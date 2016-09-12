@@ -9,7 +9,7 @@
 
   <tag>
     <name>include</name>
-    <tag-class>fi.internetix.edelphi.taglib.IncludeTag</tag-class> 
+    <tag-class>fi.metatavu.edelphi.taglib.IncludeTag</tag-class> 
     <body-content>JSP</body-content>
     <attribute>
       <name>page</name>
@@ -20,7 +20,7 @@
 
   <tag>
     <name>param</name>
-    <tag-class>fi.internetix.edelphi.taglib.ParamTag</tag-class>
+    <tag-class>fi.metatavu.edelphi.taglib.ParamTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
       <name>name</name>
@@ -38,7 +38,7 @@
     <description>Tag library for chart definitions in eDelfoi. Based on BIRT sample chart viewer.</description>
     <name>queryPageChart</name>
     <tag-class>
-      fi.internetix.edelphi.taglib.QueryPageChartTag
+      fi.metatavu.edelphi.taglib.QueryPageChartTag
     </tag-class>
     <body-content>JSP</body-content>
 

@@ -5,7 +5,7 @@
   <name>eDelfoi persistence</name>
   
   <parent>
-    <groupId>fi.internetix.edelphi</groupId>
+    <groupId>fi.metatavu.edelph</groupId>
     <artifactId>parent</artifactId>
     <version>1.0.16-SNAPSHOT</version>    
     <relativePath>../pom.xml</relativePath>
@@ -148,45 +148,6 @@
           </execution>
         </executions>
       </plugin>
-
-<!-- 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.7</version>
-        <dependencies>
-          <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-entitymanager</artifactId>
-            <version>${hibernate-instrumentation.version}</version>
-          </dependency>
-        </dependencies>
-        <executions>
-          <execution>
-            <phase>process-classes</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <target>
-            <taskdef name="instrument" classname="org.hibernate.tool.instrument.javassist.InstrumentTask">
-              <classpath>
-                <path refid="maven.runtime.classpath" />
-                <path refid="maven.plugin.classpath" />
-              </classpath>
-            </taskdef>
-            <instrument verbose="true">
-              <fileset dir="${project.build.outputDirectory}">
-                <include name="**fi/internetix/edelphi/domainmodel/**/*.class" />
-              </fileset>
-            </instrument>
-          </target>
-        </configuration>
-      </plugin>
--->
-
     </plugins>
   </build>
 

@@ -3,21 +3,21 @@ if ((typeof fi) == 'undefined') {
    * @namespace fi package
    */
   var fi = {};
-};if ((typeof fi.internetix) == 'undefined') {
+};if ((typeof fi.metatavu) == 'undefined') {
   /**
-   * @namespace fi.internetix package
+   * @namespace fi.metatavu package
    */
-  fi.internetix = {};
-};if ((typeof fi.internetix.validation) == 'undefined') {
+  fi.metatavu = {};
+};if ((typeof fi.metatavu.validation) == 'undefined') {
   /**
-   * @namespace fi.internetix.validation package
+   * @namespace fi.metatavu.validation package
    */
-  fi.internetix.validation = {};
-};if ((typeof fi.internetix.validation.validator) == 'undefined') {
+  fi.metatavu.validation = {};
+};if ((typeof fi.metatavu.validation.validator) == 'undefined') {
   /**
-   * @namespace fi.internetix.validation.validator package
+   * @namespace fi.metatavu.validation.validator package
    */
-  fi.internetix.validation.validator = {};
+  fi.metatavu.validation.validator = {};
 };/*
  * Base class for all field validators
  *  
@@ -29,8 +29,8 @@ if ((typeof fi) == 'undefined') {
  * Licensed under GNU Lesser General Public License Version 3 or later (the "LGPL") 
  * http://www.gnu.org/licenses/lgpl.html
  */
-fi.internetix.validation.FieldValidator = Class.create(
-  /** @lends fi.internetix.validation.FieldValidator# */ 
+fi.metatavu.validation.FieldValidator = Class.create(
+  /** @lends fi.metatavu.validation.FieldValidator# */ 
   {
   /**
   * Class constructor
@@ -45,13 +45,13 @@ fi.internetix.validation.FieldValidator = Class.create(
    * @returns 
    *   <table>
    *     <tr>
-   *       <td>fi.internetix.validation.FieldValidator#STATUS_UNKNOWN</td><td>&nbsp;&nbsp;If field cannot be validated</td>
+   *       <td>fi.metatavu.validation.FieldValidator#STATUS_UNKNOWN</td><td>&nbsp;&nbsp;If field cannot be validated</td>
    *     </tr>
    *     <tr>
-   *       <td>fi.internetix.validation.FieldValidator#STATUS_VALID</td><td>&nbsp;&nbsp;If field is valid</td>
+   *       <td>fi.metatavu.validation.FieldValidator#STATUS_VALID</td><td>&nbsp;&nbsp;If field is valid</td>
    *     </tr>
    *     <tr>
-   *       <td>fi.internetix.validation.FieldValidator#STATUS_INVALID</td><td>&nbsp;&nbsp;If field is invalid</td>
+   *       <td>fi.metatavu.validation.FieldValidator#STATUS_INVALID</td><td>&nbsp;&nbsp;If field is invalid</td>
    *     </tr>
    *   </table>
    */
@@ -62,10 +62,10 @@ fi.internetix.validation.FieldValidator = Class.create(
    * @returns
    *   <table>
    *     <tr>
-   *       <td>fi.internetix.validation.FieldValidator.TYPE_NORMAL</td><td>&nbsp;&nbsp;For normal fields</td>
+   *       <td>fi.metatavu.validation.FieldValidator.TYPE_NORMAL</td><td>&nbsp;&nbsp;For normal fields</td>
    *     </tr>
    *     <tr>
-   *       <td>fi.internetix.validation.FieldValidator.TYPE_LINKED</td><td>&nbsp;&nbsp;For linked fields</td>
+   *       <td>fi.metatavu.validation.FieldValidator.TYPE_LINKED</td><td>&nbsp;&nbsp;For linked fields</td>
    *     </tr>
    *   </table>
    *   
@@ -90,8 +90,8 @@ fi.internetix.validation.FieldValidator = Class.create(
 });
 
 /** @class **/
-Object.extend(fi.internetix.validation.FieldValidator, 
-  /** @lends fi.internetix.validation.FieldValidator# */   
+Object.extend(fi.metatavu.validation.FieldValidator, 
+  /** @lends fi.metatavu.validation.FieldValidator# */   
   {
   /**
    * Invalid status
@@ -126,13 +126,13 @@ Object.extend(fi.internetix.validation.FieldValidator,
    * Linked validator
    */
   TYPE_LINKED:2    
-});fi.internetix.validation.LinkedFieldValidator = Class.create(fi.internetix.validation.FieldValidator, 
-  /** @lends fi.internetix.validation.LinkedFieldValidator# **/   
+});fi.metatavu.validation.LinkedFieldValidator = Class.create(fi.metatavu.validation.FieldValidator, 
+  /** @lends fi.metatavu.validation.LinkedFieldValidator# **/   
   {
   /**
   * Class constructor
   * @class Constructs this class
-  * @extends fi.internetix.validation.FieldValidator
+  * @extends fi.metatavu.validation.FieldValidator
   * @constructs
   * @param $super super class 
   */
@@ -141,7 +141,7 @@ Object.extend(fi.internetix.validation.FieldValidator,
   },
   getLinkedField: function (field) {},
   getType: function ($super) {
-    return fi.internetix.validation.FieldValidator.TYPE_LINKED;
+    return fi.metatavu.validation.FieldValidator.TYPE_LINKED;
   }
 });/*
  * Field validator vault
@@ -154,8 +154,8 @@ Object.extend(fi.internetix.validation.FieldValidator,
  * Licensed under GNU Lesser General Public License Version 3 or later (the "LGPL") 
  * http://www.gnu.org/licenses/lgpl.html
  */
-fi.internetix.validation.FieldValidatorVault = 
-  /** @lends fi.internetix.validation.FieldValidatorVault# */ 
+fi.metatavu.validation.FieldValidatorVault = 
+  /** @lends fi.metatavu.validation.FieldValidatorVault# */ 
   {
   /**
    * @class Static class for storing field validators
@@ -179,8 +179,8 @@ fi.internetix.validation.FieldValidatorVault =
     return this._validators.values();
   },
   _validators: new Hash()
-};fi.internetix.validation.ValidationDelegator = Class.create(
-  /** @lends fi.internetix.validation.ValidationDelegator# */ 
+};fi.metatavu.validation.ValidationDelegator = Class.create(
+  /** @lends fi.metatavu.validation.ValidationDelegator# */ 
   {
   /**
   * Class constructor
@@ -230,7 +230,7 @@ fi.internetix.validation.FieldValidatorVault =
    * @param requiredCheckAsUnknown whether required should be interpret as unknown
    */
   validate: function (requiredCheckAsUnknown) {
-    this._validate(requiredCheckAsUnknown, this._validators, fi.internetix.validation.FieldValidator.STATUS_UNKNOWN);
+    this._validate(requiredCheckAsUnknown, this._validators, fi.metatavu.validation.FieldValidator.STATUS_UNKNOWN);
   },
   /**
    * Resets field validity before validation
@@ -246,7 +246,7 @@ fi.internetix.validation.FieldValidatorVault =
    * @returns field validity status
    */
   getStatus: function () {
-    return this._field._validity == undefined ? fi.internetix.validation.FieldValidator.STATUS_UNDEFINED : this._field._validity;
+    return this._field._validity == undefined ? fi.metatavu.validation.FieldValidator.STATUS_UNDEFINED : this._field._validity;
   },
   /**
    * Retruns whether field is mandatory or not
@@ -255,7 +255,7 @@ fi.internetix.validation.FieldValidatorVault =
    */
   isMandatory: function () {
     for (var i = this._validators.length - 1; i >= 0; i--) {
-      if (this._validators[i].getType() == fi.internetix.validation.FieldValidator.TYPE_MANDATORY)
+      if (this._validators[i].getType() == fi.metatavu.validation.FieldValidator.TYPE_MANDATORY)
         return true;
     }
     
@@ -292,16 +292,16 @@ fi.internetix.validation.FieldValidatorVault =
 
     if (visible) {
       for (var i = 0, l = validators.length; i < l; i++) {
-        if (status != fi.internetix.validation.FieldValidator.STATUS_INVALID) {
+        if (status != fi.metatavu.validation.FieldValidator.STATUS_INVALID) {
           switch (validators[i].validate(this._field)) {
-            case fi.internetix.validation.FieldValidator.STATUS_INVALID:
-              if (requiredCheckAsUnknown && (validators[i].getType() == fi.internetix.validation.FieldValidator.TYPE_MANDATORY))
-                status = fi.internetix.validation.FieldValidator.STATUS_UNKNOWN;
+            case fi.metatavu.validation.FieldValidator.STATUS_INVALID:
+              if (requiredCheckAsUnknown && (validators[i].getType() == fi.metatavu.validation.FieldValidator.TYPE_MANDATORY))
+                status = fi.metatavu.validation.FieldValidator.STATUS_UNKNOWN;
               else
-                status = fi.internetix.validation.FieldValidator.STATUS_INVALID;
+                status = fi.metatavu.validation.FieldValidator.STATUS_INVALID;
             break;
-            case fi.internetix.validation.FieldValidator.STATUS_VALID:
-              status = fi.internetix.validation.FieldValidator.STATUS_VALID;
+            case fi.metatavu.validation.FieldValidator.STATUS_VALID:
+              status = fi.metatavu.validation.FieldValidator.STATUS_VALID;
             break;
           }
         } else {
@@ -309,42 +309,42 @@ fi.internetix.validation.FieldValidatorVault =
         }
       }
       
-      if (status != fi.internetix.validation.FieldValidator.STATUS_UNKNOWN) {
+      if (status != fi.metatavu.validation.FieldValidator.STATUS_UNKNOWN) {
         var linkedValidators = this._getLinkedValidators(validators);
         for (var i = 0, l = linkedValidators.length; i < l; i++) {
           var linkedField = linkedValidators[i].getLinkedField(this._field);
-          var fieldDelegator = fi.internetix.validation.ValidationDelegatorVault.getDelegator(linkedField);
+          var fieldDelegator = fi.metatavu.validation.ValidationDelegatorVault.getDelegator(linkedField);
           fieldDelegator._linkedValidate(requiredCheckAsUnknown, status, linkedValidators[i]);
         }
       }
     } else {
-      status = fi.internetix.validation.FieldValidator.STATUS_HIDDEN;
+      status = fi.metatavu.validation.FieldValidator.STATUS_HIDDEN;
     }
     
     if (oldStatus != status) {
       this._field._validity = status;
       
       switch (status) {
-        case fi.internetix.validation.FieldValidator.STATUS_UNKNOWN:
-          if (oldStatus == fi.internetix.validation.FieldValidator.STATUS_VALID)
+        case fi.metatavu.validation.FieldValidator.STATUS_UNKNOWN:
+          if (oldStatus == fi.metatavu.validation.FieldValidator.STATUS_VALID)
             this._field.removeClassName('valid');
           else 
             this._field.removeClassName('invalid');
           __formValidationHook(this._field.form, this.isMandatory());          
         break;
-        case fi.internetix.validation.FieldValidator.STATUS_INVALID:
-          if (oldStatus == fi.internetix.validation.FieldValidator.STATUS_VALID)
+        case fi.metatavu.validation.FieldValidator.STATUS_INVALID:
+          if (oldStatus == fi.metatavu.validation.FieldValidator.STATUS_VALID)
             this._field.removeClassName('valid');
           this._field.addClassName('invalid');
           __formValidationHook(this._field.form, true);
         break;
-        case fi.internetix.validation.FieldValidator.STATUS_VALID:
-          if (oldStatus != fi.internetix.validation.FieldValidator.STATUS_VALID)
+        case fi.metatavu.validation.FieldValidator.STATUS_VALID:
+          if (oldStatus != fi.metatavu.validation.FieldValidator.STATUS_VALID)
             this._field.removeClassName('invalid');
           this._field.addClassName('valid');
           __formValidationHook(this._field.form, false);
         break;
-        case fi.internetix.validation.FieldValidator.STATUS_HIDDEN:
+        case fi.metatavu.validation.FieldValidator.STATUS_HIDDEN:
           this._field.removeClassName('invalid');
           this._field.removeClassName('valid');
           __formValidationHook(this._field.form, false);
@@ -356,7 +356,7 @@ fi.internetix.validation.FieldValidatorVault =
     var result = new Array();
     for (var i = 0, l = validators.length; i < l; i++) {
       var validator = validators[i];
-      if (validator.getType() == fi.internetix.validation.FieldValidator.TYPE_LINKED) 
+      if (validator.getType() == fi.metatavu.validation.FieldValidator.TYPE_LINKED) 
         result.push(validator);
     }
     
@@ -378,13 +378,13 @@ function __formValidationHook(formElement, isInvalid) {
       var valid = !isInvalid;
 
       if (valid) {
-        var delegators = fi.internetix.validation.ValidationDelegatorVault.getFormDelegators(formElement);
+        var delegators = fi.metatavu.validation.ValidationDelegatorVault.getFormDelegators(formElement);
         for ( var i = 0, l = delegators.length; i < l; i++) {
           switch (delegators[i].getStatus()) {
-            case fi.internetix.validation.FieldValidator.STATUS_INVALID:
+            case fi.metatavu.validation.FieldValidator.STATUS_INVALID:
               valid = false;
             break;
-            case fi.internetix.validation.FieldValidator.STATUS_UNKNOWN:
+            case fi.metatavu.validation.FieldValidator.STATUS_UNKNOWN:
               if (delegators[i].isMandatory()) {
                 valid = false;
               }
@@ -403,8 +403,8 @@ function __formValidationHook(formElement, isInvalid) {
         formValidButton.setAttribute("disabled", "disabled");
     }
   }
-};fi.internetix.validation.ValidationDelegatorVault =
-  /** @lends fi.internetix.validation.ValidationDelegatorVault# */ 
+};fi.metatavu.validation.ValidationDelegatorVault =
+  /** @lends fi.metatavu.validation.ValidationDelegatorVault# */ 
   {
   /**
    * @class Static class for storing validation delegators
@@ -453,15 +453,15 @@ function __formValidationHook(formElement, isInvalid) {
 function initializeValidation(container) {
   var delegators = new Array();
   var c = $(container || document.body);
-  var validators = fi.internetix.validation.FieldValidatorVault.getValidators();
+  var validators = fi.metatavu.validation.FieldValidatorVault.getValidators();
   for ( var i = 0, l = validators.length; i < l; i++) {
     var fields = c.select('.' + validators[i].getClassName());
     for ( var j = 0, le = fields.length; j < le; j++) {
       var field = fields[j];
-      var delegator = fi.internetix.validation.ValidationDelegatorVault.getDelegator(field);
+      var delegator = fi.metatavu.validation.ValidationDelegatorVault.getDelegator(field);
       if (!delegator) {
-        delegator = new fi.internetix.validation.ValidationDelegator(field);
-        fi.internetix.validation.ValidationDelegatorVault.setDelegator(field, delegator);
+        delegator = new fi.metatavu.validation.ValidationDelegator(field);
+        fi.metatavu.validation.ValidationDelegatorVault.setDelegator(field, delegator);
       }
 
       delegator.addValidator(validators[i]);
@@ -484,13 +484,13 @@ function initializeValidation(container) {
  * @param element element
  */
 function initializeElementValidation(element) {
-  var delegator = fi.internetix.validation.ValidationDelegatorVault.getDelegator(element);
+  var delegator = fi.metatavu.validation.ValidationDelegatorVault.getDelegator(element);
   if (!delegator) {
-    delegator = new fi.internetix.validation.ValidationDelegator(element);
-    fi.internetix.validation.ValidationDelegatorVault.setDelegator(element, delegator);
+    delegator = new fi.metatavu.validation.ValidationDelegator(element);
+    fi.metatavu.validation.ValidationDelegatorVault.setDelegator(element, delegator);
   }
 
-  var validators = fi.internetix.validation.FieldValidatorVault.getValidators();
+  var validators = fi.metatavu.validation.FieldValidatorVault.getValidators();
   for ( var i = 0, l = validators.length; i < l; i++) {
     var validator = validators[i];
     if (element.hasClassName(validator.getClassName()))
@@ -510,7 +510,7 @@ function deinitializeValidation(container) {
   for ( var i = 0, l = c.childNodes.length; i < l; i++) {
     if (c.childNodes[i].nodeType == 1) {
       deinitializeValidation(c.childNodes[i]);
-      fi.internetix.validation.ValidationDelegatorVault.releaseDelegator(c.childNodes[i]);
+      fi.metatavu.validation.ValidationDelegatorVault.releaseDelegator(c.childNodes[i]);
     }
   }
   ;
@@ -522,7 +522,7 @@ function deinitializeValidation(container) {
  * @param requiredCheckAsUnknown whether required should be interpret as unknown
  */
 function revalidateAll(requiredCheckAsUnknown) {
-  var delegators = fi.internetix.validation.ValidationDelegatorVault.getDelegators();
+  var delegators = fi.metatavu.validation.ValidationDelegatorVault.getDelegators();
   for ( var i = 0, l = delegators.length; i < l; i++) {
     delegators[i].validate(requiredCheckAsUnknown);
   }
@@ -534,7 +534,7 @@ function revalidateAll(requiredCheckAsUnknown) {
  * @param requiredCheckAsUnknown whether required should be interpret as unknown
  */
 function forceRevalidateAll(requiredCheckAsUnknown) {
-  var delegators = fi.internetix.validation.ValidationDelegatorVault.getDelegators();
+  var delegators = fi.metatavu.validation.ValidationDelegatorVault.getDelegators();
   for ( var i = 0, l = delegators.length; i < l; i++) {
     delegators[i].forceValidate(requiredCheckAsUnknown);
   }
@@ -542,7 +542,7 @@ function forceRevalidateAll(requiredCheckAsUnknown) {
 
 Element.addMethods({
   validate : function(element, requiredCheckAsUnknown, forceRevalidate) {
-    var delegator = fi.internetix.validation.ValidationDelegatorVault.getDelegator(element);
+    var delegator = fi.metatavu.validation.ValidationDelegatorVault.getDelegator(element);
     if (delegator) {
       if (!forceRevalidate)
         delegator.validate(requiredCheckAsUnknown);
@@ -561,13 +561,13 @@ Element.addMethods({
  * Licensed under GNU Lesser General Public License Version 3 or later (the "LGPL") 
  * http://www.gnu.org/licenses/lgpl.html
  */
-fi.internetix.validation.validator.EmailFieldValidator = Class.create(fi.internetix.validation.FieldValidator, 
-  /** @lends fi.internetix.validation.validator.EmailFieldValidator# **/   
+fi.metatavu.validation.validator.EmailFieldValidator = Class.create(fi.metatavu.validation.FieldValidator, 
+  /** @lends fi.metatavu.validation.validator.EmailFieldValidator# **/   
   {
   /**
   * Class constructor
   * @class Constructs this class
-  * @extends fi.internetix.validation.FieldValidator
+  * @extends fi.metatavu.validation.FieldValidator
   * @constructs
   * @param $super super class 
   */
@@ -579,20 +579,20 @@ fi.internetix.validation.validator.EmailFieldValidator = Class.create(fi.interne
     var value = this._getFieldValue(field);
     
     if (value) {
-      return this._validEmailMask.test(value.strip()) ? fi.internetix.validation.FieldValidator.STATUS_VALID : fi.internetix.validation.FieldValidator.STATUS_INVALID;
+      return this._validEmailMask.test(value.strip()) ? fi.metatavu.validation.FieldValidator.STATUS_VALID : fi.metatavu.validation.FieldValidator.STATUS_INVALID;
     } else {
-      return fi.internetix.validation.FieldValidator.STATUS_UNKNOWN;
+      return fi.metatavu.validation.FieldValidator.STATUS_UNKNOWN;
     }
   },
   getType: function ($super) {
-    return fi.internetix.validation.FieldValidator.TYPE_NORMAL;
+    return fi.metatavu.validation.FieldValidator.TYPE_NORMAL;
   },
   getClassName: function () {
     return 'email';
   }
 });
 
-fi.internetix.validation.FieldValidatorVault.registerValidator(new fi.internetix.validation.validator.EmailFieldValidator());/*
+fi.metatavu.validation.FieldValidatorVault.registerValidator(new fi.metatavu.validation.validator.EmailFieldValidator());/*
  * Equals field validator
  *  
  * Copyright (C) 2011 Antti Leppä / Otavan Opisto
@@ -603,13 +603,13 @@ fi.internetix.validation.FieldValidatorVault.registerValidator(new fi.internetix
  * Licensed under GNU Lesser General Public License Version 3 or later (the "LGPL") 
  * http://www.gnu.org/licenses/lgpl.html
  */
-fi.internetix.validation.validator.EqualsFieldValidator = Class.create(fi.internetix.validation.LinkedFieldValidator,
-  /** @lends fi.internetix.validation.validator.EqualsFieldValidator# **/   
+fi.metatavu.validation.validator.EqualsFieldValidator = Class.create(fi.metatavu.validation.LinkedFieldValidator,
+  /** @lends fi.metatavu.validation.validator.EqualsFieldValidator# **/   
   {
   /**
   * Class constructor
   * @class Constructs this class
-  * @extends fi.internetix.validation.LinkedFieldValidator
+  * @extends fi.metatavu.validation.LinkedFieldValidator
   * @constructs
   * @param $super super class 
   */
@@ -622,10 +622,10 @@ fi.internetix.validation.validator.EqualsFieldValidator = Class.create(fi.intern
       var value1 = this._getFieldValue(field);
       var value2 = this._getFieldValue(equalsField);
       if (value1) 
-        return value1 == value2 ? fi.internetix.validation.FieldValidator.STATUS_VALID : fi.internetix.validation.FieldValidator.STATUS_INVALID;
+        return value1 == value2 ? fi.metatavu.validation.FieldValidator.STATUS_VALID : fi.metatavu.validation.FieldValidator.STATUS_INVALID;
     } 
     
-    return fi.internetix.validation.FieldValidator.STATUS_UNKNOWN;
+    return fi.metatavu.validation.FieldValidator.STATUS_UNKNOWN;
   },
   getLinkedField: function (field) {
     var fieldClassNames = $w(field.className);
@@ -653,7 +653,7 @@ fi.internetix.validation.validator.EqualsFieldValidator = Class.create(fi.intern
   }
 });
 
-fi.internetix.validation.FieldValidatorVault.registerValidator(new fi.internetix.validation.validator.EqualsFieldValidator());/*
+fi.metatavu.validation.FieldValidatorVault.registerValidator(new fi.metatavu.validation.validator.EqualsFieldValidator());/*
  * Float field validator
  *  
  * Copyright (C) 2011 Antti Leppä / Otavan Opisto
@@ -664,13 +664,13 @@ fi.internetix.validation.FieldValidatorVault.registerValidator(new fi.internetix
  * Licensed under GNU Lesser General Public License Version 3 or later (the "LGPL") 
  * http://www.gnu.org/licenses/lgpl.html
  */
-fi.internetix.validation.validator.FloatValidValidator = Class.create(fi.internetix.validation.FieldValidator, 
-  /** @lends fi.internetix.validation.validator.FloatValidValidator# **/   
+fi.metatavu.validation.validator.FloatValidValidator = Class.create(fi.metatavu.validation.FieldValidator, 
+  /** @lends fi.metatavu.validation.validator.FloatValidValidator# **/   
   {
   /**
   * Class constructor
   * @class Constructs this class
-  * @extends fi.internetix.validation.FieldValidator
+  * @extends fi.metatavu.validation.FieldValidator
   * @constructs
   * @param $super super class 
   */
@@ -681,20 +681,20 @@ fi.internetix.validation.validator.FloatValidValidator = Class.create(fi.interne
   validate: function ($super, field) {
     var value = this._getFieldValue(field);
     if (value) {
-      return this._validFloatMask.test(value) ? fi.internetix.validation.FieldValidator.STATUS_VALID : fi.internetix.validation.FieldValidator.STATUS_INVALID;
+      return this._validFloatMask.test(value) ? fi.metatavu.validation.FieldValidator.STATUS_VALID : fi.metatavu.validation.FieldValidator.STATUS_INVALID;
     } else {
-      return fi.internetix.validation.FieldValidator.STATUS_UNKNOWN;
+      return fi.metatavu.validation.FieldValidator.STATUS_UNKNOWN;
     }
   },
   getType: function ($super) {
-    return fi.internetix.validation.FieldValidator.TYPE_NORMAL;
+    return fi.metatavu.validation.FieldValidator.TYPE_NORMAL;
   },
   getClassName: function () {
     return 'float';
   }
 });
 
-fi.internetix.validation.FieldValidatorVault.registerValidator(new fi.internetix.validation.validator.FloatValidValidator());/*
+fi.metatavu.validation.FieldValidatorVault.registerValidator(new fi.metatavu.validation.validator.FloatValidValidator());/*
  * Mask field validator
  *  
  * Copyright (C) 2011 Antti Leppä / Otavan Opisto
@@ -705,13 +705,13 @@ fi.internetix.validation.FieldValidatorVault.registerValidator(new fi.internetix
  * Licensed under GNU Lesser General Public License Version 3 or later (the "LGPL") 
  * http://www.gnu.org/licenses/lgpl.html
  */
-fi.internetix.validation.validator.MaskFieldValidator = Class.create(fi.internetix.validation.FieldValidator,
-  /** @lends fi.internetix.validation.validator.MaskFieldValidator# **/   
+fi.metatavu.validation.validator.MaskFieldValidator = Class.create(fi.metatavu.validation.FieldValidator,
+  /** @lends fi.metatavu.validation.validator.MaskFieldValidator# **/   
   {
   /**
   * Class constructor
   * @class Constructs this class
-  * @extends fi.internetix.validation.FieldValidator
+  * @extends fi.metatavu.validation.FieldValidator
   * @constructs
   * @param $super super class 
   */
@@ -723,20 +723,20 @@ fi.internetix.validation.validator.MaskFieldValidator = Class.create(fi.internet
     var mask = field.getAttribute("validatemask");
     
     if (mask && value) {
-      return new RegExp(mask).test(value) ? fi.internetix.validation.FieldValidator.STATUS_VALID : fi.internetix.validation.FieldValidator.STATUS_INVALID;
+      return new RegExp(mask).test(value) ? fi.metatavu.validation.FieldValidator.STATUS_VALID : fi.metatavu.validation.FieldValidator.STATUS_INVALID;
     } else {
-      return fi.internetix.validation.FieldValidator.STATUS_UNKNOWN;
+      return fi.metatavu.validation.FieldValidator.STATUS_UNKNOWN;
     }
   },
   getType: function ($super) {
-    return fi.internetix.validation.FieldValidator.TYPE_NORMAL;
+    return fi.metatavu.validation.FieldValidator.TYPE_NORMAL;
   },
   getClassName: function () {
     return 'mask';
   }
 });
 
-fi.internetix.validation.FieldValidatorVault.registerValidator(new fi.internetix.validation.validator.MaskFieldValidator());/*
+fi.metatavu.validation.FieldValidatorVault.registerValidator(new fi.metatavu.validation.validator.MaskFieldValidator());/*
  * Number field validator
  *  
  * Copyright (C) 2011 Antti Leppä / Otavan Opisto
@@ -747,13 +747,13 @@ fi.internetix.validation.FieldValidatorVault.registerValidator(new fi.internetix
  * Licensed under GNU Lesser General Public License Version 3 or later (the "LGPL") 
  * http://www.gnu.org/licenses/lgpl.html
  */
-fi.internetix.validation.validator.NumberValidValidator = Class.create(fi.internetix.validation.FieldValidator,
-  /** @lends fi.internetix.validation.validator.NumberValidValidator# **/   
+fi.metatavu.validation.validator.NumberValidValidator = Class.create(fi.metatavu.validation.FieldValidator,
+  /** @lends fi.metatavu.validation.validator.NumberValidValidator# **/   
   {
   /**
   * Class constructor
   * @class Constructs this class
-  * @extends fi.internetix.validation.FieldValidator
+  * @extends fi.metatavu.validation.FieldValidator
   * @constructs
   * @param $super super class 
   */
@@ -764,20 +764,20 @@ fi.internetix.validation.validator.NumberValidValidator = Class.create(fi.intern
   validate: function ($super, field) {
     var value = this._getFieldValue(field);
     if (value) {
-      return this._validNumberMask.test(value) ? fi.internetix.validation.FieldValidator.STATUS_VALID : fi.internetix.validation.FieldValidator.STATUS_INVALID;
+      return this._validNumberMask.test(value) ? fi.metatavu.validation.FieldValidator.STATUS_VALID : fi.metatavu.validation.FieldValidator.STATUS_INVALID;
     } else {
-      return fi.internetix.validation.FieldValidator.STATUS_UNKNOWN;
+      return fi.metatavu.validation.FieldValidator.STATUS_UNKNOWN;
     }
   },
   getType: function ($super) {
-    return fi.internetix.validation.FieldValidator.TYPE_NORMAL;
+    return fi.metatavu.validation.FieldValidator.TYPE_NORMAL;
   },
   getClassName: function () {
     return 'number';
   }
 });
 
-fi.internetix.validation.FieldValidatorVault.registerValidator(new fi.internetix.validation.validator.NumberValidValidator());/*
+fi.metatavu.validation.FieldValidatorVault.registerValidator(new fi.metatavu.validation.validator.NumberValidValidator());/*
  * Required field validator
  *  
  * Copyright (C) 2011 Antti Leppä / Otavan Opisto
@@ -788,13 +788,13 @@ fi.internetix.validation.FieldValidatorVault.registerValidator(new fi.internetix
  * Licensed under GNU Lesser General Public License Version 3 or later (the "LGPL") 
  * http://www.gnu.org/licenses/lgpl.html
  */
-fi.internetix.validation.validator.RequiredFieldValidator = Class.create(fi.internetix.validation.FieldValidator,
-  /** @lends fi.internetix.validation.validator.RequiredFieldValidator# **/   
+fi.metatavu.validation.validator.RequiredFieldValidator = Class.create(fi.metatavu.validation.FieldValidator,
+  /** @lends fi.metatavu.validation.validator.RequiredFieldValidator# **/   
   {
   /**
   * Class constructor
   * @class Constructs this class
-  * @extends fi.internetix.validation.FieldValidator
+  * @extends fi.metatavu.validation.FieldValidator
   * @constructs
   * @param $super super class 
   */
@@ -802,14 +802,14 @@ fi.internetix.validation.validator.RequiredFieldValidator = Class.create(fi.inte
     $super();
   },
   validate: function ($super, field) {
-    return this._getFieldValue(field).blank() ? fi.internetix.validation.FieldValidator.STATUS_INVALID : fi.internetix.validation.FieldValidator.STATUS_VALID;
+    return this._getFieldValue(field).blank() ? fi.metatavu.validation.FieldValidator.STATUS_INVALID : fi.metatavu.validation.FieldValidator.STATUS_VALID;
   },
   getType: function ($super) {
-    return fi.internetix.validation.FieldValidator.TYPE_MANDATORY;
+    return fi.metatavu.validation.FieldValidator.TYPE_MANDATORY;
   },
   getClassName: function () {
     return 'required';
   }
 });
 
-fi.internetix.validation.FieldValidatorVault.registerValidator(new fi.internetix.validation.validator.RequiredFieldValidator());
+fi.metatavu.validation.FieldValidatorVault.registerValidator(new fi.metatavu.validation.validator.RequiredFieldValidator());

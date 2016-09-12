@@ -3,16 +3,16 @@ if ((typeof fi) == 'undefined') {
    * @namespace fi package
    */
   var fi = {};
-};if ((typeof fi.internetix) == 'undefined') {
+};if ((typeof fi.metatavu) == 'undefined') {
   /**
-   * @namespace fi.internetix package
+   * @namespace fi.metatavu package
    */
-  fi.internetix = {};
-};if ((typeof fi.internetix.datagrid) == 'undefined') {
+  fi.metatavu = {};
+};if ((typeof fi.metatavu.datagrid) == 'undefined') {
   /**
-   * @namespace fi.internetix.datagrid package
+   * @namespace fi.metatavu.datagrid package
    */
-  fi.internetix.datagrid = {};
+  fi.metatavu.datagrid = {};
 };var _dataGrids = new Hash();
 
 function getDataGridById(id) {
