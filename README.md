@@ -13,6 +13,10 @@ called eDelfoi.
 
 eDelfoi is licensed under GPLv3.
 
+eDelphi has originally been developed by Otavan Opisto. Future development of software was adopted by Metatavu Oy in Septemper 2016. 
+
+Original repository can be found from: https://github.com/otavanopisto/edelphi
+
 Contributing to eDelphi
 -----------------------
 
