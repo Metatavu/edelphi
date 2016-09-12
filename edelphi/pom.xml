@@ -8,7 +8,7 @@
 Delphi technique is used for bringing values, new viewpoints and ideas as a foundation for planning and decision making, i.e. making qualitative research. The program can also be used for making a simple, Survey-type of query. The newest version of the program is called eDelfoi.  </description>
 
   <parent>
-    <groupId>fi.internetix.edelphi</groupId>
+    <groupId>fi.metatavu.edelph</groupId>
     <artifactId>parent</artifactId>
     <version>1.0.16-SNAPSHOT</version>    
     <relativePath>../pom.xml</relativePath>
@@ -96,7 +96,7 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
     <!-- eDelphi -->
 
   	<dependency>
-		<groupId>fi.internetix.edelphi</groupId>
+		<groupId>fi.metatavu.edelph</groupId>
 		<artifactId>persistence</artifactId>
 		<version>${project.version}</version>
 		<type>jar</type>
@@ -112,7 +112,7 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
   	<!-- SMVCJ -->
   	
   	<dependency>
-  		<groupId>fi.internetix.smvcj</groupId>
+  		<groupId>fi.metatavu.edelph</groupId>
   		<artifactId>smvcj</artifactId>
   		<type>jar</type>
   		<scope>compile</scope>

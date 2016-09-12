@@ -5,21 +5,21 @@ if ((typeof fi) == 'undefined') {
   var fi = {};
 };
 
-if ((typeof fi.internetix) == 'undefined') {
+if ((typeof fi.metatavu) == 'undefined') {
   /**
-   * @namespace fi.internetix package
+   * @namespace fi.metatavu package
    */
-  fi.internetix = {};
+  fi.metatavu = {};
 };
 
-if ((typeof fi.internetix.draft) == 'undefined') {
+if ((typeof fi.metatavu.draft) == 'undefined') {
   /**
-   * @namespace fi.internetix.draft package
+   * @namespace fi.metatavu.draft package
    */
-  fi.internetix.draft = {};
+  fi.metatavu.draft = {};
 };
 
-fi.internetix.draft.DraftTaskVault = {
+fi.metatavu.draft.DraftTaskVault = {
   getTaskClassFor: function (element) {
     for (var i = this._taskTypes.length - 1; i >= 0; i--) {
       for (var j = 0; j < this._taskTypes[i].supports.length; j++) {
@@ -55,7 +55,7 @@ fi.internetix.draft.DraftTaskVault = {
   _customTasks: new Array()
 };
 
-fi.internetix.draft.AbstractDraftTask = Class.create({
+fi.metatavu.draft.AbstractDraftTask = Class.create({
   initialize : function() {
     
   },
@@ -73,7 +73,7 @@ fi.internetix.draft.AbstractDraftTask = Class.create({
   }
 });
 
-fi.internetix.draft.InputFieldDraftTask = Class.create(fi.internetix.draft.AbstractDraftTask, {
+fi.metatavu.draft.InputFieldDraftTask = Class.create(fi.metatavu.draft.AbstractDraftTask, {
   initialize : function($super) {
     $super();
   },
@@ -85,20 +85,20 @@ fi.internetix.draft.InputFieldDraftTask = Class.create(fi.internetix.draft.Abstr
 
     switch (element.type) {
       case 'checkbox':
-        return new fi.internetix.draft.ElementDraft('inputField', elementName, this._compress(element.checked));
+        return new fi.metatavu.draft.ElementDraft('inputField', elementName, this._compress(element.checked));
       break;
       case 'radio':
         if (element.checked) {
           var inputs = document.getElementsByName(elementName);
           for (var i = 0, l = inputs.length; i < l; i++) {
             if (inputs[i].checked) {
-              return new fi.internetix.draft.ElementDraft('inputField', elementName, inputs[i].value, i);
+              return new fi.metatavu.draft.ElementDraft('inputField', elementName, inputs[i].value, i);
             }
           }
         }
       break;
       default:
-        return new fi.internetix.draft.ElementDraft('inputField', elementName, this._compress(element.value));
+        return new fi.metatavu.draft.ElementDraft('inputField', elementName, this._compress(element.value));
       break;
     }
     
@@ -125,13 +125,13 @@ fi.internetix.draft.InputFieldDraftTask = Class.create(fi.internetix.draft.Abstr
   }
 });
 
-Object.extend(fi.internetix.draft.InputFieldDraftTask, {
+Object.extend(fi.metatavu.draft.InputFieldDraftTask, {
   supports: ['input[type="checkbox"]','input[type="hidden"]','input[type="password"]','input[type="radio"]','input[type="text"]']
 });
 
-fi.internetix.draft.DraftTaskVault._registerTaskType(fi.internetix.draft.InputFieldDraftTask, 'inputField');
+fi.metatavu.draft.DraftTaskVault._registerTaskType(fi.metatavu.draft.InputFieldDraftTask, 'inputField');
 
-fi.internetix.draft.SelectFieldDraftTask = Class.create(fi.internetix.draft.AbstractDraftTask, {
+fi.metatavu.draft.SelectFieldDraftTask = Class.create(fi.metatavu.draft.AbstractDraftTask, {
   initialize : function($super) {
     $super();
   },
@@ -142,7 +142,7 @@ fi.internetix.draft.SelectFieldDraftTask = Class.create(fi.internetix.draft.Abst
     if (elementName.blank())
       return null;
     else
-      return new fi.internetix.draft.ElementDraft('selectField', elementName, this._compress(elementValue));
+      return new fi.metatavu.draft.ElementDraft('selectField', elementName, this._compress(elementValue));
   },
   restoreDraftData: function (elementDraft) {
     var name = elementDraft.getName();
@@ -157,13 +157,13 @@ fi.internetix.draft.SelectFieldDraftTask = Class.create(fi.internetix.draft.Abst
   }
 });
 
-Object.extend(fi.internetix.draft.SelectFieldDraftTask, {
+Object.extend(fi.metatavu.draft.SelectFieldDraftTask, {
   supports: ['select']
 });
 
-fi.internetix.draft.DraftTaskVault._registerTaskType(fi.internetix.draft.SelectFieldDraftTask, 'selectField');
+fi.metatavu.draft.DraftTaskVault._registerTaskType(fi.metatavu.draft.SelectFieldDraftTask, 'selectField');
 
-fi.internetix.draft.TextAreaFieldDraftTask = Class.create(fi.internetix.draft.AbstractDraftTask, {
+fi.metatavu.draft.TextAreaFieldDraftTask = Class.create(fi.metatavu.draft.AbstractDraftTask, {
   initialize : function($super) {
     $super();
   },
@@ -174,7 +174,7 @@ fi.internetix.draft.TextAreaFieldDraftTask = Class.create(fi.internetix.draft.Ab
     if (elementName.blank())
       return null;
     else
-      return new fi.internetix.draft.ElementDraft('textareaField', elementName, this._compress(elementValue));
+      return new fi.metatavu.draft.ElementDraft('textareaField', elementName, this._compress(elementValue));
   },
   restoreDraftData: function (elementDraft) {
     var name = elementDraft.getName();
@@ -186,19 +186,19 @@ fi.internetix.draft.TextAreaFieldDraftTask = Class.create(fi.internetix.draft.Ab
   }
 });
 
-Object.extend(fi.internetix.draft.TextAreaFieldDraftTask, {
+Object.extend(fi.metatavu.draft.TextAreaFieldDraftTask, {
   supports: ['textarea']
 });
 
-fi.internetix.draft.DraftTaskVault._registerTaskType(fi.internetix.draft.TextAreaFieldDraftTask, 'textareaField');
+fi.metatavu.draft.DraftTaskVault._registerTaskType(fi.metatavu.draft.TextAreaFieldDraftTask, 'textareaField');
 
-fi.internetix.draft.CustomDraftTask = Class.create(fi.internetix.draft.AbstractDraftTask, {
+fi.metatavu.draft.CustomDraftTask = Class.create(fi.metatavu.draft.AbstractDraftTask, {
   getId: function () {
     throw new Error("Not implemented"); 
   }
 });
 
-fi.internetix.draft.ElementDraft = Class.create({
+fi.metatavu.draft.ElementDraft = Class.create({
   initialize : function(draftTaskId, name, data,index) {
     this._data = data;
     this._name = name;
@@ -219,7 +219,7 @@ fi.internetix.draft.ElementDraft = Class.create({
   }
 });
 
-fi.internetix.draft.DraftAPI = Class.create({
+fi.metatavu.draft.DraftAPI = Class.create({
   initialize: function (rootElement) {
     this._rootElement = rootElement;
   },
@@ -230,8 +230,8 @@ fi.internetix.draft.DraftAPI = Class.create({
     draftData.set("elements", elementDrafts);
     
     var customDrafts = new Array();
-    for (var i = 0, l = fi.internetix.draft.DraftTaskVault.getCustomTasks().length; i < l; i++) {
-      var customTask = fi.internetix.draft.DraftTaskVault.getCustomTasks()[i];
+    for (var i = 0, l = fi.metatavu.draft.DraftTaskVault.getCustomTasks().length; i < l; i++) {
+      var customTask = fi.metatavu.draft.DraftTaskVault.getCustomTasks()[i];
       var customDraft = customTask.createDraftData();
       if (customDraft) {
         customDrafts.push({
@@ -253,8 +253,8 @@ fi.internetix.draft.DraftAPI = Class.create({
 
     var elementDrafts = draftData.elements;
     for (var i = 0, l = elementDrafts.length; i < l; i++) {
-      var elementDraft = new fi.internetix.draft.ElementDraft(elementDrafts[i].taskId, elementDrafts[i].name, elementDrafts[i].data, elementDrafts[i].index);
-      var draftTaskClass = fi.internetix.draft.DraftTaskVault.getTaskClassById(elementDraft.getDraftTaskId());
+      var elementDraft = new fi.metatavu.draft.ElementDraft(elementDrafts[i].taskId, elementDrafts[i].name, elementDrafts[i].data, elementDrafts[i].index);
+      var draftTaskClass = fi.metatavu.draft.DraftTaskVault.getTaskClassById(elementDraft.getDraftTaskId());
       if (draftTaskClass) {
         var draftTask = new draftTaskClass();
         draftTask.restoreDraftData(elementDraft);
@@ -264,8 +264,8 @@ fi.internetix.draft.DraftAPI = Class.create({
     var customDrafts = draftData.custom;
     if (customDrafts) {
       for (var i = 0, l = customDrafts.length; i < l; i++) {
-        var customDraft = new fi.internetix.draft.ElementDraft(customDrafts[i].taskId, customDrafts[i].name, customDrafts[i].data);
-        var customTask = fi.internetix.draft.DraftTaskVault.getCustomTaskById(customDraft.getDraftTaskId());
+        var customDraft = new fi.metatavu.draft.ElementDraft(customDrafts[i].taskId, customDrafts[i].name, customDrafts[i].data);
+        var customTask = fi.metatavu.draft.DraftTaskVault.getCustomTaskById(customDraft.getDraftTaskId());
         if (customTask)
           customTask.restoreDraftData(customDraft);
       }
@@ -278,7 +278,7 @@ fi.internetix.draft.DraftAPI = Class.create({
     
     for (var i = 0, l = elements.length; i < l; i++) {
       if (elements[i].nodeType == 1) {
-        var draftTaskClass = fi.internetix.draft.DraftTaskVault.getTaskClassFor(elements[i]);
+        var draftTaskClass = fi.metatavu.draft.DraftTaskVault.getTaskClassFor(elements[i]);
         if (draftTaskClass) {
           var draftTask = new draftTaskClass();
           var elementDraft = draftTask.createDraftData(elements[i]);

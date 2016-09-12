@@ -22,7 +22,7 @@ function isDraftEqualToLatestDraft(draftData) {
 }
 
 function initDrafting(rootElement) {
-  DRAFTAPI = new fi.internetix.draft.DraftAPI(rootElement);
+  DRAFTAPI = new fi.metatavu.draft.DraftAPI(rootElement);
   
   JSONUtils.request(CONTEXTPATH + "/drafts/retrieveformdraft.json", {
     onSuccess: function (jsonResponse) {

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>fi.internetix.edelphi</groupId>
+  <groupId>fi.metatavu.edelphi</groupId>
   <artifactId>parent</artifactId>
   <version>1.0.16-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <url>https://github.com/otavanopisto/edelphi</url>  
+  <url>https://github.com/Metatavu/edelphi</url>  
   
   <licenses>
     <license>
@@ -17,19 +17,19 @@
   
   <issueManagement>
     <system>GitHub</system>
-    <url>https://github.com/otavanopisto/edelphi/issues</url>
+    <url>https://github.com/Metatavu/edelphi/issues</url>
   </issueManagement>
   
   <scm>
-    <developerConnection>scm:git:git@github.com:otavanopisto/edelphi.git</developerConnection>
-    <url>git@github.com:otavanopisto/edelphi.git</url>
-    <connection>scm:git:git@github.com:otavanopisto/edelphi.git</connection>
+    <developerConnection>scm:git:git@github.com:Metatavu/edelphi.git</developerConnection>
+    <url>git@github.com:Metatavu/edelphi.git</url>
+    <connection>scm:git:git@github.com:Metatavu/edelphi.git</connection>
     <tag>HEAD</tag>
   </scm>
   
   <organization>
-    <name>Internetix / Otava Folk High School</name>
-    <url>http://www.otavanopisto.fi</url>
+    <name>Metatavu Oy</name>
+    <url>https://metatavu.fi</url>
   </organization>
 
   <properties>
@@ -45,6 +45,7 @@
   <modules>
     <module>edelphi-persistence</module>
     <module>edelphi</module>
+    <module>smvcj</module>
   </modules>
 
   <dependencyManagement>
@@ -76,7 +77,7 @@
       </dependency>
 
       <dependency>
-        <groupId>fi.internetix.smvcj</groupId>
+        <groupId>fi.metatavu.edelphi.smvcj</groupId>
         <artifactId>smvcj</artifactId>
         <version>0.0.3</version>
       </dependency>
