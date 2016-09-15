@@ -58,6 +58,7 @@
     <module>smvcj</module>
     <module>edelphi-persistence</module>
     <module>edelphi</module>
+    <module>itests</module>
   </modules>
 
   <dependencyManagement>

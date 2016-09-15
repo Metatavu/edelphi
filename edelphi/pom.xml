@@ -6,6 +6,7 @@
   <description>eDelfoi is a research program based on Delphi expert method. It is developed in co-operation with Future Research Center of Turku School of Economics.
 
 Delphi technique is used for bringing values, new viewpoints and ideas as a foundation for planning and decision making, i.e. making qualitative research. The program can also be used for making a simple, Survey-type of query. The newest version of the program is called eDelfoi.  </description>
+  <url>https://github.com/Metatavu/edelphi</url>  
 
   <parent>
     <groupId>fi.metatavu.edelphi</groupId>
@@ -13,6 +14,46 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
     <version>1.1.0-SNAPSHOT</version>    
     <relativePath>../pom.xml</relativePath>
   </parent>
+  
+  <licenses>
+    <license>
+      <name>GNU LGPL v3</name>
+      <url>http://www.gnu.org/licenses/lgpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/Metatavu/edelphi/issues</url>
+  </issueManagement>
+  
+  <scm>
+    <developerConnection>scm:git:git@github.com:Metatavu/edelphi.git</developerConnection>
+    <url>git@github.com:Metatavu/edelphi.git</url>
+    <connection>scm:git:git@github.com:Metatavu/edelphi.git</connection>
+    <tag>HEAD</tag>
+  </scm>
+  
+  <organization>
+    <name>Metatavu Oy</name>
+    <url>https://metatavu.fi</url>
+  </organization>
+  
+  <developers>
+    <developer>
+      <email>ratkaisutiimi@otavanopisto.fi</email>
+      <name>Ratkaisutiimi</name>
+      <organization>Otavan Opisto</organization>
+      <organizationUrl>http://www.otavanopisto.fi</organizationUrl>
+    </developer>
+    <developer>
+      <email>antti.leppa@metatavu.fi</email>
+      <name>Antti Leppä</name>
+      <organization>Metatavu Oy</organization>
+      <organizationUrl>https://www.metatavu.fi</organizationUrl>
+    </developer>    
+  </developers>
   
   <dependencies>
   
