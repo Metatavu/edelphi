@@ -6,7 +6,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import fi.metatavu.edelphi.smvcj.StatusCode;
 import fi.metatavu.edelphi.smvcj.dispatcher.RequestDispatchContext;

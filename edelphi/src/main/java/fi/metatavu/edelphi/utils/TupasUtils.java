@@ -27,7 +27,7 @@ public class TupasUtils {
     if ("01".equals(alg)) {
       return DigestUtils.md5Hex(mac).toUpperCase();
     } else {
-      return DigestUtils.shaHex(mac).toUpperCase();
+      return DigestUtils.sha1Hex(mac).toUpperCase();
     }
   }
   

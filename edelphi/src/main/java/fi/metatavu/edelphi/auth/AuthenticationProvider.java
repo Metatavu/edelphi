@@ -2,7 +2,7 @@ package fi.metatavu.edelphi.auth;
 
 import java.util.Locale;
 
-import fi.metatavu.edelphi.smvc.controllers.RequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.domainmodel.base.AuthSource;
 
 /**

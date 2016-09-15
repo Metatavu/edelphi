@@ -6,7 +6,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import fi.metatavu.edelphi.smvc.dispatcher.ParameterHandler;
+import fi.metatavu.edelphi.smvcj.dispatcher.ParameterHandler;
 
 public class PrettyUrlParameterHandler implements ParameterHandler {
   

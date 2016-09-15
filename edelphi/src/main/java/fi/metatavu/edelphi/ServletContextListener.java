@@ -15,7 +15,7 @@ import javax.persistence.PersistenceContext;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
-import fi.metatavu.edelphi.smvc.controllers.RequestControllerMapper;
+import fi.metatavu.edelphi.smvcj.controllers.RequestControllerMapper;
 import fi.metatavu.edelphi.dao.GenericDAO;
 import fi.metatavu.edelphi.utils.SystemUtils;
 

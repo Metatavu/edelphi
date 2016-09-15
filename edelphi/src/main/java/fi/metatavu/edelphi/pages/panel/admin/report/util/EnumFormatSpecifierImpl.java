@@ -3,7 +3,7 @@ package fi.metatavu.edelphi.pages.panel.admin.report.util;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.birt.chart.model.attribute.impl.NumberFormatSpecifierImpl;
 
 import com.ibm.icu.util.ULocale;

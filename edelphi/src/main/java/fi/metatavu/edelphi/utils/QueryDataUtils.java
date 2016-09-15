@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,11 +15,11 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
-import com.csvreader.CsvWriter;
+import com.opencsv.CSVWriter;
 
-import fi.metatavu.edelphi.smvc.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvc.StatusCode;
-import fi.metatavu.edelphi.smvc.controllers.RequestContext;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.StatusCode;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
@@ -140,71 +141,78 @@ public class QueryDataUtils {
   }
   
   private static byte[] exportDataToCsv(Locale locale, ReplierExportStrategy replierExportStrategy, List<String> columns, Map<QueryReply, Map<Integer, Object>> rows) throws IOException {
-    ByteArrayOutputStream csvStream = new ByteArrayOutputStream();
-    CsvWriter csvWriter = new CsvWriter(csvStream, ',', Charset.forName("UTF-8"));
-    
-    switch (replierExportStrategy) {
-    	case NONE:
-    	break;
-    	case HASH:
-    		csvWriter.write(Messages.getInstance().getText(locale, "panelAdmin.query.export.csvReplierIdColumn"));
-    	break;
-    	case NAME:
-    		csvWriter.write(Messages.getInstance().getText(locale, "panelAdmin.query.export.csvReplierNameColumn"));
-    	break;
-    	case EMAIL:
-    		csvWriter.write(Messages.getInstance().getText(locale, "panelAdmin.query.export.csvReplierEmailColumn"));
-    	break;
-    }
-    
-    // Header
-    for (String column : columns) {
-      csvWriter.write(column);
-    }
-    csvWriter.endRecord();
-
-    // Rows
-    for (QueryReply queryReply : rows.keySet()) {
-    	switch (replierExportStrategy) {
+    try (
+      ByteArrayOutputStream csvStream = new ByteArrayOutputStream();
+      OutputStreamWriter streamWriter = new OutputStreamWriter(csvStream, Charset.forName("UTF-8"))) {
+      CSVWriter csvWriter = new CSVWriter(streamWriter, ',');
+      List<String> nextLine = new ArrayList<>();
+      
+      switch (replierExportStrategy) {
       	case NONE:
       	break;
       	case HASH:
-      		csvWriter.write(queryReply.getUser() != null ? RequestUtils.md5EncodeString(String.valueOf(queryReply.getUser().getId())) : "-");
+      	  nextLine.add(Messages.getInstance().getText(locale, "panelAdmin.query.export.csvReplierIdColumn"));
       	break;
       	case NAME:
-      		csvWriter.write(queryReply.getUser() != null ? queryReply.getUser().getFullName(true, false) : "-");
+      	  nextLine.add(Messages.getInstance().getText(locale, "panelAdmin.query.export.csvReplierNameColumn"));
       	break;
       	case EMAIL:
-      		csvWriter.write(queryReply.getUser() != null ? queryReply.getUser().getDefaultEmailAsString() : "-");
+      	  nextLine.add(Messages.getInstance().getText(locale, "panelAdmin.query.export.csvReplierEmailColumn"));
       	break;
       }
-    	
-      Map<Integer, Object> columnValues = rows.get(queryReply);
-
-      for (int columnIndex = 0, columnCount = columns.size(); columnIndex < columnCount; columnIndex++) {
-        Object value = columnValues.get(columnIndex);
-        if (value == null) {
-          csvWriter.write("");
-        } else {
-          if (value instanceof Number) {
-            csvWriter.write(String.valueOf(value));
-          }
-          else {
-
-            // Convert cell value line breaks to spaces, as poor little Excel has trouble interpreting them correctly    
-            // TODO This conversion could probably be avoided some way; OpenOffice/LibreOffice handle line breaks just fine  
-            
-            csvWriter.write(String.valueOf(value).replace('\n', ' ').replace('\r', ' '));
+      
+      // Header
+      for (String column : columns) {
+        nextLine.add(column);
+      }
+      
+      csvWriter.writeNext(nextLine.toArray(new String[0]));
+      nextLine = new ArrayList<>();
+      
+      // Rows
+      for (QueryReply queryReply : rows.keySet()) {
+      	switch (replierExportStrategy) {
+        	case NONE:
+        	break;
+        	case HASH:
+        	  nextLine.add(queryReply.getUser() != null ? RequestUtils.md5EncodeString(String.valueOf(queryReply.getUser().getId())) : "-");
+        	break;
+        	case NAME:
+        	  nextLine.add(queryReply.getUser() != null ? queryReply.getUser().getFullName(true, false) : "-");
+        	break;
+        	case EMAIL:
+        	  nextLine.add(queryReply.getUser() != null ? queryReply.getUser().getDefaultEmailAsString() : "-");
+        	break;
+        }
+      	
+        Map<Integer, Object> columnValues = rows.get(queryReply);
+  
+        for (int columnIndex = 0, columnCount = columns.size(); columnIndex < columnCount; columnIndex++) {
+          Object value = columnValues.get(columnIndex);
+          if (value == null) {
+            nextLine.add("");
+          } else {
+            if (value instanceof Number) {
+              nextLine.add(String.valueOf(value));
+            }
+            else {
+  
+              // Convert cell value line breaks to spaces, as poor little Excel has trouble interpreting them correctly    
+              // TODO This conversion could probably be avoided some way; OpenOffice/LibreOffice handle line breaks just fine  
+              
+              nextLine.add(String.valueOf(value).replace('\n', ' ').replace('\r', ' '));
+            }
           }
         }
+  
+        csvWriter.writeNext(nextLine.toArray(new String[0]));
+        nextLine = new ArrayList<>();
       }
-
-      csvWriter.endRecord();
+  
+      csvWriter.close();
+  
+      return csvStream.toByteArray();
     }
-
-    csvWriter.close();
-
-    return csvStream.toByteArray();
   }
 
   public enum ReplierExportStrategy {

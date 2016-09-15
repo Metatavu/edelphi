@@ -1,6 +1,6 @@
 package fi.metatavu.edelphi.pages;
 
-import fi.metatavu.edelphi.smvc.controllers.PageRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.utils.RequestUtils;
 

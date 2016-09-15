@@ -3,7 +3,7 @@ package fi.metatavu.edelphi.pages.panel.admin;
 import java.util.ArrayList;
 import java.util.List;
 
-import fi.metatavu.edelphi.smvc.controllers.PageRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageTemplateDAO;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageTemplate;
 import fi.metatavu.edelphi.pages.panel.PanelPageController;

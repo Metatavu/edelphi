@@ -16,8 +16,8 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -90,7 +90,7 @@ public class Bulletin implements ArchivableEntity, ModificationTrackedEntity {
   @Transient
   public String getSummary() {
     if (StringUtils.isNotBlank(getMessage())) {
-      String plainMessage = StringEscapeUtils.unescapeHtml(getMessage().replaceAll("\\<.*?>",""));
+      String plainMessage = StringEscapeUtils.unescapeHtml4(getMessage().replaceAll("\\<.*?>",""));
       if (StringUtils.isNotBlank(plainMessage)) {
         if (plainMessage.length() >= 255) {
           return plainMessage.substring(0, 252) + "...";

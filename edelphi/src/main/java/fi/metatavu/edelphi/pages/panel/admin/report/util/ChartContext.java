@@ -3,8 +3,8 @@ package fi.metatavu.edelphi.pages.panel.admin.report.util;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.apache.commons.lang.math.NumberUtils;
-import org.codehaus.jackson.annotate.JsonIgnore;
+import org.apache.commons.lang3.math.NumberUtils;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ChartContext implements Serializable {
 

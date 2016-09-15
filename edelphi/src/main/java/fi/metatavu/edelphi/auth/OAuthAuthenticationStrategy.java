@@ -8,7 +8,7 @@ import org.scribe.builder.api.DefaultApi10a;
 import org.scribe.model.Token;
 import org.scribe.oauth.OAuthService;
 
-import fi.metatavu.edelphi.smvc.controllers.RequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 
 public abstract class OAuthAuthenticationStrategy extends AbstractAuthenticationStrategy {
 

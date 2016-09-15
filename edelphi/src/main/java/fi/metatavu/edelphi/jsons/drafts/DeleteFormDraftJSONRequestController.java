@@ -2,9 +2,9 @@ package fi.metatavu.edelphi.jsons.drafts;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import fi.metatavu.edelphi.smvc.controllers.JSONRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 import fi.metatavu.edelphi.dao.drafts.FormDraftDAO;
 import fi.metatavu.edelphi.domainmodel.drafts.FormDraft;
 import fi.metatavu.edelphi.domainmodel.users.User;

@@ -1,6 +1,6 @@
 package fi.metatavu.edelphi;
 
-import fi.metatavu.edelphi.smvc.StatusCode;
+import fi.metatavu.edelphi.smvcj.StatusCode;
 
 public class EdelfoiStatusCode extends StatusCode {
 

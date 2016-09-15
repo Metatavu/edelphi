@@ -50,7 +50,7 @@ public class Messages {
    */
   public ResourceBundle getResourceBundle(Locale locale) {
     if (!bundles.containsKey(locale)) {
-      ResourceBundle localeBundle = ResourceBundle.getBundle("fi.metatavu.edelphi.smvc.i18n.locale", locale); 
+      ResourceBundle localeBundle = ResourceBundle.getBundle("fi.metatavu.edelphi.smvcj.i18n.locale", locale); 
       bundles.put(locale, localeBundle);
     }
 

@@ -4,9 +4,8 @@ import java.util.Date;
 
 import javax.persistence.PersistenceException;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.util.Version;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.hibernate.search.jpa.Search;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
@@ -53,7 +52,7 @@ public class UserDAO extends GenericDAO<User> {
   
     try {
       String queryString = queryBuilder.toString();
-      QueryParser parser = new QueryParser(Version.LUCENE_31, "", new StandardAnalyzer(Version.LUCENE_31));
+      QueryParser parser = new QueryParser("", new StandardAnalyzer());
       org.apache.lucene.search.Query luceneQuery = parser.parse(queryString);
 
       FullTextQuery query = (FullTextQuery) fullTextEntityManager.createFullTextQuery(luceneQuery, User.class)
@@ -97,7 +96,7 @@ public class UserDAO extends GenericDAO<User> {
     try {
       String queryString = queryBuilder.toString();
       org.apache.lucene.search.Query luceneQuery;
-      QueryParser parser = new QueryParser(Version.LUCENE_31, "", new StandardAnalyzer(Version.LUCENE_31));
+      QueryParser parser = new QueryParser("", new StandardAnalyzer());
       luceneQuery = parser.parse(queryString);
 
       FullTextQuery query = (FullTextQuery) fullTextEntityManager.createFullTextQuery(luceneQuery, User.class)

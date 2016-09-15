@@ -28,7 +28,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -40,8 +40,8 @@ import org.xml.sax.SAXException;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
-import fi.metatavu.edelphi.smvc.controllers.RequestContext;
-import fi.metatavu.edelphi.smvc.logging.Logging;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
+import fi.metatavu.edelphi.smvcj.logging.Logging;
 import fi.metatavu.edelphi.dao.panels.PanelStampDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionMultiOptionAnswerDAO;
@@ -420,29 +420,22 @@ public class ReportUtils {
           }
           
           byte[] svgContent = downloadUrlAsByteArray(svgUri);
-          // Google Drive does not support SVG so we need to convert them into
-          // another format.
-          byte[] emfData = SVGUtils.convertSvgToEmf(svgContent);
 
           // Google Drive does not accept EMF but it accepts WMF, so we need to
           // tell it to handle this file as WMF instead of EMF
           String chartTitle = Messages.getInstance().getText(requestContext.getRequest().getLocale(), "panel.admin.report.googleReport.chartTitle", new Object[] { queryName, i + 1 });
 
-          File chartFile = GoogleDriveUtils.insertFile(drive, chartTitle, "", exportTempFolder.getId(), "application/x-msmetafile", emfData, true, retryCount);
+          File chartFile = GoogleDriveUtils.insertFile(drive, chartTitle, "", exportTempFolder.getId(), "image/svg+xml", svgContent, retryCount);
           if (chartFile != null) {
             // If file uploading was a success we publish it with the link
             GoogleDriveUtils.publishFileWithLink(drive, chartFile);
 
             if (!imagesOnly) {
-              // After that, we replace object -tag with img -tag that points to
-              // image png export url.
-              String googleLink = chartFile.getExportLinks().get("image/png");
+              String charFileUrl = GoogleDriveUtils.getFileUrl(drive, chartFile.getId());
               Node parent = svgObjectElement.getParentNode();
               Element imageElement = reportDocument.createElement("img");
-              imageElement.setAttribute("src", googleLink);
-
+              imageElement.setAttribute("src", charFileUrl);
               parent.replaceChild(imageElement, svgObjectElement);
-
               tempFiles.add(chartFile);
             }
 
@@ -475,7 +468,7 @@ public class ReportUtils {
 
         byte[] documentContent = resultStream.toByteArray();
 
-        File file = GoogleDriveUtils.insertFile(drive, queryName, "", null, "text/html", documentContent, true, retryCount);
+        File file = GoogleDriveUtils.insertFile(drive, queryName, "", null, "text/html", documentContent, retryCount);
 
         Logging.logInfo("Report exported into Google Drive from " + url + " with id " + file.getId());
 

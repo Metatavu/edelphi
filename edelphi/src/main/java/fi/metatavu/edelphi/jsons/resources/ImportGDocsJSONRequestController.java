@@ -6,9 +6,9 @@ import java.util.Locale;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
-import fi.metatavu.edelphi.smvc.AccessDeniedException;
-import fi.metatavu.edelphi.smvc.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvc.controllers.JSONRequestContext;
+import fi.metatavu.edelphi.smvcj.AccessDeniedException;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.resources.FolderDAO;
@@ -56,10 +56,10 @@ public class ImportGDocsJSONRequestController extends JSONController {
         GoogleDriveUtils.insertUserPermission(drive, resourceId, googleDriveAccountId, "reader");
         File file = GoogleDriveUtils.getFile(drive, resourceId);
         boolean isImage = file.getImageMediaMetadata() != null;
-        Date created = new Date(file.getCreatedDate().getValue());
-        Date lastModified = new Date(file.getModifiedDate().getValue());
+        Date created = new Date(file. getCreatedTime().getValue());
+        Date lastModified = new Date(file.getModifiedTime().getValue());
 
-        String name = file.getTitle();
+        String name = file.getName();
         String urlName = ResourceUtils.getUniqueUrlName(name, parentFolder);
         
         Integer indexNumber = ResourceUtils.getNextIndexNumber(parentFolder);

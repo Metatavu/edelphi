@@ -10,9 +10,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NavigableMap;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import fi.metatavu.edelphi.smvc.controllers.PageRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.dao.base.DelfoiDAO;
 import fi.metatavu.edelphi.dao.panels.PanelDAO;

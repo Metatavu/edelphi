@@ -1,6 +1,6 @@
 package fi.metatavu.edelphi.pages;
 
-import fi.metatavu.edelphi.smvc.controllers.PageRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.auth.AuthenticationProvider;
 import fi.metatavu.edelphi.auth.AuthenticationProviderFactory;
 import fi.metatavu.edelphi.auth.AuthenticationResult;

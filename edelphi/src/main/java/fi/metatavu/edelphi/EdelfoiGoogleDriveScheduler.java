@@ -14,7 +14,7 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
-import fi.metatavu.edelphi.smvc.logging.Logging;
+import fi.metatavu.edelphi.smvcj.logging.Logging;
 import fi.metatavu.edelphi.dao.GenericDAO;
 import fi.metatavu.edelphi.dao.resources.GoogleDocumentDAO;
 import fi.metatavu.edelphi.dao.resources.GoogleImageDAO;
@@ -40,16 +40,16 @@ public class EdelfoiGoogleDriveScheduler {
     	 for (GoogleDocument googleDocument : googleDocuments) {
     		 try {
      			 File file = GoogleDriveUtils.getFile(drive, googleDocument.getResourceId());
-    			 if (file.getLabels().getTrashed()) {
+    			 if (file.getTrashed()) {
     				 // User has trashed the file from Google Drive, so archiving it.
     				 googleDocumentDAO.archive(googleDocument);
     			 } else {
-      			 if (!googleDocument.getName().equals(file.getTitle())) {
-        			 String urlName = ResourceUtils.getUniqueUrlName(file.getTitle(), googleDocument.getParentFolder());
-        			 googleDocumentDAO.updateName(googleDocument, file.getTitle(), urlName);
+      			 if (!googleDocument.getName().equals(file.getName())) {
+        			 String urlName = ResourceUtils.getUniqueUrlName(file.getName(), googleDocument.getParentFolder());
+        			 googleDocumentDAO.updateName(googleDocument, file.getName(), urlName);
       			 }
       			 
-      			 googleDocumentDAO.updateLastModified(googleDocument, new Date(file.getModifiedDate().getValue()));
+      			 googleDocumentDAO.updateLastModified(googleDocument, new Date(file.getModifiedTime().getValue()));
       			 googleDocumentDAO.updateLastSynchronized(googleDocument, new Date(System.currentTimeMillis()));
     			 }
     		 } catch (GoogleJsonResponseException e) {
@@ -69,16 +69,16 @@ public class EdelfoiGoogleDriveScheduler {
     	 for (GoogleImage googleImage : googleImages) {
     		 try {
     			 File file = GoogleDriveUtils.getFile(drive, googleImage.getResourceId());
-    			 if (file.getLabels().getTrashed()) {
+    			 if (file.getTrashed()) {
     				 // User has trashed the file from Google Drive, so archiving it.
     				 googleImageDAO.archive(googleImage);
     			 } else {
-      			 if (!googleImage.getName().equals(file.getTitle())) {
-        			 String urlName = ResourceUtils.getUniqueUrlName(file.getTitle(), googleImage.getParentFolder());
-        			 googleImageDAO.updateName(googleImage, file.getTitle(), urlName);
+      			 if (!googleImage.getName().equals(file.getName())) {
+        			 String urlName = ResourceUtils.getUniqueUrlName(file.getName(), googleImage.getParentFolder());
+        			 googleImageDAO.updateName(googleImage, file.getName(), urlName);
       			 }
       			 
-      			 googleImageDAO.updateLastModified(googleImage, new Date(file.getModifiedDate().getValue()));
+      			 googleImageDAO.updateLastModified(googleImage, new Date(file.getModifiedTime().getValue()));
       			 googleImageDAO.updateLastSynchronized(googleImage, new Date(System.currentTimeMillis()));
     			 }
     		 } catch (GoogleJsonResponseException e) {

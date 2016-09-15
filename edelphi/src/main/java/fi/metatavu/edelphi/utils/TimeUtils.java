@@ -1,6 +1,6 @@
 package fi.metatavu.edelphi.utils;
 
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 public class TimeUtils {
 

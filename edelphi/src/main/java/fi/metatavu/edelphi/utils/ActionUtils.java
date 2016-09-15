@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fi.metatavu.edelphi.smvc.controllers.RequestContext;
-import fi.metatavu.edelphi.smvc.logging.Logging;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
+import fi.metatavu.edelphi.smvcj.logging.Logging;
 import fi.metatavu.edelphi.dao.actions.DelfoiActionDAO;
 import fi.metatavu.edelphi.dao.actions.DelfoiUserRoleActionDAO;
 import fi.metatavu.edelphi.dao.actions.PanelUserRoleActionDAO;

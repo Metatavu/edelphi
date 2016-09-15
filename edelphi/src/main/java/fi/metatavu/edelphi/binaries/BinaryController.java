@@ -1,9 +1,9 @@
 package fi.metatavu.edelphi.binaries;
 
-import fi.metatavu.edelphi.smvc.AccessDeniedException;
-import fi.metatavu.edelphi.smvc.LoginRequiredException;
-import fi.metatavu.edelphi.smvc.controllers.BinaryRequestController;
-import fi.metatavu.edelphi.smvc.controllers.RequestContext;
+import fi.metatavu.edelphi.smvcj.AccessDeniedException;
+import fi.metatavu.edelphi.smvcj.LoginRequiredException;
+import fi.metatavu.edelphi.smvcj.controllers.BinaryRequestController;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 
 public abstract class BinaryController implements BinaryRequestController {
 

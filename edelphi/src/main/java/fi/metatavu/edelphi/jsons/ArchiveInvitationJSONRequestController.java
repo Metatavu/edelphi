@@ -1,9 +1,9 @@
 package fi.metatavu.edelphi.jsons;
 
-import fi.metatavu.edelphi.smvc.AccessDeniedException;
-import fi.metatavu.edelphi.smvc.LoginRequiredException;
-import fi.metatavu.edelphi.smvc.controllers.JSONRequestContext;
-import fi.metatavu.edelphi.smvc.controllers.RequestContext;
+import fi.metatavu.edelphi.smvcj.AccessDeniedException;
+import fi.metatavu.edelphi.smvcj.LoginRequiredException;
+import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.dao.panels.PanelInvitationDAO;
 import fi.metatavu.edelphi.dao.users.UserDAO;

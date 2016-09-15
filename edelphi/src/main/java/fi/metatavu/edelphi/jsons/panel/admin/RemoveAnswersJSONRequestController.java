@@ -2,9 +2,9 @@ package fi.metatavu.edelphi.jsons.panel.admin;
 
 import java.util.List;
 
-import fi.metatavu.edelphi.smvc.PageNotFoundException;
-import fi.metatavu.edelphi.smvc.controllers.JSONRequestContext;
-import fi.metatavu.edelphi.smvc.logging.Logging;
+import fi.metatavu.edelphi.smvcj.PageNotFoundException;
+import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
+import fi.metatavu.edelphi.smvcj.logging.Logging;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionAnswerDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;

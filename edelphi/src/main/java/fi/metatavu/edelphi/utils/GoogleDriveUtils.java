@@ -2,23 +2,28 @@ package fi.metatavu.edelphi.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.transform.TransformerException;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -29,24 +34,20 @@ import org.w3c.dom.css.CSSStyleSheet;
 import org.w3c.tidy.Tidy;
 
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.auth.security.PrivateKeys;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.ByteArrayContent;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson.JacksonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.Drive.Files;
-import com.google.api.services.drive.Drive.Files.Insert;
+import com.google.api.services.drive.Drive.Files.Create;
+import com.google.api.services.drive.Drive.Files.Get;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
-import com.google.api.services.drive.model.ParentReference;
 import com.google.api.services.drive.model.Permission;
 import com.google.api.services.drive.model.PermissionList;
 
-import fi.metatavu.edelphi.smvc.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvc.controllers.RequestContext;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.auth.AuthenticationProviderFactory;
 import fi.metatavu.edelphi.auth.GoogleAuthenticationStrategy;
@@ -55,9 +56,13 @@ import fi.metatavu.edelphi.dao.base.DelfoiAuthDAO;
 import fi.metatavu.edelphi.domainmodel.base.AuthSource;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiAuth;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 
 public class GoogleDriveUtils {
 
+  private static final String TEXT_HTML = "text/html";
+  private static final Logger logger = Logger.getLogger(GoogleDriveUtils.class.getName());
 	private static final String[] REQUIRED_SCOPES = new String[] { "https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/drive.file" };
 	private static final JsonFactory JSON_FACTORY = new JacksonFactory();
 	private static final HttpTransport TRANSPORT = new NetHttpTransport();
@@ -96,8 +101,7 @@ public class GoogleDriveUtils {
 		String keyStoreFile = System.getProperty("edelphi.googleServiceAccount.keyStoreFile");
 		String googleDriveAccountId = SystemUtils.getSettingValue("googleDrive.accountId");
   	String googleDriveAccountUser = SystemUtils.getSettingValue("googleDrive.accountUser");
-
-		PrivateKey key = PrivateKeys.loadFromP12File(new java.io.File(keyStoreFile), keyStorePassword, keyStoreAlias, keyPassword);
+		PrivateKey key = getPrivateKey(keyStoreFile, keyStorePassword, keyStoreAlias, keyPassword);
 		
 		if (ADMIN_CREDENTIAL != null) {
 			long tokenExpiresIn = ADMIN_CREDENTIAL.getExpirationTimeMilliseconds() != null ? ADMIN_CREDENTIAL.getExpirationTimeMilliseconds() - System.currentTimeMillis() : -1;
@@ -114,13 +118,32 @@ public class GoogleDriveUtils {
 	    .setTransport(TRANSPORT)
       .setJsonFactory(JSON_FACTORY)
       .setServiceAccountId(googleDriveAccountId)
-      .setServiceAccountScopes(REQUIRED_SCOPES)
+      .setServiceAccountScopes(Arrays.asList(REQUIRED_SCOPES))
       .setServiceAccountPrivateKey(key)
       .setServiceAccountUser(googleDriveAccountUser)
       .build();
 			
 		return ADMIN_CREDENTIAL;
   }
+	
+	private static PrivateKey getPrivateKey(String keyStoreFile, String keyStorePassword, String keyAlias, String keyPassword) throws KeyStoreException {
+	  KeyStore keyStore = KeyStore.getInstance("PKCS12");
+	  
+	  try (FileInputStream keyInputStream = new FileInputStream(keyStoreFile)) {
+	    keyStore.load(keyInputStream, keyStorePassword.toCharArray());
+	    return (PrivateKey) keyStore.getKey(keyAlias, keyPassword.toCharArray());
+	  } catch (FileNotFoundException e) {
+	    logger.log(Level.SEVERE, String.format("Could not find private key %s", keyStoreFile), e);
+    } catch (IOException e) {
+      logger.log(Level.SEVERE, String.format("Could not read private key %s", keyStoreFile), e);
+    } catch (NoSuchAlgorithmException e) {
+      logger.log(Level.SEVERE, String.format("Could not read keystore %s", keyStoreFile), e);
+    } catch (CertificateException | UnrecoverableKeyException e) {
+      logger.log(Level.SEVERE, String.format("Could not read certificate %s from keystore %s", keyAlias, keyStoreFile), e);
+    }
+	  
+	  return null;
+	}
 
 	public static AuthSource getGoogleAuthSource(Delfoi delfoi) {
     // TODO needs more finesse; at this point we simply return the first Google auth in Delfoi and assume one exists in the first place
@@ -162,12 +185,12 @@ public class GoogleDriveUtils {
 		return drive.files().get(fileId).execute();
 	}
 	
-	public static File insertFile(Drive drive, String title, String description, String parentId, String mimeType, byte[] content, boolean convert, int retryCount) throws IOException {
+	public static File insertFile(Drive drive, String title, String description, String parentId, String mimeType, byte[] content, int retryCount) throws IOException {
     File file = null;
     int retries = 0;
     while (file == null) {
     	try {
-      	file = tryInsertFile(drive, title, description, parentId, mimeType, content, convert);
+      	file = tryInsertFile(drive, title, description, parentId, mimeType, content);
       } catch (IOException e) {
       	if (retries >= retryCount) {
       		throw e;
@@ -181,11 +204,14 @@ public class GoogleDriveUtils {
   }
   
   public static File insertFolder(Drive drive, String title, String description, String parentId, int retryCount) throws IOException {
-  	return insertFile(drive, title, description, parentId, "application/vnd.google-apps.folder", null, false, retryCount);
+  	return insertFile(drive, title, description, parentId, "application/vnd.google-apps.folder", null, retryCount);
   }
   
   public static FileList listFiles(Drive drive, Integer maxResults) throws IOException {
-  	return drive.files().list().setMaxResults(maxResults).execute();
+  	return drive.files()
+  	    .list()
+  	    .setPageSize(maxResults)
+  	    .execute();
   }
   
   public static FileList listFiles(Drive drive, String q) throws IOException {
@@ -203,12 +229,12 @@ public class GoogleDriveUtils {
   }
 
   public static Permission insertPermission(Drive drive, String fileId, Permission permission) throws IOException {
-		return drive.permissions().insert(fileId, permission).execute();
+		return drive.permissions().create(fileId, permission).execute();
 	}
   
   public static Permission insertUserPermission(Drive drive, String fileId, String userEmail, String permission) throws IOException {
   	Permission permissionObject = new Permission();
-  	permissionObject.setValue(userEmail);
+  	permissionObject.setEmailAddress(userEmail);
   	permissionObject.setType("user");
   	permissionObject.setRole(permission);
     return GoogleDriveUtils.insertPermission(drive, fileId, permissionObject);
@@ -222,105 +248,121 @@ public class GoogleDriveUtils {
 	public static Permission publishFileWithLink(Drive drive, File file) throws IOException {
   	Permission permission = new Permission();
   	
-  	permission.setValue("anyoneWithLink");
   	permission.setType("anyone");
   	permission.setRole("reader");
   	
   	return insertPermission(drive, file.getId(), permission);
   }
 	
-	// Misc
-
-	public static DownloadResponse exportFile(Drive drive, File file, String format) throws ClientProtocolException, IOException {
-		String exportLink = file.getExportLinks().get(format);
-		
-		DefaultHttpClient httpClient = new DefaultHttpClient();
-		HttpGet httpGet = new HttpGet(exportLink);
-		
-		GoogleCredential credential = (GoogleCredential) drive.getRequestFactory().getInitializer();
-		httpGet.setHeader("Authorization", "Bearer " + credential.getAccessToken());
-		
-		HttpResponse response = httpClient.execute(httpGet);
-
-		HttpEntity entity = response.getEntity();
-		
-		try {
-			int statusCode = response.getStatusLine().getStatusCode();
-			if (statusCode >= 200 && statusCode <= 299) {
-				InputStream contentStream = entity.getContent();
-				try {
-				  return new DownloadResponse(entity.getContentType().getValue(), IOUtils.toByteArray(contentStream));
-				} finally {
-				  contentStream.close();
-				}
-			} else {
-				throw new IOException("Google Drive returned error code " + statusCode);
-			}
-		} finally {
-		  entity.consumeContent();
-		}
+	/**
+	 * Exports file in requested format
+	 * 
+	 * @param drive drive client
+	 * @param file file to be exported
+	 * @param format target format
+	 * @return exported data
+	 * @throws IOException 
+	 */
+	public static DownloadResponse exportFile(Drive drive, File file, String format) throws IOException {
+	  return exportFile(drive, file.getId(), format);
 	}
-	
-	public static DownloadResponse exportSpreadsheet(Drive drive, File file) throws ClientProtocolException, IOException {
-		String exportLink = file.getAlternateLink() + "&chrome=false&output=html";
-				
-		DefaultHttpClient httpClient = new DefaultHttpClient();
-		HttpGet httpGet = new HttpGet(exportLink);
-		
-		GoogleCredential credential = (GoogleCredential) drive.getRequestFactory().getInitializer();
-		httpGet.setHeader("Authorization", "Bearer " + credential.getAccessToken());
-		
-		HttpResponse response = httpClient.execute(httpGet);
 
-		HttpEntity entity = response.getEntity();
-		
-		try {
-			int statusCode = response.getStatusLine().getStatusCode();
-			if (statusCode >= 200 && statusCode <= 299) {
-				InputStream contentStream = entity.getContent();
-				try {
-				  return new DownloadResponse(entity.getContentType().getValue(), IOUtils.toByteArray(contentStream));
-				} finally {
-				  contentStream.close();
-				}
-			} else {
-				throw new IOException("Google Drive returned error code " + statusCode);
-			}
-		} finally {
-		  entity.consumeContent();
-		}
-	}
-	
-	public static DownloadResponse downloadFile(Drive drive, File file) throws ClientProtocolException, IOException {
-		String downloadUrl = file.getDownloadUrl();
-		
-		DefaultHttpClient httpClient = new DefaultHttpClient();
-		HttpGet httpGet = new HttpGet(downloadUrl);
-		
-		GoogleCredential credential = (GoogleCredential) drive.getRequestFactory().getInitializer();
-		httpGet.setHeader("Authorization", "Bearer " + credential.getAccessToken());
-		
-		HttpResponse response = httpClient.execute(httpGet);
+  /**
+   * Exports file in requested format
+   * 
+   * @param drive drive client
+   * @param fileId id of file to be exported
+   * @param format target format
+   * @return exported data
+   * @throws IOException 
+   */
+  public static DownloadResponse exportFile(Drive drive, String fileId, String format) throws IOException {
+    try (InputStream inputStream = drive.files().export(fileId, format).executeAsInputStream()) {
+      return new DownloadResponse(format, IOUtils.toByteArray(inputStream));
+    }
+  }
+  
+  public static String getFileUrl(Drive drive, File file) {
+    if (file == null) {
+      logger.log(Level.SEVERE, "Could not get file url for null file");
+      return null;
+    }
+    
+    return getFileUrl(drive, file.getId());
+  }
 
-		HttpEntity entity = response.getEntity();
-		
-		try {
-			int statusCode = response.getStatusLine().getStatusCode();
-			if (statusCode >= 200 && statusCode <= 299) {
-				InputStream contentStream = entity.getContent();
-				try {
-					return new DownloadResponse(entity.getContentType().getValue(), IOUtils.toByteArray(contentStream));
-				} finally {
-				  contentStream.close();
-				}
-			} else {
-				throw new IOException("Google Drive returned error code " + statusCode);
-			}
-		} finally {
-		  entity.consumeContent();
-		}
+  public static String getFileUrl(Drive drive, String fileId) {
+    try {
+      return drive.files().get(fileId).buildHttpRequestUrl().build();
+    } catch (IOException e) {
+      logger.log(Level.SEVERE, String.format( "Failed to build Google Drive URL for file %s",  fileId), e);
+    }
+    
+    return null;
+  }
+  
+  /**
+   * Exports a spreadsheet in HTML format
+   * 
+   * @param drive drive client
+   * @param fileId file id for file to be exported
+   * @return Spreadsheet in HTML format
+   * @throws IOException
+   */
+	public static DownloadResponse exportSpreadsheet(Drive drive, String fileId) throws IOException {
+	  try (InputStream inputStream = drive.files().export(fileId, TEXT_HTML).executeAsInputStream()) {
+      return new DownloadResponse(TEXT_HTML, IOUtils.toByteArray(inputStream));
+    }
 	}
+  
+  /**
+   * Exports a spreadsheet in HTML format
+   * 
+   * @param drive drive client
+   * @param file file to be exported
+   * @return Spreadsheet in HTML format
+   * @throws IOException
+   */
+  public static DownloadResponse exportSpreadsheet(Drive drive, File file) throws IOException {
+    return exportSpreadsheet(drive, file.getId());
+  }
 	
+	/**
+	 * Downloads file from Google Drive
+	 * 
+	 * @param drive drive client
+	 * @param fileId file id for file to be downloaded
+	 * @return file content
+	 * @throws IOException an IOException
+	 */
+	public static DownloadResponse downloadFile(Drive drive, String fileId) throws IOException {
+	  Get request = drive.files().get(fileId).setAlt("media");
+	  String contentType = request.executeUsingHead().getContentType();
+	  if (StringUtils.isNotBlank(contentType)) {
+  	  try (InputStream inputStream = request.executeAsInputStream()) {
+	      return new DownloadResponse(TEXT_HTML, IOUtils.toByteArray(inputStream));
+      }
+	  }
+	  
+	  return null;
+	}
+
+  /**
+   * Downloads file from Google Drive
+   * 
+   * @param drive drive client
+   * @param file file to be downloaded
+   * @return file content
+   * @throws IOException an IOException
+   */
+  public static DownloadResponse downloadFile(Drive drive, File file) throws IOException {
+    if (file == null) {
+      return null;
+    }
+    
+    return downloadFile(drive, file.getId());
+  }
+  
 	public static String extractGoogleDocumentContent(byte[] rawData) throws TransformerException, IOException {
     ByteArrayOutputStream contentOutputStream = new ByteArrayOutputStream();
     
@@ -380,33 +422,27 @@ public class GoogleDriveUtils {
     return CSSUtils.getStylesheetAsString(styleSheet);
   }
 
-	private static File tryInsertFile(Drive drive, String title, String description, String parentId, String mimeType, byte[] content, boolean convert) throws IOException {
+	private static File tryInsertFile(Drive drive, String title, String description, String parentId, String mimeType, byte[] content) throws IOException {
 		// File's metadata
   	
     File body = new File();
-    body.setTitle(title);
+    body.setName(title);
     body.setDescription(description);
     body.setMimeType(mimeType);
 
     if (parentId != null && parentId.length() > 0) {
-      body.setParents(Arrays.asList(new ParentReference().setId(parentId)));
+      body.setParents(Arrays.asList(parentId));
     }
     
-    Files files = drive.files();
-  	Insert insert;
-
     if (content != null) {
     // File's content.
       ByteArrayContent fileContent = new ByteArrayContent(mimeType, content);
-   	  insert = files.insert(body, fileContent);
-    	insert.getMediaHttpUploader().setDirectUploadEnabled(true);
+      Create create = drive.files().create(body, fileContent);
+      create.getMediaHttpUploader().setDirectUploadEnabled(true);
+      return create.execute();
     } else {
-    	insert = files.insert(body);
+      return drive.files().create(body).execute();
     }
-    
-    insert.setConvert(convert);
-    
-    return insert.execute();
 	}
 	
   private static void handleAuthLevelFull(RequestContext requestContext) {
@@ -475,4 +511,5 @@ public class GoogleDriveUtils {
     GRANT,
     FULL
   }
+
 }
