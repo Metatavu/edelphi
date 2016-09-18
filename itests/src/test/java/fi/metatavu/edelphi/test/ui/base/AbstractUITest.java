@@ -219,7 +219,7 @@ public class AbstractUITest {
   }
   
   private String toDataUrl(String contentType, byte[] data) {
-    return String.format("data:image/%s;base64,%s", contentType, Base64.getEncoder().encodeToString(data));
+    return String.format("data:%s;base64,%s", contentType, Base64.getEncoder().encodeToString(data));
   }
   
   protected long createFolder(String name, String urlName, Long parentFolderId) {

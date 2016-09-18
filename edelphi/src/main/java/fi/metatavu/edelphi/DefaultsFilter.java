@@ -18,7 +18,7 @@ import fi.metatavu.edelphi.utils.SessionUtils;
  * 
  * @author Antti Leppä
  */
-@WebFilter
+@WebFilter (urlPatterns = "/*")
 public class DefaultsFilter implements Filter {
 
   @Override
