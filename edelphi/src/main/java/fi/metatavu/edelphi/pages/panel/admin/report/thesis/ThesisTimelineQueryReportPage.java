@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.eclipse.birt.chart.model.Chart;
 
-import fi.metatavu.edelphi.smvc.controllers.RequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
@@ -98,11 +98,14 @@ public class ThesisTimelineQueryReportPage extends QueryReportPageController {
       Map<Double, String> dataNames = new HashMap<Double, String>();
       List<Double> occurences = new ArrayList<Double>();
       Map<Double, Long> classifiedData = ReportUtils.getClassifiedNumberFieldData(data);
+      
       for (double d = min; d <= max; d += step) {
         String caption = step % 1 == 0 ? new Long(Math.round(d)).toString() : new Double(d).toString();
         dataNames.put(d, caption);
-        occurences.add(classifiedData.get(d) == null ? new Double(0) : classifiedData.get(d));
+        occurences.add(classifiedData.get(d) == null ? 0d : classifiedData.get(d));
       }
+      
+      
       QueryFieldDataStatistics statistics = ReportUtils.getStatistics(data, dataNames);
       Double avg = statistics.getCount() > 1 ? statistics.getAvg() : null;
       Double q1 = statistics.getCount() >= 5 ? statistics.getQ1() : null;

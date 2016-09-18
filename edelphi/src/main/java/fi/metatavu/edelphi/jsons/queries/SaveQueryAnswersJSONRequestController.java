@@ -2,8 +2,8 @@ package fi.metatavu.edelphi.jsons.queries;
 
 import java.util.Locale;
 
-import fi.metatavu.edelphi.smvc.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvc.controllers.JSONRequestContext;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;

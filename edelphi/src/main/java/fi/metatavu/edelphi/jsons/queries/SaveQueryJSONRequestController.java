@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
-import fi.metatavu.edelphi.smvc.Severity;
-import fi.metatavu.edelphi.smvc.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvc.controllers.JSONRequestContext;
+import fi.metatavu.edelphi.smvcj.Severity;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;

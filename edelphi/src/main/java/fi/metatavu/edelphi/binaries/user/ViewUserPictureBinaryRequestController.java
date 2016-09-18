@@ -1,7 +1,7 @@
 package fi.metatavu.edelphi.binaries.user;
 
-import fi.metatavu.edelphi.smvc.PageNotFoundException;
-import fi.metatavu.edelphi.smvc.controllers.BinaryRequestContext;
+import fi.metatavu.edelphi.smvcj.PageNotFoundException;
+import fi.metatavu.edelphi.smvcj.controllers.BinaryRequestContext;
 import fi.metatavu.edelphi.binaries.BinaryController;
 import fi.metatavu.edelphi.dao.users.UserDAO;
 import fi.metatavu.edelphi.dao.users.UserPictureDAO;

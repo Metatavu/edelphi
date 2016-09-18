@@ -2,7 +2,7 @@ package fi.metatavu.edelphi.search;
 
 import javax.persistence.EntityManager;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.MassIndexer;
@@ -15,7 +15,6 @@ public class SearchUtils {
     MassIndexer massIndexer = fullTextSession.createIndexer();
     
     massIndexer.batchSizeToLoadObjects(10);
-    massIndexer.threadsForSubsequentFetching(1);
     massIndexer.threadsToLoadObjects(1);
     massIndexer.cacheMode(CacheMode.IGNORE);
     
@@ -27,7 +26,6 @@ public class SearchUtils {
     MassIndexer massIndexer = fullTextSession.createIndexer(objectsClass);
     
     massIndexer.batchSizeToLoadObjects(10);
-    massIndexer.threadsForSubsequentFetching(1);
     massIndexer.threadsToLoadObjects(1);
     massIndexer.cacheMode(CacheMode.IGNORE);
 

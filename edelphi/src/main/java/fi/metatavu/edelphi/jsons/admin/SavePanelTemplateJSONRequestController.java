@@ -2,7 +2,7 @@ package fi.metatavu.edelphi.jsons.admin;
 
 import java.util.List;
 
-import fi.metatavu.edelphi.smvc.controllers.JSONRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.dao.actions.DelfoiActionDAO;
 import fi.metatavu.edelphi.dao.panels.PanelSettingsTemplateDAO;

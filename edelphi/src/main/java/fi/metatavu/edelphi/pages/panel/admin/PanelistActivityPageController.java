@@ -6,8 +6,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import fi.metatavu.edelphi.smvc.PageNotFoundException;
-import fi.metatavu.edelphi.smvc.controllers.PageRequestContext;
+import fi.metatavu.edelphi.smvcj.PageNotFoundException;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.dao.panels.PanelUserDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;

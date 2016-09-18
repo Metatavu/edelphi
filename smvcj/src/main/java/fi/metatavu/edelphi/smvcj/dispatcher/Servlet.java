@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.transaction.UserTransaction;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import fi.metatavu.edelphi.smvcj.AccessDeniedException;
 import fi.metatavu.edelphi.smvcj.LoginRequiredException;

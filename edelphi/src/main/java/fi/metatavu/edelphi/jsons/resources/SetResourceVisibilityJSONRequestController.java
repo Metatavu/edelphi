@@ -1,6 +1,6 @@
 package fi.metatavu.edelphi.jsons.resources;
 
-import fi.metatavu.edelphi.smvc.controllers.JSONRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.dao.resources.ResourceDAO;
 import fi.metatavu.edelphi.dao.users.UserDAO;

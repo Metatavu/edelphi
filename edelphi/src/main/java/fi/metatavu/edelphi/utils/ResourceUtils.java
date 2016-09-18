@@ -6,7 +6,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import fi.metatavu.edelphi.dao.base.DelfoiDAO;
 import fi.metatavu.edelphi.dao.panels.PanelDAO;

@@ -19,7 +19,7 @@ import javax.mail.internet.MimeMessage;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import fi.metatavu.edelphi.smvc.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.domainmodel.base.EmailMessage;
 import fi.metatavu.edelphi.i18n.Messages;

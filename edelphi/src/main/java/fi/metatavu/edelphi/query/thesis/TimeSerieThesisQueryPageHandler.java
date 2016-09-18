@@ -11,12 +11,12 @@ import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
-import fi.metatavu.edelphi.smvc.controllers.PageRequestContext;
-import fi.metatavu.edelphi.smvc.controllers.RequestContext;
-import fi.metatavu.edelphi.smvc.logging.Logging;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
+import fi.metatavu.edelphi.smvcj.logging.Logging;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionAnswerDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionNumericAnswerDAO;

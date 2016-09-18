@@ -8,78 +8,79 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Locale;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.net.URLCodec;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
-import fi.metatavu.edelphi.smvc.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvc.controllers.RequestContext;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.i18n.Messages;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.AuthUtils;
+import net.sf.json.JSONObject;
 
 
 public class NingAuthenticationStrategy extends AbstractAuthenticationStrategy implements AuthenticationProvider {
 
   private JSONObject doTokenRequest(URL url, String username, String password, BasicNameValuePair... data) throws IOException, DecoderException, URISyntaxException {
-    HttpClient httpclient = new DefaultHttpClient();
-    HttpPost httpPost = new HttpPost(url.toURI());
-    
-    String authString = username + ":" + password;
-    byte[] authEncBytes = Base64.encodeBase64(authString.getBytes("UTF-8"));
-
-    httpPost.addHeader("Authorization", "Basic " + new String(authEncBytes));
-    httpPost.setEntity(new UrlEncodedFormEntity(Arrays.asList(data)));
-
-    HttpResponse response = httpclient.execute(httpPost);
-    HttpEntity entity = response.getEntity();
-    
-    if (entity != null) {
-      return JSONObject.fromObject(EntityUtils.toString(entity, "UTF-8"));
-    } else {
-      return null;
+    try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
+      HttpPost httpPost = new HttpPost(url.toURI());
+      
+      String authString = username + ":" + password;
+      byte[] authEncBytes = Base64.encodeBase64(authString.getBytes("UTF-8"));
+  
+      httpPost.addHeader("Authorization", "Basic " + new String(authEncBytes));
+      httpPost.setEntity(new UrlEncodedFormEntity(Arrays.asList(data)));
+  
+      HttpResponse response = httpClient.execute(httpPost);
+      HttpEntity entity = response.getEntity();
+      
+      if (entity != null) {
+        return JSONObject.fromObject(EntityUtils.toString(entity, "UTF-8"));
+      } else {
+        return null;
+      }
     }
   }
   
   private JSONObject doGetRequest(URL url, String token, String tokenSecret) throws IOException, DecoderException, URISyntaxException {
-    HttpClient httpclient = new DefaultHttpClient();
-    HttpGet httpGet = new HttpGet(url.toURI());
-    
-    StringBuilder authorizationBuilder = new StringBuilder();
-    
-    authorizationBuilder
-      .append("OAuth oauth_signature_method=\"PLAINTEXT\",")
-      .append("oauth_consumer_key=\"")
-      .append(encodeUrl(getApiKey()))
-      .append("\",")
-      .append("oauth_token=\"")
-      .append(encodeUrl(token))
-      .append("\",")
-      .append("oauth_signature=\"")
-      .append(encodeUrl(getApiSecret()) + "%26" + encodeUrl(tokenSecret))
-      .append('"');
-    
-    httpGet.addHeader("Authorization", authorizationBuilder.toString());
-    
-    HttpResponse response = httpclient.execute(httpGet);
-    HttpEntity entity = response.getEntity();
-    
-    if (entity != null) {
-      return JSONObject.fromObject(EntityUtils.toString(entity, "UTF-8"));
-    } else {
-      return null;
+    try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
+      HttpGet httpGet = new HttpGet(url.toURI());
+      
+      StringBuilder authorizationBuilder = new StringBuilder();
+      
+      authorizationBuilder
+        .append("OAuth oauth_signature_method=\"PLAINTEXT\",")
+        .append("oauth_consumer_key=\"")
+        .append(encodeUrl(getApiKey()))
+        .append("\",")
+        .append("oauth_token=\"")
+        .append(encodeUrl(token))
+        .append("\",")
+        .append("oauth_signature=\"")
+        .append(encodeUrl(getApiSecret()) + "%26" + encodeUrl(tokenSecret))
+        .append('"');
+      
+      httpGet.addHeader("Authorization", authorizationBuilder.toString());
+      
+      HttpResponse response = httpClient.execute(httpGet);
+      HttpEntity entity = response.getEntity();
+      
+      if (entity != null) {
+        return JSONObject.fromObject(EntityUtils.toString(entity, "UTF-8"));
+      } else {
+        return null;
+      }
     }
   }
 

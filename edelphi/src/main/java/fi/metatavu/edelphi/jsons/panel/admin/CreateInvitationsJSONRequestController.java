@@ -3,12 +3,12 @@ package fi.metatavu.edelphi.jsons.panel.admin;
 import java.util.Locale;
 import java.util.UUID;
 
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 
-import fi.metatavu.edelphi.smvc.PageNotFoundException;
-import fi.metatavu.edelphi.smvc.Severity;
-import fi.metatavu.edelphi.smvc.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvc.controllers.JSONRequestContext;
+import fi.metatavu.edelphi.smvcj.PageNotFoundException;
+import fi.metatavu.edelphi.smvcj.Severity;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.base.EmailMessageDAO;

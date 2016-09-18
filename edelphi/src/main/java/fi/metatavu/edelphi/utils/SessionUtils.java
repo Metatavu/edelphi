@@ -2,7 +2,7 @@ package fi.metatavu.edelphi.utils;
 
 import javax.servlet.http.HttpSession;
 
-import fi.metatavu.edelphi.smvc.controllers.RequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 
 public class SessionUtils {
 

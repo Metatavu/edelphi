@@ -1,6 +1,6 @@
 package fi.metatavu.edelphi.jsons;
 
-import fi.metatavu.edelphi.smvc.controllers.JSONRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 import fi.metatavu.edelphi.auth.AuthenticationProvider;
 import fi.metatavu.edelphi.auth.AuthenticationProviderFactory;
 import fi.metatavu.edelphi.auth.AuthenticationResult;

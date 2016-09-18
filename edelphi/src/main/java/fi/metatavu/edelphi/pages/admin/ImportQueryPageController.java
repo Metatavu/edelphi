@@ -2,7 +2,7 @@ package fi.metatavu.edelphi.pages.admin;
 
 import org.apache.commons.fileupload.FileItem;
 
-import fi.metatavu.edelphi.smvc.controllers.PageRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
 import fi.metatavu.edelphi.pages.PageController;

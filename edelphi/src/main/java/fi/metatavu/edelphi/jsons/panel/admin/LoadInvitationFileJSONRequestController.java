@@ -1,9 +1,10 @@
 package fi.metatavu.edelphi.jsons.panel.admin;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -11,11 +12,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.fileupload.FileItem;
 
-import com.csvreader.CsvReader;
+import com.opencsv.CSVReader;
 
-import fi.metatavu.edelphi.smvc.Severity;
-import fi.metatavu.edelphi.smvc.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvc.controllers.JSONRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.users.UserEmailDAO;
@@ -23,6 +21,9 @@ import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.i18n.Messages;
 import fi.metatavu.edelphi.jsons.JSONController;
+import fi.metatavu.edelphi.smvcj.Severity;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 
 public class LoadInvitationFileJSONRequestController extends JSONController {
 
@@ -41,18 +42,26 @@ public class LoadInvitationFileJSONRequestController extends JSONController {
     List<Map<String, Object>> userInfos = new ArrayList<Map<String,Object>>();
     
     int invalidRecords = 0;
-    try {
-      CsvReader csvReader = new CsvReader(csvFile.getInputStream(), Charset.defaultCharset());
-      while (csvReader.readRecord()) {
-        int columnCount = csvReader.getColumnCount();
+    try (
+        InputStreamReader streamReader = new InputStreamReader(csvFile.getInputStream());
+        CSVReader queryDataReader = new CSVReader(streamReader)) {
+      
+      Iterator<String[]> iterator = queryDataReader.iterator();
+      
+      while (iterator.hasNext()) {
+        String[] csvValues = iterator.next();
+        
+        int columnCount = csvValues.length;
         if (columnCount == 0) {
           invalidRecords++;
         }
+        
         else {
           Long userId = null;
-          String firstName = csvReader.getColumnCount() >= 3 ? csvReader.get(0) : null;
-          String lastName = csvReader.getColumnCount() >= 3 ? csvReader.get(1) : null;
-          String email = (csvReader.getColumnCount() >= 3 ? csvReader.get(2) : csvReader.get(0)).toLowerCase();
+          String firstName = columnCount >= 3 ? csvValues[0] : null;
+          String lastName = columnCount >= 3 ? csvValues[1] : null;
+          String email = (columnCount >= 3 ? csvValues[2] : csvValues[0]).toLowerCase();
+          
           if (!RFC2822.matcher(email).matches()) {
             invalidRecords++;
           }

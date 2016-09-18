@@ -7,13 +7,13 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fi.metatavu.edelphi.smvc.AccessDeniedException;
-import fi.metatavu.edelphi.smvc.LoginRequiredException;
-import fi.metatavu.edelphi.smvc.controllers.JSONRequestContext;
-import fi.metatavu.edelphi.smvc.controllers.RequestContext;
+import fi.metatavu.edelphi.smvcj.AccessDeniedException;
+import fi.metatavu.edelphi.smvcj.LoginRequiredException;
+import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.dao.panels.PanelStampDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserGroupDAO;

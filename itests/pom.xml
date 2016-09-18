@@ -1,0 +1,365 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>fi.metatavu.edelphi</groupId>
+  <artifactId>itests</artifactId>
+  <version>1.1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <name>eDelphi - itests</name>
+  <description>Integration tests for eDelphi</description>
+  <url>https://github.com/Metatavu/edelphi</url>  
+  
+  <licenses>
+    <license>
+      <name>GNU LGPL v3</name>
+      <url>http://www.gnu.org/licenses/lgpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/Metatavu/edelphi/issues</url>
+  </issueManagement>
+  
+  <scm>
+    <developerConnection>scm:git:git@github.com:Metatavu/edelphi.git</developerConnection>
+    <url>git@github.com:Metatavu/edelphi.git</url>
+    <connection>scm:git:git@github.com:Metatavu/edelphi.git</connection>
+    <tag>HEAD</tag>
+  </scm>
+  
+  <organization>
+    <name>Metatavu Oy</name>
+    <url>https://metatavu.fi</url>
+  </organization>
+  
+  <developers>
+    <developer>
+      <email>ratkaisutiimi@otavanopisto.fi</email>
+      <name>Ratkaisutiimi</name>
+      <organization>Otavan Opisto</organization>
+      <organizationUrl>http://www.otavanopisto.fi</organizationUrl>
+    </developer>
+    <developer>
+      <email>antti.leppa@metatavu.fi</email>
+      <name>Antti Leppä</name>
+      <organization>Metatavu Oy</organization>
+      <organizationUrl>https://www.metatavu.fi</organizationUrl>
+    </developer>    
+  </developers>
+  
+  
+  <properties>
+    <!-- Project -->
+
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <!-- Maven -->
+
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    
+    <!-- Selenium -->
+    
+    <selenium-java.version>3.0.0-beta3</selenium-java.version>
+    
+    <!-- Wildfly -->
+    
+    <wildfly.version>10.1.0.Final</wildfly.version>
+    
+    <!-- H2 -->
+    
+    <h2.version>1.4.192</h2.version>
+    
+  </properties>
+  
+  <dependencies>
+  
+    <dependency>
+      <groupId>junit</groupId>
+       <artifactId>junit</artifactId>
+       <version>4.12</version>
+    </dependency>
+  
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-java</artifactId>
+      <version>${selenium-java.version}</version>
+    </dependency>
+  
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.4</version>
+    </dependency>
+  </dependencies>
+  
+  <profiles>
+
+    <profile>
+      <id>ui</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      
+      <properties>
+        <wildfly.home>${project.basedir}/.cargo/extracts/wildfly-10.1.0.Final/wildfly-10.1.0.Final</wildfly.home>
+        <it.port.http>8280</it.port.http>
+        <it.host>test.edelphi.fi</it.host>
+        <it.jdbc.driver>org.h2.Driver</it.jdbc.driver>
+        <it.jdbc.url>jdbc:h2:file:${project.build.directory}/h2;AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE</it.jdbc.url>
+        <it.jdbc.jndi>java:/jboss/datasources/edelphi</it.jdbc.jndi>
+        <it.jdbc.username>sa</it.jdbc.username>
+        <it.jdbc.password>sa</it.jdbc.password>
+        <it.hibernate.dialect>org.hibernate.dialect.H2Dialect</it.hibernate.dialect>
+        <it.browser>chrome</it.browser>
+        <it.package>**</it.package>
+        <it.tests>**/*IT.java</it.tests>
+      </properties>
+      
+      <dependencies>
+        <dependency>
+          <groupId>com.h2database</groupId>
+          <artifactId>h2</artifactId>
+          <version>${h2.version}</version>
+          <scope>test</scope>
+        </dependency>   
+
+        <dependency>
+          <groupId>fi.metatavu.edelphi</groupId>
+          <artifactId>persistence</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+      
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version> 2.19.1</version>
+            <configuration>
+              <failIfNoTests>true</failIfNoTests>
+              <includes>
+                <include>${it.tests}</include>
+              </includes>
+              <systemPropertyVariables>
+                <jboss.home>${wildfly.home}</jboss.home>
+                <module.path>${wildfly.home}/modules</module.path>
+                <it.project.version>${project.version}</it.project.version>
+                <it.selenium.version>${selenium-java.version}</it.selenium.version>
+                <it.host>${it.host}</it.host>
+                <it.port.http>${it.port.http}</it.port.http>
+                <it.jdbc.driver>${it.jdbc.driver}</it.jdbc.driver>
+                <it.jdbc.url>${it.jdbc.url}</it.jdbc.url>
+                <it.jdbc.jndi>${it.jdbc.jndi}</it.jdbc.jndi>
+                <it.jdbc.username>${it.jdbc.username}</it.jdbc.username>
+                <it.jdbc.password>${it.jdbc.password}</it.jdbc.password>
+                <it.browser>${it.browser}</it.browser>
+                <ci>${env.CONTINUOUS_INTEGRATION}</ci>
+              </systemPropertyVariables>
+            </configuration>
+            <executions>
+              <execution>
+                <id>integration-test</id>
+                <goals>
+                  <goal>integration-test</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>verify</id>
+                <goals>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          
+          <plugin>
+            <groupId>de.juplo</groupId>
+            <artifactId>hibernate-maven-plugin</artifactId>
+            <version> 2.0.0</version>
+            <dependencies>
+              <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
+              </dependency>
+            </dependencies>
+            <configuration>
+              <driver>${it.jdbc.driver}</driver>
+              <hibernateDialect>${it.hibernate.dialect}</hibernateDialect> 
+              <url><![CDATA[${it.jdbc.url}]]></url>
+              <username>${it.jdbc.username}</username>
+              <password>${it.jdbc.password}</password>
+            </configuration>
+            <executions>
+              <execution> 
+                <id>create-schema</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>create</goal>
+                </goals>
+                <configuration>
+                  <type>CREATE</type>
+                </configuration>
+              </execution>
+              
+              <execution> 
+                <id>drop-db-after-test</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>drop</goal>
+                </goals>
+                <configuration>
+                  <type>DROP</type>
+                  <force>true</force>
+                  <skip>${it.skipdatabasedrop}</skip>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>sql-maven-plugin</artifactId>
+            <version>1.5</version>
+            <dependencies>
+              <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
+              </dependency>
+            </dependencies>
+    
+            <configuration>      
+              <driver>${it.jdbc.driver}</driver>
+              <url>${it.jdbc.url}</url>
+              <username>${it.jdbc.username}</username>
+              <password>${it.jdbc.password}</password>
+            </configuration>
+            <executions>
+              <execution>
+                <id>basic-sql-setup</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <autocommit>true</autocommit>
+                  <srcFiles>
+                    <srcFile>src/test/resources/init.sql</srcFile>
+                  </srcFiles>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          
+          <plugin>
+            <groupId>org.codehaus.cargo</groupId>
+            <artifactId>cargo-maven2-plugin</artifactId>
+            <version>1.6.0</version>
+            <configuration>
+              <container>
+                <containerId>wildfly10x</containerId>
+                <log>${project.basedir}/target/cargo.log</log>
+                <output>${project.basedir}/target/wildfly.log</output>
+                <zipUrlInstaller>
+                  <url>https://dl.dropboxusercontent.com/s/ldyeiv0gtsg5oyo/wildfly-10.1.0.Final.zip?dl=0</url>
+                  <downloadDir>${project.basedir}/.cargo/downloads</downloadDir>
+                  <extractDir>${project.basedir}/.cargo/extracts</extractDir>
+                </zipUrlInstaller>
+                <dependencies>
+                  <dependency>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                  </dependency>
+                </dependencies>               
+              </container>
+              <configuration>
+                <properties>
+                  <cargo.servlet.port>${it.port.http}</cargo.servlet.port>
+                  <cargo.jboss.configuration>standalone</cargo.jboss.configuration>
+                  <cargo.jvmargs>-Xms64m -Xmx1152m -XX:MaxPermSize=512m</cargo.jvmargs>
+                  <cargo.datasource.datasource.edelphi>
+                    cargo.datasource.driver=${it.jdbc.driver}|
+                    cargo.datasource.url=${it.jdbc.url}|
+                    cargo.datasource.jndi=${it.jdbc.jndi}|
+                    cargo.datasource.username=${it.jdbc.username}|
+                    cargo.datasource.password=${it.jdbc.password}|
+                    cargo.datasource.transactionsupport=RESOURCE_LOCAL
+                  </cargo.datasource.datasource.edelphi>
+                </properties>    
+              </configuration>
+            </configuration>
+            <executions>
+              <execution>
+                <id>start-cargo</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>stop-cargo</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>stop</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>org.wildfly.plugins</groupId>
+            <artifactId>wildfly-maven-plugin</artifactId>
+            <version>1.0.2.Final</version>
+            <executions>
+              <execution>
+                <id>deploy-fni</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>deploy</goal>
+                </goals>
+                <configuration>
+                  <before-deployment>
+                    <batch>true</batch>
+                    <commands>
+                      <command>/subsystem=undertow/server=default-server/host=edelphi:add(alias=["${it.host}"])</command>
+                    </commands>
+                  </before-deployment>
+                  <filename>../../edelphi/target/edelphi-${project.version}.war</filename>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+                    
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>wait-maven-plugin</artifactId>
+            <version>1.0</version>
+            <executions>
+              <execution>
+                <id>wait</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>wait</goal>
+                </goals>      
+                <configuration>
+                  <protocol>http</protocol>
+                  <host>${it.host}</host>
+                  <port>${it.port.http}</port>
+                  <file>/index.page</file>
+                  <maxcount>20</maxcount>
+                  <timeout>10000</timeout>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+  </profiles>
+
+</project>

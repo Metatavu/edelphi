@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
-import fi.metatavu.edelphi.smvc.controllers.PageRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingKeyDAO;

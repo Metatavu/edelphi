@@ -1,7 +1,7 @@
 package fi.metatavu.edelphi.pages.panel.admin;
 
-import fi.metatavu.edelphi.smvc.PageNotFoundException;
-import fi.metatavu.edelphi.smvc.controllers.PageRequestContext;
+import fi.metatavu.edelphi.smvcj.PageNotFoundException;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.dao.panels.PanelUserDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;

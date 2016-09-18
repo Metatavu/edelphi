@@ -2,8 +2,8 @@ package fi.metatavu.edelphi.jsons.panel.admin;
 
 import java.util.List;
 
-import fi.metatavu.edelphi.smvc.PageNotFoundException;
-import fi.metatavu.edelphi.smvc.controllers.JSONRequestContext;
+import fi.metatavu.edelphi.smvcj.PageNotFoundException;
+import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.dao.actions.DelfoiActionDAO;
 import fi.metatavu.edelphi.dao.actions.PanelUserRoleActionDAO;

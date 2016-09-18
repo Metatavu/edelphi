@@ -2,8 +2,8 @@ package fi.metatavu.edelphi.pages.admin;
 
 import java.io.IOException;
 
-import fi.metatavu.edelphi.smvc.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvc.controllers.PageRequestContext;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.base.DelfoiDefaultsDAO;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;

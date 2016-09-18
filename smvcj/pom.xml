@@ -6,20 +6,17 @@
   <parent>
     <groupId>fi.metatavu.edelphi</groupId>
     <artifactId>parent</artifactId>
-    <version>1.0.16-SNAPSHOT</version>    
+    <version>1.1.0-SNAPSHOT</version>    
     <relativePath>../pom.xml</relativePath>
   </parent>
   
   <dependencies>
   
-    <!-- Servlet -->
-
     <dependency>
       <groupId>org.jboss.spec.javax.servlet</groupId>
       <artifactId>jboss-servlet-api_3.1_spec</artifactId>
+      <scope>provided</scope>
     </dependency>
-        
-    <!-- Transactions -->
     
     <dependency>
       <groupId>org.jboss.spec.javax.transaction</groupId>
@@ -27,21 +24,24 @@
       <scope>provided</scope>
     </dependency>
     
-    <!-- Commons -->
-
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
+    
     <dependency>
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
+      <scope>provided</scope>
     </dependency>
-    
-    <!-- JSON -->
-
+      
     <dependency>
       <groupId>net.sf.json-lib</groupId>
       <artifactId>json-lib</artifactId>
+      <scope>provided</scope>
       <classifier>jdk15</classifier>
-    </dependency>
-    
+    </dependency> 
+  
   </dependencies>
   
 </project>

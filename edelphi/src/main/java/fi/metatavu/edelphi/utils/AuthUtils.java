@@ -11,10 +11,10 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.math.NumberUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import fi.metatavu.edelphi.smvc.controllers.RequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.auth.AuthenticationProviderFactory;
 import fi.metatavu.edelphi.auth.InternalAuthenticationStrategy;
 import fi.metatavu.edelphi.auth.OAuthAccessToken;

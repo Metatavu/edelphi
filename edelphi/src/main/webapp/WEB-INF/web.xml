@@ -23,13 +23,13 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
   <filter>
-    <filter-name>DebugFilter</filter-name>
-    <filter-class>fi.metatavu.edelphi.DebugFilter</filter-class>
+    <filter-name>DefaultsFilter</filter-name>
+    <filter-class>fi.metatavu.edelphi.DefaultsFilter</filter-class>
   </filter>
   <filter-mapping>
-    <filter-name>DebugFilter</filter-name>
+    <filter-name>DefaultsFilter</filter-name>
     <url-pattern>/*</url-pattern>
-  </filter-mapping>
+</filter-mapping>
   <filter>
     <filter-name>PrettyUrlFilter</filter-name>
     <filter-class>fi.metatavu.edelphi.PrettyUrlFilter</filter-class>
@@ -74,18 +74,6 @@
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/_app/*</url-pattern>
   </servlet-mapping>
-  <listener>
-    <listener-class>fi.metatavu.edelphi.ServletContextListener</listener-class>
-  </listener>
-  <security-constraint>
-    <web-resource-collection>
-      <web-resource-name>secure</web-resource-name>
-      <url-pattern>/*</url-pattern>
-    </web-resource-collection>
-    <user-data-constraint>
-      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
-    </user-data-constraint>
-  </security-constraint>
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>

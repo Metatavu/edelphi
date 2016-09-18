@@ -1,6 +1,6 @@
   package fi.metatavu.edelphi.pages.panel.admin.report.text;
 
-import fi.metatavu.edelphi.smvc.controllers.RequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageType;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReportPage;

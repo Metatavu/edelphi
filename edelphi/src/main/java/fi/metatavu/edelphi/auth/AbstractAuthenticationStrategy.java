@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import fi.metatavu.edelphi.smvc.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvc.controllers.RequestContext;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.base.AuthSourceSettingDAO;
 import fi.metatavu.edelphi.dao.users.DelfoiUserDAO;

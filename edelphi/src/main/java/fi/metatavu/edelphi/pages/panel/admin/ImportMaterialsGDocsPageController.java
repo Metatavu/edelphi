@@ -8,8 +8,8 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
-import fi.metatavu.edelphi.smvc.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvc.controllers.PageRequestContext;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.panels.PanelDAO;
@@ -42,7 +42,7 @@ public class ImportMaterialsGDocsPageController extends PanelPageController {
       	// TODO: Navigation (next, prev, etc)
       	// TODO: Support folders 
       	FileList files = GoogleDriveUtils.listFiles(drive, "mimeType != 'application/vnd.google-apps.folder' and trashed != true");
-      	for (File file : files.getItems()) {
+      	for (File file : files.getFiles()) {
           googleDocuments.add(new GoogleDocumentBean(file));
       	}
       	
@@ -65,7 +65,7 @@ public class ImportMaterialsGDocsPageController extends PanelPageController {
 
     public GoogleDocumentBean(File file) {
       this.resourceId = file.getId();
-      this.title = file.getTitle();
+      this.title = file.getName();
       this.iconUrl = file.getIconLink();
       this.kind = file.getKind();
     }

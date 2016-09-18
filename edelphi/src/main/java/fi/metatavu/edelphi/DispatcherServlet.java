@@ -8,7 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import fi.metatavu.edelphi.smvc.dispatcher.Servlet;
+import fi.metatavu.edelphi.smvcj.dispatcher.Servlet;
 import fi.metatavu.edelphi.dao.GenericDAO;
 
 public class DispatcherServlet extends Servlet {

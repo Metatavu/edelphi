@@ -2,9 +2,9 @@ package fi.metatavu.edelphi.jsons.admin;
 
 import java.util.Locale;
 
-import fi.metatavu.edelphi.smvc.PageNotFoundException;
-import fi.metatavu.edelphi.smvc.Severity;
-import fi.metatavu.edelphi.smvc.controllers.JSONRequestContext;
+import fi.metatavu.edelphi.smvcj.PageNotFoundException;
+import fi.metatavu.edelphi.smvcj.Severity;
+import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.dao.base.DelfoiBulletinDAO;
 import fi.metatavu.edelphi.dao.users.UserDAO;

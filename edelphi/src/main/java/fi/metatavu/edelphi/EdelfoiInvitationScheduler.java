@@ -9,7 +9,7 @@ import javax.ejb.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import fi.metatavu.edelphi.smvc.logging.Logging;
+import fi.metatavu.edelphi.smvcj.logging.Logging;
 import fi.metatavu.edelphi.dao.GenericDAO;
 import fi.metatavu.edelphi.dao.base.EmailMessageDAO;
 import fi.metatavu.edelphi.dao.panels.PanelInvitationDAO;

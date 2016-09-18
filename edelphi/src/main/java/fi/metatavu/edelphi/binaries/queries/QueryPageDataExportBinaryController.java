@@ -5,15 +5,15 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.map.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
-import fi.metatavu.edelphi.smvc.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvc.controllers.BinaryRequestContext;
-import fi.metatavu.edelphi.smvc.controllers.RequestContext;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.BinaryRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.binaries.BinaryController;
 import fi.metatavu.edelphi.dao.panels.PanelStampDAO;
@@ -100,8 +100,11 @@ public class QueryPageDataExportBinaryController extends BinaryController {
   		try {
   		  String title = queryPage.getQuerySection().getQuery().getName() + " - " + queryPage.getTitle();
   			byte[] csvData = QueryDataUtils.exportQueryPageDataAsCsv(requestContext.getRequest().getLocale(), replierExportStrategy, replies, queryPage, panelStamp);
-  			File file = GoogleDriveUtils.insertFile(drive, title, "", null, "text/csv", csvData, true, 3);
-  			requestContext.setRedirectURL(file.getAlternateLink());
+  			File file = GoogleDriveUtils.insertFile(drive, title, "", null, "text/csv", csvData, 3);
+  			String fileUrl = GoogleDriveUtils.getFileUrl(drive, file);
+  			if (fileUrl != null) {
+  			  requestContext.setRedirectURL(fileUrl);
+  			}
   		} catch (Exception e) {
         Messages messages = Messages.getInstance();
         Locale locale = requestContext.getRequest().getLocale();

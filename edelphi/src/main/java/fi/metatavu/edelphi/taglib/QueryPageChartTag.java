@@ -22,7 +22,7 @@ import org.apache.taglibs.standard.tag.common.core.ParamParent;
 import org.eclipse.birt.chart.model.Chart;
 import org.eclipse.birt.chart.model.attribute.Bounds;
 
-import fi.metatavu.edelphi.smvc.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;

@@ -8,16 +8,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import fi.metatavu.edelphi.smvc.AccessDeniedException;
-import fi.metatavu.edelphi.smvc.LoginRequiredException;
-import fi.metatavu.edelphi.smvc.PageNotFoundException;
-import fi.metatavu.edelphi.smvc.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.AccessDeniedException;
+import fi.metatavu.edelphi.smvcj.LoginRequiredException;
+import fi.metatavu.edelphi.smvcj.PageNotFoundException;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 import fi.metatavu.edelphi.utils.MailUtils;
 import fi.metatavu.edelphi.utils.SystemUtils;
 
-public class PlatformErrorListener implements fi.metatavu.edelphi.smvc.dispatcher.PlatformErrorListener {
+public class PlatformErrorListener implements fi.metatavu.edelphi.smvcj.dispatcher.PlatformErrorListener {
 
   @Override
   public void onLoginRequiredException(HttpServletRequest request, HttpServletResponse response, LoginRequiredException e) {

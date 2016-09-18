@@ -9,11 +9,11 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import fi.metatavu.edelphi.smvc.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvc.StatusCode;
-import fi.metatavu.edelphi.smvc.controllers.PageRequestContext;
-import fi.metatavu.edelphi.smvc.controllers.RequestController;
-import fi.metatavu.edelphi.smvc.controllers.RequestControllerMapper;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.StatusCode;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestController;
+import fi.metatavu.edelphi.smvcj.controllers.RequestControllerMapper;
 import fi.metatavu.edelphi.ActionedController;
 import fi.metatavu.edelphi.dao.actions.DelfoiActionDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiAction;

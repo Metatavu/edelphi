@@ -6,10 +6,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import fi.metatavu.edelphi.smvc.controllers.RequestController;
-import fi.metatavu.edelphi.smvc.controllers.RequestControllerMapper;
-import fi.metatavu.edelphi.smvc.dispatcher.RequestDispatchContext;
-import fi.metatavu.edelphi.smvc.dispatcher.RequestDispatcher;
+import fi.metatavu.edelphi.smvcj.controllers.RequestController;
+import fi.metatavu.edelphi.smvcj.controllers.RequestControllerMapper;
+import fi.metatavu.edelphi.smvcj.dispatcher.RequestDispatchContext;
+import fi.metatavu.edelphi.smvcj.dispatcher.RequestDispatcher;
 import fi.metatavu.edelphi.dao.panels.PanelDAO;
 import fi.metatavu.edelphi.dao.resources.FolderDAO;
 import fi.metatavu.edelphi.dao.resources.ResourceDAO;

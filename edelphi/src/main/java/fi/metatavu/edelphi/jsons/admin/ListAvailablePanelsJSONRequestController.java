@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import fi.metatavu.edelphi.smvc.controllers.JSONRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 import fi.metatavu.edelphi.dao.panels.PanelDAO;
 import fi.metatavu.edelphi.dao.users.UserDAO;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;

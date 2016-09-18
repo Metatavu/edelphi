@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fi.metatavu.edelphi.smvc.AccessDeniedException;
-import fi.metatavu.edelphi.smvc.LoginRequiredException;
-import fi.metatavu.edelphi.smvc.SmvcMessage;
-import fi.metatavu.edelphi.smvc.controllers.PageRequestContext;
-import fi.metatavu.edelphi.smvc.controllers.RequestContext;
+import fi.metatavu.edelphi.smvcj.AccessDeniedException;
+import fi.metatavu.edelphi.smvcj.LoginRequiredException;
+import fi.metatavu.edelphi.smvcj.SmvcMessage;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.ActionedController;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
@@ -17,7 +17,7 @@ import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.utils.ActionUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 
-public abstract class PageController implements fi.metatavu.smvc.controllers.PageController, ActionedController {
+public abstract class PageController implements fi.metatavu.edelphi.smvcj.controllers.PageController, ActionedController {
 
   public void authorize(RequestContext requestContext) throws LoginRequiredException, AccessDeniedException {
     String actionAccessName = getAccessActionName() == null ? null : getAccessActionName().toString();

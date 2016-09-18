@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
-import fi.metatavu.edelphi.smvc.controllers.PageRequestContext;
-import fi.metatavu.edelphi.smvc.controllers.RequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.dao.panels.PanelUserExpertiseClassDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserIntressClassDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionAnswerDAO;

@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Locale;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
-import fi.metatavu.edelphi.smvc.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvc.controllers.BinaryRequestContext;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.BinaryRequestContext;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.binaries.BinaryController;
 import fi.metatavu.edelphi.dao.resources.DocumentDAO;
@@ -61,13 +61,14 @@ public class ViewDocumentBinaryController extends BinaryController {
   				DownloadResponse response = GoogleDriveUtils.exportFile(drive, file, "application/pdf");
   				outputData = response.getData();
   				outputMime = response.getMimeType();
-  				outputFileName = ResourceUtils.getUrlName(file.getTitle()) + ".pdf";
+  				outputFileName = ResourceUtils.getUrlName(file.getName()) + ".pdf";
   			} else {
-  				if (file.getDownloadUrl() != null) {
+  			  String fileUrl = GoogleDriveUtils.getFileUrl(drive, file);
+  				if (StringUtils.isNotBlank(fileUrl)) {
   				  DownloadResponse response = GoogleDriveUtils.downloadFile(drive, file);
   					outputData = response.getData();
   					outputMime = response.getMimeType();
-  					outputFileName = ResourceUtils.getUrlName(file.getTitle());
+  					outputFileName = ResourceUtils.getUrlName(file.getName());
   				} else {
   					throw new IOException("Don't know how to handle GoogleDocument #" + googleDocument.getId());
   				}

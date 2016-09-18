@@ -8,7 +8,7 @@ import java.util.NavigableMap;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import fi.metatavu.edelphi.smvc.controllers.JSONRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageTemplateDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageTemplateLocalizedSettingDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageTemplateSimpleSettingDAO;

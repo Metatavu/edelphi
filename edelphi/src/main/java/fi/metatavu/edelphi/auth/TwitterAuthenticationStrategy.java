@@ -15,8 +15,8 @@ import org.scribe.model.Verb;
 import org.scribe.model.Verifier;
 import org.scribe.oauth.OAuthService;
 
-import fi.metatavu.edelphi.smvc.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvc.controllers.RequestContext;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.i18n.Messages;
 
@@ -44,7 +44,7 @@ public class TwitterAuthenticationStrategy extends OAuthAuthenticationStrategy {
 
   @Override
   protected Class<? extends Api> getApiClass() {
-    return TwitterApi.SSL.class;
+    return TwitterApi.class;
   }
 
   protected AuthenticationResult processResponse(RequestContext requestContext, OAuthService service, String[] requestedScopes) {
