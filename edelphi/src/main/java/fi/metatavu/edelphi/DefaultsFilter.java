@@ -8,33 +8,37 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import fi.metatavu.edelphi.utils.SessionUtils;
 
-public class DebugFilter implements Filter {
+/**
+ * 
+ * @author Antti Leppä
+ */
+@WebFilter
+public class DefaultsFilter implements Filter {
 
+  @Override
   public void init(FilterConfig arg0) throws ServletException {
-
+    // Nothing to init
   }
 
+  @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
     if (request instanceof HttpServletRequest) {
       HttpSession session = ((HttpServletRequest) request).getSession();
-      session.setAttribute("delfoiId", new Long(1));
-
-//      if (session.getAttribute("loggedUserId") == null) {
-//        session.setAttribute("loggedUserId", new Long(1));
-//        session.setAttribute("loggedUserRoleId", new Long(1)); // 1 = Administrator in initial data
-//        session.setAttribute("loggedUserFullName", "John Doe");
-//      }
+      session.setAttribute("delfoiId", 1l);
       SessionUtils.setCurrentTheme(session, "default");
     }
 
     filterChain.doFilter(request, response);
   }
 
+  @Override
   public void destroy() {
+    // Nothing to destroy
   }
 }
