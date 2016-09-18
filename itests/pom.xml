@@ -73,6 +73,27 @@
     
   </properties>
   
+  <dependencies>
+  
+    <dependency>
+      <groupId>junit</groupId>
+       <artifactId>junit</artifactId>
+       <version>4.12</version>
+    </dependency>
+  
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-java</artifactId>
+      <version>${selenium-java.version}</version>
+    </dependency>
+  
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.4</version>
+    </dependency>
+  </dependencies>
+  
   <profiles>
 
     <profile>
@@ -93,16 +114,10 @@
         <it.hibernate.dialect>org.hibernate.dialect.H2Dialect</it.hibernate.dialect>
         <it.browser>chrome</it.browser>
         <it.package>**</it.package>
-        <it.tests>fi/metatavu/edelphi/test/ui/local/${it.package}/*IT.java</it.tests>
+        <it.tests>**/*IT.java</it.tests>
       </properties>
       
       <dependencies>
-        <dependency>
-          <groupId>org.seleniumhq.selenium</groupId>
-          <artifactId>selenium-java</artifactId>
-          <version>${selenium-java.version}</version>
-        </dependency>
-      
         <dependency>
           <groupId>com.h2database</groupId>
           <artifactId>h2</artifactId>
@@ -124,6 +139,7 @@
             <artifactId>maven-failsafe-plugin</artifactId>
             <version> 2.19.1</version>
             <configuration>
+              <failIfNoTests>true</failIfNoTests>
               <includes>
                 <include>${it.tests}</include>
               </includes>
@@ -198,6 +214,41 @@
                   <type>DROP</type>
                   <force>true</force>
                   <skip>${it.skipdatabasedrop}</skip>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>sql-maven-plugin</artifactId>
+            <version>1.5</version>
+            <dependencies>
+              <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
+              </dependency>
+            </dependencies>
+    
+            <configuration>      
+              <driver>${it.jdbc.driver}</driver>
+              <url>${it.jdbc.url}</url>
+              <username>${it.jdbc.username}</username>
+              <password>${it.jdbc.password}</password>
+            </configuration>
+            <executions>
+              <execution>
+                <id>basic-sql-setup</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <autocommit>true</autocommit>
+                  <srcFiles>
+                    <srcFile>src/test/resources/init.sql</srcFile>
+                  </srcFiles>
                 </configuration>
               </execution>
             </executions>
@@ -295,7 +346,7 @@
                 </goals>      
                 <configuration>
                   <protocol>http</protocol>
-                  <host>tuu</host>
+                  <host>${it.host}</host>
                   <port>${it.port.http}</port>
                   <file>/index.page</file>
                   <maxcount>20</maxcount>
