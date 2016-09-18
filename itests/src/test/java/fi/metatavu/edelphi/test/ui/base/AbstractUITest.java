@@ -13,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -201,13 +202,24 @@ public class AbstractUITest {
   }
   
   protected void takeScreenshot(File file) throws IOException {
+    TakesScreenshot takesScreenshot = (TakesScreenshot) webDriver;
+    
+    if (getCI()) {
+      String imageData = toDataUrl("image/png", takesScreenshot.getScreenshotAs(OutputType.BYTES));
+      logger.warning(String.format("Screenshot: %s: %s", file.getName(), imageData));
+    } else {    
     FileOutputStream fileOuputStream = new FileOutputStream(file);
-    try {
-     fileOuputStream.write(((TakesScreenshot) webDriver).getScreenshotAs(OutputType.BYTES));
-    } finally {
-      fileOuputStream.flush();
-      fileOuputStream.close();
+      try {
+       fileOuputStream.write(takesScreenshot.getScreenshotAs(OutputType.BYTES));
+      } finally {
+        fileOuputStream.flush();
+        fileOuputStream.close();
+      }
     }
+  }
+  
+  private String toDataUrl(String contentType, byte[] data) {
+    return String.format("data:image/%s;base64,%s", contentType, Base64.getEncoder().encodeToString(data));
   }
   
   protected long createFolder(String name, String urlName, Long parentFolderId) {
@@ -260,6 +272,10 @@ public class AbstractUITest {
     }
     
     return -1;
+  }
+  
+  protected boolean getCI() {
+    return StringUtils.equals(System.getProperty("ci"), "true");
   }
   
   private Connection getConnection() {

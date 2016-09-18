@@ -156,6 +156,7 @@
                 <it.jdbc.username>${it.jdbc.username}</it.jdbc.username>
                 <it.jdbc.password>${it.jdbc.password}</it.jdbc.password>
                 <it.browser>${it.browser}</it.browser>
+                <ci>${env.CONTINUOUS_INTEGRATION}</ci>
               </systemPropertyVariables>
             </configuration>
             <executions>
