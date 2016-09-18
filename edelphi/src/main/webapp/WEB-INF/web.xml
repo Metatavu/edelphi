@@ -74,9 +74,6 @@
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/_app/*</url-pattern>
   </servlet-mapping>
-  <listener>
-    <listener-class>fi.metatavu.edelphi.ServletContextListener</listener-class>
-  </listener>
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>

@@ -1,9 +1,9 @@
 package fi.metatavu.edelphi;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Locale;
-import java.util.Vector;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -16,73 +16,80 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.jsp.jstl.core.Config;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.LocaleUtils;
 
+/**
+ * Filter that is responsible of resolving used locale
+ * 
+ * @author Antti Leppä
+ */
 public class LocaleFilter implements Filter {
-
+  
+  private static final String[] SUPPORTED_LOCALES = {"en", "fi"};
+  
+  @Override
   public void init(FilterConfig arg0) throws ServletException {
-
+    // Nothing to initialize
   }
 
+  @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
     ServletRequest servletRequest = request;
     try {
       if (request instanceof HttpServletRequest) {
-        Cookie[] cookies = ((HttpServletRequest) request).getCookies();
-        String localeCode = "";
-        if (cookies != null) {
-          for (Cookie cookie : cookies) {
-            if ("eDelphiLocale".equals(cookie.getName())) {
-              localeCode = cookie.getValue();
-              break;
-            }
-          }
-        }
-
-        if (StringUtils.isBlank(localeCode)) {
-          localeCode = servletRequest.getLocale().toString();
-        }
-
-        if (!localeCode.equals(request.getLocale().toString())) {
-          Locale locale;
-          String[] localeCodeS = localeCode.split("_");
-          if (localeCodeS.length == 2)
-            locale = new Locale(localeCodeS[0], localeCodeS[1]);
-          else {
-            locale = new Locale(localeCodeS[0]);
-          }
-
-          Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new fi.metatavu.edelphi.i18n.LocalizationContext(locale));
-          servletRequest = new LocaleRequestWrapper((HttpServletRequest) request, locale);
-        } else {
-          Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new fi.metatavu.edelphi.i18n.LocalizationContext(request.getLocale()));
-        }
+        Locale locale = resolveSupportedLocale(resolveLocale((HttpServletRequest) request));
+        Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new fi.metatavu.edelphi.i18n.LocalizationContext(locale));
+        servletRequest = new LocaleRequestWrapper((HttpServletRequest) request, locale);
       }
     } finally {
       filterChain.doFilter(servletRequest, response);
     }
   }
 
+  @Override
   public void destroy() {
+    // Nothing to destroy
   }
 
   public class LocaleRequestWrapper extends HttpServletRequestWrapper {
+
+    private Locale locale;
+
     public LocaleRequestWrapper(HttpServletRequest req, Locale locale) {
       super(req);
       this.locale = locale;
     }
 
+    @Override
     public Enumeration<Locale> getLocales() {
-      Vector<Locale> v = new Vector<Locale>(1);
-      v.add(getLocale());
-      return v.elements();
+      return Collections.enumeration(Collections.singleton(getLocale()));
     }
 
+    @Override
     public Locale getLocale() {
       return locale;
     }
-
-    private Locale locale;
   }
-
+  
+  private Locale resolveLocale(HttpServletRequest request) {
+    Cookie[] cookies = request.getCookies();
+    if (cookies != null) {
+      for (Cookie cookie : cookies) {
+        if ("eDelphiLocale".equals(cookie.getName())) {
+          return LocaleUtils.toLocale(cookie.getValue());
+        }
+      }
+    }
+    
+    return request.getLocale();
+  }
+  
+  private Locale resolveSupportedLocale(Locale locale) {
+    if (ArrayUtils.contains(SUPPORTED_LOCALES, locale.getLanguage())) {
+      return new Locale(locale.getLanguage());
+    }
+    
+    return new Locale(SUPPORTED_LOCALES[0]);
+  }
 }
