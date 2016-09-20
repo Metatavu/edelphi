@@ -6,6 +6,7 @@ cache:
   directories:
   - $HOME/.m2
   - itests/.cargo
+  - sonar-scanner
 addons:
   hosts:
     - test.edelphi.fi

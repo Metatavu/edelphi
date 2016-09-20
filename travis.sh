@@ -4,7 +4,7 @@ if [ "$TRAVIS_PULL_REQUEST" != "false" ] && [ -n "${GITHUB_TOKEN}" ] && [ -n "${
 
   # It's a pull-request, run SonarQube analysis in the pull-request and execute tests
 
-  sh sonar-runner/bin/sonar-runner -Dsonar.host.url=$SONAR_HOST_URL \
+  sh sonar-scanner/bin/sonar-runner -Dsonar.host.url=$SONAR_HOST_URL \
     -Dsonar.analysis.mode=issues \
     -Dsonar.login=$SONAR_TOKEN \
     -Dsonar.projectKey=$SONAR_PROJECT_KEY \
@@ -21,7 +21,7 @@ if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "develop" ]; the
 
   # Merge to develop, publish to SonarQube
 
-  sh sonar-runner/bin/sonar-runner -Dsonar.host.url=$SONAR_HOST_URL \
+  sh sonar-scanner/bin/sonar-runner -Dsonar.host.url=$SONAR_HOST_URL \
     -Dsonar.analysis.mode=publish \
     -Dsonar.login=$SONAR_TOKEN \
     -Dsonar.projectKey=$SONAR_PROJECT_KEY
