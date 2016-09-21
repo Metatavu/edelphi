@@ -134,41 +134,7 @@
       </dependencies>
       
       <build>
-        <plugins>
-          <plugin>
-            <groupId>org.jacoco</groupId>
-            <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.7.6.201602180812</version>
-            <configuration>
-              <destFile>${jacoco.reportPath}</destFile>
-              <dataFile>${jacoco.reportPath}</dataFile>
-              <outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
-              <classDumpDir>${project.reporting.outputDirectory}/jacoco-it/classes</classDumpDir>
-            </configuration>
-                
-            <executions>
-              <execution>
-                <id>jacoco-agent</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>prepare-agent</goal>
-                </goals>
-                <configuration>
-                  <destFile>${jacoco.reportPath}</destFile>
-                  <propertyName>jacoco.agent.itArgLine</propertyName>
-                </configuration>
-              </execution>
-              <execution>
-                <id>jacoco-report</id>
-                <phase>post-integration-test</phase>
-                <goals>
-                  <goal>dump</goal>
-                  <goal>report</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>         
-        
+        <plugins>      
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-failsafe-plugin</artifactId>
@@ -178,9 +144,6 @@
               <includes>
                 <include>${it.tests}</include>
               </includes>
-              <properties>
-                <cargo.jvmargs>${jacoco.agent.itArgLine},output=tcpserver,port=6300 -Xms64m -Xmx1024m -Drunmode=TEST</cargo.jvmargs>
-              </properties>
               <systemPropertyVariables>
                 <jboss.home>${wildfly.home}</jboss.home>
                 <module.path>${wildfly.home}/modules</module.path>
@@ -294,6 +257,40 @@
           </plugin>
           
           <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>0.7.6.201602180812</version>
+            <configuration>
+              <destFile>${jacoco.reportPath}</destFile>
+              <dataFile>${jacoco.reportPath}</dataFile>
+              <outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
+              <classDumpDir>${project.reporting.outputDirectory}/jacoco-it/classes</classDumpDir>
+            </configuration>
+                
+            <executions>
+              <execution>
+                <id>jacoco-agent</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+                <configuration>
+                  <destFile>${jacoco.reportPath}</destFile>
+                  <propertyName>jacoco.agent.itArgLine</propertyName>
+                </configuration>
+              </execution>
+              <execution>
+                <id>jacoco-report</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>dump</goal>
+                  <goal>report</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>   
+          
+          <plugin>
             <groupId>org.codehaus.cargo</groupId>
             <artifactId>cargo-maven2-plugin</artifactId>
             <version>1.6.0</version>
@@ -318,7 +315,7 @@
                 <properties>
                   <cargo.servlet.port>${it.port.http}</cargo.servlet.port>
                   <cargo.jboss.configuration>standalone</cargo.jboss.configuration>
-                  <cargo.jvmargs>-Xms64m -Xmx1152m -XX:MaxPermSize=512m</cargo.jvmargs>
+                  <cargo.jvmargs>${jacoco.agent.itArgLine},output=tcpserver,port=6300 -Xms64m -Xmx1152m -Drunmode=TEST</cargo.jvmargs>
                   <cargo.datasource.datasource.edelphi>
                     cargo.datasource.driver=${it.jdbc.driver}|
                     cargo.datasource.url=${it.jdbc.url}|
