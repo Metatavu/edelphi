@@ -2,7 +2,7 @@
 
 if [ "$TRAVIS_PULL_REQUEST" != "false" ] && [ -n "${GITHUB_TOKEN}" ] && [ -n "${SONAR_TOKEN}" ]; then
 
-  # It's a pull-request, run SonarQube analysis in the pull-request and execute tests
+  ecno "Pull request"
 
   sh sonar-scanner/bin/sonar-runner -Dsonar.host.url=$SONAR_HOST_URL \
     -Dsonar.analysis.mode=issues \
@@ -15,11 +15,9 @@ if [ "$TRAVIS_PULL_REQUEST" != "false" ] && [ -n "${GITHUB_TOKEN}" ] && [ -n "${
   mvn clean verify -Pui -Dit.browser=phantomjs
   mvn jacoco:report coveralls:report -Pitests -DrepoToken=$COVERALLS_TOKEN
   set +e
-fi
+elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "develop" ]; then
 
-if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "develop" ]; then
-
-  # Merge to develop, publish to SonarQube
+  echo "Develop build"
 
   sh sonar-scanner/bin/sonar-runner -Dsonar.host.url=$SONAR_HOST_URL \
     -Dsonar.analysis.mode=publish \
@@ -28,4 +26,8 @@ if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "develop" ]; the
   set -e
   mvn jacoco:report coveralls:report -Pitests -DrepoToken=$COVERALLS_TOKEN
   set +e
+elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "master" ]; then
+  echo "Master build"
+else
+  echo "Push to branch" 	  
 fi
