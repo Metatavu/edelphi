@@ -27,8 +27,9 @@
       <property name="hibernate.show_sql" value="false" />
       <property name="hibernate.generate_statistics" value="true" />
       <property name="hibernate.session.events.log" value="false" />
+      <!-- 
       <property name="hibernate.hbm2ddl.auto" value="validate" />
-
+      -->
       <!-- Byte code instrumentation -->
  
       <property name="hibernate.enhance.enable.enableLazyInitialization" value="true"/>
