@@ -19,8 +19,7 @@ if [ "$TRAVIS_PULL_REQUEST" != "false" ] && [ -n "${GITHUB_TOKEN}" ] && [ -n "${
     -Dsonar.github.repository=$TRAVIS_REPO_SLUG \
     -Dsonar.github.pullRequest=$TRAVIS_PULL_REQUEST
   set -e
-  mvn clean verify -Pui -Dit.browser=phantomjs
-  mvn jacoco:report coveralls:report -Pitests -DrepoToken=$COVERALLS_TOKEN
+  mvn clean verify jacoco:report coveralls:report -Pui -Dit.browser=phantomjs -DrepoToken=$COVERALLS_TOKEN
   set +e
 elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "develop" ]; then
 
@@ -30,9 +29,7 @@ elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "develop" ]; t
     -Dsonar.analysis.mode=publish \
     -Dsonar.login=$SONAR_TOKEN \
     -Dsonar.projectKey=$SONAR_PROJECT_KEY
-  set -e
-  mvn jacoco:report coveralls:report -Pitests -DrepoToken=$COVERALLS_TOKEN
-  set +e
+
 elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "master" ]; then
   echo "Master build"
 else
