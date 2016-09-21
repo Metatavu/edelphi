@@ -9,7 +9,7 @@ if [ "$TRAVIS_PULL_REQUEST" != "false" ] && [ -n "${GITHUB_TOKEN}" ] && [ -n "${
     -Dsonar.login=$SONAR_TOKEN \
     -Dsonar.projectKey=$SONAR_PROJECT_KEY \
     -Dsonar.projectName=eDelphi \
-    -Dsonar.projectVersion=`mvn -f pom.xml -q -Dexec.executable=\'echo\' -Dexec.args=\'${project.version}\' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec` \
+    -Dsonar.projectVersion=`mvn -f pom.xml -q -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec` \
     -Dsonar.sources=edelphi/src,edelphi-persistence/src,itests/src,smvcj/src \
     -Dsonar.java.source=1.8 \
     -Dsonar.github.oauth=$GITHUB_TOKEN \
