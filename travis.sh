@@ -25,11 +25,15 @@ if [ "$TRAVIS_PULL_REQUEST" != "false" ] && [ -n "${GITHUB_TOKEN}" ] && [ -n "${
 elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "develop" ]; then
 
   echo "Develop build"
-
+  
   sh sonar-scanner/bin/sonar-scanner -Dsonar.host.url=$SONAR_HOST_URL \
     -Dsonar.analysis.mode=publish \
     -Dsonar.login=$SONAR_TOKEN \
-    -Dsonar.projectKey=$SONAR_PROJECT_KEY
+    -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+    -Dsonar.projectName=eDelphi \
+    -Dsonar.projectVersion=$PROJECT_VERSION \
+    -Dsonar.sources=edelphi/src,edelphi-persistence/src,itests/src,smvcj/src \
+    -Dsonar.java.source=1.8
 
 elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "master" ]; then
   echo "Master build"
