@@ -21,7 +21,7 @@ elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "master" ]; th
   
   # Perform release
   
-  mvn -Psonatype-oss-release -B release:prepare release:perform --settings ~/.m2/mySettings.xml
+  mvn -Psonatype-oss-release -Drelease.arguments="-Dgpg.passphrase=${PGP_PASSPHRASE} -Dgpg.homedir=.gnupg" -B release:prepare release:perform --settings ~/.m2/mySettings.xml
   
   # Merge changed back to develop
   
