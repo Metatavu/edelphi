@@ -11,23 +11,12 @@
 
 package fi.metatavu.edelphi.taglib.chartutil;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-
-import javax.servlet.ServletContext;
-
 import org.eclipse.birt.chart.exception.ChartException;
 import org.eclipse.birt.chart.model.Chart;
 import org.eclipse.birt.chart.model.ChartWithAxes;
 import org.eclipse.birt.chart.model.ChartWithoutAxes;
-import org.eclipse.birt.chart.model.Serializer;
 import org.eclipse.birt.chart.model.component.Axis;
 import org.eclipse.birt.chart.model.data.SeriesDefinition;
-import org.eclipse.birt.chart.model.impl.SerializerImpl;
-import org.eclipse.birt.chart.plugin.ChartEnginePlugin;
 import org.eclipse.birt.chart.util.ChartUtil;
 import org.eclipse.emf.common.util.EList;
 
@@ -36,42 +25,6 @@ import org.eclipse.emf.common.util.EList;
  */
 
 public class ChartWebHelper {
-
-  /**
-   * Parses a XML file to chart model instance
-   * 
-   * @param strPath
-   *          chart XML file path
-   * @return chart model
-   * @throws ChartException
-   */
-  public static Chart parseChart(String strPath) throws ChartException {
-    if (strPath == null) {
-      return null;
-    }
-    Chart chartModel = null;
-    final File chartFile = new File(strPath);
-    // Reads the chart model
-    InputStream is = null;
-    try {
-      if (chartFile.exists()) {
-        Serializer serializer = SerializerImpl.instance();
-        is = new FileInputStream(chartFile);
-        chartModel = serializer.read(is);
-      }
-    } catch (Exception e) {
-      throw new ChartException(ChartEnginePlugin.ID, ChartException.NOT_FOUND, e);
-    } finally {
-      if (is != null) {
-        try {
-          is.close();
-        } catch (IOException e) {
-
-        }
-      }
-    }
-    return chartModel;
-  }
 
   /**
    * Checks if the output type is supported
@@ -122,33 +75,4 @@ public class ChartWebHelper {
     return false;
   }
 
-  /**
-   * Returns the real path of the file in the web folder
-   * 
-   * @param context
-   *          servlet context
-   * @param fileName
-   *          the relative path of the file
-   */
-  public static String getRealPath(ServletContext context, String fileName) {
-    String path = context.getRealPath("/"); //$NON-NLS-1$
-
-    if (path == null) {
-      // resources are in a .war (JBoss, WebLogic)
-      java.net.URL url;
-      try {
-        url = context.getResource("/"); //$NON-NLS-1$
-        path = url.getPath();
-      } catch (MalformedURLException e) {
-        e.printStackTrace();
-      }
-    }
-    // In WebSphere, path may not end with separator
-    if (path != null && path.length() > 0) {
-      if (path.charAt(path.length() - 1) != '\\' || path.charAt(path.length() - 1) != '/') {
-        path += File.separator;
-      }
-    }
-    return path + fileName;
-  }
 }

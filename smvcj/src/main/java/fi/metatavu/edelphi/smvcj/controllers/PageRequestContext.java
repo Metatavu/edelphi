@@ -54,7 +54,7 @@ public class PageRequestContext extends RequestContext {
   /**
    * Sets the path of the Freemarker template to be included in the response.
    * 
-   * @param includeJSP The path of theFreemarker template to be included in the response
+   * @param includeFtl The path of theFreemarker template to be included in the response
    */
   public void setIncludeFtl(String includeFtl) {
     this.includeFtl = includeFtl;
@@ -70,15 +70,15 @@ public class PageRequestContext extends RequestContext {
   
   /**
    * Writes the response to the page request.
-   * <p/>
+   * <br><br>
    * If the status code of this context is not {@link StatusCode#OK}, a redirect to the generic
    * error page is done with the following request attributes:
-   * <p/>
-   * <code>statusCode</code> identifying the error in question<br/>
-   * <code>errorLevel</code> stating the severity of the error<br/>
-   * <code>errorMessage</code> stating what went wrong<br/>
-   * <code>exception</code> itself, if it was set to this context<br/>
-   * <p/>
+   * <br><br>
+   * <code>statusCode</code> identifying the error in question<br>
+   * <code>errorLevel</code> stating the severity of the error<br>
+   * <code>errorMessage</code> stating what went wrong<br>
+   * <code>exception</code> itself, if it was set to this context<br>
+   * <br><br>
    * If the status code of this context is {@link StatusCode#OK}, the response either redirects to
    * the URL specified in this context, or includes the specified JSP page in the response.
    * 

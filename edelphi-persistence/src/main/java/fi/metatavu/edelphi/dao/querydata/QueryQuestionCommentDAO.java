@@ -194,10 +194,10 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
    * list of comments directly below parentComment as value. 
    *  
    * @param queryPage page where to list the comments from
-   * @return Map<parentComment.id, List<childComments>>
+   * @return list of non-root comments on page and orders to mapped by parentComment.id
    */
   public Map<Long, List<QueryQuestionComment>> listTreesByQueryPage(QueryPage queryPage) {
-    Map<Long, List<QueryQuestionComment>> result = new HashMap<Long, List<QueryQuestionComment>>();
+    Map<Long, List<QueryQuestionComment>> result = new HashMap<>();
 
     EntityManager entityManager = getEntityManager();
 
@@ -220,7 +220,7 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
       List<QueryQuestionComment> children = result.get(parentCommentId);
       
       if (children == null) {
-        children = new ArrayList<QueryQuestionComment>();
+        children = new ArrayList<>();
         result.put(parentCommentId, children);
       }
 

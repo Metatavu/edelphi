@@ -17,6 +17,11 @@ import net.sf.json.JSONObject;
  */
 public class JSONRequestContext extends RequestContext {
 
+  /**
+   * The JSON response object.
+   */
+  private JSONObject jsonResponse = new JSONObject();
+  
   /** Create a new JSON request context.
    * 
    * @param dispatchContext The dispatch context, passed to RequestContext constructor
@@ -40,18 +45,19 @@ public class JSONRequestContext extends RequestContext {
   
   @Override
   public void writePreCommitResponse(int statusCode) throws Exception {
+    // Intentionally left empty
   }
   
   /**
    * Writes the response to the JSON request.
-   * <p/>
+   * <br><br>
    * In addition to all response parameters added to the context by the JSON request controller, the
    * following parameters also exist in the response:
-   * <p/>
-   * <code>statusCode</code> identifying whether the call was successful or not<br/>
-   * <code>errorLevel</code>, if the status code is not {@link StatusCode#OK}<br/>
-   * <code>errorMessage</code>, if the status code is not {@link StatusCode#OK} <br/>
-   * <code>redirectURL</code>, if a redirect URL has been set to the context<br/>
+   * <br><br>
+   * <code>statusCode</code> identifying whether the call was successful or not<br>
+   * <code>errorLevel</code>, if the status code is not {@link StatusCode#OK}<br>
+   * <code>errorMessage</code>, if the status code is not {@link StatusCode#OK} <br>
+   * <code>redirectURL</code>, if a redirect URL has been set to the context<br>
    * 
    * @throws Exception If writing the response fails for any reason
    */
@@ -74,10 +80,5 @@ public class JSONRequestContext extends RequestContext {
       responseWriter.close();
     }
   }
-
-  /**
-   * The JSON response object.
-   */
-  private JSONObject jsonResponse = new JSONObject();
 
 }

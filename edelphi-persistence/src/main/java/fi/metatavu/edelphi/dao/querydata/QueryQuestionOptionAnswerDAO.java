@@ -1,15 +1,9 @@
 package fi.metatavu.edelphi.dao.querydata;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import javax.persistence.EntityManager;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
@@ -18,7 +12,6 @@ import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionAnswer_;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryField;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption;
-import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption_;
 
 public class QueryQuestionOptionAnswerDAO extends GenericDAO<QueryQuestionOptionAnswer> {
 
@@ -116,34 +109,4 @@ public class QueryQuestionOptionAnswerDAO extends GenericDAO<QueryQuestionOption
     return queryQuestionOptionAnswer;
   }
 
-  /**
-   * 
-   * @param queryField
-   * @return map with queryfieldoption.id as key, count of the option answers as value 
-   */
-  public Map<Long, Long> listOptionAnswerCounts(QueryField queryField) {
-    EntityManager entityManager = getEntityManager();
-
-    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-    CriteriaQuery<Tuple> criteria = criteriaBuilder.createQuery(Tuple.class);
-    Root<QueryQuestionOptionAnswer> answerRoot = criteria.from(QueryQuestionOptionAnswer.class);
-    Join<QueryQuestionOptionAnswer, QueryOptionFieldOption> queryFieldOptionRoot = answerRoot.join(QueryQuestionOptionAnswer_.option);
-    criteria.multiselect(
-        queryFieldOptionRoot.get(QueryOptionFieldOption_.id), 
-        criteriaBuilder.count(answerRoot.get(QueryQuestionOptionAnswer_.id)));
-    criteria.where(criteriaBuilder.equal(answerRoot.get(QueryQuestionOptionAnswer_.queryField), queryField));
-    criteria.groupBy(queryFieldOptionRoot.get(QueryOptionFieldOption_.id));
-
-    TypedQuery<Tuple> q = entityManager.createQuery(criteria);
-    List<Tuple> resultList = q.getResultList();
-
-    Map<Long, Long> resultMap = new HashMap<Long, Long>();
-
-    for (Tuple optionAnswer : resultList) {
-      resultMap.put(optionAnswer.get(0, Long.class), optionAnswer.get(1, Long.class));
-    }
-    
-    return resultMap;
-  }
-  
 }

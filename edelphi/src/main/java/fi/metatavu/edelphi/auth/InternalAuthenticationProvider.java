@@ -4,7 +4,7 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 
 
 /**
- * Defines requirements for a class capable of authorizing users with username & password combination.
+ * Defines requirements for a class capable of authorizing users with username &amp; password combination.
  */
 public interface InternalAuthenticationProvider extends AuthenticationProvider {
 

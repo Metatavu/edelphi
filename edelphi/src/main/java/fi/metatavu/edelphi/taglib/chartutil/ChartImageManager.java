@@ -14,7 +14,6 @@ package fi.metatavu.edelphi.taglib.chartutil;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.util.Locale;
 
@@ -218,31 +217,6 @@ public class ChartImageManager {
     PlatformConfig config = new PlatformConfig();
     config.setProperty("STANDALONE", "true"); //$NON-NLS-2$
     ChartEngine.instance(config);
-  }
-
-  /**
-   * Trim the end separator
-   * 
-   * @param path
-   * @return
-   */
-  protected static String trimSep(String path) {
-    path = trimString(path);
-    if (path.endsWith(File.separator)) {
-      path = path.substring(0, path.length() - 1);
-    }
-
-    return path;
-  }
-
-  /**
-   * Returns trim string, not null
-   * 
-   * @param str
-   * @return
-   */
-  private static String trimString(String str) {
-    return str != null ? str.trim() : "";
   }
 
 }

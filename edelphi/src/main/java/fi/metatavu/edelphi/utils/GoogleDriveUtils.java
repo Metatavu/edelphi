@@ -261,7 +261,7 @@ public class GoogleDriveUtils {
 	 * @param file file to be exported
 	 * @param format target format
 	 * @return exported data
-	 * @throws IOException 
+   * @throws IOException thrown when exporting fails unexpectedly
 	 */
 	public static DownloadResponse exportFile(Drive drive, File file, String format) throws IOException {
 	  return exportFile(drive, file.getId(), format);
@@ -274,7 +274,7 @@ public class GoogleDriveUtils {
    * @param fileId id of file to be exported
    * @param format target format
    * @return exported data
-   * @throws IOException 
+   * @throws IOException thrown when exporting fails unexpectedly
    */
   public static DownloadResponse exportFile(Drive drive, String fileId, String format) throws IOException {
     try (InputStream inputStream = drive.files().export(fileId, format).executeAsInputStream()) {
@@ -307,7 +307,7 @@ public class GoogleDriveUtils {
    * @param drive drive client
    * @param fileId file id for file to be exported
    * @return Spreadsheet in HTML format
-   * @throws IOException
+   * @throws IOException thrown when exporting fails unexpectedly
    */
 	public static DownloadResponse exportSpreadsheet(Drive drive, String fileId) throws IOException {
 	  try (InputStream inputStream = drive.files().export(fileId, TEXT_HTML).executeAsInputStream()) {
@@ -321,7 +321,7 @@ public class GoogleDriveUtils {
    * @param drive drive client
    * @param file file to be exported
    * @return Spreadsheet in HTML format
-   * @throws IOException
+   * @throws IOException thrown when exporting fails unexpectedly
    */
   public static DownloadResponse exportSpreadsheet(Drive drive, File file) throws IOException {
     return exportSpreadsheet(drive, file.getId());
