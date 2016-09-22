@@ -53,7 +53,7 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <release.arguments>-Dgpg.passphrase=${env.PGP_PASSPHRASE} -Dgpg.homedir=${project.build.directory}/../.gnupg</release.arguments>
+    <release.arguments>-Dgpg.passphrase=${env.PGP_PASSPHRASE} -Dgpg.homedir=${project.build.directory}/../../.gnupg</release.arguments>
   </properties>
   
   <modules>
