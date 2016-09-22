@@ -47,7 +47,7 @@ QueryEditorUtils = {
   }
 };
 
-QueryEditorDraftTask = Class.create(fi.internetix.draft.CustomDraftTask, {
+QueryEditorDraftTask = Class.create(fi.metatavu.draft.CustomDraftTask, {
   initialize: function ($super, editor) {
     $super();
     
@@ -55,7 +55,7 @@ QueryEditorDraftTask = Class.create(fi.internetix.draft.CustomDraftTask, {
   },
   createDraftData: function () {
     this._editor._commitChanges();
-    return new fi.internetix.draft.ElementDraft(this.getId(), 'data', this._compress(Object.toJSON({
+    return new fi.metatavu.draft.ElementDraft(this.getId(), 'data', this._compress(Object.toJSON({
       sectionDatas: this._editor._sectionDatas,
       pageDatas: this._editor._pageDatas 
     })));
@@ -127,7 +127,7 @@ QueryEditorBlockController = Class.create(BlockController, {
     
     this._initializePages();
     
-    fi.internetix.draft.DraftTaskVault.registerCustomTask(new QueryEditorDraftTask(this));
+    fi.metatavu.draft.DraftTaskVault.registerCustomTask(new QueryEditorDraftTask(this));
   },
   deinitialize: function ($super) {
     Event.stopObserving(this._saveButton, "click", this._saveButtonClickListener);

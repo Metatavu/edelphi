@@ -1,0 +1,33 @@
+language: java
+sudo: false
+jdk: oraclejdk8
+cache:
+  directories:
+  - $HOME/.m2
+  - itests/.cargo
+  - .sonar
+  - sonar-scanner
+addons:
+  hosts:
+    - test.edelphi.fi
+
+before_install:
+  - openssl aes-256-cbc -K $encrypted_a8cb9807bd59_key -iv $encrypted_a8cb9807bd59_iv -in travis-encrypted.tar.enc -out travis-encrypted.tar -d    
+
+install:
+  - . travis-install.sh
+    
+before_script:
+  - . travis-before-script.sh
+    
+script:
+  - . travis.sh
+  
+after_success:
+- . travis-after-success.sh
+  
+after_failure:
+- . travis-after-failure.sh
+
+notifications:
+  email: false

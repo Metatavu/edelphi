@@ -2,365 +2,287 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>edelphi</artifactId>
   <packaging>war</packaging>
-  <name>eDelfoi is a research program based on Delphi expert method.</name>
+  <name>${project.groupId}:${project.artifactId}</name>
   <description>eDelfoi is a research program based on Delphi expert method. It is developed in co-operation with Future Research Center of Turku School of Economics.
 
 Delphi technique is used for bringing values, new viewpoints and ideas as a foundation for planning and decision making, i.e. making qualitative research. The program can also be used for making a simple, Survey-type of query. The newest version of the program is called eDelfoi.  </description>
+  <url>https://github.com/Metatavu/edelphi</url>  
 
   <parent>
-    <groupId>fi.internetix.edelphi</groupId>
+    <groupId>fi.metatavu.edelphi</groupId>
     <artifactId>parent</artifactId>
-    <version>1.0.16-SNAPSHOT</version>    
+    <version>1.1.0-SNAPSHOT</version>    
     <relativePath>../pom.xml</relativePath>
   </parent>
   
+  <licenses>
+    <license>
+      <name>GNU LGPL v3</name>
+      <url>http://www.gnu.org/licenses/lgpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/Metatavu/edelphi/issues</url>
+  </issueManagement>
+  
+  <scm>
+    <developerConnection>scm:git:git@github.com:Metatavu/edelphi.git</developerConnection>
+    <url>git@github.com:Metatavu/edelphi.git</url>
+    <connection>scm:git:git@github.com:Metatavu/edelphi.git</connection>
+    <tag>HEAD</tag>
+  </scm>
+  
+  <organization>
+    <name>Metatavu Oy</name>
+    <url>https://metatavu.fi</url>
+  </organization>
+  
+  <developers>
+    <developer>
+      <email>ratkaisutiimi@otavanopisto.fi</email>
+      <name>Ratkaisutiimi</name>
+      <organization>Otavan Opisto</organization>
+      <organizationUrl>http://www.otavanopisto.fi</organizationUrl>
+    </developer>
+    <developer>
+      <email>antti.leppa@metatavu.fi</email>
+      <name>Antti Leppä</name>
+      <organization>Metatavu Oy</organization>
+      <organizationUrl>https://www.metatavu.fi</organizationUrl>
+    </developer>    
+  </developers>
+  
   <dependencies>
-    <!-- JavaEE 6.0 API -->
-    
+  
     <dependency>
-      <groupId>javax</groupId>
-      <artifactId>javaee-api</artifactId>
+      <groupId>org.jboss.spec.javax.servlet</groupId>
+      <artifactId>jboss-servlet-api_3.1_spec</artifactId>
       <scope>provided</scope>
     </dependency>
     
-    <!-- JBoss provided -->
- 
-    <!-- Import the CDI API, we use provided scope as the API is included  in JBoss AS 7 -->
     <dependency>
-       <groupId>javax.enterprise</groupId>
-       <artifactId>cdi-api</artifactId>
-       <scope>provided</scope>
-    </dependency>
-
-    <!-- Import the Common Annotations API (JSR-250), we use provided scope as the API is included in JBoss AS 7 -->
-    <dependency>
-       <groupId>org.jboss.spec.javax.annotation</groupId>
-       <artifactId>jboss-annotations-api_1.1_spec</artifactId>
-       <scope>provided</scope>
-    </dependency>
-
-    <!-- Import the JPA API, we use provided scope as the API is included in JBoss AS 7 -->
-    <dependency>
-       <groupId>org.hibernate.javax.persistence</groupId>
-       <artifactId>hibernate-jpa-2.0-api</artifactId>
-       <scope>provided</scope>
-    </dependency>
-
-    <!-- Hibernate -->
-    <dependency>
-       <groupId>org.hibernate</groupId>
-       <artifactId>hibernate-core</artifactId>
-       <scope>provided</scope>
-    </dependency>    
-   
-    <dependency>
-      <groupId>org.hibernate.common</groupId>
-      <artifactId>hibernate-commons-annotations</artifactId>
+      <groupId>org.jboss.spec.javax.servlet.jsp</groupId>
+      <artifactId>jboss-jsp-api_2.3_spec</artifactId>
       <scope>provided</scope>
     </dependency>
-   
-    <!-- Import the EJB API, we use provided scope as the API is included in JBoss AS 7 -->
-    <dependency>
-       <groupId>org.jboss.spec.javax.ejb</groupId>
-       <artifactId>jboss-ejb-api_3.1_spec</artifactId>
-       <scope>provided</scope>
-    </dependency>
-
-    <!-- Hibernate Validator is shipped in JBoss AS 7 -->
-    <dependency>
-       <groupId>org.hibernate</groupId>
-       <artifactId>hibernate-validator</artifactId>
-       <scope>provided</scope>
-       <exclusions>
-          <exclusion>
-             <groupId>org.slf4j</groupId>
-             <artifactId>slf4j-api</artifactId>
-          </exclusion>
-       </exclusions>
-    </dependency>
-
-    <!-- Annotation processor to generate the JPA 2.0 metamodel classes  for typesafe criteria queries -->
-    <dependency>
-       <groupId>org.hibernate</groupId>
-       <artifactId>hibernate-jpamodelgen</artifactId>
-       <scope>provided</scope>
-    </dependency>  
-   
-    <!-- JSTL -->
+    
     <dependency>
       <groupId>org.jboss.spec.javax.servlet.jstl</groupId>
       <artifactId>jboss-jstl-api_1.2_spec</artifactId>
       <scope>provided</scope>
     </dependency>
-    
-    <!-- eDelphi -->
 
-  	<dependency>
-		<groupId>fi.internetix.edelphi</groupId>
-		<artifactId>persistence</artifactId>
-		<version>${project.version}</version>
-		<type>jar</type>
-		<scope>compile</scope>
-		<exclusions>
-			<exclusion>
-				<artifactId>guava</artifactId>
-				<groupId>com.google.guava</groupId>
-			</exclusion>
-		</exclusions>
-  	</dependency>
-  	
-  	<!-- SMVCJ -->
-  	
-  	<dependency>
-  		<groupId>fi.internetix.smvcj</groupId>
-  		<artifactId>smvcj</artifactId>
-  		<type>jar</type>
-  		<scope>compile</scope>
-  	</dependency>
-  	
-  	<!-- CSS Parser -->
-  	
-  	<dependency>
-  		<groupId>net.sourceforge.cssparser</groupId>
-  		<artifactId>cssparser</artifactId>
-  		<type>jar</type>
-  		<scope>compile</scope>
-  	</dependency>
-  	
- 	<!-- OpenID -->
-  	
     <dependency>
-      <groupId>org.openid4java</groupId>
-      <artifactId>openid4java-consumer</artifactId>
-      <type>pom</type>
-      <scope>compile</scope>
-      <exclusions>
-      	<exclusion>
-      		<artifactId>xercesImpl</artifactId>
-      		<groupId>xerces</groupId>
-      	</exclusion>
-      </exclusions>
+      <groupId>org.jboss.spec.javax.ejb</groupId>
+      <artifactId>jboss-ejb-api_3.2_spec</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-infinispan</artifactId>
+      <scope>provided</scope>
     </dependency>
 
-    <!-- OAuth -->  
-     
     <dependency>
-    	<groupId>org.scribe</groupId>
-    	<artifactId>scribe</artifactId>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-search-orm</artifactId>
+      <scope>provided</scope>
     </dependency>
     
-    <!-- Apache Commons -->
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-search-engine</artifactId>
+      <scope>provided</scope>
+    </dependency>
     
     <dependency>
-    	<groupId>commons-codec</groupId>
-    	<artifactId>commons-codec</artifactId>
-    	<type>jar</type>
-    	<scope>compile</scope>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-entitymanager</artifactId>
+      <scope>provided</scope>
     </dependency>
-     
-    <!-- Google Drive API -->
+
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-queryparser</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-queries</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-analyzers-common</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>fi.metatavu.edelphi</groupId>
+      <artifactId>smvcj</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+      
+    <dependency>
+      <groupId>net.sf.json-lib</groupId>
+      <artifactId>json-lib</artifactId>
+      <classifier>jdk15</classifier>
+    </dependency> 
+    
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <scope>provided</scope>
+    </dependency> 
+
+    <dependency>
+      <groupId>fi.metatavu.edelphi</groupId>
+      <artifactId>persistence</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+      
+    <dependency>
+      <groupId>org.scribe</groupId>
+      <artifactId>scribe</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>com.google.apis</groupId>
       <artifactId>google-api-services-drive</artifactId>
+      <type>jar</type>
+      <scope>compile</scope>
     </dependency>
 
-    <!-- CSV -->
+    <dependency>
+      <groupId>com.google.http-client</groupId>
+      <artifactId>google-http-client-jackson2</artifactId>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+        
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <scope>provided</scope>
+    </dependency>
+      
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <scope>provided</scope>
+    </dependency>
+        
+    <dependency>
+      <groupId>org.eclipse.birt.runtime</groupId>
+      <artifactId>org.eclipse.birt.runtime</artifactId>
+    </dependency>
+      
+    <dependency>
+      <groupId>com.sun.mail</groupId>
+      <artifactId>javax.mail</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
     <dependency>
-        <groupId>net.sourceforge.javacsv</groupId>
-        <artifactId>javacsv</artifactId>
-        <type>jar</type>
-        <scope>compile</scope>
+      <groupId>org.openid4java</groupId>
+      <artifactId>openid4java</artifactId>
     </dependency>
     
-    <!-- BIRT -->
-    
-    <dependency>
-    	<groupId>org.apache.xmlgraphics</groupId>
-    	<artifactId>batik-bridge</artifactId>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    	<exclusions>
-    		<exclusion>
-    			<artifactId>xml-apis</artifactId>
-    			<groupId>xml-apis</groupId>
-    		</exclusion>
-    	</exclusions>
-    </dependency>
-    <dependency>
-    	<groupId>org.eclipse.birt.chart</groupId>
-    	<artifactId>engine</artifactId>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>org.eclipse.birt.chart</groupId>
-    	<artifactId>engine-extension</artifactId>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>org.eclipse.birt</groupId>
-    	<artifactId>core</artifactId>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>org.eclipse.birt.chart</groupId>
-    	<artifactId>device-extension</artifactId>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>org.eclipse.birt.chart</groupId>
-    	<artifactId>examples-core</artifactId>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>org.eclipse.emf</groupId>
-    	<artifactId>ecore</artifactId>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>org.eclipse.emf</groupId>
-    	<artifactId>ecore-xmi</artifactId>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>org.eclipse.emf</groupId>
-    	<artifactId>common</artifactId>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>com.ibm.icu</groupId>
-    	<artifactId>icu4j</artifactId>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-    	<groupId>org.eclipse.core</groupId>
-    	<artifactId>runtime</artifactId>
-    	<type>jar</type>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.jtidy</groupId>
-      <artifactId>jtidy</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.birt.chart</groupId>
-      <artifactId>device-svg</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.birt.chart</groupId>
-      <artifactId>device-pdf</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.xhtmlrenderer</groupId>
       <artifactId>flying-saucer-pdf-itext5</artifactId>
     </dependency>
+    
     <dependency>
-      <groupId>dom4j</groupId>
-      <artifactId>dom4j</artifactId>
-      <scope>provided</scope>
-      <exclusions>
-      	<exclusion>
-      		<artifactId>xml-apis</artifactId>
-      		<groupId>xml-apis</groupId>
-      	</exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-    	<groupId>com.google.http-client</groupId>
-    	<artifactId>google-http-client-jackson</artifactId>
-    </dependency>
-<!--     <dependency> -->
-<!--   	  <groupId>org.codehaus.groovy.modules.http-builder</groupId> -->
-<!-- 	  <artifactId>http-builder</artifactId> -->
-<!--     </dependency> -->
-    <dependency>
-    	<groupId>hanjava.net</groupId>
-    	<artifactId>svg2emf</artifactId>
-        <exclusions>
-	      <exclusion>
-	        <artifactId>xercesImpl</artifactId>
-	      	<groupId>xerces</groupId>
-	      </exclusion>
-	    </exclusions>
+      <groupId>net.sourceforge.cssparser</groupId>
+      <artifactId>cssparser</artifactId>
     </dependency>
     
-    <!-- Jackson -->
-      
     <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
+      <groupId>com.opencsv</groupId>
+      <artifactId>opencsv</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>net.sf.jtidy</groupId>
+      <artifactId>jtidy</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>xalan</groupId>
+      <artifactId>xalan</artifactId>
       <scope>provided</scope>
     </dependency>
-      
+
     <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
       <scope>provided</scope>
     </dependency>
   </dependencies>
-
+  
   <build>
     <plugins>
+    
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
-        <configuration>
-          <source>${maven.compiler.source}</source>
-          <target>${maven.compiler.target}</target>
-          <encoding>${project.build.sourceEncoding}</encoding>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>2.1.2</version>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.8</version>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>            
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>2.2</version>
+        <version>2.6</version>
         <configuration>
           <archive>
             <manifestEntries>
-              <Dependencies>org.codehaus.jackson.jackson-mapper-asl,org.codehaus.jackson.jackson-core-asl</Dependencies>
+              <Dependencies>org.hibernate, org.hibernate.infinispan, org.hibernate.search.orm, org.hibernate.search.engine, org.hibernate.validator, org.apache.lucene, org.apache.commons.codec, com.fasterxml.jackson.core.jackson-annotations, com.fasterxml.jackson.core.jackson-databind, com.fasterxml.jackson.datatype.jackson-datatype-jsr310</Dependencies>
             </manifestEntries>
           </archive>
         </configuration>
       </plugin>
+    
     </plugins>
   </build>
+  
+  <repositories>
+  
+    <repository>
+      <id>repository.jboss.org-public</id>
+      <name>JBoss repository</name>
+      <url>https://repository.jboss.org/nexus/content/groups/public</url>
+    </repository>
+    
+  </repositories>
   
 </project>
