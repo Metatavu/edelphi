@@ -20,6 +20,9 @@ before_script:
 script:
   - . travis.sh
   
+after_success:
+- . travis-after-success.sh
+  
 after_failure:
 - . travis-after-failure.sh
 
