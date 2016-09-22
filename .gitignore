@@ -2,3 +2,4 @@
 /.project
 /todo.txt
 sonar-scanner
+.sonar
