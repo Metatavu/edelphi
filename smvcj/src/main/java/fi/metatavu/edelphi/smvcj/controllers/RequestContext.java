@@ -34,7 +34,7 @@ import fi.metatavu.edelphi.smvcj.i18n.Messages;
 
 /**
  * An abstract request context associated with each request made to the application.
- * <p/>
+ * <br><br>
  * Wraps in both the HTTP servlet request and response objects, as well as packs some logic for
  * error handling and tracking the currently logged in user.
  */
@@ -44,9 +44,10 @@ public abstract class RequestContext {
    * The constructor specifying the HTTP servlet request and response objects associated with the
    * context.
    * 
+   * @param requestDispatchContext The HTTP servlet request dispatch context
    * @param servletRequest The HTTP servlet request
    * @param servletResponse The HTTP servlet response
-   * @throws FileUploadException 
+   * @param servletContext The HTTP servlet context
    */
   protected RequestContext(RequestDispatchContext requestDispatchContext, HttpServletRequest servletRequest, HttpServletResponse servletResponse, ServletContext servletContext) {
     this.servletRequest = servletRequest;
@@ -106,7 +107,7 @@ public abstract class RequestContext {
    * Returns whether this context is associated with a logged in user.
    * 
    * @return <code>true</code> if a logged in user exists in this context, otherwise
-   * <code>false/code>
+   * <code>false</code>
    */
   public boolean isLoggedIn() {
     return getLoggedUserId() != null;

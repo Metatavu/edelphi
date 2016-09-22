@@ -103,9 +103,9 @@ public class QueryFieldDataStatistics {
   /**
    * Returns quantile over base value.
    * 
-   * @param quantile
-   * @param base
-   * @return
+   * @param quantile quantile index
+   * @param base quantile base
+   * @return quantile over base value.
    */
   public Double getQuantile(int quantile, int base) {
     if (getCount() == 0)

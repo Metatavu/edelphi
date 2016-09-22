@@ -51,8 +51,8 @@ public interface AuthenticationProvider {
   /**
    * Processes the login request.
    * 
-   * @param requestContext
-   * @throws AuthenticationException
+   * @param requestContext Smvcj request context
+   * @return authentication result
    */
   public AuthenticationResult processLogin(RequestContext requestContext);
 }

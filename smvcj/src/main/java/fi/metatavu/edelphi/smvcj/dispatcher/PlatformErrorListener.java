@@ -16,6 +16,8 @@ public interface PlatformErrorListener {
   /**
    * Method run when platform encounters a login required exception
    * 
+   * @param request HTTP servlet request
+   * @param response HTTP servlet request
    * @param e original exception
    */
   void onLoginRequiredException(HttpServletRequest request, HttpServletResponse response, LoginRequiredException e);
@@ -23,6 +25,8 @@ public interface PlatformErrorListener {
   /**
    * Method run when platform encounters a page not found exception
    * 
+   * @param request HTTP servlet request
+   * @param response HTTP servlet request
    * @param e original exception
    */
   void onPageNotFoundException(HttpServletRequest request, HttpServletResponse response, PageNotFoundException e);
@@ -30,6 +34,8 @@ public interface PlatformErrorListener {
   /**
    * Method run when platform encounters an access denied exception
    * 
+   * @param request HTTP servlet request
+   * @param response HTTP servlet request
    * @param e original exception
    */
   void onAccessDeniedException(HttpServletRequest request, HttpServletResponse response, AccessDeniedException e);
@@ -37,6 +43,8 @@ public interface PlatformErrorListener {
   /**
    * Method run when platform encounters smvc runtime exception
    * 
+   * @param request HTTP servlet request
+   * @param response HTTP servlet request
    * @param e original exception
    */
   void onSmvcRuntimeException(HttpServletRequest request, HttpServletResponse response, SmvcRuntimeException e);
@@ -44,6 +52,8 @@ public interface PlatformErrorListener {
   /**
    * Method run when platform encounters exception that is not derived from SmvcRuntimeException
    * 
+   * @param request HTTP servlet request
+   * @param response HTTP servlet request
    * @param e original exception
    */
   void onUncontrolledException(HttpServletRequest request, HttpServletResponse response, Exception e);
@@ -51,6 +61,8 @@ public interface PlatformErrorListener {
   /**
    * Method run when platform fails to run commit phase
    * 
+   * @param request HTTP servlet request
+   * @param response HTTP servlet request
    * @param e original exception
    */
   void onTransactionCommitException(HttpServletRequest request, HttpServletResponse response, Exception e);

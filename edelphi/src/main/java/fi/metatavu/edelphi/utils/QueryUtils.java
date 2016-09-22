@@ -125,11 +125,10 @@ public class QueryUtils {
   }
   
   /**
-   * Loads the whole comment tree and appends it to requestContext for jsp to read.
+   * Loads the whole comment tree and appends it to requestContext for JSP to read.
    * 
-   * @param requestContext
-   * @param queryPage
-   * @param queryReplies 
+   * @param requestContext Smvcj request context
+   * @param queryPage query page
    */
   public static void appendQueryPageComments(RequestContext requestContext, QueryPage queryPage) {
     QueryQuestionCommentDAO queryQuestionCommentDAO = new QueryQuestionCommentDAO();

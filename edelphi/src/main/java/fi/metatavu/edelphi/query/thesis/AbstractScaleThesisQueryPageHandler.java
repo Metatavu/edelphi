@@ -142,12 +142,12 @@ public abstract class AbstractScaleThesisQueryPageHandler extends AbstractThesis
   /**
    * Synchronizes field meta. Should not be used when field already contains replies
    * 
-   * @param settings
-   * @param queryPage
-   * @param optionsOption
-   * @param fieldName
-   * @param fieldCaption
-   * @param mandatory
+   * @param settings settings map
+   * @param queryPage query page
+   * @param optionsOption page option
+   * @param fieldName field name
+   * @param fieldCaption field caption 
+   * @param mandatory whether field is mandatory
    */
   protected void synchronizeField(Map<String, String> settings, QueryPage queryPage, QueryOption optionsOption, String fieldName, String fieldCaption, Boolean mandatory) {
     QueryFieldDAO queryFieldDAO = new QueryFieldDAO();

@@ -3,3 +3,5 @@
 /todo.txt
 sonar-scanner
 .sonar
+travis-encrypted.tar 
+.travis_rsa
