@@ -1,13 +1,11 @@
 #!/bin/bash
 
 if [ "$TRAVIS_PULL_REQUEST" != "false" ] && [ -n "${GITHUB_TOKEN}" ] && [ -n "${SONAR_TOKEN}" ]; then
-  # Pull request
-  
+  echo "Pull request"
 elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "develop" ]; then
-  # Develop build
-  
+  echo "Develop build"
 elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "master" ]; then
-  # Master build
+  echo "Master build"
   
   # Change git -repository to  writeable
 
@@ -32,7 +30,5 @@ elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "master" ]; th
   git push --set-upstream origin develop
 
 else
-  # Feature or hotfix build
-  
+  echo "Feature or hotfix build"
 fi
-
