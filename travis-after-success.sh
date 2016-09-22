@@ -23,7 +23,7 @@ elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "master" ]; th
   
   # Perform release
   
-  mvn -B release:prepare release:perform --settings ~/.m2/mySettings.xml
+  mvn -Psonatype-oss-release -B release:prepare release:perform --settings ~/.m2/mySettings.xml
   
   # Merge changed back to develop
   
