@@ -11,10 +11,14 @@ elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "master" ]; th
 
   eval `ssh-agent -s`
   ssh-add .travis_rsa
+  git remote set-url origin git@github.com:Metatavu/edelphi.git
   git config user.name "Travis CI"
   git config user.email "travis@travis-ci.org"
-  git remote set-url origin git@github.com:Metatavu/edelphi.git
-  
+  git config --global push.default simple
+  git checkout master
+  git reset --hard
+  git pull
+
   # Prepare Maven credentials for Sonatype 
 
   python travis-prepare-sonatype.py
