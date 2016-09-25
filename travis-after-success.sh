@@ -5,33 +5,38 @@ if [ "$TRAVIS_PULL_REQUEST" != "false" ] && [ -n "${GITHUB_TOKEN}" ] && [ -n "${
 elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "develop" ]; then
   echo "Develop build"
 elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "master" ]; then
-  echo "Master build"
+  commitmessage=`git log --pretty=format:"%s" -1`;
+  if [[ $commitmessage == *"[maven-release-plugin]"* ]]; then
+    echo "Release build"
+  else
+  	echo "Master build"
   
-  # Change git -repository to  writeable
+    # Change git -repository to  writeable
 
-  eval `ssh-agent -s`
-  ssh-add .travis_rsa
-  git remote set-url origin git@github.com:Metatavu/edelphi.git
-  git config user.name "Travis CI"
-  git config user.email "travis@travis-ci.org"
-  git config --global push.default simple
-  git checkout master
-  git reset --hard
-  git pull
+    eval `ssh-agent -s`
+    ssh-add .travis_rsa
+    git remote set-url origin git@github.com:Metatavu/edelphi.git
+    git config user.name "Travis CI"
+    git config user.email "travis@travis-ci.org"
+    git config --global push.default simple
+    git checkout master
+    git reset --hard
+    git pull
 
-  # Prepare Maven credentials for Sonatype 
+    # Prepare Maven credentials for Sonatype 
 
-  python travis-prepare-sonatype.py
+    python travis-prepare-sonatype.py
   
-  # Perform release
+    # Perform release
   
-  mvn -Psonatype-oss-release -B release:prepare release:perform --settings ~/.m2/mySettings.xml
+    mvn -Psonatype-oss-release -B release:prepare release:perform --settings ~/.m2/mySettings.xml
   
-  # Merge changed back to develop
+    # Merge changed back to develop
   
-  git checkout -B develop
-  git merge master
-  git push --set-upstream origin develop
+    git checkout -B develop
+    git merge master
+    git push --set-upstream origin develop	
+  fi
 
 else
   echo "Feature or hotfix build"
