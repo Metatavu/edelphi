@@ -53,7 +53,6 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <release.arguments>-Dgpg.passphrase=${env.PGP_PASSPHRASE} -Dgpg.homedir=${project.build.directory}/../.gnupg</release.arguments>
   </properties>
   
   <modules>
@@ -123,7 +122,7 @@
               <useReleaseProfile>false</useReleaseProfile>
               <tagNameFormat>@{project.version}</tagNameFormat>
               <autoVersionSubmodules>true</autoVersionSubmodules>
-              <arguments>${release.arguments} -Psonatype-oss-release</arguments>
+              <arguments>-Dgpg.passphrase=${env.PGP_PASSPHRASE} -Dgpg.homedir=${project.build.directory}/../.gnupg -Psonatype-oss-release</arguments>
             </configuration>
           </plugin>
           
