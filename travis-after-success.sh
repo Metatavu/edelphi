@@ -9,7 +9,9 @@ elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "master" ]; th
   if [[ $commitmessage == *"[maven-release-plugin]"* ]]; then
     echo "Release build"
   else
-  	echo "Master build"
+    echo "Master build"
+  
+    set -e
   
     # Change git -repository to  writeable
 
@@ -36,6 +38,8 @@ elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "master" ]; th
     git checkout -B develop
     git merge master
     git push --set-upstream origin develop	
+    
+    set +e    
   fi
 
 else
