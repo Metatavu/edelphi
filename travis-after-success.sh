@@ -40,7 +40,7 @@ elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "master" ]; th
     git branch -u develop origin/develop
     git pull
     git merge master
-    git push -u origin develop	
+    git push -u develop origin/develop
     
     set +e    
   fi
