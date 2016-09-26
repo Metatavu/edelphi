@@ -31,11 +31,12 @@ elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "master" ]; th
   
     # Perform release
   
-    mvn -Psonatype-oss-release -B release:prepare release:perform --settings ~/.m2/mySettings.xml
+    mvn -q -Psonatype-oss-release -B release:prepare release:perform --settings ~/.m2/mySettings.xml
   
     # Merge changed back to develop
   
     git checkout -B develop
+    git reset --hard
     git merge master
     git push --set-upstream origin develop	
     
