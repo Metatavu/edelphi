@@ -35,7 +35,7 @@ elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "master" ]; th
   
     # Merge changed back to develop
   
-    git checkout -t origin/develop
+    git checkout -B develop
     git pull
     git merge master
     git push --set-upstream origin develop
