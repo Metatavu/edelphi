@@ -7,6 +7,8 @@ import java.util.List;
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -86,6 +88,16 @@ public class User implements ArchivableEntity, ModificationTrackedEntity {
 
   @Temporal (value=TemporalType.TIMESTAMP)
   private Date lastLogin;
+  
+  @NotNull
+  @Enumerated (EnumType.STRING)
+  private SubscriptionLevel subscriptionLevel;
+
+  @Temporal (value=TemporalType.TIMESTAMP)
+  private Date subscriptionStarted;
+  
+  @Temporal (value=TemporalType.TIMESTAMP)
+  private Date subscriptionEnds;
   
   /**
    * Returns internal unique id
@@ -265,5 +277,29 @@ public class User implements ArchivableEntity, ModificationTrackedEntity {
   public List<UserEmail> getEmails() {
     return emails;
   }
-
+  
+  public SubscriptionLevel getSubscriptionLevel() {
+    return subscriptionLevel;
+  }
+  
+  public void setSubscriptionLevel(SubscriptionLevel subscriptionLevel) {
+    this.subscriptionLevel = subscriptionLevel;
+  }
+  
+  public Date getSubscriptionStarted() {
+    return subscriptionStarted;
+  }
+  
+  public void setSubscriptionStarted(Date subscriptionStarted) {
+    this.subscriptionStarted = subscriptionStarted;
+  }
+  
+  public Date getSubscriptionEnds() {
+    return subscriptionEnds;
+  }
+  
+  public void setSubscriptionEnds(Date subscriptionEnds) {
+    this.subscriptionEnds = subscriptionEnds;
+  }
+  
 }

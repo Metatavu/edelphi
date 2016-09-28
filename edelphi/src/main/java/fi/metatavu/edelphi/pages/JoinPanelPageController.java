@@ -19,6 +19,7 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelInvitationState;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUser;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserJoinType;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
+import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.i18n.Messages;
@@ -88,7 +89,7 @@ public class JoinPanelPageController extends PageController {
           // No one is logged in and the invitation email is available
           // -> automatically create a new account
           
-          user = userDAO.create(null, null, null,  null);
+          user = userDAO.create(null, null, null,  null, SubscriptionLevel.FREE, null, null);
           userEmail = userEmailDAO.create(user, panelInvitation.getEmail());
           userDAO.addUserEmail(user, userEmail, true, user);
           Delfoi delfoi = RequestUtils.getDelfoi(pageRequestContext);

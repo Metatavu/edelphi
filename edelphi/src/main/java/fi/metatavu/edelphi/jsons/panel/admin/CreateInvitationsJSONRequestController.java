@@ -30,6 +30,7 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelUser;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserJoinType;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.DelfoiUserRole;
+import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.i18n.Messages;
@@ -188,7 +189,7 @@ public class CreateInvitationsJSONRequestController extends JSONController {
           UserEmail userEmail = userEmailDAO.findByAddress(email);
           user = userEmail == null ? null : userEmail.getUser();
           if (user == null) {
-            user = userDAO.create(firstName, lastName, null, creator);
+            user = userDAO.create(firstName, lastName, null, creator, SubscriptionLevel.FREE, null, null);
             userEmail = userEmailDAO.create(user, email);
             userDAO.addUserEmail(user, userEmail, true, creator);
             if (passwordGenerationCount == 0) {

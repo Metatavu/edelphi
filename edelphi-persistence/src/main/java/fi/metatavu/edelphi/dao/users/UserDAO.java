@@ -3,22 +3,23 @@ package fi.metatavu.edelphi.dao.users;
 import java.util.Date;
 
 import javax.persistence.PersistenceException;
-
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.hibernate.search.jpa.FullTextEntityManager;
-import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
+import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.search.SearchResult;
 
+import org.hibernate.search.jpa.FullTextEntityManager;
+import org.hibernate.search.jpa.FullTextQuery;
+
 public class UserDAO extends GenericDAO<User> {
   
-  public User create(String firstName, String lastName, String nickname, User creator) {
+  public User create(String firstName, String lastName, String nickname, User creator, SubscriptionLevel subscriptionLevel, Date subscriptionStarted, Date subscriptionEnds) {
     Date now = new Date();
     
     User user = new User();
@@ -30,6 +31,9 @@ public class UserDAO extends GenericDAO<User> {
     user.setLastModified(now);
     user.setLastModifier(creator);
     user.setArchived(Boolean.FALSE);
+    user.setSubscriptionLevel(subscriptionLevel);
+    user.setSubscriptionStarted(subscriptionStarted);
+    user.setSubscriptionEnds(subscriptionEnds);
 
     return persist(user);
   }

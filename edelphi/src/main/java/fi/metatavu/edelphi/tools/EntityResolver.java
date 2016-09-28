@@ -33,6 +33,7 @@ import fi.metatavu.edelphi.domainmodel.querymeta.QueryField;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionField;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
+import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.utils.ResourceUtils;
@@ -227,7 +228,7 @@ public class EntityResolver {
       UserEmail userEmail = userEmailDAO.findByAddress(email);
       if (userEmail == null) {
         UserDAO userDAO = new UserDAO();
-        user = userDAO.create(null, null, null, null);
+        user = userDAO.create(null, null, null, null, SubscriptionLevel.FREE, null, null);
         userEmail = userEmailDAO.create(user, email);
         userDAO.addUserEmail(user, userEmail, true, user);
       }
