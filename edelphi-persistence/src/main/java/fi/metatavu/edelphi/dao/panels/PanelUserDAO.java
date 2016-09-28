@@ -38,6 +38,7 @@ public class PanelUserDAO extends GenericDAO<PanelUser> {
     return panelUser;
   }
 
+  @SuppressWarnings ("squid:S00107")
   public PanelUser create(Panel panel, User user, PanelUserRole role, PanelUserJoinType joinType, PanelStamp stamp, User creator, Date created, User modifier, Date modified) {
     PanelUser panelUser = new PanelUser();
     panelUser.setPanel(panel);
