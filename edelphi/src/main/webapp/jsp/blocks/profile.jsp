@@ -25,8 +25,7 @@
         </div>
         <div class="changeProfilePictureModalOverlay" style="display: none"></div>
         <div class="changeProfilePictureModalContainer" style="display: none">
-          <iframe id="_uploadFrame" onload="profilePictureSelected('${pageContext.request.contextPath}/user/picture.binary?userId=${user.id}');"
-            style="display: none" name="_uploadFrame"> </iframe>
+          <iframe id="_uploadFrame" style="display: none" name="_uploadFrame"> </iframe>
 
           <div class="changeProfilePictureCloseModalButton"></div>
           <div class="changeProfilePictureModalContent">
@@ -98,6 +97,31 @@
       </form>
     </div>
   </div>
+  
+  <!-- Subscription level -->
+  
+  <jsp:include page="/jsp/fragments/block_title.jsp">
+    <jsp:param value="profile.block.profileSubscriptionLevelBlockTitle" name="titleLocale" />
+  </jsp:include>
+  
+  <div id="profileSubscriptionLevelBlockContent" class="blockContent">
+    <div>
+      <p>Nykyinen tilaustasosi on "Ammattilaistaso".</p>
+      <p>Tilaustasosi oikeuttaa seuraaviin toimintoihin:</p>
+      <p>
+        <b>Kahteen</b><span> aktiiviseen, maksimissaan </span><b>100</b> panelistin paneeliin<br/><span style="color:black">(tilauksesi päättyy 4.12.2017)</span>
+      </p>
+      
+      <p>
+        Sinulla on tällä hetkellä <b>1</b> aktiivinen paneeli.
+      </p>
+      
+      <p>
+        Voit muuttaa tai jatkaa tilaustasi klikkaamalla <a href="#">tästä</a>
+      </p>
+    </div>
+  </div>
+  
 
   <!-- Internal password -->
 

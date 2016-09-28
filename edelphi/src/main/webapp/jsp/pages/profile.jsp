@@ -14,6 +14,11 @@
 <jsp:include page="/jsp/supports/modalpopup_support.jsp"></jsp:include>
 <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/profile.js"></script>
 <c:choose>
+  <c:when test="${loggedUserId gt 0}">
+    <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/createpanel.js"></script>
+  </c:when>
+</c:choose>
+<c:choose>
   <c:when test="${empty user.defaultEmail.address && (empty user.firstName || empty user.lastName)}">
     <script type="text/javascript">
           var eventQueue = getGlobalEventQueue();

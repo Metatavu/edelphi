@@ -32,11 +32,14 @@ ProfileSettingsBasicInfoEditor = Class.create(BlockController, {
     
     // Invitations
     
-    var _this = this;
-    $('profileInvitationBlockContent').select('.profileInvitationRowWrapper').each(function(invitationElement) {
-      var deleteElement = invitationElement.down('.blockContextualLink.delete');
-      Event.observe(deleteElement, 'click', _this._deleteInvitationClickListener);
-    });
+    var invitationBlock = $('profileInvitationBlockContent');
+    if (invitationBlock) {
+      var _this = this;
+      invitationBlock.select('.profileInvitationRowWrapper').each(function(invitationElement) {
+        var deleteElement = invitationElement.down('.blockContextualLink.delete');
+        Event.observe(deleteElement, 'click', _this._deleteInvitationClickListener);
+      });
+    }
   },
   hideEditor: function () {
     var dialogElement = this._profilePicture.down('.changeProfilePictureModalOverlay');
