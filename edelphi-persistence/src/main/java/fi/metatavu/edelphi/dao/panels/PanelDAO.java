@@ -24,6 +24,7 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 
 public class PanelDAO extends GenericDAO<Panel> {
 
+  @SuppressWarnings ("squid:S00107")
   public Panel create(Delfoi delfoi, String name, String description, Folder rootFolder, 
       PanelState state, PanelAccessLevel accessLevel, PanelUserRole defaultPanelUserRole, User creator) {
     Date now = new Date();
@@ -42,9 +43,7 @@ public class PanelDAO extends GenericDAO<Panel> {
     panel.setLastModifier(creator);
     panel.setCreator(creator);
 
-    getEntityManager().persist(panel);
-
-    return panel;
+    return persist(panel);
   }
   
   public Panel findByRootFolder(Folder rootFolder) {
@@ -116,8 +115,6 @@ public class PanelDAO extends GenericDAO<Panel> {
   }
   
   public Panel update(Panel panel, String name, String description, PanelAccessLevel accessLevel, PanelState state, User modifier) {
-    EntityManager entityManager = getEntityManager();
-
     panel.setName(name);
     panel.setDescription(description);
     panel.setAccessLevel(accessLevel);
@@ -125,33 +122,23 @@ public class PanelDAO extends GenericDAO<Panel> {
     panel.setLastModified(new Date());
     panel.setLastModifier(modifier);
     
-    entityManager.persist(panel);
-    
-    return panel;
+    return persist(panel);
   }
   
   public Panel updateInvitationTemplate(Panel panel, String invitationTemplate, User modifier) {
-    EntityManager entityManager = getEntityManager();
-
     panel.setInvitationTemplate(invitationTemplate);
     panel.setLastModified(new Date());
     panel.setLastModifier(modifier);
     
-    entityManager.persist(panel);
-
-    return panel;
+    return persist(panel);
   }
   
   public Panel updateCurrentStamp(Panel panel, PanelStamp currentStamp, User modifier) {
-    EntityManager entityManager = getEntityManager();
-
     panel.setCurrentStamp(currentStamp);
     panel.setLastModified(new Date());
     panel.setLastModifier(modifier);
     
-    entityManager.persist(panel);
-
-    return panel;
+    return persist(panel);
   }
 
 }
