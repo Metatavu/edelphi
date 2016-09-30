@@ -35,7 +35,6 @@ public class AuthUtils {
   private static final String LOGIN_CONTEXT_TYPE = "loginContextType";
   private static final String AUTH_SOURCE_ID = "authSourceId";
   private static final String LOGIN_REDIRECT_URL = "loginRedirectUrl";
-
   private static final String INTERNAL_AUTHORIZATION_HEADER = "InternalAuthorization ";
   
   private AuthUtils() {
