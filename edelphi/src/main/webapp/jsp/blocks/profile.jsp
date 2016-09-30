@@ -106,19 +106,49 @@
   
   <div id="profileSubscriptionLevelBlockContent" class="blockContent">
     <div>
-      <p>Nykyinen tilaustasosi on "Ammattilaistaso".</p>
-      <p>Tilaustasosi oikeuttaa seuraaviin toimintoihin:</p>
+      <c:choose>
+        <c:when test="${subscriptionLevelSettings.level eq 'NONE'}">
+          <p>
+            <fmt:message key="profile.block.profileNoActiveSubscription"/>
+          </p>
+        </c:when>
+        <c:otherwise>
+         <p>
+           <fmt:message key="profile.block.profileSubscriptionLeveText">
+             <fmt:param><fmt:message key="generic.subscriptionLevels.${subscriptionLevelSettings.level}"/></fmt:param>
+           </fmt:message>
+         </p>
+         <p>
+           <fmt:message key="profile.block.profileSubscriptionFeaturesLabel"/>
+         </p>
+         <p>
+           <ul>
+             <li>
+               <fmt:message key="profile.block.profileSubscriptionPanels">
+                 <fmt:param>${subscriptionLevelSettings.panels}</fmt:param>
+                 <fmt:param value="${activePanelCount}"/>
+               </fmt:message>
+             </li>
+             <li>
+               <fmt:message key="profile.block.profileSubscriptionPanelists">
+                 <fmt:param>${subscriptionLevelSettings.panelists}</fmt:param>
+               </fmt:message>
+             </li>
+           </ul>
+         </p>
+         <p>
+           <fmt:message key="profile.block.profileSubscriptionEnds">
+             <fmt:param value="${subscriptionEnds}"/>
+           </fmt:message>
+         </p>
+        </c:otherwise>
+      </c:choose>
+
       <p>
-        <b>Kahteen</b><span> aktiiviseen, maksimissaan </span><b>100</b> panelistin paneeliin<br/><span style="color:black">(tilauksesi päättyy 4.12.2017)</span>
+        <span><fmt:message key="profile.block.profileChangeSubscriptionText"/></span>
+        <a href="#"><fmt:message key="profile.block.profileChangeSubscriptionLink"/></a>
       </p>
-      
-      <p>
-        Sinulla on tällä hetkellä <b>1</b> aktiivinen paneeli.
-      </p>
-      
-      <p>
-        Voit muuttaa tai jatkaa tilaustasi klikkaamalla <a href="#">tästä</a>
-      </p>
+     
     </div>
   </div>
   
