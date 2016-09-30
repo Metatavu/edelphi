@@ -6,15 +6,21 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
+import fi.metatavu.edelphi.domainmodel.actions.DelfoiAction;
+import fi.metatavu.edelphi.domainmodel.actions.PanelUserRoleAction;
+import fi.metatavu.edelphi.domainmodel.actions.PanelUserRoleAction_;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
+import fi.metatavu.edelphi.domainmodel.panels.PanelState;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUser;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserJoinType;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserRole;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUser_;
+import fi.metatavu.edelphi.domainmodel.panels.Panel_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 public class PanelUserDAO extends GenericDAO<PanelUser> {
@@ -164,6 +170,41 @@ public class PanelUserDAO extends GenericDAO<PanelUser> {
     );
     
     return entityManager.createQuery(criteria).getResultList();
+  }
+  
+  /**
+   * Returns count of panels in specific state where user is in specified role
+   * 
+   * @param user user
+   * @param state panel state
+   * @param role role
+   * @param state 
+   * @return count of panels in specific state where user is in specified role
+   */
+  public Long countByPanelStateUserAndRole(User user, DelfoiAction action, PanelState state) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
+    
+    Root<PanelUser> panelUserRoot = criteria.from(PanelUser.class);
+    Root<PanelUserRoleAction> roleActionRoot = criteria.from(PanelUserRoleAction.class);
+    Join<PanelUser, Panel> panelJoin = panelUserRoot.join(PanelUser_.panel);
+    criteria.select(criteriaBuilder.countDistinct(panelJoin));
+    
+    criteria.where(
+      criteriaBuilder.and(
+        criteriaBuilder.equal(panelJoin, roleActionRoot.get(PanelUserRoleAction_.panel)), 
+        criteriaBuilder.equal(roleActionRoot.get(PanelUserRoleAction_.delfoiAction), action), 
+        criteriaBuilder.equal(panelUserRoot.get(PanelUser_.role), roleActionRoot.get(PanelUserRoleAction_.userRole)), 
+        criteriaBuilder.equal(panelJoin.get(Panel_.state), state),
+        criteriaBuilder.equal(panelUserRoot.get(PanelUser_.user), user),
+        criteriaBuilder.equal(panelUserRoot.get(PanelUser_.archived), Boolean.FALSE),
+        criteriaBuilder.equal(panelJoin.get(Panel_.archived), Boolean.FALSE)
+      )
+    );
+    
+    return entityManager.createQuery(criteria).getSingleResult();
   }
     
 }
