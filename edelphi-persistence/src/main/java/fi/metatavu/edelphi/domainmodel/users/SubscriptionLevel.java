@@ -2,12 +2,14 @@ package fi.metatavu.edelphi.domainmodel.users;
 
 public enum SubscriptionLevel {
 
-  FREE,
+  NONE,
   
   EDU,
   
   BASIC,
   
-  PRO
+  PRO,
+  
+  UNLIMITED
  
 }

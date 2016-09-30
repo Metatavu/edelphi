@@ -14,7 +14,7 @@
   <alterData>
     <update table="User">
       <set>
-        <value type="java.lang.String" column="subscriptionLevel" value="FREE"/>
+        <value type="java.lang.String" column="subscriptionLevel" value="NONE"/>
       </set>
     </update>
   </alterData>
