@@ -25,6 +25,17 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 
 public class PanelUserDAO extends GenericDAO<PanelUser> {
 
+  /**
+   * Creates new panel user
+   * 
+   * @param panel panel
+   * @param user user
+   * @param role user's role in panel
+   * @param joinType join type
+   * @param stamp panel stamp
+   * @param creator creator user
+   * @return new panelist
+   */
   public PanelUser create(Panel panel, User user, PanelUserRole role, PanelUserJoinType joinType, PanelStamp stamp, User creator) {
     Date now = new Date();
     
@@ -40,10 +51,23 @@ public class PanelUserDAO extends GenericDAO<PanelUser> {
     panelUser.setLastModifier(creator);
     panelUser.setArchived(Boolean.FALSE);
     
-    getEntityManager().persist(panelUser);
-    return panelUser;
+    return persist(panelUser);
   }
-
+  
+  /**
+   * Creates new panel user
+   * 
+   * @param panel panel
+   * @param user user
+   * @param role user's role in panel
+   * @param joinType join type
+   * @param stamp panel stamp
+   * @param creator creator user
+   * @param created creation time
+   * @param modifier last modifier
+   * @param modified last modification time
+   * @return new panelist
+   */
   @SuppressWarnings ("squid:S00107")
   public PanelUser create(Panel panel, User user, PanelUserRole role, PanelUserJoinType joinType, PanelStamp stamp, User creator, Date created, User modifier, Date modified) {
     PanelUser panelUser = new PanelUser();
@@ -62,6 +86,14 @@ public class PanelUserDAO extends GenericDAO<PanelUser> {
     return panelUser;
   }
   
+  /**
+   * Finds a panel user by panel, user and stamp
+   * 
+   * @param panel panel
+   * @param user user
+   * @param stamp stamp
+   * @return a panel user
+   */
   public PanelUser findByPanelAndUserAndStamp(Panel panel, User user, PanelStamp stamp) {
     EntityManager entityManager = getEntityManager();
 
@@ -81,6 +113,14 @@ public class PanelUserDAO extends GenericDAO<PanelUser> {
     return getSingleResult(entityManager.createQuery(criteria));
   }
   
+  /**
+   * Lists panel users by panel, role and stamp
+   * 
+   * @param panel panel
+   * @param role role
+   * @param stamp stamp
+   * @return panel users
+   */
   public List<PanelUser> listByPanelAndRoleAndStamp(Panel panel, PanelUserRole role, PanelStamp stamp) {
     EntityManager entityManager = getEntityManager();
 
@@ -100,6 +140,14 @@ public class PanelUserDAO extends GenericDAO<PanelUser> {
     return entityManager.createQuery(criteria).getResultList();
   }
 
+  /**
+   * Lists panel users by panel, user and stamp
+   * 
+   * @param panel panel
+   * @param user user
+   * @param stamp stamp
+   * @return panel users
+   */
   public List<PanelUser> listByPanelAndUserAndStamp(Panel panel, User user, PanelStamp stamp) {
     EntityManager entityManager = getEntityManager();
 
@@ -119,24 +167,45 @@ public class PanelUserDAO extends GenericDAO<PanelUser> {
     return entityManager.createQuery(criteria).getResultList();
   }
   
+  /**
+   * Updates panel user's join type
+   * 
+   * @param panelUser panel user
+   * @param joinType new join type
+   * @param modifier modifier
+   * @return updated user
+   */
   public PanelUser updateJoinType(PanelUser panelUser, PanelUserJoinType joinType, User modifier) {
     panelUser.setJoinType(joinType);
     panelUser.setLastModified(new Date());
     panelUser.setLastModifier(modifier);
     
-    getEntityManager().persist(panelUser);
-    return panelUser;
+    return persist(panelUser);
   }
 
+  /**
+   * Updates panel user's role
+   * 
+   * @param panelUser panel user
+   * @param panelUserRole new role
+   * @param modifier modifier
+   * @return updated user
+   */
   public PanelUser updateRole(PanelUser panelUser, PanelUserRole panelUserRole, User modifier) {
     panelUser.setRole(panelUserRole);
     panelUser.setLastModified(new Date());
     panelUser.setLastModifier(modifier);
     
-    getEntityManager().persist(panelUser);
-    return panelUser;
+    return persist(panelUser);
   }
 
+  /**
+   * Lists panel users by panel and stamp
+   * 
+   * @param panel panel
+   * @param stamp stamp
+   * @return panel users
+   */
   public List<PanelUser> listByPanelAndStamp(Panel panel, PanelStamp stamp) {
     EntityManager entityManager = getEntityManager();
 
@@ -155,6 +224,12 @@ public class PanelUserDAO extends GenericDAO<PanelUser> {
     return entityManager.createQuery(criteria).getResultList();
   }
 
+  /**
+   * Lists panel users by user
+   * 
+   * @param user user
+   * @return panel users
+   */
   public List<PanelUser> listByUser(User user) {
     EntityManager entityManager = getEntityManager();
 
@@ -173,13 +248,12 @@ public class PanelUserDAO extends GenericDAO<PanelUser> {
   }
   
   /**
-   * Returns count of panels in specific state where user is in specified role
+   * Returns count of panels in specific state where user has permission to perform specific action
    * 
    * @param user user
+   * @param action action
    * @param state panel state
-   * @param role role
-   * @param state 
-   * @return count of panels in specific state where user is in specified role
+   * @return count of panels in specific state where user has permission to perform specific action
    */
   public Long countByPanelStateUserAndRole(User user, DelfoiAction action, PanelState state) {
     EntityManager entityManager = getEntityManager();
