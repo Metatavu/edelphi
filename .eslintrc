@@ -5,5 +5,8 @@
     "browser": true,
     "prototypejs": trure
   },
+  "globals": {
+    "CONTEXTPATH": false
+  }
   "extends": "eslint:recommended"
 }
