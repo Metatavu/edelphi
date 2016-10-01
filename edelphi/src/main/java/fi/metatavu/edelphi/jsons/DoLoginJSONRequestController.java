@@ -26,7 +26,7 @@ public class DoLoginJSONRequestController extends JSONController {
     }
     AuthSourceDAO authSourceDAO = new AuthSourceDAO();
     AuthSource authSource = authSourceDAO.findById(authSourceId);
-    AuthenticationProvider authProvider = (AuthenticationProvider) AuthenticationProviderFactory.getInstance().createAuthenticationProvider(authSource);
+    AuthenticationProvider authProvider = AuthenticationProviderFactory.getInstance().createAuthenticationProvider(authSource);
     AuthenticationResult result = authProvider.processLogin(jsonRequestContext);
     if (result != AuthenticationResult.PROCESSING) {
       AuthUtils.addAuthenticationStrategy(jsonRequestContext, authProvider.getName());
@@ -35,11 +35,12 @@ public class DoLoginJSONRequestController extends JSONController {
       User loggedUser = userDAO.findById(jsonRequestContext.getLoggedUserId());      
       
       String baseURL = RequestUtils.getBaseUrl(jsonRequestContext.getRequest());
-      String redirectUrl = null;
-      if (result == AuthenticationResult.NEW_ACCOUNT || (loggedUser != null && (loggedUser.getFirstName() == null || loggedUser.getLastName() == null || loggedUser.getDefaultEmail() == null))) {
+      String redirectUrl;
+      boolean missingDetails = loggedUser != null && (loggedUser.getFirstName() == null || loggedUser.getLastName() == null || loggedUser.getDefaultEmail() == null);
+      
+      if (result == AuthenticationResult.NEW_ACCOUNT || missingDetails) {
         redirectUrl = baseURL + "/profile.page";
-      }
-      else {
+      } else {
         String loginRedirectUrl = AuthUtils.retrieveRedirectUrl(jsonRequestContext);
         redirectUrl = loginRedirectUrl != null ? loginRedirectUrl : baseURL + "/index.page";
       }
