@@ -1,3 +1,5 @@
+/* global BlockController */
+
 var ProfileSettingsBasicInfoEditor = Class.create(BlockController, {
   initialize : function(editorContainer) {
     this._editorContainer = editorContainer;
