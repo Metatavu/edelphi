@@ -208,6 +208,14 @@ public class AbstractUITest {
     new WebDriverWait(getWebDriver(), 60).until(untilPredicate);
   }
   
+  protected void assertNotPresent(final String... selectors) {
+    for (String selector : selectors) {
+      List<WebElement> elements = findElements(selector);
+      assertTrue(String.format("Found %d elements with selector %s", elements.size(), selector), elements.isEmpty());
+    }
+  }
+  
+  
   protected List<WebElement> findElements(String... selectors) {
     List<WebElement> result = new ArrayList<>();
 
