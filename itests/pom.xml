@@ -457,7 +457,12 @@
                 </goals>
                 <configuration>
                   <scanForSources>true</scanForSources>
-                  <sourceDirectories>${project.basedir}/../edelphi/src/main/java,${project.basedir}/../edelphi-persistence/src/main/java,${project.basedir}/../edelphi-persistence/target/generated-sources/apt,${project.basedir}/../smvcj/src/main/java</sourceDirectories>
+                  <sourceDirectories>
+                    <sourceDirectory>${project.basedir}/../edelphi/src/main/java</sourceDirectory>
+                    <sourceDirectory>${project.basedir}/../edelphi-persistence/src/main/java</sourceDirectory>
+                    <sourceDirectory>${project.basedir}/../edelphi-persistence/target/generated-sources/apt</sourceDirectory>
+                    <sourceDirectory>${project.basedir}/../smvcj/src/main/java</sourceDirectory>
+                  </sourceDirectories>
                 </configuration>
               </execution>
             </executions>
