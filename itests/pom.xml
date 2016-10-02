@@ -115,6 +115,7 @@
         <it.package>**</it.package>
         <it.tests>**/*IT.java</it.tests>
         <jacoco.reportPath>${project.basedir}/target/jacoco.exec</jacoco.reportPath>
+        <jacoco.version>0.7.6.201602180812</jacoco.version>
       </properties>
       
       <dependencies>
@@ -139,6 +140,7 @@
             <artifactId>maven-failsafe-plugin</artifactId>
             <version>2.19.1</version>
             <configuration>
+              <forkCount>0</forkCount>
               <failIfNoTests>true</failIfNoTests>
               <includes>
                 <include>${it.tests}</include>
@@ -258,35 +260,86 @@
           <plugin>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.7.6.201602180812</version>
+            <version>${jacoco.version}</version>
             <configuration>
               <destFile>${jacoco.reportPath}</destFile>
               <dataFile>${jacoco.reportPath}</dataFile>
-              <outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
-              <classDumpDir>${project.reporting.outputDirectory}/jacoco-it/classes</classDumpDir>
+              <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
+              <classDumpDir>${project.reporting.outputDirectory}/jacoco/classes</classDumpDir>
+              <propertyName>jacoco.agent.itArgLine</propertyName>
             </configuration>
-                
             <executions>
               <execution>
                 <id>jacoco-agent</id>
                 <phase>pre-integration-test</phase>
                 <goals>
-                  <goal>prepare-agent</goal>
+                  <goal>prepare-agent-integration</goal>
                 </goals>
                 <configuration>
                   <destFile>${jacoco.reportPath}</destFile>
-                  <propertyName>jacoco.agent.itArgLine</propertyName>
                 </configuration>
               </execution>
+              <execution>
+                <id>jacoco-dump</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>dump</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.6</version>
+            <executions>
               <execution>
                 <id>jacoco-report</id>
                 <phase>post-integration-test</phase>
                 <goals>
-                  <goal>dump</goal>
-                  <goal>report</goal>
+                  <goal>run</goal>
                 </goals>
+                <configuration>
+                  <target>
+                    <echo message="Generating JaCoCo Reports" />
+                    <taskdef name="report" classname="org.jacoco.ant.ReportTask">
+                      <classpath path="${basedir}/target/jacoco-jars/org.jacoco.ant.jar" />
+                    </taskdef>
+                    <mkdir dir="${project.reporting.outputDirectory}" />
+                    <report>
+                      <executiondata>
+                        <fileset dir="${project.basedir}/target">
+                          <include name="jacoco.exec" />
+                        </fileset>
+                      </executiondata>
+                      <structure name="Coverage">
+                        <group name="jacoco">
+                          <classfiles>
+                            <fileset dir="${project.basedir}/../edelphi/target/classes" />
+                            <fileset dir="${project.basedir}/../edelphi-persistence/target/classes" />
+                            <fileset dir="${project.basedir}/../smvcj/target/classes" />
+                          </classfiles>
+                          <sourcefiles encoding="UTF-8">
+                            <fileset dir="${project.basedir}/../edelphi/src/main/java" />
+                            <fileset dir="${project.basedir}/../edelphi-persistence/src/main/java" />
+                            <fileset dir="${project.basedir}/../smvcj/src/main/java" />
+                          </sourcefiles>
+                        </group>
+                      </structure>
+                      <xml destfile="${project.reporting.outputDirectory}/jacoco/jacoco.xml" />
+                    </report>
+                  </target>
+                </configuration>
               </execution>
             </executions>
+            <dependencies>
+              <dependency>
+                <groupId>org.jacoco</groupId>
+                <artifactId>org.jacoco.ant</artifactId>
+                <version>${jacoco.version}</version>
+              </dependency>
+            </dependencies>
           </plugin>
           
           <plugin>
@@ -390,7 +443,6 @@
               </execution>
             </executions>
           </plugin>
-          
           <plugin>
             <groupId>org.eluder.coveralls</groupId>
             <artifactId>coveralls-maven-plugin</artifactId>
