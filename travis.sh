@@ -17,10 +17,7 @@ if [ "$TRAVIS_PULL_REQUEST" != "false" ] && [ -n "${GITHUB_TOKEN}" ] && [ -n "${
     -Dsonar.github.repository=$TRAVIS_REPO_SLUG \
     -Dsonar.github.pullRequest=$TRAVIS_PULL_REQUEST
   set -e
-  pushd .
-  cd itests
   mvn clean verify jacoco:report coveralls:report -Pui -Dit.browser=phantomjs -DrepoToken=$COVERALLS_TOKEN
-  popd
   set +e
 elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "develop" ]; then
 
