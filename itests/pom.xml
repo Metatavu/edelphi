@@ -114,7 +114,6 @@
         <it.browser>chrome</it.browser>
         <it.package>**</it.package>
         <it.tests>**/*IT.java</it.tests>
-        <jacoco.reportPath>${project.basedir}/target/jacoco.exec</jacoco.reportPath>
       </properties>
       
       <dependencies>
@@ -256,40 +255,6 @@
           </plugin>
           
           <plugin>
-            <groupId>org.jacoco</groupId>
-            <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.7.6.201602180812</version>
-            <configuration>
-              <destFile>${jacoco.reportPath}</destFile>
-              <dataFile>${jacoco.reportPath}</dataFile>
-              <outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
-              <classDumpDir>${project.reporting.outputDirectory}/jacoco-it/classes</classDumpDir>
-            </configuration>
-                
-            <executions>
-              <execution>
-                <id>jacoco-agent</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>prepare-agent</goal>
-                </goals>
-                <configuration>
-                  <destFile>${jacoco.reportPath}</destFile>
-                  <propertyName>jacoco.agent.itArgLine</propertyName>
-                </configuration>
-              </execution>
-              <execution>
-                <id>jacoco-report</id>
-                <phase>post-integration-test</phase>
-                <goals>
-                  <goal>dump</goal>
-                  <goal>report</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>   
-          
-          <plugin>
             <groupId>org.codehaus.cargo</groupId>
             <artifactId>cargo-maven2-plugin</artifactId>
             <version>1.6.0</version>
@@ -389,12 +354,6 @@
                 </configuration>
               </execution>
             </executions>
-          </plugin>
-        
-          <plugin>
-            <groupId>org.eluder.coveralls</groupId>
-            <artifactId>coveralls-maven-plugin</artifactId>
-            <version>4.2.0</version>
           </plugin>
         </plugins>
       </build>
