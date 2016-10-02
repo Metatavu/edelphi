@@ -350,7 +350,7 @@
             <version>1.0.2.Final</version>
             <executions>
               <execution>
-                <id>deploy-fni</id>
+                <id>deploy-app</id>
                 <phase>pre-integration-test</phase>
                 <goals>
                   <goal>deploy</goal>
@@ -395,6 +395,15 @@
             <groupId>org.eluder.coveralls</groupId>
             <artifactId>coveralls-maven-plugin</artifactId>
             <version>4.2.0</version>
+            <executions>
+              <execution>
+                <id>coveralls-report</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>
