@@ -323,6 +323,7 @@
                           <sourcefiles encoding="UTF-8">
                             <fileset dir="${project.basedir}/../edelphi/src/main/java" />
                             <fileset dir="${project.basedir}/../edelphi-persistence/src/main/java" />
+                            <fileset dir="${project.basedir}/../edelphi-persistence/target/generated-sources/apt" />
                             <fileset dir="${project.basedir}/../smvcj/src/main/java" />
                           </sourcefiles>
                         </group>
@@ -454,6 +455,10 @@
                 <goals>
                   <goal>report</goal>
                 </goals>
+                <configuration>
+                  <scanForSources>true</scanForSources>
+                  <sourceDirectories>${project.basedir}/../edelphi/src/main/java,${project.basedir}/../edelphi-persistence/src/main/java,${project.basedir}/../edelphi-persistence/target/generated-sources/apt,${project.basedir}/../smvcj/src/main/java</sourceDirectories>
+                </configuration>
               </execution>
             </executions>
           </plugin>
