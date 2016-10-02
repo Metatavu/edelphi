@@ -10,11 +10,24 @@ import fi.metatavu.edelphi.domainmodel.system.SettingKey;
 
 public class SystemUtils {
   
-  public static final String ENV_PRODUCTION = "production";
-  public static final String ENV_DEVELOPMENT = "development";
+  private static final String SYSTEM_ENVIRONMENT = "system.environment";
+  private static final String ENV_PRODUCTION = "production";
+  private static final String ENV_DEVELOPMENT = "development";
+  private static final String ENV_TEST = "test";
+  
+  private SystemUtils() {
+  }
   
   public static boolean isProductionEnvironment() {
-    return ENV_PRODUCTION.equals(getSettingValue("system.environment"));
+    return ENV_PRODUCTION.equals(getSettingValue(SYSTEM_ENVIRONMENT));
+  }
+
+  public static boolean isDevelopmentEnvironment() {
+    return ENV_DEVELOPMENT.equals(getSettingValue(SYSTEM_ENVIRONMENT));
+  }
+  
+  public static boolean isTestEnvironment() {
+    return ENV_TEST.equals(getSettingValue(SYSTEM_ENVIRONMENT));
   }
   
   public static String getSettingValue(String name) {
