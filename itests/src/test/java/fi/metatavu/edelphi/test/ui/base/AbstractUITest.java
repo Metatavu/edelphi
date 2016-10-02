@@ -1,6 +1,7 @@
 package fi.metatavu.edelphi.test.ui.base;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
@@ -12,6 +13,10 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
@@ -43,6 +48,8 @@ import com.google.common.base.Predicate;
 
 public class AbstractUITest {
   
+  private static final long TEST_AUTH_SOURCE_ID = 1l;
+
   private Logger logger = Logger.getLogger(AbstractUITest.class.getName());
   
   private WebDriver webDriver;
@@ -52,6 +59,14 @@ public class AbstractUITest {
   
   public void navigate(String path) {
     webDriver.get(String.format("%s%s", getAppUrl(), path));
+  }
+
+  protected void login(String email) {
+    navigate(String.format("/dologin.json?authSource=%d&username=%s", TEST_AUTH_SOURCE_ID, email));
+  }
+
+  protected void assertLoginScreen() {
+    waitAndAssertText(".errorPageDescriptionContainer", "You need to be logged in to access the requested page.");
   }
   
   protected WebDriver createLocalDriver() {
@@ -71,6 +86,30 @@ public class AbstractUITest {
     return null;
   }
 
+  protected LocalDate toLocalDate(int year, int month, int day) {
+    return LocalDate.of(year, month, day);
+  }
+  
+  protected Date toDate(int year, int month, int day) {
+    return toDate(toLocalDate(year, month, day));
+  }
+  
+  protected Date toDate(ZonedDateTime zonedDateTime) {
+    return Date.from(zonedDateTime.toInstant());
+  }
+  
+  protected Date toDate(OffsetDateTime offsetDateTime) {
+    return Date.from(offsetDateTime.toInstant());
+  }
+  
+  protected Date toDate(LocalDate localDate, ZoneId zoneId) {
+    return Date.from(localDate.atStartOfDay(zoneId).toInstant());
+  }
+  
+  protected Date toDate(LocalDate localDate) {
+    return toDate(localDate, ZoneId.systemDefault());
+  }
+  
   protected WebDriver createChromeDriver() {
     return new ChromeDriver();
   }
@@ -81,7 +120,8 @@ public class AbstractUITest {
   
   protected WebDriver createPhantomJsDriver() {
     DesiredCapabilities desiredCapabilities = DesiredCapabilities.phantomjs();
-    desiredCapabilities.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, ".phantomjs/bin/phantomjs");
+    
+    desiredCapabilities.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, (new File(".phantomjs/bin/phantomjs")).getAbsolutePath());
     desiredCapabilities.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS, new String[] { "--ignore-ssl-errors=true", "--webdriver-loglevel=NONE", "--load-images=false" } );
     PhantomJSDriver driver = new PhantomJSDriver(desiredCapabilities);
     driver.manage().window().setSize(new Dimension(1024, 768));
@@ -168,6 +208,14 @@ public class AbstractUITest {
     new WebDriverWait(getWebDriver(), 60).until(untilPredicate);
   }
   
+  protected void assertNotPresent(final String... selectors) {
+    for (String selector : selectors) {
+      List<WebElement> elements = findElements(selector);
+      assertTrue(String.format("Found %d elements with selector %s", elements.size(), selector), elements.isEmpty());
+    }
+  }
+  
+  
   protected List<WebElement> findElements(String... selectors) {
     List<WebElement> result = new ArrayList<>();
 
@@ -198,7 +246,9 @@ public class AbstractUITest {
   }
   
   protected void takeScreenshot() throws IOException {
-    takeScreenshot(new File("target", UUID.randomUUID().toString() + ".png"));
+    File file = new File("itests/target", UUID.randomUUID().toString() + ".png");
+    assertTrue(file.createNewFile());
+    takeScreenshot(file);
   }
   
   protected void takeScreenshot(File file) throws IOException {
@@ -239,6 +289,20 @@ public class AbstractUITest {
     return id;
   }
   
+  protected void updateUserSubscription(Long userId, String subscriptionLevel, Date subscriptionStarted, Date subscriptionEnds) {
+    String sql =
+       "UPDATE " +
+       "   User " +
+       "SET " +
+       "  subscriptionLevel = ?, " +
+       "  subscriptionStarted = ?, " +
+       "  subscriptionEnds = ? " +
+       "WHERE " +
+       "  id = ? ";
+    
+    executeUpdate(sql, subscriptionLevel, subscriptionStarted, subscriptionEnds, userId);
+  }
+  
   @SuppressWarnings ("squid:S00107")
   private long createResource(String name, String urlName, String description, Long parentFolderId, String type, boolean visible, boolean archived, Date created, Long lastModifierId, Date lastModified) {
     String sql = 
@@ -272,6 +336,25 @@ public class AbstractUITest {
     }
     
     return -1;
+  }
+  
+  private void executeUpdate(String sql, Object... params) {
+    try (Connection connection = getConnection()) {
+      connection.setAutoCommit(true);
+      PreparedStatement statement = connection.prepareStatement(sql);
+      try {
+        for (int i = 0, l = params.length; i < l; i++) {
+          statement.setObject(i + 1, params[i]);
+        }
+
+        statement.execute();
+      } finally {
+        statement.close();
+      }
+    } catch (Exception e) {
+      logger.log(Level.SEVERE, "Failed to execute update", e);
+      fail(e.getMessage());
+    }
   }
   
   protected boolean getCI() {

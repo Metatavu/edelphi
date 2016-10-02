@@ -5,6 +5,7 @@ cache:
   directories:
   - $HOME/.m2
   - itests/.cargo
+  - itests/.phantomjs
   - .sonar
   - sonar-scanner
 addons:

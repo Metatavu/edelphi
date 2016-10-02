@@ -1,0 +1,12 @@
+{
+  "rules": {},
+  "env": {
+    "es6": true,
+    "browser": true,
+    "prototypejs": trure
+  },
+  "globals": {
+    "CONTEXTPATH": false
+  },
+  "extends": "eslint:recommended"
+}

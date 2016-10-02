@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NonUniqueResultException;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
 import fi.metatavu.edelphi.domainmodel.base.ArchivableEntity;
@@ -13,63 +14,69 @@ import fi.metatavu.edelphi.domainmodel.base.ModificationTrackedEntity;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 public class GenericDAO<T> {
-  
+
+  private static final ThreadLocal<EntityManager> THREAD_LOCAL = new ThreadLocal<>();
+
   @SuppressWarnings("unchecked")
   public T findById(Long id) {
-    EntityManager entityManager = getEntityManager();
-    return (T) entityManager.find(getGenericTypeClass(), id);
+    return (T) getEntityManager().find(getGenericTypeClass(), id);
   }
 
   @SuppressWarnings("unchecked")
   public List<T> listAll() {
-    EntityManager entityManager = getEntityManager();
     Class<?> genericTypeClass = getGenericTypeClass();
-    Query query = entityManager.createQuery("select o from " + genericTypeClass.getName() + " o");
+    Query query = getEntityManager().createQuery("select o from " + genericTypeClass.getName() + " o");
     return query.getResultList();
   }
 
   @SuppressWarnings("unchecked")
   public List<T> listAll(int firstResult, int maxResults) {
-    EntityManager entityManager = getEntityManager();
     Class<?> genericTypeClass = getGenericTypeClass();
-    Query query = entityManager.createQuery("select o from " + genericTypeClass.getName() + " o");
+    Query query = getEntityManager().createQuery("select o from " + genericTypeClass.getName() + " o");
     query.setFirstResult(firstResult);
     query.setMaxResults(maxResults);
     return query.getResultList();
   }
   
-  public void archive(ArchivableEntity entity) {
+  public void archive(T entity) {
     archive(entity, null);
   }
   
-  public void archive(ArchivableEntity entity, User user) {
-    EntityManager entityManager = getEntityManager();
-    entity.setArchived(Boolean.TRUE);
+  public void archive(T entity, User user) {
+    if (!(entity instanceof ArchivableEntity)) {
+      throw new PersistenceException("Entity does not implement ArchivableEntity");
+    }
+    
+    ((ArchivableEntity) entity).setArchived(Boolean.TRUE);
     if (entity instanceof ModificationTrackedEntity && user != null) {
       ((ModificationTrackedEntity) entity).setLastModified(new Date());
       ((ModificationTrackedEntity) entity).setLastModifier(user);
     }
-    entityManager.persist(entity);
+    
+    persist(entity);
 }
 
-  public void unarchive(ArchivableEntity entity) {
+  public void unarchive(T entity) {
     unarchive(entity, null);
   }
   
-  public void unarchive(ArchivableEntity entity, User user) {
-    EntityManager entityManager = getEntityManager();
-    entity.setArchived(Boolean.FALSE);
+  public void unarchive(T entity, User user) {
+    if (!(entity instanceof ArchivableEntity)) {
+      throw new PersistenceException("Entity does not implement ArchivableEntity");
+    }
+    
+    ((ArchivableEntity) entity).setArchived(Boolean.FALSE);
     if (entity instanceof ModificationTrackedEntity && user != null) {
       ((ModificationTrackedEntity) entity).setLastModified(new Date());
       ((ModificationTrackedEntity) entity).setLastModifier(user);
     }
-    entityManager.persist(entity);
+    
+    persist(entity);
   }
 
   public Integer count() {
-    EntityManager entityManager = getEntityManager();
     Class<?> genericTypeClass = getGenericTypeClass();
-    Query query = entityManager.createQuery("select count(o) from " + genericTypeClass.getName() + " o");
+    Query query = getEntityManager().createQuery("select count(o) from " + genericTypeClass.getName() + " o");
     return (Integer) query.getSingleResult();
   }
 
@@ -81,11 +88,16 @@ public class GenericDAO<T> {
     getEntityManager().flush();
   }
   
+  public T persist(T entity) {
+    getEntityManager().persist(entity);
+    return entity;
+  }
+  
   protected T getSingleResult(Query query) {
     @SuppressWarnings("unchecked")
     List<T> list = query.getResultList();
     
-    if (list.size() == 0)
+    if (list.isEmpty())
       return null;
     
     if (list.size() == 1)
@@ -93,7 +105,7 @@ public class GenericDAO<T> {
     
     throw new NonUniqueResultException("SingleResult query returned " + list.size() + " elements");
   }
-
+  
   protected EntityManager getEntityManager() {
     return THREAD_LOCAL.get();
   }
@@ -110,5 +122,4 @@ public class GenericDAO<T> {
     return (Class<?>) parameterizedType.getActualTypeArguments()[0];
   }
   
-  private static final ThreadLocal<EntityManager> THREAD_LOCAL = new ThreadLocal<EntityManager>();
 }

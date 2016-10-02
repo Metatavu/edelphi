@@ -7,6 +7,8 @@ import java.util.List;
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -41,6 +43,63 @@ import fi.metatavu.edelphi.domainmodel.base.ModificationTrackedEntity;
 @Inheritance(strategy=InheritanceType.JOINED)
 public class User implements ArchivableEntity, ModificationTrackedEntity {
 
+  @Id
+  @DocumentId
+  @GeneratedValue(strategy=GenerationType.TABLE, generator="User")  
+  @TableGenerator(name="User", initialValue=1, allocationSize=100, table = "hibernate_sequences", pkColumnName = "sequence_name", valueColumnName = "sequence_next_hi_value")
+  private Long id;
+  
+  @Field(index = Index.YES, store = Store.NO)
+  private String firstName;
+
+  @Field(index = Index.YES, store = Store.NO)
+  private String lastName;
+  
+  private String nickname;
+  
+  @ManyToOne
+  private UserEmail defaultEmail;
+
+  @OneToMany (fetch = FetchType.LAZY)
+  @JoinColumn (name="user_id")
+  @IndexedEmbedded
+  private List<UserEmail> emails = new ArrayList<>();
+
+  @NotNull
+  @Column(nullable = false)
+  @Field(index = Index.YES, store = Store.NO)
+  private Boolean archived = Boolean.FALSE;
+
+  @ManyToOne 
+  private User creator;
+  
+  @NotNull
+  @Column (updatable=false, nullable=false)
+  @Temporal (value=TemporalType.TIMESTAMP)
+  private Date created;
+  
+  @ManyToOne  
+  private User lastModifier;
+  
+  @NotNull
+  @Column (nullable=false)
+  @Temporal (value=TemporalType.TIMESTAMP)
+  private Date lastModified;
+
+  @Temporal (value=TemporalType.TIMESTAMP)
+  private Date lastLogin;
+  
+  @Column (nullable=false)
+  @NotNull
+  @Enumerated (EnumType.STRING)
+  private SubscriptionLevel subscriptionLevel;
+
+  @Temporal (value=TemporalType.TIMESTAMP)
+  private Date subscriptionStarted;
+  
+  @Temporal (value=TemporalType.TIMESTAMP)
+  private Date subscriptionEnds;
+  
   /**
    * Returns internal unique id
    * 
@@ -82,34 +141,42 @@ public class User implements ArchivableEntity, ModificationTrackedEntity {
     return defaultEmail;
   }
 
+  @Override
   public void setCreator(User creator) {
     this.creator = creator;
   }
 
+  @Override
   public User getCreator() {
     return creator;
   }
 
+  @Override
   public void setCreated(Date created) {
     this.created = created;
   }
 
+  @Override
   public Date getCreated() {
     return created;
   }
 
+  @Override
   public void setLastModifier(User lastModifier) {
     this.lastModifier = lastModifier;
   }
 
+  @Override
   public User getLastModifier() {
     return lastModifier;
   }
 
+  @Override
   public void setLastModified(Date lastModified) {
     this.lastModified = lastModified;
   }
 
+  @Override
   public Date getLastModified() {
     return lastModified;
   }
@@ -122,10 +189,12 @@ public class User implements ArchivableEntity, ModificationTrackedEntity {
     return lastLogin;
   }
 
+  @Override
   public void setArchived(Boolean archived) {
     this.archived = archived;
   }
 
+  @Override
   public Boolean getArchived() {
     return archived;
   }
@@ -142,10 +211,26 @@ public class User implements ArchivableEntity, ModificationTrackedEntity {
 
   @Transient
   public String getFullName(boolean lastNameFirst, boolean useMailIfNull) {
-    String fn = getFirstName();
-    String ln = getLastName();
-    String name = fn == null ? ln == null ? null : ln : ln == null ? fn : lastNameFirst ? ln + ", " + fn : fn + " " + ln;
-    return name == null && useMailIfNull ? getDefaultEmailAsString() : name; 
+    boolean firstNameBlank = StringUtils.isBlank(firstName);
+    boolean lastNameBlank = StringUtils.isBlank(lastName);
+        
+    if (firstNameBlank && lastNameBlank) {
+      return useMailIfNull ? getDefaultEmailAsString() : null;
+    } else {
+      return printFullName(lastNameFirst, firstNameBlank, lastNameBlank);
+    }
+  }
+
+  private String printFullName(boolean lastNameFirst, boolean firstNameBlank, boolean lastNameBlank) {
+    if (!firstNameBlank && !lastNameBlank) {
+      return lastNameFirst ? String.format("%s, %s", lastName, firstName) : String.format("%s %s", firstName, lastName);
+    }
+    
+    if (!firstNameBlank) {
+      return firstName;
+    }
+    
+    return lastName;
   }
   
   @Transient
@@ -193,51 +278,29 @@ public class User implements ArchivableEntity, ModificationTrackedEntity {
   public List<UserEmail> getEmails() {
     return emails;
   }
-
-  @Id
-  @DocumentId
-  @GeneratedValue(strategy=GenerationType.TABLE, generator="User")  
-  @TableGenerator(name="User", initialValue=1, allocationSize=100, table = "hibernate_sequences", pkColumnName = "sequence_name", valueColumnName = "sequence_next_hi_value")
-  private Long id;
   
-  @Field(index = Index.YES, store = Store.NO)
-  private String firstName;
-
-  @Field(index = Index.YES, store = Store.NO)
-  private String lastName;
+  public SubscriptionLevel getSubscriptionLevel() {
+    return subscriptionLevel;
+  }
   
-  private String nickname;
+  public void setSubscriptionLevel(SubscriptionLevel subscriptionLevel) {
+    this.subscriptionLevel = subscriptionLevel;
+  }
   
-  @ManyToOne
-  private UserEmail defaultEmail;
-
-  @OneToMany (fetch = FetchType.LAZY)
-  @JoinColumn (name="user_id")
-  @IndexedEmbedded
-  private List<UserEmail> emails = new ArrayList<UserEmail>();
-
-  @NotNull
-  @Column(nullable = false)
-  @Field(index = Index.YES, store = Store.NO)
-  private Boolean archived = Boolean.FALSE;
-
-  @ManyToOne 
-  private User creator;
+  public Date getSubscriptionStarted() {
+    return subscriptionStarted;
+  }
   
-  @NotNull
-  @Column (updatable=false, nullable=false)
-  @Temporal (value=TemporalType.TIMESTAMP)
-  private Date created;
+  public void setSubscriptionStarted(Date subscriptionStarted) {
+    this.subscriptionStarted = subscriptionStarted;
+  }
   
-  @ManyToOne  
-  private User lastModifier;
+  public Date getSubscriptionEnds() {
+    return subscriptionEnds;
+  }
   
-  @NotNull
-  @Column (nullable=false)
-  @Temporal (value=TemporalType.TIMESTAMP)
-  private Date lastModified;
-
-  @Temporal (value=TemporalType.TIMESTAMP)
-  private Date lastLogin;
-
+  public void setSubscriptionEnds(Date subscriptionEnds) {
+    this.subscriptionEnds = subscriptionEnds;
+  }
+  
 }
