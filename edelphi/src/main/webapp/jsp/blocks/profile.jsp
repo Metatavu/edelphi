@@ -112,30 +112,30 @@
         </p>
       </c:when>
       <c:otherwise>
-       <p>
+       <p class="profileSubscriptionLeveText">
          <fmt:message key="profile.block.profileSubscriptionLeveText">
            <fmt:param><fmt:message key="generic.subscriptionLevels.${subscriptionLevelSettings.level}"/></fmt:param>
          </fmt:message>
        </p>
-       <p>
+       <p class="profileSubscriptionFeaturesLabel">
          <fmt:message key="profile.block.profileSubscriptionFeaturesLabel"/>
        </p>
        <p>
          <ul>
-           <li>
+           <li class="profileSubscriptionPanels">
              <fmt:message key="profile.block.profileSubscriptionPanels">
                <fmt:param>${subscriptionLevelSettings.panels}</fmt:param>
                <fmt:param value="${activePanelCount}"/>
              </fmt:message>
            </li>
-           <li>
+           <li class="profileSubscriptionPanelists">
              <fmt:message key="profile.block.profileSubscriptionPanelists">
                <fmt:param>${subscriptionLevelSettings.panelists}</fmt:param>
              </fmt:message>
            </li>
          </ul>
        </p>
-       <p>
+       <p class="profileSubscriptionEnds">
          <fmt:message key="profile.block.profileSubscriptionEnds">
            <fmt:param value="${subscriptionEnds}"/>
          </fmt:message>
@@ -144,8 +144,8 @@
     </c:choose>
 
     <p>
-      <span><fmt:message key="profile.block.profileChangeSubscriptionText"/></span>
-      <a href="#"><fmt:message key="profile.block.profileChangeSubscriptionLink"/></a>
+      <span class="profileChangeSubscriptionText"><fmt:message key="profile.block.profileChangeSubscriptionText"/></span>
+      <a class="profileChangeSubscriptionLink" href="#"><fmt:message key="profile.block.profileChangeSubscriptionLink"/></a>
     </p>
    
   </div>
