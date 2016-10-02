@@ -19,41 +19,54 @@ import fi.metatavu.edelphi.utils.RequestUtils;
 
 public abstract class PageController implements fi.metatavu.edelphi.smvcj.controllers.PageController, ActionedController {
 
-  public void authorize(RequestContext requestContext) throws LoginRequiredException, AccessDeniedException {
+  private DelfoiActionName accessActionName = null;
+  private DelfoiActionScope accessActionScope;
+  
+  @Override
+  public void authorize(RequestContext requestContext) {
     String actionAccessName = getAccessActionName() == null ? null : getAccessActionName().toString();
     DelfoiActionScope actionAccessScope = getAccessActionScope();
     
     if (actionAccessName != null) {
       switch(actionAccessScope) {
         case DELFOI:
-          Delfoi delfoi = RequestUtils.getDelfoi(requestContext);
-          if (delfoi == null)
-            throw new AccessDeniedException(requestContext.getRequest().getLocale());
-          
-          if (!ActionUtils.hasDelfoiAccess(requestContext, actionAccessName)) {
-            if (!requestContext.isLoggedIn()) {
-              throw new LoginRequiredException(RequestUtils.getCurrentUrl(requestContext.getRequest(), true), "DELFOI", delfoi.getId() + "");
-            }
-            else {
-              throw new AccessDeniedException(requestContext.getRequest().getLocale());
-            }
-          }
+          authorizeDelfoi(requestContext, actionAccessName);
         break;
-        
         case PANEL:
-          Panel panel = RequestUtils.getPanel(requestContext);
-          if (panel == null)
-            throw new AccessDeniedException(requestContext.getRequest().getLocale());
-            
-          if (!ActionUtils.hasPanelAccess(requestContext, actionAccessName)) {
-            if (!requestContext.isLoggedIn()) {
-              throw new LoginRequiredException(RequestUtils.getCurrentUrl(requestContext.getRequest(), true), "PANEL", panel.getId() + "");
-            }
-            else {
-              throw new AccessDeniedException(requestContext.getRequest().getLocale());
-            }
-          }
+          authorizePanel(requestContext, actionAccessName);
         break;
+        default:
+        break;
+      }
+    }
+  }
+
+  private void authorizePanel(RequestContext requestContext, String actionAccessName) {
+    Panel panel = RequestUtils.getPanel(requestContext);
+    if (panel == null)
+      throw new AccessDeniedException(requestContext.getRequest().getLocale());
+      
+    if (!ActionUtils.hasPanelAccess(requestContext, actionAccessName)) {
+      if (!requestContext.isLoggedIn()) {
+        throw new LoginRequiredException(RequestUtils.getCurrentUrl(requestContext.getRequest(), true), "PANEL", panel.getId() + "");
+      }
+      else {
+        throw new AccessDeniedException(requestContext.getRequest().getLocale());
+      }
+    }
+  }
+
+  private void authorizeDelfoi(RequestContext requestContext, String actionAccessName) {
+    Delfoi delfoi = RequestUtils.getDelfoi(requestContext);
+    if (delfoi == null)
+      throw new AccessDeniedException(requestContext.getRequest().getLocale());
+    
+    if (!ActionUtils.hasDelfoiAccess(requestContext, actionAccessName)) {
+      if (!requestContext.isLoggedIn()) {
+        throw new LoginRequiredException(RequestUtils.getCurrentUrl(requestContext.getRequest(), true), "DELFOI", delfoi.getId() + "");
+      }
+      else {
+        throw new AccessDeniedException(requestContext.getRequest().getLocale());
       }
     }
   }
@@ -62,7 +75,7 @@ public abstract class PageController implements fi.metatavu.edelphi.smvcj.contro
     if (panel == null)
       throw new IllegalStateException("PageController panel action without panel");
       
-    if (!ActionUtils.hasPanelAccess(requestContext, actionAccessName.toString())) {
+    if (!ActionUtils.hasPanelAccess(requestContext, actionAccessName)) {
       throw new AccessDeniedException(requestContext.getRequest().getLocale());
     }
   }
@@ -71,11 +84,12 @@ public abstract class PageController implements fi.metatavu.edelphi.smvcj.contro
     if (delfoi == null)
       throw new IllegalStateException("PageController Delfoi action without Delfoi");
     
-    if (!ActionUtils.hasDelfoiAccess(requestContext, actionAccessName.toString())) {
+    if (!ActionUtils.hasDelfoiAccess(requestContext, actionAccessName)) {
       throw new AccessDeniedException(requestContext.getRequest().getLocale());
     }
   }
   
+  @Override
   public void process(PageRequestContext pageRequestContext) {
     List<SmvcMessage> messages = RequestUtils.retrieveRedirectMessages(pageRequestContext);
     if (messages != null) {
@@ -89,7 +103,7 @@ public abstract class PageController implements fi.metatavu.edelphi.smvcj.contro
     @SuppressWarnings("unchecked")
     Map<String, String> jsData = (Map<String, String>) pageRequestContext.getRequest().getAttribute("jsData");
     if (jsData == null) {
-      jsData = new HashMap<String, String>();
+      jsData = new HashMap<>();
       pageRequestContext.getRequest().setAttribute("jsData", jsData);
     }
     
@@ -101,14 +115,14 @@ public abstract class PageController implements fi.metatavu.edelphi.smvcj.contro
     this.accessActionScope = actionScope;
   }
   
+  @Override
   public DelfoiActionName getAccessActionName() {
     return accessActionName;
   }
   
+  @Override
   public DelfoiActionScope getAccessActionScope() {
     return accessActionScope;
   }
   
-  private DelfoiActionName accessActionName = null;
-  private DelfoiActionScope accessActionScope;
 }
