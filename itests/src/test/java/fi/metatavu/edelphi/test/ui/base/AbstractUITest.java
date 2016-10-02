@@ -43,6 +43,8 @@ import com.google.common.base.Predicate;
 
 public class AbstractUITest {
   
+  private static final long TEST_AUTH_SOURCE_ID = 1l;
+
   private Logger logger = Logger.getLogger(AbstractUITest.class.getName());
   
   private WebDriver webDriver;
@@ -52,6 +54,14 @@ public class AbstractUITest {
   
   public void navigate(String path) {
     webDriver.get(String.format("%s%s", getAppUrl(), path));
+  }
+
+  protected void login(String email) {
+    navigate(String.format("/dologin.json?authSource=%d&username=%s", TEST_AUTH_SOURCE_ID, email));
+  }
+
+  protected void assertLoginScreen() {
+    waitAndAssertText(".errorPageDescriptionContainer", "You need to be logged in to access the requested page.");
   }
   
   protected WebDriver createLocalDriver() {
