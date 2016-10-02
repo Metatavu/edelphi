@@ -89,6 +89,7 @@ public class User implements ArchivableEntity, ModificationTrackedEntity {
   @Temporal (value=TemporalType.TIMESTAMP)
   private Date lastLogin;
   
+  @Column (nullable=false)
   @NotNull
   @Enumerated (EnumType.STRING)
   private SubscriptionLevel subscriptionLevel;
