@@ -22,82 +22,6 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 
 @Entity
 public class QueryPageTemplate implements ArchivableEntity, ModificationTrackedEntity{
-  
-  public Long getId() {
-    return id;
-  }
-  
-  public LocalizedEntry getName() {
-    return name;
-  }
-  
-  public void setName(LocalizedEntry name) {
-    this.name = name;
-  }
-  
-  public String getIconName() {
-    return iconName;
-  }
-  
-  public void setIconName(String iconName) {
-    this.iconName = iconName;
-  }
-  
-  public QueryPageType getPageType() {
-    return pageType;
-  }
-  
-  public void setPageType(QueryPageType pageType) {
-    this.pageType = pageType;
-  }
-  
-  public void setCreated(Date created) {
-    this.created = created;
-  }
-
-  public Date getCreated() {
-    return created;
-  }
-
-  public void setCreator(User creator) {
-    this.creator = creator;
-  }
-
-  public User getCreator() {
-    return creator;
-  }
-
-  public void setLastModified(Date lastModified) {
-    this.lastModified = lastModified;
-  }
-
-  public Date getLastModified() {
-    return lastModified;
-  }
-
-  public void setLastModifier(User lastModifier) {
-    this.lastModifier = lastModifier;
-  }
-
-  public User getLastModifier() {
-    return lastModifier;
-  }
-
-  public void setArchived(Boolean archived) {
-    this.archived = archived;
-  }
-
-  public Boolean getArchived() {
-    return archived;
-  }
-
-  public LocalizedEntry getDescription() {
-    return description;
-  }
-
-  public void setDescription(LocalizedEntry description) {
-    this.description = description;
-  }
 
   @Id
   @GeneratedValue(strategy = GenerationType.TABLE, generator = "QueryPageTemplate")
@@ -138,4 +62,90 @@ public class QueryPageTemplate implements ArchivableEntity, ModificationTrackedE
   @Column (nullable=false)
   @Temporal (value=TemporalType.TIMESTAMP)
   private Date lastModified;
+  
+  public Long getId() {
+    return id;
+  }
+  
+  public LocalizedEntry getName() {
+    return name;
+  }
+  
+  public void setName(LocalizedEntry name) {
+    this.name = name;
+  }
+  
+  public String getIconName() {
+    return iconName;
+  }
+  
+  public void setIconName(String iconName) {
+    this.iconName = iconName;
+  }
+  
+  public QueryPageType getPageType() {
+    return pageType;
+  }
+  
+  public void setPageType(QueryPageType pageType) {
+    this.pageType = pageType;
+  }
+  
+  @Override
+  public void setCreated(Date created) {
+    this.created = created;
+  }
+
+  @Override
+  public Date getCreated() {
+    return created;
+  }
+
+  @Override
+  public void setCreator(User creator) {
+    this.creator = creator;
+  }
+
+  @Override
+  public User getCreator() {
+    return creator;
+  }
+
+  @Override
+  public void setLastModified(Date lastModified) {
+    this.lastModified = lastModified;
+  }
+
+  @Override
+  public Date getLastModified() {
+    return lastModified;
+  }
+
+  @Override
+  public void setLastModifier(User lastModifier) {
+    this.lastModifier = lastModifier;
+  }
+
+  @Override
+  public User getLastModifier() {
+    return lastModifier;
+  }
+
+  @Override
+  public void setArchived(Boolean archived) {
+    this.archived = archived;
+  }
+
+  @Override
+  public Boolean getArchived() {
+    return archived;
+  }
+
+  public LocalizedEntry getDescription() {
+    return description;
+  }
+
+  public void setDescription(LocalizedEntry description) {
+    this.description = description;
+  }
 }
