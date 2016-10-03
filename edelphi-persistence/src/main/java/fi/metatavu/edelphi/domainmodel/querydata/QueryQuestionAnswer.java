@@ -17,6 +17,17 @@ import fi.metatavu.edelphi.domainmodel.querymeta.QueryField;
 @Cacheable (true)
 public class QueryQuestionAnswer {
 
+  @Id 
+  @GeneratedValue(strategy=GenerationType.TABLE, generator="QueryQuestionAnswer")  
+  @TableGenerator(name="QueryQuestionAnswer", initialValue=1, allocationSize=100, table = "hibernate_sequences", pkColumnName = "sequence_name", valueColumnName = "sequence_next_hi_value")
+  private Long id;
+  
+  @ManyToOne
+  private QueryReply queryReply;
+  
+  @ManyToOne
+  private QueryField queryField;
+
   /**
    * Returns internal unique id
    * 
@@ -41,15 +52,4 @@ public class QueryQuestionAnswer {
   public QueryField getQueryField() {
     return queryField;
   }
-
-  @Id 
-  @GeneratedValue(strategy=GenerationType.TABLE, generator="QueryQuestionAnswer")  
-  @TableGenerator(name="QueryQuestionAnswer", initialValue=1, allocationSize=100, table = "hibernate_sequences", pkColumnName = "sequence_name", valueColumnName = "sequence_next_hi_value")
-  private Long id;
-  
-  @ManyToOne
-  private QueryReply queryReply;
-  
-  @ManyToOne
-  private QueryField queryField;
 }
