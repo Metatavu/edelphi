@@ -1,6 +1,9 @@
 package fi.metatavu.edelphi.domainmodel.querydata;
 
+import java.util.Date;
+
 import javax.persistence.Cacheable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -9,6 +12,8 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.TableGenerator;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryField;
 
@@ -27,6 +32,14 @@ public class QueryQuestionAnswer {
   
   @ManyToOne
   private QueryField queryField;
+  
+  @Column (nullable = false)
+  @Temporal (TemporalType.TIMESTAMP)
+  private Date created;
+  
+  @Column (nullable = false)
+  @Temporal (TemporalType.TIMESTAMP)
+  private Date lastModified;
 
   /**
    * Returns internal unique id
@@ -52,4 +65,21 @@ public class QueryQuestionAnswer {
   public QueryField getQueryField() {
     return queryField;
   }
+  
+  public Date getCreated() {
+    return created;
+  }
+  
+  public void setCreated(Date created) {
+    this.created = created;
+  }
+  
+  public Date getLastModified() {
+    return lastModified;
+  }
+  
+  public void setLastModified(Date lastModified) {
+    this.lastModified = lastModified;
+  }
+  
 }
