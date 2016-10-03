@@ -115,7 +115,7 @@ public class QueryQuestionMultiOptionAnswerDAO extends GenericDAO<QueryQuestionM
     TypedQuery<Tuple> q = entityManager.createQuery(criteria);
     List<Tuple> resultList = q.getResultList();
 
-    Map<Long, Long> resultMap = new HashMap<Long, Long>();
+    Map<Long, Long> resultMap = new HashMap<>();
 
     for (Tuple optionAnswer : resultList) {
       resultMap.put(optionAnswer.get(0, Long.class), optionAnswer.get(1, Long.class));

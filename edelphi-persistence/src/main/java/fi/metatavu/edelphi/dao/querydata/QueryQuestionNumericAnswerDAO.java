@@ -110,7 +110,7 @@ public class QueryQuestionNumericAnswerDAO extends GenericDAO<QueryQuestionNumer
   // TOOD: This is not a DAO method
   public List<Double> listAnswers(QueryField queryField) {
     List<QueryQuestionNumericAnswer> listByQueryField = listByQueryField(queryField);
-    List<Double> results = new ArrayList<Double>();
+    List<Double> results = new ArrayList<>();
     
     for (QueryQuestionNumericAnswer answer : listByQueryField) {
       results.add(answer.getData());
