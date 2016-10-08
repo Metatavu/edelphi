@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ejb.Stateful;
 import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
@@ -22,7 +21,6 @@ import javax.websocket.server.ServerEndpoint;
 import org.apache.commons.io.IOUtils;
 
 @ServerEndpoint ("/ws/socket/{role}")
-@Stateful
 public class AnswerWebSocket {
   
   private static final Logger logger = Logger.getLogger(AnswerWebSocket.class.getName());
@@ -49,15 +47,6 @@ public class AnswerWebSocket {
     } catch (IOException e) {
       logger.log(Level.SEVERE, "Failed to read message", e);
     }
-    
-    System.out.println(message);
-    
-//    ObjectMapper objectMapper = new ObjectMapper();
-//    try {
-//      objectMapper.readValue(messageReader, new TypeReference<Map<String, String>>() { });
-//    } catch (IOException e) {
-//      logger.log(Level.SEVERE, "Failed to unmarshal message", e);
-//    }
     
     for (Entry<String, Session> sessionEntry : liveSessions.entrySet()) {
       if (!sessionEntry.getKey().equals(session.getId())) {

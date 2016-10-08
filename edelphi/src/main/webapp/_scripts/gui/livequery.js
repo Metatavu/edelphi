@@ -1,90 +1,189 @@
 (function() {
   'use strict';
   
+  $.widget("custom.bubbleGrid", {
+    
+    options: {
+      columns: 7,
+      rows: 7,
+      marginX: 50,
+      marginY: 50,
+      labelX: '',
+      labelY: '',
+      labelMargin: 10,
+      xTickLabels: null,
+      yTickLabels: null,
+      tickMarginY: 10,
+      tickMarginX: 10
+    },
+    
+    _allocateArray: function (size, value) {
+      var result = [];
+      
+      for (var i = 0; i < size; i++) {
+        result.push(value);
+      }
+      
+      return result;
+    },
+    
+    _create : function() {
+      this.element.addClass('bubbleGrid');
+      
+      this._bubbleSpaceX = (this.element.outerWidth() - (this.options.marginX * 2)) / (this.options.columns - 1); 
+      this._bubbleSpaceY = (this.element.outerHeight() - (this.options.marginY * 2)) / (this.options.rows - 1);
+      this._createBubbles();
+      this._createTickLabels();
+      
+      var labelX = $('<label>')
+        .css({
+          'position': 'absolute',
+          'text-align': 'center'
+        })
+        .text(this.options.labelX)
+        .addClass('axisLabel labelX')
+        .appendTo(this.element);
+      
+      labelX
+        .css({
+          'top': this.options.labelMargin,
+          'left': ((this.element.width() / 2) - (labelX.width() / 2))
+        });
+      
+      var labelY = $('<label>')
+        .css({
+          'position': 'absolute',
+          'transform': 'rotate(270deg)'
+        })
+        .text(this.options.labelY)
+        .addClass('axisLabel labelY')
+        .appendTo(this.element);
+      
+      labelY
+        .css({
+          'left': (-labelX.width() / 2) + this.options.labelMargin,
+          'top': (this.element.height() / 2) - (labelX.height() / 2)
+        });
+    },
+    
+    bubbleSize: function (x, y, value) {
+      $(this._bubbles[x][y]).css({
+        'padding': value||1,
+        'margin-left': -value||1,
+        'margin-top': -value||1
+      });
+    },
+    
+    _createBubbles: function () {
+      var colorMulX = 255 / this.options.rows;
+      var colorMulY = 255 / this.options.columns;
+      
+      this._bubbles = this._allocateArray(this.options.column + 1);
+      for (var x = 0; x < this.options.columns; x++) {
+        this._bubbles[x] = this._allocateArray(this.options.rows + 1);
+        for (var y = 0; y < this.options.columns; y++) {
+          this._bubbles[x][y] = $('<div>')
+            .css({
+              top: (y * this._bubbleSpaceY) + this.options.marginY,
+              left: (x * this._bubbleSpaceX) + this.options.marginX,
+              background: 'rgb(' + [Math.round(x * colorMulX), 0, Math.round(y * colorMulY)].join(',') + ')'
+            })
+            .addClass('bubble')
+            .appendTo(this.element);
+        }        
+      }
+    },
+    
+    _createTickLabels: function () {
+      if (this.options.xTickLabels && this.options.xTickLabels.length == this.options.columns) {
+        for (var x = 0; x < this.options.columns; x++) {
+          var tickLabelX = $('<label>')
+            .css({
+              'position': 'absolute',
+              'text-align': 'center'
+            })
+            .text(this.options.xTickLabels[x])
+            .addClass('tickLabel tickLabelX')
+            .appendTo(this.element);
+          
+          tickLabelX.css({
+            bottom: this.options.tickMarginY,
+            left: ((x * this._bubbleSpaceX) + this.options.marginX) - (tickLabelX.width() / 2)
+          })
+        }
+      }
+      
+      if (this.options.yTickLabels && this.options.yTickLabels.length == this.options.rows) {
+        for (var y = 0; y < this.options.rows; y++) {
+          var tickLabelY = $('<label>')
+            .css({
+              'position': 'absolute',
+              'text-align': 'center'
+            })
+            .text(this.options.xTickLabels[y])
+            .addClass('tickLabel tickLabelY')
+            .appendTo(this.element);
+          
+          tickLabelY.css({
+            right: this.options.tickMarginX,
+            top: ((y * this._bubbleSpaceY) + this.options.marginY) - (tickLabelY.height() / 2)
+          })
+        }
+      }
+    }
+    
+  });
+  
   $.widget("custom.liveQuery", {
+    
+    options: {
+      columns: 7,
+      rows: 7,
+      valueSize: 15
+    },
+    
     _create : function() {
       this._pageData = JSON.parse( $(this.element).attr('data-page-data') );
       $(this.element).removeAttr('data-page-data');
       $(this.element).attr('id', 'queryPage-' + this._pageData.queryPageId);
       
+      $('<h3>')
+        .text(this._pageData.pageTitle)
+        .appendTo(this.element);
+      
+      $('<div>')
+        .appendTo(this.element)
+        .bubbleGrid({
+          labelX: this._pageData.xLabel,
+          labelY: this._pageData.yLabel,
+          xTickLabels: this._pageData.xTickLabels,
+          yTickLabels: this._pageData.yTickLabels
+        });
+
       this._values = this._pageData.values;
-      this._layout = {
-        showlegend: false,
-        xaxis: { 
-          title: this._pageData.xLabel,
-          titlefont: {
-            family: 'PT Sans",Arial,sans-serif',
-            size: 15,
-            color: '#df4d1c'
-          },
-          range: [0, 6]
-        },
-        yaxis: { 
-          title: this._pageData.yLabel,
-          titlefont: {
-            family: 'PT Sans",Arial,sans-serif',
-            size: 15,
-            color: '#df4d1c'
-          },
-          range: [0, 6] 
-        }
-      };
-      
-      this._config = {
-        staticPlot: true,
-        scrollZoom: true,
-        showTips: false,
-        editable: false,
-        displayModeBar: false,
-        displaylogo: false,
-        autosizable: false
-      };
-      
-      this._traces = this._createTraces();
-      Plotly.newPlot(this.element[0], this._traces, this._layout, this._config);
+      this._refreshValues();
     },
     
     updateValues: function (replyId, values) {
       this._values[replyId] = values;
-      this._traces = this._createTraces();
-      Plotly.newPlot(this.element[0], this._traces, this._layout);
+      this._refreshValues();
     },
     
-    _createTraces: function () {
-      var flatten = this._flattenValues();
+    _refreshValues: function () {
+      this._flatValue = this._flattenValues();
       
-      var traces = [];
-      
-      for (var x = 0; x < flatten.length; x++) {
-        var xValues = new Array(7).fill(this._pageData.xTickLabels[x]);
-        var yValues = this._pageData.yTickLabels;
-        var sizes = new Array(7).fill(0);
-        
-        for (var y = 0; y < flatten[x].length; y++) {
-          sizes[y] = flatten[x][y] * 20;
+      for (var x = 0; x < this.options.rows; x++) {
+        for (var y = 0; y < this.options.columns; y++) {
+          this.element.find('.bubbleGrid').bubbleGrid('bubbleSize', x, y, this._flatValue[x][y] * this.options.valueSize)
         }
-        
-        var trace = {
-          x: xValues,
-          y: yValues,
-          mode: 'markers',
-          marker: {
-            size: sizes
-          },
-          type: "scatter"
-        };
-        
-        traces.push(trace);
       }
-      
-      return traces;
     },
     
     _flattenValues: function () {
-      var result = new Array(7);
+      var result = this._allocateArray(7);
       
       for (var x = 0; x < 7; x++) {
-        result[x] = new Array(7);
+        result[x] = this._allocateArray(7);
         for (var y = 0; y < 7; y++) {
           result[x][y] = 0;;
         }        
@@ -97,7 +196,18 @@
       });
       
       return result;
+    },
+    
+    _allocateArray: function (size) {
+      var result = [];
+      
+      for (var i = 0; i < size; i++) {
+        result.push(null);
+      }
+      
+      return result;
     }
+    
   });
   
   $.widget("custom.liveReport", {
@@ -112,65 +222,6 @@
     
     _createCharts: function () {
       $('.query').liveQuery();
-    },
-    
-    _createQuery1Charts: function () {
-      
-      var sizes = [];
-      
-      for (var x = -3; x < 3; x++) {
-        for (var y = -3; y < 3; y++) {
-          sizes.push(x + y + 10 * 10);
-        }        
-      }
-      
-      var trace1 = {
-          x: [-3, -2, -1, 0, 1, 2, 3],
-          y: [-3, -2, -1, 0, 1, 2, 3],
-          mode: 'markers',
-          marker: {
-//            color: ["hsl(0,100,40)", "hsl(33,100,40)", "hsl(66,100,40)", "hsl(99,100,40)"],
-            size: sizes
-//            opacity: [0.6, 0.7, 0.8, 0.9]
-          },
-          type: "scatter"
-        };
-
-        var data = [trace1];
-
-        var layout = {
-          showlegend: false,
-          xaxis: { range: [-3, 3] },
-          yaxis: { range: [-3, 3] }
-        };
-        
-        var config = {
-          staticPlot: true,
-          scrollZoom: true,
-          showTips: false,
-          editable: false,
-          displayModeBar: false,
-          displaylogo: false,
-          autosizable: false
-        };
-
-        Plotly.newPlot($('#query-1 .main-chart')[0], data, layout, config);
-        /**
-        
-        setInterval($.proxy(function() {
-          trace1.marker.size[Math.round(Math.random() * trace1.marker.size.length)] += (Math.random() * 2) * 10;
-          console.log(trace1.marker.size);
-          for (var i = 0, l = trace1.x.length; i < l; i++) {
-            trace1.x[i] += (Math.random() * 2) - 1;
-          }
-          
-          for (var i = 0, l = trace1.y.length; i < l; i++) {
-            trace1.y[i] += (Math.random() * 2) - 1;
-          }
-          Plotly.update($('#query-1 .main-chart')[0], data, layout);
-        }, this), 300)
-          **/
-      
     },
     
     _onWebSocketMessage: function (message) {

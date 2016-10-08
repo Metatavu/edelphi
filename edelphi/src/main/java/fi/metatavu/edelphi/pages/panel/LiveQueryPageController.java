@@ -115,18 +115,7 @@ public class LiveQueryPageController extends PanelPageController {
     List<QueryReply> queryReplies = ReportUtils.getQueryReplies(queryPage, reportContext);
     for (QueryReply queryReply : queryReplies) {
       Integer[] replyValues = new Integer[] {0, 0};
-//      
-//      Double[][] replyValues = new Double[maxX][];
-//      for (int x = 0; x < maxX; x++) {
-//        replyValues[x] = new Double[maxY];
-//      }
-//      
-//      for (int x = 0; x < replyValues.length; x++) {
-//        for (int y = 0; y < replyValues[x].length; y++) {
-//          replyValues[x][y] = 0d;
-//        }
-//      }
-//      
+
       QueryQuestionOptionAnswer answerX = queryQuestionOptionAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryFieldX);
       QueryQuestionOptionAnswer answerY = queryQuestionOptionAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryFieldY);
 
@@ -135,12 +124,9 @@ public class LiveQueryPageController extends PanelPageController {
         int y = NumberUtils.createInteger(answerY.getOption().getValue());
         replyValues[0] = x;
         replyValues[1] = y;
-        
-        
-        // replyValues[x][y] += replyValues[x][y] + 1;
+        values.put(queryReply.getId(), replyValues);
       }
       
-      values.put(queryReply.getId(), replyValues);
     }
 
     QueryPageSettingKey queryPageSettingKey = queryPageSettingKeyDAO.findByName("scale2d.label.x");
@@ -150,7 +136,7 @@ public class LiveQueryPageController extends PanelPageController {
     queryPageSetting = queryPageSettingDAO.findByKeyAndQueryPage(queryPageSettingKey, queryPage);
     String yLabel = queryPageSetting == null ? null : queryPageSetting.getValue();
 
-    return new PageData(queryPage.getId(), xLabel, yLabel, values, xTickLabels.toArray(new String[0]), yTickLabels.toArray(new String[0]));
+    return new PageData(queryPage.getTitle(), queryPage.getId(), xLabel, yLabel, values, xTickLabels.toArray(new String[0]), yTickLabels.toArray(new String[0]));
   }
 
   private String getFieldName(String axis) {
@@ -159,6 +145,7 @@ public class LiveQueryPageController extends PanelPageController {
 
   public class PageData {
 
+    private String pageTitle;
     private Long queryPageId;
     private String xLabel;
     private String yLabel;
@@ -166,14 +153,19 @@ public class LiveQueryPageController extends PanelPageController {
     private String[] xTickLabels;
     private String[] yTickLabels;
 
-    public PageData(Long queryPageId, String xLabel, String yLabel, Map<Long, Integer[]> values, String[] xTickLabels, String[] yTickLabels) {
+    public PageData(String pageTitle, Long queryPageId, String xLabel, String yLabel, Map<Long, Integer[]> values, String[] xTickLabels, String[] yTickLabels) {
       super();
+      this.pageTitle = pageTitle;
       this.queryPageId = queryPageId;
       this.xLabel = xLabel;
       this.yLabel = yLabel;
       this.values = values;
       this.xTickLabels = xTickLabels;
       this.yTickLabels = yTickLabels;
+    }
+    
+    public String getPageTitle() {
+      return pageTitle;
     }
     
     public Long getQueryPageId() {

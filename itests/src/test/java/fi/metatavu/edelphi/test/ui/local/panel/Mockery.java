@@ -29,7 +29,7 @@ public class Mockery {
   }
   
   private static void startThem(int userFrom, int userTo) {
-    for (int i = 1, l = 10; i < l; i++) {
+    for (int i = 1, l = 20; i < l; i++) {
       RunMock runMock = new RunMock(i);
       
       new Thread(runMock).start();
