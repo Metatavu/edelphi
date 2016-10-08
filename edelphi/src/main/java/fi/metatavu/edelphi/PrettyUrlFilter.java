@@ -21,10 +21,12 @@ public class PrettyUrlFilter implements Filter {
     if (ctxPath.length() > 1) {
       uri = uri.substring(ctxPath.length());
     }
+    
     if (uri.startsWith("/_") || uri.equals("/robots.txt")) {
       filterChain.doFilter(request, response);
-    }
-    else {
+    } else if (uri.startsWith("/ws")) {
+      filterChain.doFilter(request, response);
+    } else {
       request.getRequestDispatcher("/_app" + uri).forward(request, response);
     }
   }

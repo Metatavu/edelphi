@@ -533,14 +533,32 @@ Scale2DQueryPageController = Class.create(QueryPageController, {
       this._liveReportController.draw();
     }
   },
+  
+  _dispatchValue: function() {
+    var queryPageId = $$('input[name="queryPageId"]')[0].getValue();
+    var replyId = $$('input[name="queryReplyId"]')[0].getValue();
+    var queryPageType = $$('input[name="queryPageType"]')[0].getValue();
+    
+    $(document).fire("ws:dispatchMessage", {
+      'action': 'queryQuestionValuesChanged',
+      'values': [this._value1, this._value2],
+      'queryPageId': queryPageId,
+      'replyId': replyId,
+      'pageType': queryPageType,
+    });
+  },
+  
   _onSlider1ValueChange: function (event) {
     this._value1 = event.value;
     this._updateReport();
+    this._dispatchValue();
   },
   _onSlider2ValueChange: function (event) {
     this._value2 = event.value;
     this._updateReport();
+    this._dispatchValue();
   },
+  
   _onRadioList1ValueChange: function (event) {
     this._value1 = event.value;
     this._updateReport();

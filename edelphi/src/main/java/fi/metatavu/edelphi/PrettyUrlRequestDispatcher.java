@@ -6,6 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
+
 import fi.metatavu.edelphi.smvcj.controllers.RequestController;
 import fi.metatavu.edelphi.smvcj.controllers.RequestControllerMapper;
 import fi.metatavu.edelphi.smvcj.dispatcher.RequestDispatchContext;
@@ -43,6 +45,12 @@ public class PrettyUrlRequestDispatcher implements RequestDispatcher {
 
     String uri = request.getRequestURI();
     String path = uri.substring(request.getContextPath().length() + 1);
+    boolean live = false;
+    if (path.endsWith("/~live")) {
+      live = true;
+      path = StringUtils.removeEnd(path, "/~live");
+    }
+    
     StringTokenizer tokenizer = new StringTokenizer(path, "/");
     int tokenCount = tokenizer.countTokens();
     if (tokenCount <= 1) {
@@ -97,7 +105,12 @@ public class PrettyUrlRequestDispatcher implements RequestDispatcher {
               break;
               case QUERY:
                 parameterHandler.addParameter("queryId", resource.getId().toString());
-                requestController = RequestControllerMapper.getRequestController(QUERY_PAGE);
+                
+                if (live) {
+                  requestController = RequestControllerMapper.getRequestController(LIVE_QUERY_PAGE);
+                } else {
+                  requestController = RequestControllerMapper.getRequestController(QUERY_PAGE);
+                }
               break;
               default:
               break;
@@ -112,6 +125,7 @@ public class PrettyUrlRequestDispatcher implements RequestDispatcher {
   private static final String INDEX_PAGE = "index.page";
   private static final String PANEL_PAGE = "panel/viewpanel.page";
   private static final String QUERY_PAGE = "panel/viewquery.page";
+  private static final String LIVE_QUERY_PAGE = "panel/livequery.page";
   private static final String DOCUMENT_PAGE = "panel/viewdocument.page";
   private static final String IMAGE_PAGE = "panel/viewimage.page";
 

@@ -1,0 +1,28 @@
+@CHARSET "UTF-8";
+
+body {
+  padding: 0px;
+  margin: 0px;
+  width: 100%;
+  height: 100%;
+}
+
+.query {
+  width: calc(50% - 20px);
+  height: calc(50%);
+  border: 1px solid #dde7ed;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  display: inline-block;
+  margin-top: 5px;
+  position: relative;
+}
+
+.query:nth-child(even) {
+  margin-right: 10px;
+  margin-left: 5px;
+}
+
+.query:nth-child(odd) {
+  margin-right: 5px;
+  margin-left: 10px;
+}
