@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.dao.querydata;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,16 +27,19 @@ import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption_;
 public class QueryQuestionMultiOptionAnswerDAO extends GenericDAO<QueryQuestionMultiOptionAnswer> {
 
   public QueryQuestionMultiOptionAnswer create(QueryReply queryReply, QueryField queryField, Set<QueryOptionFieldOption> options) {
-    EntityManager entityManager = getEntityManager();
-    
+    Date now = new Date();
+    return create(queryReply, queryField, options, now, now);
+  }
+  
+  public QueryQuestionMultiOptionAnswer create(QueryReply queryReply, QueryField queryField, Set<QueryOptionFieldOption> options, Date created, Date lastModified) {
     QueryQuestionMultiOptionAnswer queryQuestionOptionAnswer = new QueryQuestionMultiOptionAnswer();
     queryQuestionOptionAnswer.setOptions(options);
     queryQuestionOptionAnswer.setQueryField(queryField);
     queryQuestionOptionAnswer.setQueryReply(queryReply);
+    queryQuestionOptionAnswer.setCreated(created);
+    queryQuestionOptionAnswer.setLastModified(lastModified);
     
-    entityManager.persist(queryQuestionOptionAnswer);
-    
-    return queryQuestionOptionAnswer;
+    return persist(queryQuestionOptionAnswer);
   }
   
   public QueryQuestionMultiOptionAnswer findByQueryReplyAndQueryField(QueryReply queryReply, QueryField queryField) {
@@ -92,12 +96,6 @@ public class QueryQuestionMultiOptionAnswerDAO extends GenericDAO<QueryQuestionM
     return entityManager.createQuery(criteria).getResultList();
   }
 
-  public QueryQuestionMultiOptionAnswer updateOptions(QueryQuestionMultiOptionAnswer queryQuestionOptionAnswer, Set<QueryOptionFieldOption> options) {
-    queryQuestionOptionAnswer.setOptions(options);
-    getEntityManager().persist(queryQuestionOptionAnswer);
-    return queryQuestionOptionAnswer;
-  }
-
   public Map<Long, Long> listOptionAnswerCounts(QueryField queryMultiselectField) {
     EntityManager entityManager = getEntityManager();
 
@@ -115,12 +113,18 @@ public class QueryQuestionMultiOptionAnswerDAO extends GenericDAO<QueryQuestionM
     TypedQuery<Tuple> q = entityManager.createQuery(criteria);
     List<Tuple> resultList = q.getResultList();
 
-    Map<Long, Long> resultMap = new HashMap<Long, Long>();
+    Map<Long, Long> resultMap = new HashMap<>();
 
     for (Tuple optionAnswer : resultList) {
       resultMap.put(optionAnswer.get(0, Long.class), optionAnswer.get(1, Long.class));
     }
     
     return resultMap;
+  }
+
+  public QueryQuestionMultiOptionAnswer updateOptions(QueryQuestionMultiOptionAnswer queryQuestionOptionAnswer, Set<QueryOptionFieldOption> options) {
+    queryQuestionOptionAnswer.setOptions(options);
+    queryQuestionOptionAnswer.setLastModified(new Date());
+    return persist(queryQuestionOptionAnswer);
   }
 }

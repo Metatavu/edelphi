@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.dao.querydata;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -14,20 +15,20 @@ import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryField;
 
 public class QueryQuestionTextAnswerDAO extends GenericDAO<QueryQuestionTextAnswer> {
-
+  
   public QueryQuestionTextAnswer create(QueryReply queryReply, QueryField queryField, String data) {
+    Date now = new Date();
+    return create(queryReply, queryField, data, now, now);
+  }
+  
+  public QueryQuestionTextAnswer create(QueryReply queryReply, QueryField queryField, String data, Date created, Date lastModified) {
     QueryQuestionTextAnswer queryQuestionTextAnswer = new QueryQuestionTextAnswer();
     queryQuestionTextAnswer.setData(data);
     queryQuestionTextAnswer.setQueryField(queryField);
     queryQuestionTextAnswer.setQueryReply(queryReply);
-    getEntityManager().persist(queryQuestionTextAnswer);
-    return queryQuestionTextAnswer;
-  }
-  
-  public QueryQuestionTextAnswer updateData(QueryQuestionTextAnswer queryQuestionTextAnswer, String data) {
-    queryQuestionTextAnswer.setData(data);
-    getEntityManager().persist(queryQuestionTextAnswer);
-    return queryQuestionTextAnswer;
+    queryQuestionTextAnswer.setCreated(created);
+    queryQuestionTextAnswer.setLastModified(lastModified);
+    return persist(queryQuestionTextAnswer);
   }
   
   public QueryQuestionTextAnswer findByQueryReplyAndQueryField(QueryReply queryReply, QueryField queryField) {
@@ -60,5 +61,11 @@ public class QueryQuestionTextAnswerDAO extends GenericDAO<QueryQuestionTextAnsw
 
     return entityManager.createQuery(criteria).getResultList();
   }
-
+  
+  public QueryQuestionTextAnswer updateData(QueryQuestionTextAnswer queryQuestionTextAnswer, String data) {
+    queryQuestionTextAnswer.setData(data);
+    queryQuestionTextAnswer.setLastModified(new Date());
+    return persist(queryQuestionTextAnswer);
+  }
+  
 }

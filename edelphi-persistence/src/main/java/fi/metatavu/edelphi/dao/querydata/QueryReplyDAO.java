@@ -22,6 +22,7 @@ public class QueryReplyDAO extends GenericDAO<QueryReply> {
     return create(user, query, panelStamp, Boolean.FALSE, creator, now, creator, now);
   }
 
+  @SuppressWarnings ("squid:S00107")
   public QueryReply create(User user, Query query, PanelStamp panelStamp, Boolean complete, User creator, Date created, User modifier, Date modified) {
     QueryReply queryReply = new QueryReply();
     queryReply.setStamp(panelStamp);
