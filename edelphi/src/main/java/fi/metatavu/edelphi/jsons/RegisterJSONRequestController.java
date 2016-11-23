@@ -99,7 +99,7 @@ public class RegisterJSONRequestController extends JSONController {
       String verificationLink = RequestUtils.getBaseUrl(jsonRequestContext.getRequest()) + "/activateaccount.page?email=" + userActivation.getEmail() + "&hash=" + userActivation.getHash();
       String mailContent = messages.getText(locale, "userRegistration.mailTemplate", new String [] { email, verificationLink });
       String infoMessage = messages.getText(locale, "userRegistration.infoMessage", new String [] { email });
-      MailUtils.sendMail(locale, email, mailSubject, mailContent);
+      MailUtils.sendMail(email, mailSubject, mailContent);
       jsonRequestContext.addMessage(Severity.INFORMATION, infoMessage);
     }
   }
