@@ -1,0 +1,2561 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet author="anttileppa" id="1479934562938-1">
+        <createTable tableName="__panelusergroupusers">
+            <column defaultValueNumeric="0" name="panelUserGroup_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-2">
+        <createTable tableName="__queryquestionmultioptionanswers">
+            <column name="answer_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="option_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-3">
+        <createTable tableName="authsource">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="strategy" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-4">
+        <createTable tableName="authsourcesetting">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="authSource_id" type="BIGINT"/>
+            <column name="settingKey" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-5">
+        <createTable tableName="bulletin">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="message" type="LONGTEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="archived" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creator_id" type="BIGINT"/>
+            <column name="created" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastModifier_id" type="BIGINT"/>
+            <column name="lastModified" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-6">
+        <createTable tableName="delfoi">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="domain" type="VARCHAR(255)"/>
+            <column name="rootFolder_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-7">
+        <createTable tableName="delfoiaction">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="actionName" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="scope" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-8">
+        <createTable tableName="delfoiauth">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="delfoi_id" type="BIGINT"/>
+            <column name="authSource_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-9">
+        <createTable tableName="delfoibulletin">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="delfoi_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-10">
+        <createTable tableName="delfoidefaults">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="delfoi_id" type="BIGINT"/>
+            <column name="defaultPanelCreatorRole_id" type="BIGINT"/>
+            <column name="defaultDelfoiUserRole_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-11">
+        <createTable tableName="delfoiuser">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="delfoi_id" type="BIGINT"/>
+            <column name="user_id" type="BIGINT"/>
+            <column name="archived" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creator_id" type="BIGINT"/>
+            <column name="created" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastModifier_id" type="BIGINT"/>
+            <column name="lastModified" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-12">
+        <createTable tableName="delfoiuserrole">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-13">
+        <createTable tableName="delfoiuserroleaction">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="delfoi_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-14">
+        <createTable tableName="document">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-15">
+        <createTable tableName="emailmessage">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fromAddress" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="toAddress" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="subject" type="VARCHAR(255)"/>
+            <column name="content" type="LONGTEXT"/>
+            <column name="creator_id" type="BIGINT"/>
+            <column name="created" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastModifier_id" type="BIGINT"/>
+            <column name="lastModified" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="archived" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-16">
+        <createTable tableName="folder">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-17">
+        <createTable tableName="formdraft">
+            <column name="creator" type="BIGINT"/>
+            <column name="data" type="LONGTEXT"/>
+            <column name="modified" type="datetime(6)"/>
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="url" type="VARCHAR(255)"/>
+            <column name="created" type="datetime(6)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-18">
+        <createTable tableName="googledocument">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="resourceId" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastSynchronized" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-19">
+        <createTable tableName="googleimage">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="resourceId" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastSynchronized" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-20">
+        <createTable tableName="hibernate_sequences">
+            <column name="sequence_next_hi_value" type="INT"/>
+            <column defaultValue="" name="sequence_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-21">
+        <createTable tableName="image">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-22">
+        <createTable tableName="linkedimage">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="url" type="LONGTEXT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-23">
+        <createTable tableName="localdocument">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-24">
+        <createTable tableName="localdocumentpage">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="document_id" type="BIGINT"/>
+            <column name="content" type="LONGTEXT"/>
+            <column name="pageNumber" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-25">
+        <createTable tableName="localimage">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="contentType" type="VARCHAR(255)"/>
+            <column name="data" type="LONGBLOB"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-26">
+        <createTable tableName="localizedentry">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-27">
+        <createTable tableName="localizedvalue">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="text" type="LONGTEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="locale" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entry_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-28">
+        <createTable tableName="mailqueueitem">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="emailMessage_id" type="BIGINT"/>
+            <column name="state" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creator_id" type="BIGINT"/>
+            <column name="created" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastModifier_id" type="BIGINT"/>
+            <column name="lastModified" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="archived" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-29">
+        <createTable tableName="panel">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="delfoi_id" type="BIGINT"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="LONGTEXT"/>
+            <column name="defaultPanelUserRole_id" type="BIGINT"/>
+            <column name="rootFolder_id" type="BIGINT"/>
+            <column name="archived" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creator_id" type="BIGINT"/>
+            <column name="created" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastModifier_id" type="BIGINT"/>
+            <column name="lastModified" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="accessLevel" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="state" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="invitationTemplate" type="LONGTEXT"/>
+            <column name="currentStamp_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-30">
+        <createTable tableName="panelauth">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="panel_id" type="BIGINT"/>
+            <column name="authSource_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-31">
+        <createTable tableName="panelbulletin">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="panel_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-32">
+        <createTable tableName="panelexpertisegroupuser">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="panelUser_id" type="BIGINT"/>
+            <column name="expertiseGroup_id" type="BIGINT"/>
+            <column name="weight" type="DOUBLE"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-33">
+        <createTable tableName="panelinvitation">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="panel_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="hash" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="state" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creator_id" type="BIGINT"/>
+            <column name="created" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastModifier_id" type="BIGINT"/>
+            <column name="lastModified" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="archived" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="query_id" type="BIGINT"/>
+            <column name="emailMessage_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-34">
+        <createTable tableName="panelsettingstemplate">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="LONGTEXT"/>
+            <column name="defaultPanelUserRole_id" type="BIGINT"/>
+            <column name="accessLevel" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="state" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="archived" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-35">
+        <createTable tableName="panelsettingstemplaterole">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="panelSettingsTemplate_id" type="BIGINT"/>
+            <column name="delfoiAction_id" type="BIGINT"/>
+            <column name="userRole_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-36">
+        <createTable tableName="panelstamp">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="panel_id" type="BIGINT"/>
+            <column name="creator_id" type="BIGINT"/>
+            <column name="created" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastModifier_id" type="BIGINT"/>
+            <column name="lastModified" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="archived" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="LONGTEXT"/>
+            <column name="stampTime" type="datetime(6)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-37">
+        <createTable tableName="paneluser">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="panel_id" type="BIGINT"/>
+            <column name="user_id" type="BIGINT"/>
+            <column name="role_id" type="BIGINT"/>
+            <column name="archived" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creator_id" type="BIGINT"/>
+            <column name="created" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastModifier_id" type="BIGINT"/>
+            <column name="lastModified" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="joinType" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="stamp_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-38">
+        <createTable tableName="paneluserexpertiseclass">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="panel_id" type="BIGINT"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-39">
+        <createTable tableName="paneluserexpertisegroup">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expertiseClass_id" type="BIGINT"/>
+            <column name="intressClass_id" type="BIGINT"/>
+            <column name="color" type="BIGINT"/>
+            <column name="panel_id" type="BIGINT"/>
+            <column name="stamp_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-40">
+        <createTable tableName="panelusergroup">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="panel_id" type="BIGINT"/>
+            <column name="creator_id" type="BIGINT"/>
+            <column name="created" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastModifier_id" type="BIGINT"/>
+            <column name="lastModified" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="archived" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="stamp_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-41">
+        <createTable tableName="paneluserintressclass">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="panel_id" type="BIGINT"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-42">
+        <createTable tableName="paneluserrole">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-43">
+        <createTable tableName="paneluserroleaction">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="panel_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-44">
+        <createTable tableName="passwordreset">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="hash" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-45">
+        <createTable tableName="query">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="allowEditReply" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="closes" type="datetime(6)"/>
+            <column name="state" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-46">
+        <createTable tableName="queryfield">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="queryPage_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="caption" type="VARCHAR(255)"/>
+            <column name="mandatory" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="archived" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-47">
+        <createTable tableName="querynumericfield">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="min" type="DOUBLE"/>
+            <column name="max" type="DOUBLE"/>
+            <column name="_precision" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-48">
+        <createTable tableName="queryoptionfield">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-49">
+        <createTable tableName="queryoptionfieldoption">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="optionField_id" type="BIGINT"/>
+            <column name="text" type="VARCHAR(255)"/>
+            <column name="value" type="VARCHAR(255)"/>
+            <column name="archived" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-50">
+        <createTable tableName="queryoptionfieldoptiongroup">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="optionField_id" type="BIGINT"/>
+            <column name="archived" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-51">
+        <createTable tableName="querypage">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pageNumber" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="archived" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creator_id" type="BIGINT"/>
+            <column name="created" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastModifier_id" type="BIGINT"/>
+            <column name="lastModified" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pageType" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="querySection_id" type="BIGINT"/>
+            <column name="visible" type="BIT(1)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-52">
+        <createTable tableName="querypagesetting">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="key_id" type="BIGINT"/>
+            <column name="queryPage_id" type="BIGINT"/>
+            <column name="value" type="LONGTEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-53">
+        <createTable tableName="querypagesettingkey">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-54">
+        <createTable tableName="querypagetemplate">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="iconName" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="archived" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creator_id" type="BIGINT"/>
+            <column name="created" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastModifier_id" type="BIGINT"/>
+            <column name="lastModified" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pageType" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-55">
+        <createTable tableName="querypagetemplatelocalizedsetting">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-56">
+        <createTable tableName="querypagetemplatesetting">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="key_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="queryPageTemplate_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-57">
+        <createTable tableName="querypagetemplatesimplesetting">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="LONGTEXT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-58">
+        <createTable tableName="queryquestionanswer">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="queryReply_id" type="BIGINT"/>
+            <column name="queryField_id" type="BIGINT"/>
+            <column name="created" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastModified" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-59">
+        <createTable tableName="queryquestionbinaryanswer">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="data" type="LONGBLOB"/>
+            <column name="contentType" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-60">
+        <createTable tableName="queryquestioncomment">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="queryReply_id" type="BIGINT"/>
+            <column name="queryPage_id" type="BIGINT"/>
+            <column name="parentComment_id" type="BIGINT"/>
+            <column name="comment" type="LONGTEXT"/>
+            <column name="archived" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creator_id" type="BIGINT"/>
+            <column name="created" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastModifier_id" type="BIGINT"/>
+            <column name="lastModified" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="hidden" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-61">
+        <createTable tableName="queryquestionmultioptionanswer">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-62">
+        <createTable tableName="queryquestionnumericanswer">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="data" type="DOUBLE"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-63">
+        <createTable tableName="queryquestionoptionanswer">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="option_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-64">
+        <createTable tableName="queryquestionoptiongroupoptionanswer">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="group_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-65">
+        <createTable tableName="queryquestiontextanswer">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="data" type="LONGTEXT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-66">
+        <createTable tableName="queryreply">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="query_id" type="BIGINT"/>
+            <column name="user_id" type="BIGINT"/>
+            <column name="archived" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creator_id" type="BIGINT"/>
+            <column name="created" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastModifier_id" type="BIGINT"/>
+            <column name="lastModified" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="stamp_id" type="BIGINT"/>
+            <column name="complete" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-67">
+        <createTable tableName="queryscalefield">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="step" type="DOUBLE"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-68">
+        <createTable tableName="querysection">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="query_id" type="BIGINT"/>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creator_id" type="BIGINT"/>
+            <column name="created" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastModifier_id" type="BIGINT"/>
+            <column name="lastModified" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="visible" type="BIT(1)"/>
+            <column name="archived" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sectionNumber" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="commentable" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="viewDiscussions" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-69">
+        <createTable tableName="querytextfield">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-70">
+        <createTable tableName="resource">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="urlName" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="parentFolder_id" type="BIGINT"/>
+            <column name="type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="visible" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="archived" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creator_id" type="BIGINT"/>
+            <column name="created" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastModifier_id" type="BIGINT"/>
+            <column name="lastModified" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="LONGTEXT"/>
+            <column name="indexNumber" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-71">
+        <createTable tableName="resourcelock">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expires" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="resource_id" type="BIGINT"/>
+            <column name="creator_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-72">
+        <createTable tableName="setting">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="key_id" type="BIGINT"/>
+            <column name="value" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-73">
+        <createTable tableName="settingkey">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-74">
+        <createTable tableName="superuser">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-75">
+        <createTable tableName="systemuserrole">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-76">
+        <createTable tableName="updaterproperties">
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-77">
+        <createTable tableName="user">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="firstName" type="VARCHAR(255)"/>
+            <column name="lastName" type="VARCHAR(255)"/>
+            <column name="nickname" type="VARCHAR(255)"/>
+            <column name="defaultEmail_id" type="BIGINT"/>
+            <column name="archived" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creator_id" type="BIGINT"/>
+            <column name="created" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastModifier_id" type="BIGINT"/>
+            <column name="lastModified" type="datetime(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastLogin" type="datetime(6)"/>
+            <column name="subscriptionLevel" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="subscriptionStarted" type="datetime(6)"/>
+            <column name="subscriptionEnds" type="datetime(6)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-78">
+        <createTable tableName="useractivation">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="hash" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-79">
+        <createTable tableName="useremail">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+            <column name="address" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-80">
+        <createTable tableName="useridentification">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+            <column name="externalId" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="authSource_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-81">
+        <createTable tableName="userpassword">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+            <column name="passwordHash" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-82">
+        <createTable tableName="userpicture">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+            <column name="contentType" type="VARCHAR(255)"/>
+            <column name="data" type="LONGBLOB"/>
+            <column name="lastModified" type="datetime(6)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-83">
+        <createTable tableName="userrole">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-84">
+        <createTable tableName="userroleaction">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="delfoiAction_id" type="BIGINT"/>
+            <column name="userRole_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-85">
+        <createTable tableName="usersetting">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+            <column name="settingKey" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-86">
+        <createTable tableName="video">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-87">
+        <addPrimaryKey columnNames="panelUserGroup_id, user_id" constraintName="PRIMARY" tableName="__panelusergroupusers"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-88">
+        <addPrimaryKey columnNames="answer_id, option_id" constraintName="PRIMARY" tableName="__queryquestionmultioptionanswers"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-89">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="authsource"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-90">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="authsourcesetting"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-91">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="bulletin"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-92">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="delfoi"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-93">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="delfoiaction"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-94">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="delfoiauth"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-95">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="delfoibulletin"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-96">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="delfoidefaults"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-97">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="delfoiuser"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-98">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="delfoiuserrole"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-99">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="delfoiuserroleaction"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-100">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="document"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-101">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="emailmessage"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-102">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="folder"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-103">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="formdraft"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-104">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="googledocument"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-105">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="googleimage"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-106">
+        <addPrimaryKey columnNames="sequence_name" constraintName="PRIMARY" tableName="hibernate_sequences"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-107">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="image"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-108">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="linkedimage"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-109">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="localdocument"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-110">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="localdocumentpage"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-111">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="localimage"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-112">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="localizedentry"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-113">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="localizedvalue"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-114">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="mailqueueitem"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-115">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="panel"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-116">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="panelauth"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-117">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="panelbulletin"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-118">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="panelexpertisegroupuser"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-119">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="panelinvitation"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-120">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="panelsettingstemplate"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-121">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="panelsettingstemplaterole"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-122">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="panelstamp"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-123">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="paneluser"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-124">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="paneluserexpertiseclass"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-125">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="paneluserexpertisegroup"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-126">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="panelusergroup"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-127">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="paneluserintressclass"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-128">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="paneluserrole"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-129">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="paneluserroleaction"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-130">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="passwordreset"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-131">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="query"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-132">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="queryfield"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-133">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="querynumericfield"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-134">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="queryoptionfield"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-135">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="queryoptionfieldoption"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-136">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="queryoptionfieldoptiongroup"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-137">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="querypage"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-138">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="querypagesetting"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-139">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="querypagesettingkey"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-140">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="querypagetemplate"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-141">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="querypagetemplatelocalizedsetting"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-142">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="querypagetemplatesetting"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-143">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="querypagetemplatesimplesetting"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-144">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="queryquestionanswer"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-145">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="queryquestionbinaryanswer"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-146">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="queryquestioncomment"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-147">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="queryquestionmultioptionanswer"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-148">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="queryquestionnumericanswer"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-149">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="queryquestionoptionanswer"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-150">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="queryquestionoptiongroupoptionanswer"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-151">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="queryquestiontextanswer"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-152">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="queryreply"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-153">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="queryscalefield"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-154">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="querysection"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-155">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="querytextfield"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-156">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="resource"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-157">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="resourcelock"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-158">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="setting"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-159">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="settingkey"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-160">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="superuser"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-161">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="systemuserrole"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-162">
+        <addPrimaryKey columnNames="name" constraintName="PRIMARY" tableName="updaterproperties"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-163">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-164">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="useractivation"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-165">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="useremail"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-166">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="useridentification"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-167">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="userpassword"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-168">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="userpicture"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-169">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="userrole"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-170">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="userroleaction"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-171">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="usersetting"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-172">
+        <addPrimaryKey columnNames="id" constraintName="PRIMARY" tableName="video"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-173">
+        <addUniqueConstraint columnNames="actionName" constraintName="actionName" tableName="delfoiaction"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-174">
+        <addUniqueConstraint columnNames="address" constraintName="address" tableName="useremail"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-175">
+        <addUniqueConstraint columnNames="email" constraintName="email" tableName="passwordreset"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-176">
+        <addUniqueConstraint columnNames="email" constraintName="email" tableName="useractivation"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-177">
+        <addUniqueConstraint columnNames="hash" constraintName="hash" tableName="passwordreset"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-178">
+        <addUniqueConstraint columnNames="hash" constraintName="hash" tableName="useractivation"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-179">
+        <addUniqueConstraint columnNames="id" constraintName="id" tableName="authsource"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-180">
+        <addUniqueConstraint columnNames="id" constraintName="id" tableName="authsourcesetting"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-181">
+        <addUniqueConstraint columnNames="id" constraintName="id" tableName="bulletin"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-182">
+        <addUniqueConstraint columnNames="id" constraintName="id" tableName="delfoiauth"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-183">
+        <addUniqueConstraint columnNames="id" constraintName="id" tableName="delfoibulletin"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-184">
+        <addUniqueConstraint columnNames="id" constraintName="id" tableName="emailmessage"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-185">
+        <addUniqueConstraint columnNames="id" constraintName="id" tableName="localizedentry"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-186">
+        <addUniqueConstraint columnNames="id" constraintName="id" tableName="localizedvalue"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-187">
+        <addUniqueConstraint columnNames="id" constraintName="id" tableName="mailqueueitem"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-188">
+        <addUniqueConstraint columnNames="id" constraintName="id" tableName="panelauth"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-189">
+        <addUniqueConstraint columnNames="id" constraintName="id" tableName="panelbulletin"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-190">
+        <addUniqueConstraint columnNames="id" constraintName="id" tableName="panelstamp"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-191">
+        <addUniqueConstraint columnNames="id" constraintName="id" tableName="passwordreset"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-192">
+        <addUniqueConstraint columnNames="id" constraintName="id" tableName="querypagetemplatelocalizedsetting"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-193">
+        <addUniqueConstraint columnNames="id" constraintName="id" tableName="querypagetemplatesetting"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-194">
+        <addUniqueConstraint columnNames="id" constraintName="id" tableName="querypagetemplatesimplesetting"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-195">
+        <addUniqueConstraint columnNames="id" constraintName="id" tableName="resourcelock"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-196">
+        <addUniqueConstraint columnNames="id" constraintName="id" tableName="useractivation"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-197">
+        <addUniqueConstraint columnNames="id" constraintName="id" tableName="usersetting"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-198">
+        <addUniqueConstraint columnNames="name" constraintName="name" tableName="updaterproperties"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-199">
+        <addUniqueConstraint columnNames="user_id" constraintName="user_id" tableName="useractivation"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-200">
+        <createIndex indexName="FK1A494DBC65DA3ED5" tableName="delfoibulletin">
+            <column name="delfoi_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-201">
+        <createIndex indexName="FK1F0CD9AC21838C35" tableName="panelauth">
+            <column name="authSource_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-202">
+        <createIndex indexName="FK1F0CD9AC43CC2035" tableName="panelauth">
+            <column name="panel_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-203">
+        <createIndex indexName="FK1F15E7CF11BFC871" tableName="paneluser">
+            <column name="stamp_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-204">
+        <createIndex indexName="FK1F15E7CF43CC2035" tableName="paneluser">
+            <column name="panel_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-205">
+        <createIndex indexName="FK1F15E7CF525F5F14" tableName="paneluser">
+            <column name="creator_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-206">
+        <createIndex indexName="FK1F15E7CFA167FF84" tableName="paneluser">
+            <column name="role_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-207">
+        <createIndex indexName="FK1F15E7CFC3196C33" tableName="paneluser">
+            <column name="lastModifier_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-208">
+        <createIndex indexName="FK1F15E7CFF7635B15" tableName="paneluser">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-209">
+        <createIndex indexName="FK248F63A6F7635B15" tableName="userpassword">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-210">
+        <createIndex indexName="FK285FEB2AD9796B" tableName="user">
+            <column name="defaultEmail_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-211">
+        <createIndex indexName="FK285FEB525F5F14" tableName="user">
+            <column name="creator_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-212">
+        <createIndex indexName="FK285FEBC3196C33" tableName="user">
+            <column name="lastModifier_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-213">
+        <createIndex indexName="FK2A08CC97D0AEF735" tableName="userroleaction">
+            <column name="delfoiAction_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-214">
+        <createIndex indexName="FK2A08CC97D0D25375" tableName="userroleaction">
+            <column name="userRole_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-215">
+        <createIndex indexName="FK2EFBE693F7635B15" tableName="userpicture">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-216">
+        <createIndex indexName="FK2F951418A20F40B5" tableName="__panelusergroupusers">
+            <column name="panelUserGroup_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-217">
+        <createIndex indexName="FK2F951418F7635B15" tableName="__panelusergroupusers">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-218">
+        <createIndex indexName="FK3996AF0DF38FF6CD" tableName="queryoptionfieldoptiongroup">
+            <column name="optionField_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-219">
+        <createIndex indexName="FK474998EB525F5F14" tableName="emailmessage">
+            <column name="creator_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-220">
+        <createIndex indexName="FK474998EBC3196C33" tableName="emailmessage">
+            <column name="lastModifier_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-221">
+        <createIndex indexName="FK49519E4525F5F14" tableName="panel">
+            <column name="creator_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-222">
+        <createIndex indexName="FK49519E465DA3ED5" tableName="panel">
+            <column name="delfoi_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-223">
+        <createIndex indexName="FK49519E46A034993" tableName="panel">
+            <column name="rootFolder_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-224">
+        <createIndex indexName="FK49519E49436FCEA" tableName="panel">
+            <column name="currentStamp_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-225">
+        <createIndex indexName="FK49519E49EDEC916" tableName="panel">
+            <column name="defaultPanelUserRole_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-226">
+        <createIndex indexName="FK49519E4C3196C33" tableName="panel">
+            <column name="lastModifier_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-227">
+        <createIndex indexName="FK4E702292F38FF6CD" tableName="queryoptionfieldoption">
+            <column name="optionField_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-228">
+        <createIndex indexName="FK5FC4B73921838C35" tableName="useridentification">
+            <column name="authSource_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-229">
+        <createIndex indexName="FK5FC4B739F7635B15" tableName="useridentification">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-230">
+        <createIndex indexName="FK65C82FC19EDEC916" tableName="panelsettingstemplate">
+            <column name="defaultPanelUserRole_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-231">
+        <createIndex indexName="FK66D14D352B7AFD60" tableName="localdocumentpage">
+            <column name="document_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-232">
+        <createIndex indexName="FK6B66B132CEA93F75" tableName="queryfield">
+            <column name="queryPage_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-233">
+        <createIndex indexName="FK6C0E232211BFC871" tableName="queryreply">
+            <column name="stamp_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-234">
+        <createIndex indexName="FK6C0E2322525F5F14" tableName="queryreply">
+            <column name="creator_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-235">
+        <createIndex indexName="FK6C0E2322BF2279B5" tableName="queryreply">
+            <column name="query_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-236">
+        <createIndex indexName="FK6C0E2322C3196C33" tableName="queryreply">
+            <column name="lastModifier_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-237">
+        <createIndex indexName="FK6C0E2322F7635B15" tableName="queryreply">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-238">
+        <createIndex indexName="FK79CB74F56A034993" tableName="delfoi">
+            <column name="rootFolder_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-239">
+        <createIndex indexName="FK7AA8C77B43CC2035" tableName="paneluserroleaction">
+            <column name="panel_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-240">
+        <createIndex indexName="FK8A3D3671F7635B15" tableName="useremail">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-241">
+        <createIndex indexName="FK8FB5F0CC65DA3ED5" tableName="delfoiuserroleaction">
+            <column name="delfoi_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-242">
+        <createIndex indexName="FK90D7066765DA3ED5" tableName="delfoidefaults">
+            <column name="delfoi_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-243">
+        <createIndex indexName="FK90D70667DC140FB" tableName="delfoidefaults">
+            <column name="defaultPanelCreatorRole_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-244">
+        <createIndex indexName="FK90D70667FA486754" tableName="delfoidefaults">
+            <column name="defaultDelfoiUserRole_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-245">
+        <createIndex indexName="FK9A62A96676CBC19B" tableName="querypagetemplatelocalizedsetting">
+            <column name="value_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-246">
+        <createIndex indexName="FK9ADBA7F011BFC871" tableName="panelusergroup">
+            <column name="stamp_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-247">
+        <createIndex indexName="FK9ADBA7F043CC2035" tableName="panelusergroup">
+            <column name="panel_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-248">
+        <createIndex indexName="FK9ADBA7F0525F5F14" tableName="panelusergroup">
+            <column name="creator_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-249">
+        <createIndex indexName="FK9ADBA7F0C3196C33" tableName="panelusergroup">
+            <column name="lastModifier_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-250">
+        <createIndex indexName="FKA976ABC543CC2035" tableName="paneluserintressclass">
+            <column name="panel_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-251">
+        <createIndex indexName="FKB17954F1317C0A41" tableName="querypagetemplate">
+            <column name="name_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-252">
+        <createIndex indexName="FKB17954F1525F5F14" tableName="querypagetemplate">
+            <column name="creator_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-253">
+        <createIndex indexName="FKB17954F1C3196C33" tableName="querypagetemplate">
+            <column name="lastModifier_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-254">
+        <createIndex indexName="FKB17954F1E584BF30" tableName="querypagetemplate">
+            <column name="description_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-255">
+        <createIndex indexName="FKB3B39DC7525F5F14" tableName="bulletin">
+            <column name="creator_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-256">
+        <createIndex indexName="FKB3B39DC7C3196C33" tableName="bulletin">
+            <column name="lastModifier_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-257">
+        <createIndex indexName="FKB7F2FCCD21838C35" tableName="authsourcesetting">
+            <column name="authSource_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-258">
+        <createIndex indexName="FKBA62EEF5A2CB73B5" tableName="__queryquestionmultioptionanswers">
+            <column name="answer_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-259">
+        <createIndex indexName="FKBA62EEF5BC6F48D2" tableName="__queryquestionmultioptionanswers">
+            <column name="option_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-260">
+        <createIndex indexName="FKBBD6B57525F5F14" tableName="querypage">
+            <column name="creator_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-261">
+        <createIndex indexName="FKBBD6B57BA4279B5" tableName="querypage">
+            <column name="querySection_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-262">
+        <createIndex indexName="FKBBD6B57C3196C33" tableName="querypage">
+            <column name="lastModifier_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-263">
+        <createIndex indexName="FKBD8A609D43CC2035" tableName="panelinvitation">
+            <column name="panel_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-264">
+        <createIndex indexName="FKBD8A609DA167FF84" tableName="panelinvitation">
+            <column name="role_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-265">
+        <createIndex indexName="FKBD8A609DBF2279B5" tableName="panelinvitation">
+            <column name="query_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-266">
+        <createIndex indexName="FKBD8A609DD980BEF5" tableName="panelinvitation">
+            <column name="emailMessage_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-267">
+        <createIndex indexName="FKC0DDB02F57C53303" tableName="queryquestionoptiongroupoptionanswer">
+            <column name="group_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-268">
+        <createIndex indexName="FKC38B483F43CC2035" tableName="panelstamp">
+            <column name="panel_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-269">
+        <createIndex indexName="FKC38B483F525F5F14" tableName="panelstamp">
+            <column name="creator_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-270">
+        <createIndex indexName="FKC38B483FC3196C33" tableName="panelstamp">
+            <column name="lastModifier_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-271">
+        <createIndex indexName="FKC7CA97E5F7635B15" tableName="usersetting">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-272">
+        <createIndex indexName="FKC80B79643CC2035" tableName="paneluserexpertiseclass">
+            <column name="panel_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-273">
+        <createIndex indexName="FKC8D443D21838C35" tableName="delfoiauth">
+            <column name="authSource_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-274">
+        <createIndex indexName="FKC8D443D65DA3ED5" tableName="delfoiauth">
+            <column name="delfoi_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-275">
+        <createIndex indexName="FKC93D120C9B550595" tableName="queryquestionanswer">
+            <column name="queryField_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-276">
+        <createIndex indexName="FKC93D120CB9C07F95" tableName="queryquestionanswer">
+            <column name="queryReply_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-277">
+        <createIndex indexName="FKC965260525F5F14" tableName="delfoiuser">
+            <column name="creator_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-278">
+        <createIndex indexName="FKC96526065DA3ED5" tableName="delfoiuser">
+            <column name="delfoi_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-279">
+        <createIndex indexName="FKC965260AC9EB995" tableName="delfoiuser">
+            <column name="role_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-280">
+        <createIndex indexName="FKC965260C3196C33" tableName="delfoiuser">
+            <column name="lastModifier_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-281">
+        <createIndex indexName="FKC965260F7635B15" tableName="delfoiuser">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-282">
+        <createIndex indexName="FKC98D65D12F852211" tableName="queryquestioncomment">
+            <column name="parentComment_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-283">
+        <createIndex indexName="FKC98D65D1525F5F14" tableName="queryquestioncomment">
+            <column name="creator_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-284">
+        <createIndex indexName="FKC98D65D1B9C07F95" tableName="queryquestioncomment">
+            <column name="queryReply_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-285">
+        <createIndex indexName="FKC98D65D1C3196C33" tableName="queryquestioncomment">
+            <column name="lastModifier_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-286">
+        <createIndex indexName="FKC98D65D1CEA93F75" tableName="queryquestioncomment">
+            <column name="queryPage_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-287">
+        <createIndex indexName="FKCBC049D11BFC871" tableName="paneluserexpertisegroup">
+            <column name="stamp_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-288">
+        <createIndex indexName="FKCBC049D324CDB04" tableName="paneluserexpertisegroup">
+            <column name="expertiseClass_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-289">
+        <createIndex indexName="FKCBC049D43CC2035" tableName="paneluserexpertisegroup">
+            <column name="panel_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-290">
+        <createIndex indexName="FKCBC049D51787064" tableName="paneluserexpertisegroup">
+            <column name="intressClass_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-291">
+        <createIndex indexName="FKCBC29ED64E0E5EFA" tableName="localizedvalue">
+            <column name="entry_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-292">
+        <createIndex indexName="FKD544611D525F5F14" tableName="querysection">
+            <column name="creator_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-293">
+        <createIndex indexName="FKD544611DBF2279B5" tableName="querysection">
+            <column name="query_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-294">
+        <createIndex indexName="FKD544611DC3196C33" tableName="querysection">
+            <column name="lastModifier_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-295">
+        <createIndex indexName="FKD840DFAD525F5F14" tableName="mailqueueitem">
+            <column name="creator_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-296">
+        <createIndex indexName="FKD840DFADC3196C33" tableName="mailqueueitem">
+            <column name="lastModifier_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-297">
+        <createIndex indexName="FKD840DFADD980BEF5" tableName="mailqueueitem">
+            <column name="emailMessage_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-298">
+        <createIndex indexName="FKD997A63032F3E225" tableName="setting">
+            <column name="key_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-299">
+        <createIndex indexName="FKD9B784DD2770E9A4" tableName="panelexpertisegroupuser">
+            <column name="expertiseGroup_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-300">
+        <createIndex indexName="FKD9B784DD283E4C75" tableName="panelexpertisegroupuser">
+            <column name="panelUser_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-301">
+        <createIndex indexName="FKE1D2F71D3D76ED32" tableName="formdraft">
+            <column name="creator"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-302">
+        <createIndex indexName="FKE2DF5BD7B2CB4755" tableName="panelsettingstemplaterole">
+            <column name="panelSettingsTemplate_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-303">
+        <createIndex indexName="FKE2DF5BD7D0AEF735" tableName="panelsettingstemplaterole">
+            <column name="delfoiAction_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-304">
+        <createIndex indexName="FKE2DF5BD7D0D25375" tableName="panelsettingstemplaterole">
+            <column name="userRole_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-305">
+        <createIndex indexName="FKEBB3101F543CF955" tableName="querypagetemplatesetting">
+            <column name="queryPageTemplate_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-306">
+        <createIndex indexName="FKEBB3101FA6E04CBC" tableName="querypagetemplatesetting">
+            <column name="key_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-307">
+        <createIndex indexName="FKEF86282E525F5F14" tableName="resource">
+            <column name="creator_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-308">
+        <createIndex indexName="FKEF86282E6D3602CB" tableName="resource">
+            <column name="parentFolder_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-309">
+        <createIndex indexName="FKEF86282EC3196C33" tableName="resource">
+            <column name="lastModifier_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-310">
+        <createIndex indexName="FKF0E02861BC6F48D2" tableName="queryquestionoptionanswer">
+            <column name="option_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-311">
+        <createIndex indexName="FKF1293AB43CC2035" tableName="panelbulletin">
+            <column name="panel_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-312">
+        <createIndex indexName="FKF2DE9A79391BC035" tableName="resourcelock">
+            <column name="resource_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-313">
+        <createIndex indexName="FKF2DE9A79525F5F14" tableName="resourcelock">
+            <column name="creator_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-314">
+        <createIndex indexName="FKF3F76701317C0A41" tableName="userrole">
+            <column name="name_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-315">
+        <createIndex indexName="FKFA821AF9A6E04CBC" tableName="querypagesetting">
+            <column name="key_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-316">
+        <createIndex indexName="FKFA821AF9CEA93F75" tableName="querypagesetting">
+            <column name="queryPage_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-317">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="googledocument" constraintName="FK12901694EF864264" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="resource"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-318">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="linkedimage" constraintName="FK143BA2A2437D371" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="image"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-319">
+        <addForeignKeyConstraint baseColumnNames="delfoi_id" baseTableName="delfoibulletin" constraintName="FK1A494DBC65DA3ED5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="delfoi"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-320">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="delfoibulletin" constraintName="FK1A494DBCB3B3B7FD" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="bulletin"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-321">
+        <addForeignKeyConstraint baseColumnNames="authSource_id" baseTableName="panelauth" constraintName="FK1F0CD9AC21838C35" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="authsource"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-322">
+        <addForeignKeyConstraint baseColumnNames="panel_id" baseTableName="panelauth" constraintName="FK1F0CD9AC43CC2035" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="panel"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-323">
+        <addForeignKeyConstraint baseColumnNames="stamp_id" baseTableName="paneluser" constraintName="FK1F15E7CF11BFC871" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="panelstamp"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-324">
+        <addForeignKeyConstraint baseColumnNames="panel_id" baseTableName="paneluser" constraintName="FK1F15E7CF43CC2035" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="panel"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-325">
+        <addForeignKeyConstraint baseColumnNames="creator_id" baseTableName="paneluser" constraintName="FK1F15E7CF525F5F14" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-326">
+        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="paneluser" constraintName="FK1F15E7CFA167FF84" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="paneluserrole"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-327">
+        <addForeignKeyConstraint baseColumnNames="lastModifier_id" baseTableName="paneluser" constraintName="FK1F15E7CFC3196C33" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-328">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="paneluser" constraintName="FK1F15E7CFF7635B15" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-329">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="userpassword" constraintName="FK248F63A6F7635B15" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-330">
+        <addForeignKeyConstraint baseColumnNames="defaultEmail_id" baseTableName="user" constraintName="FK285FEB2AD9796B" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="useremail"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-331">
+        <addForeignKeyConstraint baseColumnNames="creator_id" baseTableName="user" constraintName="FK285FEB525F5F14" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-332">
+        <addForeignKeyConstraint baseColumnNames="lastModifier_id" baseTableName="user" constraintName="FK285FEBC3196C33" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-333">
+        <addForeignKeyConstraint baseColumnNames="delfoiAction_id" baseTableName="userroleaction" constraintName="FK2A08CC97D0AEF735" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="delfoiaction"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-334">
+        <addForeignKeyConstraint baseColumnNames="userRole_id" baseTableName="userroleaction" constraintName="FK2A08CC97D0D25375" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="userrole"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-335">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="userpicture" constraintName="FK2EFBE693F7635B15" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-336">
+        <addForeignKeyConstraint baseColumnNames="panelUserGroup_id" baseTableName="__panelusergroupusers" constraintName="FK2F951418A20F40B5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="panelusergroup"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-337">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="__panelusergroupusers" constraintName="FK2F951418F7635B15" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-338">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="document" constraintName="FK3737353BEF864264" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="resource"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-339">
+        <addForeignKeyConstraint baseColumnNames="optionField_id" baseTableName="queryoptionfieldoptiongroup" constraintName="FK3996AF0DF38FF6CD" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="queryoptionfield"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-340">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="queryquestionmultioptionanswer" constraintName="FK3DDA355EC93D2C42" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="queryquestionanswer"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-341">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="image" constraintName="FK437B93BEF864264" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="resource"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-342">
+        <addForeignKeyConstraint baseColumnNames="creator_id" baseTableName="emailmessage" constraintName="FK474998EB525F5F14" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-343">
+        <addForeignKeyConstraint baseColumnNames="lastModifier_id" baseTableName="emailmessage" constraintName="FK474998EBC3196C33" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-344">
+        <addForeignKeyConstraint baseColumnNames="creator_id" baseTableName="panel" constraintName="FK49519E4525F5F14" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-345">
+        <addForeignKeyConstraint baseColumnNames="delfoi_id" baseTableName="panel" constraintName="FK49519E465DA3ED5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="delfoi"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-346">
+        <addForeignKeyConstraint baseColumnNames="rootFolder_id" baseTableName="panel" constraintName="FK49519E46A034993" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="folder"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-347">
+        <addForeignKeyConstraint baseColumnNames="currentStamp_id" baseTableName="panel" constraintName="FK49519E49436FCEA" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="panelstamp"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-348">
+        <addForeignKeyConstraint baseColumnNames="defaultPanelUserRole_id" baseTableName="panel" constraintName="FK49519E49EDEC916" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="paneluserrole"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-349">
+        <addForeignKeyConstraint baseColumnNames="lastModifier_id" baseTableName="panel" constraintName="FK49519E4C3196C33" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-350">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="query" constraintName="FK4AC28A8EF864264" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="resource"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-351">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="googleimage" constraintName="FK4E3CFE82EF864264" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="resource"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-352">
+        <addForeignKeyConstraint baseColumnNames="optionField_id" baseTableName="queryoptionfieldoption" constraintName="FK4E702292F38FF6CD" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="queryoptionfield"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-353">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="video" constraintName="FK4ED245BEF864264" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="resource"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-354">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="paneluserrole" constraintName="FK4F565CE5F3F78137" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="userrole"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-355">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="systemuserrole" constraintName="FK59590650F3F78137" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="userrole"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-356">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="delfoiuserrole" constraintName="FK5A8D16F6F3F78137" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="userrole"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-357">
+        <addForeignKeyConstraint baseColumnNames="authSource_id" baseTableName="useridentification" constraintName="FK5FC4B73921838C35" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="authsource"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-358">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="useridentification" constraintName="FK5FC4B739F7635B15" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-359">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="superuser" constraintName="FK639BB9C6287A21" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-360">
+        <addForeignKeyConstraint baseColumnNames="defaultPanelUserRole_id" baseTableName="panelsettingstemplate" constraintName="FK65C82FC19EDEC916" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="paneluserrole"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-361">
+        <addForeignKeyConstraint baseColumnNames="document_id" baseTableName="localdocumentpage" constraintName="FK66D14D352B7AFD60" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="localdocument"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-362">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="useractivation" constraintName="FK6AEA1361F7635B15" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-363">
+        <addForeignKeyConstraint baseColumnNames="queryPage_id" baseTableName="queryfield" constraintName="FK6B66B132CEA93F75" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="querypage"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-364">
+        <addForeignKeyConstraint baseColumnNames="stamp_id" baseTableName="queryreply" constraintName="FK6C0E232211BFC871" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="panelstamp"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-365">
+        <addForeignKeyConstraint baseColumnNames="creator_id" baseTableName="queryreply" constraintName="FK6C0E2322525F5F14" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-366">
+        <addForeignKeyConstraint baseColumnNames="query_id" baseTableName="queryreply" constraintName="FK6C0E2322BF2279B5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="query"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-367">
+        <addForeignKeyConstraint baseColumnNames="lastModifier_id" baseTableName="queryreply" constraintName="FK6C0E2322C3196C33" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-368">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="queryreply" constraintName="FK6C0E2322F7635B15" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-369">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="queryscalefield" constraintName="FK77CE3898EA4750EB" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="querynumericfield"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-370">
+        <addForeignKeyConstraint baseColumnNames="rootFolder_id" baseTableName="delfoi" constraintName="FK79CB74F56A034993" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="folder"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-371">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="paneluserroleaction" constraintName="FK7AA8C77B2A08E6CD" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="userroleaction"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-372">
+        <addForeignKeyConstraint baseColumnNames="panel_id" baseTableName="paneluserroleaction" constraintName="FK7AA8C77B43CC2035" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="panel"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-373">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="folder" constraintName="FK7DC2088EEF864264" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="resource"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-374">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="querytextfield" constraintName="FK7EE7D4056B66CB68" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="queryfield"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-375">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="useremail" constraintName="FK8A3D3671F7635B15" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-376">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="delfoiuserroleaction" constraintName="FK8FB5F0CC2A08E6CD" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="userroleaction"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-377">
+        <addForeignKeyConstraint baseColumnNames="delfoi_id" baseTableName="delfoiuserroleaction" constraintName="FK8FB5F0CC65DA3ED5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="delfoi"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-378">
+        <addForeignKeyConstraint baseColumnNames="delfoi_id" baseTableName="delfoidefaults" constraintName="FK90D7066765DA3ED5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="delfoi"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-379">
+        <addForeignKeyConstraint baseColumnNames="defaultPanelCreatorRole_id" baseTableName="delfoidefaults" constraintName="FK90D70667DC140FB" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="paneluserrole"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-380">
+        <addForeignKeyConstraint baseColumnNames="defaultDelfoiUserRole_id" baseTableName="delfoidefaults" constraintName="FK90D70667FA486754" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="delfoiuserrole"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-381">
+        <addForeignKeyConstraint baseColumnNames="value_id" baseTableName="querypagetemplatelocalizedsetting" constraintName="FK9A62A96676CBC19B" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="localizedentry"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-382">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="querypagetemplatelocalizedsetting" constraintName="FK9A62A966EBB32A55" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="querypagetemplatesetting"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-383">
+        <addForeignKeyConstraint baseColumnNames="stamp_id" baseTableName="panelusergroup" constraintName="FK9ADBA7F011BFC871" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="panelstamp"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-384">
+        <addForeignKeyConstraint baseColumnNames="panel_id" baseTableName="panelusergroup" constraintName="FK9ADBA7F043CC2035" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="panel"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-385">
+        <addForeignKeyConstraint baseColumnNames="creator_id" baseTableName="panelusergroup" constraintName="FK9ADBA7F0525F5F14" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-386">
+        <addForeignKeyConstraint baseColumnNames="lastModifier_id" baseTableName="panelusergroup" constraintName="FK9ADBA7F0C3196C33" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-387">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="queryquestionbinaryanswer" constraintName="FK9C45D2EDC93D2C42" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="queryquestionanswer"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-388">
+        <addForeignKeyConstraint baseColumnNames="panel_id" baseTableName="paneluserintressclass" constraintName="FKA976ABC543CC2035" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="panel"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-389">
+        <addForeignKeyConstraint baseColumnNames="name_id" baseTableName="querypagetemplate" constraintName="FKB17954F1317C0A41" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="localizedentry"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-390">
+        <addForeignKeyConstraint baseColumnNames="creator_id" baseTableName="querypagetemplate" constraintName="FKB17954F1525F5F14" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-391">
+        <addForeignKeyConstraint baseColumnNames="lastModifier_id" baseTableName="querypagetemplate" constraintName="FKB17954F1C3196C33" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-392">
+        <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="querypagetemplate" constraintName="FKB17954F1E584BF30" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="localizedentry"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-393">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="queryoptionfield" constraintName="FKB2E62FBD6B66CB68" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="queryfield"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-394">
+        <addForeignKeyConstraint baseColumnNames="creator_id" baseTableName="bulletin" constraintName="FKB3B39DC7525F5F14" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-395">
+        <addForeignKeyConstraint baseColumnNames="lastModifier_id" baseTableName="bulletin" constraintName="FKB3B39DC7C3196C33" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-396">
+        <addForeignKeyConstraint baseColumnNames="authSource_id" baseTableName="authsourcesetting" constraintName="FKB7F2FCCD21838C35" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="authsource"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-397">
+        <addForeignKeyConstraint baseColumnNames="answer_id" baseTableName="__queryquestionmultioptionanswers" constraintName="FKBA62EEF5A2CB73B5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="queryquestionmultioptionanswer"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-398">
+        <addForeignKeyConstraint baseColumnNames="option_id" baseTableName="__queryquestionmultioptionanswers" constraintName="FKBA62EEF5BC6F48D2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="queryoptionfieldoption"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-399">
+        <addForeignKeyConstraint baseColumnNames="creator_id" baseTableName="querypage" constraintName="FKBBD6B57525F5F14" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-400">
+        <addForeignKeyConstraint baseColumnNames="querySection_id" baseTableName="querypage" constraintName="FKBBD6B57BA4279B5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="querysection"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-401">
+        <addForeignKeyConstraint baseColumnNames="lastModifier_id" baseTableName="querypage" constraintName="FKBBD6B57C3196C33" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-402">
+        <addForeignKeyConstraint baseColumnNames="panel_id" baseTableName="panelinvitation" constraintName="FKBD8A609D43CC2035" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="panel"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-403">
+        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="panelinvitation" constraintName="FKBD8A609DA167FF84" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="paneluserrole"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-404">
+        <addForeignKeyConstraint baseColumnNames="query_id" baseTableName="panelinvitation" constraintName="FKBD8A609DBF2279B5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="query"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-405">
+        <addForeignKeyConstraint baseColumnNames="emailMessage_id" baseTableName="panelinvitation" constraintName="FKBD8A609DD980BEF5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="emailmessage"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-406">
+        <addForeignKeyConstraint baseColumnNames="group_id" baseTableName="queryquestionoptiongroupoptionanswer" constraintName="FKC0DDB02F57C53303" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="queryoptionfieldoptiongroup"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-407">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="queryquestionoptiongroupoptionanswer" constraintName="FKC0DDB02FF0E04297" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="queryquestionoptionanswer"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-408">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="localimage" constraintName="FKC34DA0D0437D371" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="image"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-409">
+        <addForeignKeyConstraint baseColumnNames="panel_id" baseTableName="panelstamp" constraintName="FKC38B483F43CC2035" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="panel"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-410">
+        <addForeignKeyConstraint baseColumnNames="creator_id" baseTableName="panelstamp" constraintName="FKC38B483F525F5F14" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-411">
+        <addForeignKeyConstraint baseColumnNames="lastModifier_id" baseTableName="panelstamp" constraintName="FKC38B483FC3196C33" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-412">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="querypagetemplatesimplesetting" constraintName="FKC740B2CDEBB32A55" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="querypagetemplatesetting"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-413">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="usersetting" constraintName="FKC7CA97E5F7635B15" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-414">
+        <addForeignKeyConstraint baseColumnNames="panel_id" baseTableName="paneluserexpertiseclass" constraintName="FKC80B79643CC2035" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="panel"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-415">
+        <addForeignKeyConstraint baseColumnNames="authSource_id" baseTableName="delfoiauth" constraintName="FKC8D443D21838C35" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="authsource"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-416">
+        <addForeignKeyConstraint baseColumnNames="delfoi_id" baseTableName="delfoiauth" constraintName="FKC8D443D65DA3ED5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="delfoi"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-417">
+        <addForeignKeyConstraint baseColumnNames="queryField_id" baseTableName="queryquestionanswer" constraintName="FKC93D120C9B550595" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="queryfield"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-418">
+        <addForeignKeyConstraint baseColumnNames="queryReply_id" baseTableName="queryquestionanswer" constraintName="FKC93D120CB9C07F95" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="queryreply"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-419">
+        <addForeignKeyConstraint baseColumnNames="creator_id" baseTableName="delfoiuser" constraintName="FKC965260525F5F14" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-420">
+        <addForeignKeyConstraint baseColumnNames="delfoi_id" baseTableName="delfoiuser" constraintName="FKC96526065DA3ED5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="delfoi"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-421">
+        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="delfoiuser" constraintName="FKC965260AC9EB995" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="delfoiuserrole"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-422">
+        <addForeignKeyConstraint baseColumnNames="lastModifier_id" baseTableName="delfoiuser" constraintName="FKC965260C3196C33" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-423">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="delfoiuser" constraintName="FKC965260F7635B15" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-424">
+        <addForeignKeyConstraint baseColumnNames="parentComment_id" baseTableName="queryquestioncomment" constraintName="FKC98D65D12F852211" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="queryquestioncomment"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-425">
+        <addForeignKeyConstraint baseColumnNames="creator_id" baseTableName="queryquestioncomment" constraintName="FKC98D65D1525F5F14" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-426">
+        <addForeignKeyConstraint baseColumnNames="queryReply_id" baseTableName="queryquestioncomment" constraintName="FKC98D65D1B9C07F95" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="queryreply"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-427">
+        <addForeignKeyConstraint baseColumnNames="lastModifier_id" baseTableName="queryquestioncomment" constraintName="FKC98D65D1C3196C33" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-428">
+        <addForeignKeyConstraint baseColumnNames="queryPage_id" baseTableName="queryquestioncomment" constraintName="FKC98D65D1CEA93F75" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="querypage"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-429">
+        <addForeignKeyConstraint baseColumnNames="stamp_id" baseTableName="paneluserexpertisegroup" constraintName="FKCBC049D11BFC871" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="panelstamp"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-430">
+        <addForeignKeyConstraint baseColumnNames="expertiseClass_id" baseTableName="paneluserexpertisegroup" constraintName="FKCBC049D324CDB04" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="paneluserexpertiseclass"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-431">
+        <addForeignKeyConstraint baseColumnNames="panel_id" baseTableName="paneluserexpertisegroup" constraintName="FKCBC049D43CC2035" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="panel"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-432">
+        <addForeignKeyConstraint baseColumnNames="intressClass_id" baseTableName="paneluserexpertisegroup" constraintName="FKCBC049D51787064" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="paneluserintressclass"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-433">
+        <addForeignKeyConstraint baseColumnNames="entry_id" baseTableName="localizedvalue" constraintName="FKCBC29ED64E0E5EFA" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="localizedentry"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-434">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="localdocument" constraintName="FKD47A98637374F71" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="document"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-435">
+        <addForeignKeyConstraint baseColumnNames="creator_id" baseTableName="querysection" constraintName="FKD544611D525F5F14" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-436">
+        <addForeignKeyConstraint baseColumnNames="query_id" baseTableName="querysection" constraintName="FKD544611DBF2279B5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="query"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-437">
+        <addForeignKeyConstraint baseColumnNames="lastModifier_id" baseTableName="querysection" constraintName="FKD544611DC3196C33" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-438">
+        <addForeignKeyConstraint baseColumnNames="creator_id" baseTableName="mailqueueitem" constraintName="FKD840DFAD525F5F14" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-439">
+        <addForeignKeyConstraint baseColumnNames="lastModifier_id" baseTableName="mailqueueitem" constraintName="FKD840DFADC3196C33" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-440">
+        <addForeignKeyConstraint baseColumnNames="emailMessage_id" baseTableName="mailqueueitem" constraintName="FKD840DFADD980BEF5" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="emailmessage"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-441">
+        <addForeignKeyConstraint baseColumnNames="key_id" baseTableName="setting" constraintName="FKD997A63032F3E225" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="settingkey"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-442">
+        <addForeignKeyConstraint baseColumnNames="expertiseGroup_id" baseTableName="panelexpertisegroupuser" constraintName="FKD9B784DD2770E9A4" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="paneluserexpertisegroup"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-443">
+        <addForeignKeyConstraint baseColumnNames="panelUser_id" baseTableName="panelexpertisegroupuser" constraintName="FKD9B784DD283E4C75" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="paneluser"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-444">
+        <addForeignKeyConstraint baseColumnNames="creator" baseTableName="formdraft" constraintName="FKE1D2F71D3D76ED32" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-445">
+        <addForeignKeyConstraint baseColumnNames="panelSettingsTemplate_id" baseTableName="panelsettingstemplaterole" constraintName="FKE2DF5BD7B2CB4755" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="panelsettingstemplate"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-446">
+        <addForeignKeyConstraint baseColumnNames="delfoiAction_id" baseTableName="panelsettingstemplaterole" constraintName="FKE2DF5BD7D0AEF735" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="delfoiaction"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-447">
+        <addForeignKeyConstraint baseColumnNames="userRole_id" baseTableName="panelsettingstemplaterole" constraintName="FKE2DF5BD7D0D25375" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="userrole"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-448">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="querynumericfield" constraintName="FKEA4736B56B66CB68" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="queryfield"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-449">
+        <addForeignKeyConstraint baseColumnNames="queryPageTemplate_id" baseTableName="querypagetemplatesetting" constraintName="FKEBB3101F543CF955" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="querypagetemplate"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-450">
+        <addForeignKeyConstraint baseColumnNames="key_id" baseTableName="querypagetemplatesetting" constraintName="FKEBB3101FA6E04CBC" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="querypagesettingkey"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-451">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="queryquestionnumericanswer" constraintName="FKEE9CA31DC93D2C42" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="queryquestionanswer"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-452">
+        <addForeignKeyConstraint baseColumnNames="creator_id" baseTableName="resource" constraintName="FKEF86282E525F5F14" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-453">
+        <addForeignKeyConstraint baseColumnNames="parentFolder_id" baseTableName="resource" constraintName="FKEF86282E6D3602CB" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="folder"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-454">
+        <addForeignKeyConstraint baseColumnNames="lastModifier_id" baseTableName="resource" constraintName="FKEF86282EC3196C33" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-455">
+        <addForeignKeyConstraint baseColumnNames="option_id" baseTableName="queryquestionoptionanswer" constraintName="FKF0E02861BC6F48D2" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="queryoptionfieldoption"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-456">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="queryquestionoptionanswer" constraintName="FKF0E02861C93D2C42" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="queryquestionanswer"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-457">
+        <addForeignKeyConstraint baseColumnNames="panel_id" baseTableName="panelbulletin" constraintName="FKF1293AB43CC2035" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="panel"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-458">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="panelbulletin" constraintName="FKF1293ABB3B3B7FD" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="bulletin"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-459">
+        <addForeignKeyConstraint baseColumnNames="resource_id" baseTableName="resourcelock" constraintName="FKF2DE9A79391BC035" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="resource"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-460">
+        <addForeignKeyConstraint baseColumnNames="creator_id" baseTableName="resourcelock" constraintName="FKF2DE9A79525F5F14" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="user"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-461">
+        <addForeignKeyConstraint baseColumnNames="name_id" baseTableName="userrole" constraintName="FKF3F76701317C0A41" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="localizedentry"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-462">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="queryquestiontextanswer" constraintName="FKF75B1699C93D2C42" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="queryquestionanswer"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-463">
+        <addForeignKeyConstraint baseColumnNames="key_id" baseTableName="querypagesetting" constraintName="FKFA821AF9A6E04CBC" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="querypagesettingkey"/>
+    </changeSet>
+    <changeSet author="anttileppa" id="1479934562938-464">
+        <addForeignKeyConstraint baseColumnNames="queryPage_id" baseTableName="querypagesetting" constraintName="FKFA821AF9CEA93F75" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="querypage"/>
+    </changeSet>
+    
+    <changeSet id="feature-#19" author="anttileppa">
+      <dropForeignKeyConstraint baseTableName="panelinvitation" constraintName="FKBD8A609DD980BEF5"/>
+      <dropForeignKeyConstraint baseTableName="mailqueueitem" constraintName="FKD840DFADD980BEF5"/>
+      <dropIndex tableName="mailqueueitem" indexName="FKD840DFADD980BEF5"/> 
+      <dropIndex tableName="panelinvitation" indexName="FKBD8A609DD980BEF5"/>
+    
+      <dropColumn tableName="PanelInvitation" columnName="emailMessage_id"></dropColumn>
+      <dropTable tableName="__panelusergroupusers"/>
+      <dropTable tableName="__queryquestionmultioptionanswers"/>
+      <dropTable tableName="MailQueueItem"/>
+      <dropTable tableName="EmailMessage"/>
+    </changeSet>
+    
+</databaseChangeLog>
