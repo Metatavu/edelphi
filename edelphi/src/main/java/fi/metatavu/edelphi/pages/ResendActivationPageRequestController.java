@@ -42,7 +42,7 @@ public class ResendActivationPageRequestController extends PageController {
     String verificationLink = RequestUtils.getBaseUrl(pageRequestContext.getRequest()) + "/activateaccount.page?email=" + userActivation.getEmail() + "&hash=" + userActivation.getHash();
     String mailContent = messages.getText(locale, "userRegistration.mailTemplate", new String [] { email, verificationLink });
     String infoMessage = messages.getText(locale, "userRegistration.infoMessage", new String [] { email });
-    MailUtils.sendMail(locale, email, mailSubject, mailContent);
+    MailUtils.sendMail(email, mailSubject, mailContent);
     
     RequestUtils.storeRedirectMessage(pageRequestContext, new SmvcMessage(Severity.INFORMATION, infoMessage));
     String baseUrl = RequestUtils.getBaseUrl(pageRequestContext.getRequest());

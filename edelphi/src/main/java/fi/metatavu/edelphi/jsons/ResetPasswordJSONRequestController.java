@@ -51,7 +51,7 @@ public class ResetPasswordJSONRequestController extends JSONController {
     String resetLink = RequestUtils.getBaseUrl(jsonRequestContext.getRequest()) + "/resetpassword.page?email=" + passwordReset.getEmail() + "&hash=" + passwordReset.getHash();
     String mailContent = messages.getText(locale, "passwordReset.mailTemplate", new String [] { email, resetLink });
     String infoMessage = messages.getText(locale, "passwordReset.infoMessage", new String [] { email });
-    MailUtils.sendMail(locale, email, mailSubject, mailContent);
+    MailUtils.sendMail(email, mailSubject, mailContent);
     jsonRequestContext.addMessage(Severity.INFORMATION, infoMessage);
   }
   

@@ -74,6 +74,10 @@
     
     <h2.version>1.4.192</h2.version>
     
+    <!-- GreenMail -->
+    
+    <greenmail.version>1.5.2</greenmail.version>
+    
   </properties>
   
   <dependencies>
@@ -97,6 +101,14 @@
       <artifactId>commons-lang3</artifactId>
       <version>3.4</version>
     </dependency>
+    
+    <dependency>
+      <groupId>com.icegreen</groupId>
+      <artifactId>greenmail</artifactId>
+      <version>${greenmail.version}</version>
+      <scope>test</scope>
+    </dependency>
+      
   </dependencies>
   
   <profiles>
@@ -110,6 +122,7 @@
       <properties>
         <wildfly.home>${project.basedir}/.cargo/extracts/wildfly-10.1.0.Final/wildfly-10.1.0.Final</wildfly.home>
         <it.port.http>8280</it.port.http>
+        <it.port.smtp>3025</it.port.smtp>
         <it.host>test.edelphi.fi</it.host>
         <it.jdbc.driver>org.h2.Driver</it.jdbc.driver>
         <it.jdbc.url>jdbc:h2:file:${project.build.directory}/h2;AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE</it.jdbc.url>
@@ -146,7 +159,6 @@
             <artifactId>maven-failsafe-plugin</artifactId>
             <version>2.19.1</version>
             <configuration>
-              <forkCount>0</forkCount>
               <failIfNoTests>true</failIfNoTests>
               <includes>
                 <include>${it.tests}</include>
@@ -158,6 +170,7 @@
                 <it.selenium.version>${selenium-java.version}</it.selenium.version>
                 <it.host>${it.host}</it.host>
                 <it.port.http>${it.port.http}</it.port.http>
+                <it.port.smtp>${it.port.smtp}</it.port.smtp>
                 <it.jdbc.driver>${it.jdbc.driver}</it.jdbc.driver>
                 <it.jdbc.url>${it.jdbc.url}</it.jdbc.url>
                 <it.jdbc.jndi>${it.jdbc.jndi}</it.jdbc.jndi>
@@ -179,86 +192,6 @@
                 <goals>
                   <goal>verify</goal>
                 </goals>
-              </execution>
-            </executions>
-          </plugin>
-          
-          <plugin>
-            <groupId>de.juplo</groupId>
-            <artifactId>hibernate-maven-plugin</artifactId>
-            <version> 2.0.0</version>
-            <dependencies>
-              <dependency>
-                <groupId>com.h2database</groupId>
-                <artifactId>h2</artifactId>
-                <version>${h2.version}</version>
-              </dependency>
-            </dependencies>
-            <configuration>
-              <driver>${it.jdbc.driver}</driver>
-              <hibernateDialect>${it.hibernate.dialect}</hibernateDialect> 
-              <url><![CDATA[${it.jdbc.url}]]></url>
-              <username>${it.jdbc.username}</username>
-              <password>${it.jdbc.password}</password>
-            </configuration>
-            <executions>
-              <execution> 
-                <id>create-schema</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>create</goal>
-                </goals>
-                <configuration>
-                  <type>CREATE</type>
-                </configuration>
-              </execution>
-              
-              <execution> 
-                <id>drop-db-after-test</id>
-                <phase>post-integration-test</phase>
-                <goals>
-                  <goal>drop</goal>
-                </goals>
-                <configuration>
-                  <type>DROP</type>
-                  <force>true</force>
-                  <skip>${it.skipdatabasedrop}</skip>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>sql-maven-plugin</artifactId>
-            <version>1.5</version>
-            <dependencies>
-              <dependency>
-                <groupId>com.h2database</groupId>
-                <artifactId>h2</artifactId>
-                <version>${h2.version}</version>
-              </dependency>
-            </dependencies>
-    
-            <configuration>      
-              <driver>${it.jdbc.driver}</driver>
-              <url>${it.jdbc.url}</url>
-              <username>${it.jdbc.username}</username>
-              <password>${it.jdbc.password}</password>
-            </configuration>
-            <executions>
-              <execution>
-                <id>basic-sql-setup</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>execute</goal>
-                </goals>
-                <configuration>
-                  <autocommit>true</autocommit>
-                  <srcFiles>
-                    <srcFile>src/test/resources/init.sql</srcFile>
-                  </srcFiles>
-                </configuration>
               </execution>
             </executions>
           </plugin>
@@ -456,6 +389,7 @@
               </execution>
             </executions>
           </plugin>
+          
           <plugin>
             <groupId>org.eluder.coveralls</groupId>
             <artifactId>coveralls-maven-plugin</artifactId>

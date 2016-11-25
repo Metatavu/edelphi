@@ -54,6 +54,14 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
       <organizationUrl>https://www.metatavu.fi</organizationUrl>
     </developer>    
   </developers>
+
+  <properties>
+  
+    <!-- Liquibase -->
+    
+    <liquibase.version>3.5.3</liquibase.version>
+
+  </properties>
   
   <dependencies>
   
@@ -78,6 +86,12 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
     <dependency>
       <groupId>org.jboss.spec.javax.ejb</groupId>
       <artifactId>jboss-ejb-api_3.2_spec</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>javax.enterprise</groupId>
+      <artifactId>cdi-api</artifactId>
       <scope>provided</scope>
     </dependency>
     
@@ -254,6 +268,13 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
       <artifactId>slf4j-api</artifactId>
       <scope>provided</scope>
     </dependency>
+    
+    <dependency>
+      <groupId>org.liquibase</groupId>
+      <artifactId>liquibase-cdi</artifactId>
+      <version>${liquibase.version}</version>
+    </dependency>
+    
   </dependencies>
   
   <build>

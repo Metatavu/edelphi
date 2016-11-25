@@ -47,7 +47,7 @@ public class ReportIssueJSONRequestController extends JSONController {
       }
     }
     
-    MailUtils.sendMail(locale, new String[] { address }, from, subject, content.toString(), MailUtils.PLAIN);
+    MailUtils.sendMail(new String[] { address }, from, subject, content.toString(), MailUtils.PLAIN);
     
     jsonRequestContext.addMessage(Severity.OK, messages.getText(locale, "reportIssue.block.issueReportedMessage"));
   }

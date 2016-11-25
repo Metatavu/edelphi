@@ -32,7 +32,7 @@ INSERT INTO
   Delfoi (id, domain, rootFolder_id)
 VALUES
   (1, 'test.edelphi.fi', 1);
-  
+
 INSERT INTO
   LocalizedEntry (id)
 VALUES 
@@ -83,6 +83,11 @@ VALUES
   (6), 
   (7), 
   (8);
+  
+INSERT INTO
+  DelfoiDefaults (id, delfoi_id, defaultPanelCreatorRole_id, defaultDelfoiUserRole_id)
+VALUES
+  (1, 1, 6, 5);
   
 INSERT INTO
   DelfoiUser (id, delfoi_id, user_id, archived, creator_id, created, lastModifier_id, lastModified, role_id)

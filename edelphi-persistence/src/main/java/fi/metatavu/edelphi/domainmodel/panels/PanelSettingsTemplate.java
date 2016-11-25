@@ -18,6 +18,36 @@ import fi.metatavu.edelphi.domainmodel.base.ArchivableEntity;
 @Entity
 public class PanelSettingsTemplate implements ArchivableEntity {
 
+  @Id 
+  @GeneratedValue(strategy=GenerationType.TABLE, generator="PanelSettingsTemplate")  
+  @TableGenerator(name="PanelSettingsTemplate", initialValue=1, allocationSize=100, table = "hibernate_sequences", pkColumnName = "sequence_name", valueColumnName = "sequence_next_hi_value")
+  private Long id;
+  
+  @NotNull
+  @Column (nullable = false)
+  @NotEmpty
+  private String name;
+  
+  @Column (length=1073741824)
+  private String description;
+  
+  @ManyToOne
+  private PanelUserRole defaultPanelUserRole;
+
+  @NotNull
+  @Column (nullable = false)
+  @Enumerated (EnumType.STRING)
+  private PanelAccessLevel accessLevel;
+
+  @NotNull
+  @Column (nullable = false)
+  @Enumerated (EnumType.STRING)
+  private PanelState state;
+  
+  @NotNull
+  @Column(nullable = false)
+  private Boolean archived;
+
   /**
    * Returns internal unique id
    * 
@@ -76,34 +106,4 @@ public class PanelSettingsTemplate implements ArchivableEntity {
   public void setArchived(Boolean archived) {
     this.archived = archived;
   }
-
-  @Id 
-  @GeneratedValue(strategy=GenerationType.TABLE, generator="PanelSettingsTemplate")  
-  @TableGenerator(name="PanelSettingsTemplate", initialValue=1, allocationSize=100, table = "hibernate_sequences", pkColumnName = "sequence_name", valueColumnName = "sequence_next_hi_value")
-  private Long id;
-  
-  @NotNull
-  @Column (nullable = false)
-  @NotEmpty
-  private String name;
-  
-  @Column (length=1073741824)
-  private String description;
-  
-  @ManyToOne
-  private PanelUserRole defaultPanelUserRole;
-
-  @NotNull
-  @Column (nullable = false)
-  @Enumerated (EnumType.STRING)
-  private PanelAccessLevel accessLevel;
-
-  @NotNull
-  @Column (nullable = false)
-  @Enumerated (EnumType.STRING)
-  private PanelState state;
-  
-  @NotNull
-  @Column(nullable = false)
-  private Boolean archived = Boolean.FALSE;
 }
