@@ -439,17 +439,24 @@ public class AbstractUITest {
     TakesScreenshot takesScreenshot = (TakesScreenshot) webDriver;
     
     if (getCI()) {
-      String imageData = toDataUrl("image/png", takesScreenshot.getScreenshotAs(OutputType.BYTES));
-      logger.warning(String.format("Screenshot: %s: %s", file.getName(), imageData));
+      dumpScreenShot(takesScreenshot);
     } else {    
-    FileOutputStream fileOuputStream = new FileOutputStream(file);
+      FileOutputStream fileOuputStream = new FileOutputStream(file);
       try {
        fileOuputStream.write(takesScreenshot.getScreenshotAs(OutputType.BYTES));
+      } catch (IOException e) {
+        dumpScreenShot(takesScreenshot);
+        throw e;
       } finally {
         fileOuputStream.flush();
         fileOuputStream.close();
       }
     }
+  }
+  
+  private void dumpScreenShot(TakesScreenshot takesScreenshot) {
+    String imageData = toDataUrl("image/png", takesScreenshot.getScreenshotAs(OutputType.BYTES));
+    logger.warning(String.format("Screenshot: %s", imageData));
   }
   
   private String toDataUrl(String contentType, byte[] data) {
