@@ -430,30 +430,37 @@ public class AbstractUITest {
   }
   
   protected void takeScreenshot() throws IOException {
-    File file = new File("itests/target", UUID.randomUUID().toString() + ".png");
-    if (file.createNewFile()) {
-      takeScreenshot(file);
-    } else {
+    if (getCI()) {
       dumpScreenShot();
+    } else {
+      takeScreenshot("itests/target", UUID.randomUUID().toString() + ".png"); 
     }
+  }
+  
+  @SuppressWarnings ("squid:S1166")
+  protected void takeScreenshot(String parentDirectory, String filename) {
+    try {
+      File file = new File(parentDirectory, filename);
+      if (file.createNewFile()) {
+        takeScreenshot(file);
+        return;
+      }
+    } catch (IOException e) {
+      // Failed to write screenshot
+    }
+
+    dumpScreenShot();
   }
 
   protected void takeScreenshot(File file) throws IOException {
     TakesScreenshot takesScreenshot = (TakesScreenshot) webDriver;
     
-    if (getCI()) {
-      dumpScreenShot(takesScreenshot);
-    } else {    
-      FileOutputStream fileOuputStream = new FileOutputStream(file);
-      try {
-       fileOuputStream.write(takesScreenshot.getScreenshotAs(OutputType.BYTES));
-      } catch (IOException e) {
-        dumpScreenShot(takesScreenshot);
-        throw e;
-      } finally {
-        fileOuputStream.flush();
-        fileOuputStream.close();
-      }
+    FileOutputStream fileOuputStream = new FileOutputStream(file);
+    try {
+     fileOuputStream.write(takesScreenshot.getScreenshotAs(OutputType.BYTES));
+    } finally {
+      fileOuputStream.flush();
+      fileOuputStream.close();
     }
   }
   
