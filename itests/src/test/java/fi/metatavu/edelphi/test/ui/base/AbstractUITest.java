@@ -265,7 +265,7 @@ public class AbstractUITest {
     desiredCapabilities.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, (new File(".phantomjs/bin/phantomjs")).getAbsolutePath());
     desiredCapabilities.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS, new String[] { "--ignore-ssl-errors=true", "--webdriver-loglevel=NONE", "--load-images=false" } );
     PhantomJSDriver driver = new PhantomJSDriver(desiredCapabilities);
-    driver.manage().window().setSize(new Dimension(1024, 768));
+    driver.manage().window().setSize(new Dimension(1280, 1024));
     return driver;
   }
   
