@@ -431,10 +431,13 @@ public class AbstractUITest {
   
   protected void takeScreenshot() throws IOException {
     File file = new File("itests/target", UUID.randomUUID().toString() + ".png");
-    assertTrue(file.createNewFile());
-    takeScreenshot(file);
+    if (file.createNewFile()) {
+      takeScreenshot(file);
+    } else {
+      dumpScreenShot();
+    }
   }
-  
+
   protected void takeScreenshot(File file) throws IOException {
     TakesScreenshot takesScreenshot = (TakesScreenshot) webDriver;
     
@@ -452,6 +455,10 @@ public class AbstractUITest {
         fileOuputStream.close();
       }
     }
+  }
+  
+  private void dumpScreenShot() {
+    dumpScreenShot((TakesScreenshot) webDriver);
   }
   
   private void dumpScreenShot(TakesScreenshot takesScreenshot) {
