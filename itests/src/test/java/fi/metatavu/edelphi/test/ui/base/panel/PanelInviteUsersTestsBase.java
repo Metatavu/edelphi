@@ -18,7 +18,7 @@ public class PanelInviteUsersTestsBase extends AbstractUITest {
     navigate("/");
     createPanel("test");
     
-    waitAndClick(".GUI_navigation .menu .menuItem:nth-child(2)");
+    waitAndClick(".panel .GUI_navigation .menu .menuItem:nth-child(2) a");
     waitVisible(INVITE_LINK_SELECTOR);
     assertText(INVITE_LINK_SELECTOR, "Invite / Add Users");
     click(INVITE_LINK_SELECTOR);
