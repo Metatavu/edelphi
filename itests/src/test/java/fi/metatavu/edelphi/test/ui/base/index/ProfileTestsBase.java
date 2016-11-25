@@ -6,7 +6,6 @@ import fi.metatavu.edelphi.test.ui.base.AbstractUITest;
 
 public class ProfileTestsBase extends AbstractUITest {
   
-  private static final String ADMIN_EMAIL = "admin@example.com";
   private static final String PROFILE_PAGE = "/profile.page";
 
   @Test

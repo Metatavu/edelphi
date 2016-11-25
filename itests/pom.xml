@@ -74,6 +74,10 @@
     
     <h2.version>1.4.192</h2.version>
     
+    <!-- GreenMail -->
+    
+    <greenmail.version>1.5.2</greenmail.version>
+    
   </properties>
   
   <dependencies>
@@ -97,6 +101,14 @@
       <artifactId>commons-lang3</artifactId>
       <version>3.4</version>
     </dependency>
+    
+    <dependency>
+      <groupId>com.icegreen</groupId>
+      <artifactId>greenmail</artifactId>
+      <version>${greenmail.version}</version>
+      <scope>test</scope>
+    </dependency>
+      
   </dependencies>
   
   <profiles>
@@ -110,6 +122,7 @@
       <properties>
         <wildfly.home>${project.basedir}/.cargo/extracts/wildfly-10.1.0.Final/wildfly-10.1.0.Final</wildfly.home>
         <it.port.http>8280</it.port.http>
+        <it.port.smtp>3025</it.port.smtp>
         <it.host>test.edelphi.fi</it.host>
         <it.jdbc.driver>org.h2.Driver</it.jdbc.driver>
         <it.jdbc.url>jdbc:h2:file:${project.build.directory}/h2;AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE</it.jdbc.url>
@@ -157,6 +170,7 @@
                 <it.selenium.version>${selenium-java.version}</it.selenium.version>
                 <it.host>${it.host}</it.host>
                 <it.port.http>${it.port.http}</it.port.http>
+                <it.port.smtp>${it.port.smtp}</it.port.smtp>
                 <it.jdbc.driver>${it.jdbc.driver}</it.jdbc.driver>
                 <it.jdbc.url>${it.jdbc.url}</it.jdbc.url>
                 <it.jdbc.jndi>${it.jdbc.jndi}</it.jdbc.jndi>

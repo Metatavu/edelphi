@@ -53,7 +53,7 @@ public class MailUtils {
       Properties props = new Properties();
 
       InitialContext ictx = new InitialContext(props);
-      Session mailSession = (Session) ictx.lookup("java:/Mail");
+      Session mailSession = (Session) ictx.lookup("java:jboss/mail/Default");
 
       MimeMessage m = new MimeMessage(mailSession);
       Address[] to = new InternetAddress[toAddresses.length];
