@@ -1,11 +1,15 @@
 package fi.metatavu.edelphi.liquibase;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
 import javax.sql.DataSource;
+
+import org.apache.commons.lang.StringUtils;
 
 import liquibase.integration.cdi.CDILiquibaseConfig;
 import liquibase.integration.cdi.annotations.LiquibaseType;
@@ -21,8 +25,16 @@ public class LiquibaseProducer {
   @Produces
   @LiquibaseType
   public CDILiquibaseConfig createConfig() {
+    List<String> contexts = new ArrayList<>();
+    
+    if ("TEST".equals(System.getProperty("runmode"))) {
+      contexts.add("test");
+    }
+    
     CDILiquibaseConfig config = new CDILiquibaseConfig();
     config.setChangeLog("fi/metatavu/edelphi/liquibase/changelog.xml");
+    config.setContexts(StringUtils.join(contexts, ','));
+    
     return config;
   }
   
