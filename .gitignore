@@ -7,3 +7,4 @@ travis-encrypted.tar
 .travis_rsa
 .gnupg
 /.DS_Store
+/localsettings.sql

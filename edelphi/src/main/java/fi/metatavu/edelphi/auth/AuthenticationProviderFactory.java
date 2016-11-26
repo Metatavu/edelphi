@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import fi.metatavu.edelphi.domainmodel.base.AuthSource;
+import fi.metatavu.edelphi.utils.SystemUtils;
 
 /**
  * The class responsible of managing the authentication providers of the application.
@@ -69,5 +70,9 @@ public class AuthenticationProviderFactory {
     AuthenticationProviderFactory.getInstance().registerAuthenticationProvider(FacebookAuthenticationStrategy.class);
     AuthenticationProviderFactory.getInstance().registerAuthenticationProvider(TwitterAuthenticationStrategy.class);
     AuthenticationProviderFactory.getInstance().registerAuthenticationProvider(NingAuthenticationStrategy.class);
+    
+    if (SystemUtils.isTestEnvironment()) {
+      AuthenticationProviderFactory.getInstance().registerAuthenticationProvider(TestAuthenticationStrategy.class);
+    }
   }
 }

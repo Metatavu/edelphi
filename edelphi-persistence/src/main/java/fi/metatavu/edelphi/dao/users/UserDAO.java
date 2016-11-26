@@ -9,6 +9,7 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.hibernate.search.jpa.Search;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
+import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.search.SearchResult;
@@ -18,7 +19,7 @@ import org.hibernate.search.jpa.FullTextQuery;
 
 public class UserDAO extends GenericDAO<User> {
   
-  public User create(String firstName, String lastName, String nickname, User creator) {
+  public User create(String firstName, String lastName, String nickname, User creator, SubscriptionLevel subscriptionLevel, Date subscriptionStarted, Date subscriptionEnds) {
     Date now = new Date();
     
     User user = new User();
@@ -30,9 +31,11 @@ public class UserDAO extends GenericDAO<User> {
     user.setLastModified(now);
     user.setLastModifier(creator);
     user.setArchived(Boolean.FALSE);
+    user.setSubscriptionLevel(subscriptionLevel);
+    user.setSubscriptionStarted(subscriptionStarted);
+    user.setSubscriptionEnds(subscriptionEnds);
 
-    getEntityManager().persist(user);
-    return user;
+    return persist(user);
   }
 
   @SuppressWarnings("unchecked")
@@ -41,13 +44,13 @@ public class UserDAO extends GenericDAO<User> {
 
     int firstResult = page * resultsPerPage;
     
-    searchText = QueryParser.escape(searchText);
-    searchText = searchText.replace(" ", "\\ ");
-    searchText = searchText + "*";
+    String criterial = QueryParser.escape(searchText);
+    criterial = criterial.replace(" ", "\\ ");
+    criterial = criterial + "*";
 
     StringBuilder queryBuilder = new StringBuilder();
     queryBuilder.append("+fullNameSearch:");
-    queryBuilder.append(searchText);
+    queryBuilder.append(criterial);
     queryBuilder.append(" +archived:false +emails.id:[* TO 9999999]");
   
     try {
@@ -67,7 +70,7 @@ public class UserDAO extends GenericDAO<User> {
 
       int lastResult = Math.min(firstResult + resultsPerPage, hits) - 1;
       
-      return new SearchResult<User>(page, pages, hits, firstResult, lastResult, query.getResultList());
+      return new SearchResult<>(page, pages, hits, firstResult, lastResult, query.getResultList());
 
     } catch (ParseException e) {
       throw new PersistenceException(e);
@@ -80,17 +83,17 @@ public class UserDAO extends GenericDAO<User> {
 
     int firstResult = page * resultsPerPage;
     
-    searchText = QueryParser.escape(searchText);
-    searchText = searchText.replace(" ", "\\ ");
-    searchText = searchText + "*";
+    String criteria = QueryParser.escape(searchText);
+    criteria = criteria.replace(" ", "\\ ");
+    criteria = criteria + "*";
 
     StringBuilder queryBuilder = new StringBuilder();
     queryBuilder.append("+(firstName:");
-    queryBuilder.append(searchText);
+    queryBuilder.append(criteria);
     queryBuilder.append(" lastName:");
-    queryBuilder.append(searchText);
+    queryBuilder.append(criteria);
     queryBuilder.append(" emails.address:");
-    queryBuilder.append(searchText + ")");
+    queryBuilder.append(criteria + ")");
     queryBuilder.append(" +archived:false +emails.id:[* TO 9999999]");
   
     try {
@@ -111,7 +114,7 @@ public class UserDAO extends GenericDAO<User> {
 
       int lastResult = Math.min(firstResult + resultsPerPage, hits) - 1;
       
-      return new SearchResult<User>(page, pages, hits, firstResult, lastResult, query.getResultList());
+      return new SearchResult<>(page, pages, hits, firstResult, lastResult, query.getResultList());
 
     } catch (ParseException e) {
       throw new PersistenceException(e);

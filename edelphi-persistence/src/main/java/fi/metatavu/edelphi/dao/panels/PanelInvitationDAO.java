@@ -9,7 +9,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
-import fi.metatavu.edelphi.domainmodel.base.EmailMessage;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitation;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitationState;
@@ -20,7 +19,7 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 
 public class PanelInvitationDAO extends GenericDAO<PanelInvitation> {
 
-  public PanelInvitation create(Panel panel, Query query, String email, String hash, PanelUserRole role, PanelInvitationState state, EmailMessage emailMessage, User creator) {
+  public PanelInvitation create(Panel panel, Query query, String email, String hash, PanelUserRole role, PanelInvitationState state, User creator) {
     Date now = new Date();
     
     PanelInvitation panelInvitation = new PanelInvitation();
@@ -30,15 +29,13 @@ public class PanelInvitationDAO extends GenericDAO<PanelInvitation> {
     panelInvitation.setHash(hash);
     panelInvitation.setRole(role);
     panelInvitation.setState(state);
-    panelInvitation.setEmailMessage(emailMessage);
     panelInvitation.setCreated(now);
     panelInvitation.setCreator(creator);
     panelInvitation.setLastModified(now);
     panelInvitation.setLastModifier(creator);
     panelInvitation.setArchived(Boolean.FALSE);
     
-    getEntityManager().persist(panelInvitation);
-    return panelInvitation;
+    return persist(panelInvitation);
   }
   
   public PanelInvitation findByPanelAndQueryAndEmail(Panel panel, Query query, String email) {

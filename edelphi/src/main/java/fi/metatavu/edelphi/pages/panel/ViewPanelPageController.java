@@ -7,12 +7,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import fi.metatavu.edelphi.smvcj.AccessDeniedException;
-import fi.metatavu.edelphi.smvcj.LoginRequiredException;
-import fi.metatavu.edelphi.smvcj.PageNotFoundException;
-import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
-import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.panels.PanelBulletinDAO;
@@ -30,6 +24,10 @@ import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.resources.QueryState;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.i18n.Messages;
+import fi.metatavu.edelphi.smvcj.PageNotFoundException;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.ActionUtils;
 import fi.metatavu.edelphi.utils.MaterialBean;
 import fi.metatavu.edelphi.utils.MaterialUtils;
@@ -45,7 +43,7 @@ public class ViewPanelPageController extends PanelPageController {
   }
 
   @Override
-  public void authorize(RequestContext requestContext) throws LoginRequiredException, AccessDeniedException {
+  public void authorize(RequestContext requestContext) {
     Panel panel = RequestUtils.getPanel(requestContext);
     if (panel != null && panel.getAccessLevel().equals(PanelAccessLevel.OPEN)) {
       Long userId = requestContext.getLoggedUserId();
@@ -79,17 +77,12 @@ public class ViewPanelPageController extends PanelPageController {
 
     User loggedUser = pageRequestContext.getLoggedUserId() == null ? null : userDAO.findById(pageRequestContext.getLoggedUserId());
     List<Query> queries = queryDAO.listByFolderAndVisibleAndArchived(panel.getRootFolder(), Boolean.TRUE, Boolean.FALSE);
-    Collections.sort(queries, new Comparator<Query>() {
-      @Override
-      public int compare(Query o1, Query o2) {
-        return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
-      }
-    });
+    Collections.sort(queries, new PanelComparator());
     
-    List<QueryBean> unfinishedQueries = new ArrayList<QueryBean>();
-    List<QueryBean> finishedQueries = new ArrayList<QueryBean>();
-    List<QueryBean> notStartedQueries = new ArrayList<QueryBean>();
-    List<QueryBean> closedQueries = new ArrayList<QueryBean>();
+    List<QueryBean> unfinishedQueries = new ArrayList<>();
+    List<QueryBean> finishedQueries = new ArrayList<>();
+    List<QueryBean> notStartedQueries = new ArrayList<>();
+    List<QueryBean> closedQueries = new ArrayList<>();
         
     String monthsText = Messages.getInstance().getText(pageRequestContext.getRequest().getLocale(), "generic.timeRemaining.months");
     String monthText = Messages.getInstance().getText(pageRequestContext.getRequest().getLocale(), "generic.timeRemaining.month");
@@ -175,6 +168,15 @@ public class ViewPanelPageController extends PanelPageController {
     pageRequestContext.setIncludeJSP("/jsp/pages/panel/viewpanel.jsp");
   }
   
+  private class PanelComparator implements Comparator<Query> {
+    
+    @Override
+    public int compare(Query o1, Query o2) {
+      return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
+    }
+    
+  }
+
   public class QueryBean {
     
     public QueryBean(Long id, String name, String fullPath, String description, String timeToAnswer, Date created, Boolean visible, QueryState state) {

@@ -62,7 +62,7 @@ public class MessageCenterJSONRequestController extends JSONController {
         throw new SmvcRuntimeException(EdelfoiStatusCode.INVALID_LOGIN, messages.getText(locale, "exception.1016.invalidConfiguration"));
       }
       
-      MailUtils.sendMail(locale, emails.toArray(new String[0]), from, messageSubject, messageContent, "text/plain");
+      MailUtils.sendMail(emails.toArray(new String[0]), from, messageSubject, messageContent, "text/plain");
 
       jsonRequestContext.addMessage(Severity.OK, messages.getText(locale, "panel.admin.messageCenter.messagesSent", new String[] { emails.size() + "" }));
     } else {

@@ -52,6 +52,10 @@
     <!-- Project -->
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    
+    <!-- Coverage -->
+    
+    <skipCoverage>true</skipCoverage>
 
     <!-- Maven -->
 
@@ -60,7 +64,7 @@
     
     <!-- Selenium -->
     
-    <selenium-java.version>3.0.0-beta3</selenium-java.version>
+    <selenium-java.version>3.0.0-beta4</selenium-java.version>
     
     <!-- Wildfly -->
     
@@ -70,27 +74,41 @@
     
     <h2.version>1.4.192</h2.version>
     
+    <!-- GreenMail -->
+    
+    <greenmail.version>1.5.2</greenmail.version>
+    
   </properties>
   
   <dependencies>
   
     <dependency>
       <groupId>junit</groupId>
-       <artifactId>junit</artifactId>
-       <version>4.12</version>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
     </dependency>
   
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-java</artifactId>
       <version>${selenium-java.version}</version>
+      <scope>test</scope>
     </dependency>
-  
+    
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>3.4</version>
     </dependency>
+    
+    <dependency>
+      <groupId>com.icegreen</groupId>
+      <artifactId>greenmail</artifactId>
+      <version>${greenmail.version}</version>
+      <scope>test</scope>
+    </dependency>
+      
   </dependencies>
   
   <profiles>
@@ -104,6 +122,7 @@
       <properties>
         <wildfly.home>${project.basedir}/.cargo/extracts/wildfly-10.1.0.Final/wildfly-10.1.0.Final</wildfly.home>
         <it.port.http>8280</it.port.http>
+        <it.port.smtp>3025</it.port.smtp>
         <it.host>test.edelphi.fi</it.host>
         <it.jdbc.driver>org.h2.Driver</it.jdbc.driver>
         <it.jdbc.url>jdbc:h2:file:${project.build.directory}/h2;AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE</it.jdbc.url>
@@ -115,6 +134,7 @@
         <it.package>**</it.package>
         <it.tests>**/*IT.java</it.tests>
         <jacoco.reportPath>${project.basedir}/target/jacoco.exec</jacoco.reportPath>
+        <jacoco.version>0.7.6.201602180812</jacoco.version>
       </properties>
       
       <dependencies>
@@ -150,6 +170,7 @@
                 <it.selenium.version>${selenium-java.version}</it.selenium.version>
                 <it.host>${it.host}</it.host>
                 <it.port.http>${it.port.http}</it.port.http>
+                <it.port.smtp>${it.port.smtp}</it.port.smtp>
                 <it.jdbc.driver>${it.jdbc.driver}</it.jdbc.driver>
                 <it.jdbc.url>${it.jdbc.url}</it.jdbc.url>
                 <it.jdbc.jndi>${it.jdbc.jndi}</it.jdbc.jndi>
@@ -176,118 +197,96 @@
           </plugin>
           
           <plugin>
-            <groupId>de.juplo</groupId>
-            <artifactId>hibernate-maven-plugin</artifactId>
-            <version> 2.0.0</version>
-            <dependencies>
-              <dependency>
-                <groupId>com.h2database</groupId>
-                <artifactId>h2</artifactId>
-                <version>${h2.version}</version>
-              </dependency>
-            </dependencies>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>${jacoco.version}</version>
             <configuration>
-              <driver>${it.jdbc.driver}</driver>
-              <hibernateDialect>${it.hibernate.dialect}</hibernateDialect> 
-              <url><![CDATA[${it.jdbc.url}]]></url>
-              <username>${it.jdbc.username}</username>
-              <password>${it.jdbc.password}</password>
-            </configuration>
-            <executions>
-              <execution> 
-                <id>create-schema</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>create</goal>
-                </goals>
-                <configuration>
-                  <type>CREATE</type>
-                </configuration>
-              </execution>
-              
-              <execution> 
-                <id>drop-db-after-test</id>
-                <phase>post-integration-test</phase>
-                <goals>
-                  <goal>drop</goal>
-                </goals>
-                <configuration>
-                  <type>DROP</type>
-                  <force>true</force>
-                  <skip>${it.skipdatabasedrop}</skip>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>sql-maven-plugin</artifactId>
-            <version>1.5</version>
-            <dependencies>
-              <dependency>
-                <groupId>com.h2database</groupId>
-                <artifactId>h2</artifactId>
-                <version>${h2.version}</version>
-              </dependency>
-            </dependencies>
-    
-            <configuration>      
-              <driver>${it.jdbc.driver}</driver>
-              <url>${it.jdbc.url}</url>
-              <username>${it.jdbc.username}</username>
-              <password>${it.jdbc.password}</password>
+              <destFile>${jacoco.reportPath}</destFile>
+              <dataFile>${jacoco.reportPath}</dataFile>
+              <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
+              <classDumpDir>${project.reporting.outputDirectory}/jacoco/classes</classDumpDir>
+              <propertyName>jacoco.agent.itArgLine</propertyName>
             </configuration>
             <executions>
               <execution>
-                <id>basic-sql-setup</id>
+                <id>jacoco-agent</id>
                 <phase>pre-integration-test</phase>
                 <goals>
-                  <goal>execute</goal>
+                  <goal>prepare-agent-integration</goal>
                 </goals>
                 <configuration>
-                  <autocommit>true</autocommit>
-                  <srcFiles>
-                    <srcFile>src/test/resources/init.sql</srcFile>
-                  </srcFiles>
+                  <destFile>${jacoco.reportPath}</destFile>
+                </configuration>
+              </execution>
+              <execution>
+                <id>jacoco-dump</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>dump</goal>
+                </goals>
+                <configuration>
+                  <skip>${skipCoverage}</skip>
                 </configuration>
               </execution>
             </executions>
           </plugin>
           
           <plugin>
-            <groupId>org.jacoco</groupId>
-            <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.7.6.201602180812</version>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.7</version>
             <configuration>
-              <destFile>${jacoco.reportPath}</destFile>
-              <dataFile>${jacoco.reportPath}</dataFile>
-              <outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
-              <classDumpDir>${project.reporting.outputDirectory}/jacoco-it/classes</classDumpDir>
+              <skip>${skipCoverage}</skip>
             </configuration>
-                
             <executions>
-              <execution>
-                <id>jacoco-agent</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>prepare-agent</goal>
-                </goals>
-                <configuration>
-                  <destFile>${jacoco.reportPath}</destFile>
-                  <propertyName>jacoco.agent.itArgLine</propertyName>
-                </configuration>
-              </execution>
               <execution>
                 <id>jacoco-report</id>
                 <phase>post-integration-test</phase>
                 <goals>
-                  <goal>dump</goal>
-                  <goal>report</goal>
+                  <goal>run</goal>
                 </goals>
+                <configuration>                  
+                  <target>
+                    <echo message="Generating JaCoCo Reports" />
+                    <taskdef name="report" classname="org.jacoco.ant.ReportTask">
+                      <classpath path="${basedir}/target/jacoco-jars/org.jacoco.ant.jar" />
+                    </taskdef>
+                    <mkdir dir="${project.reporting.outputDirectory}" />
+                    <report>
+                      <executiondata>
+                        <fileset dir="${project.basedir}/target">
+                          <include name="jacoco.exec" />
+                        </fileset>
+                      </executiondata>
+                      <structure name="Coverage">
+                        <group name="jacoco">
+                          <classfiles>
+                            <fileset dir="${project.basedir}/../edelphi/target/classes" />
+                            <fileset dir="${project.basedir}/../edelphi-persistence/target/classes" />
+                            <fileset dir="${project.basedir}/../smvcj/target/classes" />
+                          </classfiles>
+                          <sourcefiles encoding="UTF-8">
+                            <fileset dir="${project.basedir}/../edelphi/src/main/java" />
+                            <fileset dir="${project.basedir}/../edelphi-persistence/src/main/java" />
+                            <fileset dir="${project.basedir}/../edelphi-persistence/target/generated-sources/apt" />
+                            <fileset dir="${project.basedir}/../smvcj/src/main/java" />
+                          </sourcefiles>
+                        </group>
+                      </structure>
+                      <xml destfile="${project.reporting.outputDirectory}/jacoco/jacoco.xml" />
+                    </report>
+                  </target>
+                </configuration>
               </execution>
             </executions>
-          </plugin>   
+            <dependencies>
+              <dependency>
+                <groupId>org.jacoco</groupId>
+                <artifactId>org.jacoco.ant</artifactId>
+                <version>${jacoco.version}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
           
           <plugin>
             <groupId>org.codehaus.cargo</groupId>
@@ -350,7 +349,7 @@
             <version>1.0.2.Final</version>
             <executions>
               <execution>
-                <id>deploy-fni</id>
+                <id>deploy-app</id>
                 <phase>pre-integration-test</phase>
                 <goals>
                   <goal>deploy</goal>
@@ -390,11 +389,30 @@
               </execution>
             </executions>
           </plugin>
-        
+          
           <plugin>
             <groupId>org.eluder.coveralls</groupId>
             <artifactId>coveralls-maven-plugin</artifactId>
             <version>4.2.0</version>
+            <executions>
+              <execution>
+                <id>coveralls-report</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+                <configuration>
+                  <skip>${skipCoverage}</skip>
+                  <scanForSources>true</scanForSources>
+                  <sourceDirectories>
+                    <sourceDirectory>${project.basedir}/../edelphi/src/main/java</sourceDirectory>
+                    <sourceDirectory>${project.basedir}/../edelphi-persistence/src/main/java</sourceDirectory>
+                    <sourceDirectory>${project.basedir}/../edelphi-persistence/target/generated-sources/apt</sourceDirectory>
+                    <sourceDirectory>${project.basedir}/../smvcj/src/main/java</sourceDirectory>
+                  </sourceDirectories>
+                </configuration>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>

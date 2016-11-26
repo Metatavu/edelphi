@@ -4,21 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import fi.metatavu.edelphi.smvcj.PageNotFoundException;
-import fi.metatavu.edelphi.smvcj.Severity;
-import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
-import fi.metatavu.edelphi.dao.base.EmailMessageDAO;
-import fi.metatavu.edelphi.dao.base.MailQueueItemDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
-import fi.metatavu.edelphi.domainmodel.base.EmailMessage;
-import fi.metatavu.edelphi.domainmodel.base.MailQueueItemState;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUser;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.i18n.Messages;
 import fi.metatavu.edelphi.jsons.JSONController;
+import fi.metatavu.edelphi.smvcj.PageNotFoundException;
+import fi.metatavu.edelphi.smvcj.Severity;
+import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
+import fi.metatavu.edelphi.utils.MailUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 
 public class SendEmailJSONRequestController extends JSONController {
@@ -40,7 +37,7 @@ public class SendEmailJSONRequestController extends JSONController {
 
     PanelUserDAO panelUserDAO = new PanelUserDAO();
 
-    List<String> emails = new ArrayList<String>();
+    List<String> emails = new ArrayList<>();
     List<PanelUser> users = panelUserDAO.listByPanelAndStamp(panel, panel.getCurrentStamp());
     User loggedUser = RequestUtils.getUser(jsonRequestContext);
 
@@ -58,13 +55,11 @@ public class SendEmailJSONRequestController extends JSONController {
       }
     }
     
-    if (emails.size() > 0) {
-      EmailMessageDAO emailMessageDAO = new EmailMessageDAO();
-      MailQueueItemDAO mailQueueItemDAO = new MailQueueItemDAO();
+    if (!emails.isEmpty()) {
       for (String email : emails) {
-        EmailMessage emailMessage = emailMessageDAO.create(loggedUser.getDefaultEmail().getAddress(), email, mailSubject, mailContent, loggedUser);
-        mailQueueItemDAO.create(MailQueueItemState.IN_QUEUE, emailMessage, loggedUser);
+        MailUtils.sendMail(loggedUser.getDefaultEmail().getAddress(), email, mailSubject, mailContent);
       }
+
       jsonRequestContext.addMessage(Severity.OK, messages.getText(locale, "panel.admin.sendEmail.mailsSent", new String[] { emails.size() + "" }));
     }
     else {

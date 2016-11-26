@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.test.ui.base;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -12,6 +13,10 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
@@ -21,11 +26,16 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.mail.MessagingException;
+
 import org.apache.commons.lang3.StringUtils;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -33,6 +43,7 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.internal.FindsByCssSelector;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
@@ -40,18 +51,161 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.google.common.base.Predicate;
+import com.icegreen.greenmail.util.GreenMail;
+import com.icegreen.greenmail.util.ServerSetup;
 
 public class AbstractUITest {
   
+  public static final String ADMIN_EMAIL = "admin@example.com";
+  private static final long TEST_AUTH_SOURCE_ID = 1l;
+
   private Logger logger = Logger.getLogger(AbstractUITest.class.getName());
   
   private WebDriver webDriver;
-  
+  private GreenMail greenMail = new GreenMail(new ServerSetup(getPortSmtp(), "localhost", ServerSetup.PROTOCOL_SMTP));
+
   @Rule
   public TestWatcher testWatcher = new TestBaseWatcher();
   
+  @Before
+  public void startGreenMail() {
+    getGreenMail().start(); 
+  }
+  
+  @After
+  public void stopGreenMail() {
+    getGreenMail().stop(); 
+  }
+  
   public void navigate(String path) {
     webDriver.get(String.format("%s%s", getAppUrl(), path));
+  }
+
+  protected void login(String email) {
+    navigate(String.format("/dologin.json?authSource=%d&username=%s", TEST_AUTH_SOURCE_ID, email));
+  }
+
+  protected void assertLoginScreen() {
+    waitAndAssertText(".errorPageDescriptionContainer", "You need to be logged in to access the requested page.");
+  }
+  
+  protected void createPanel(String name) {
+    createPanel(name, null);
+  }  
+  
+  protected void createPanel(String name, String description) {
+    navigate("/");
+    waitAndClick(".createPanelBlockCreatePanelLink");
+    waitAndClick(".createPanel_panelTypesContainer .createPanel_panelType:nth-child(1) .createPanel_panelTypeName");
+    waitAndType("input[name='createPanel_panelName']", name);
+    
+    if (StringUtils.isNotBlank(description)) {
+      waitAndType(".createPanel_panelDescription", description);
+    }
+    
+    waitAndClick(".createPanel_donePageLink");
+    waitNotVisible(".createPanelBlock_createPanelDialogOverlay");
+  }
+  
+  protected void waitAndClick(String selector) {
+    waitVisible(selector);
+    click(selector);
+  }
+  
+  @SuppressWarnings ("squid:S1166")
+  protected int getElementWidth(String selector) {
+    waitVisible(selector); 
+    while (true) {
+      try {
+        List<WebElement> elements = findElements(selector);
+        if (!elements.isEmpty()) {
+          return elements.get(0).getSize().getWidth();
+        }
+      } catch (Exception e) {
+        // Ignore
+      }
+    }
+  }
+  
+  protected void clickOffset(String selector, int offsetX, int offsetY) {
+    Actions build = new Actions(webDriver);
+    build
+      .moveToElement(findElements(selector).get(0), offsetX, offsetY)
+      .click()
+      .build()
+      .perform();
+  }
+  
+  protected void click(String selector) {
+    findElements(selector).get(0).click();
+  }
+
+  protected void waitAndType(String selector, String text) {
+    waitPresent(selector);
+    findElements(selector).get(0).sendKeys(text);
+  }
+  
+  protected void waitAndType(String selector, Keys... keys) {
+    waitPresent(selector);
+    findElements(selector).get(0).sendKeys(keys);
+  }
+  
+  protected void waitPresent(final String... selectors) {
+    Predicate<WebDriver> untilPredicate = driver -> !findElements(selectors).isEmpty();
+    new WebDriverWait(getWebDriver(), 60).until(untilPredicate);
+  }
+  
+  protected void waitNotPresent(final String... selectors) {
+    Predicate<WebDriver> untilPredicate = driver -> findElements(selectors).isEmpty();
+    new WebDriverWait(webDriver, 60).until(untilPredicate);
+  }
+  
+  @SuppressWarnings ("squid:S1166")
+  protected void waitVisible(final String selector) {
+    Predicate<WebDriver> untilPredicate = driver -> {
+      try {
+        List<WebElement> elements = findElementsBySelector(selector);
+        if (elements.isEmpty()) {
+          return false;
+        }
+        
+        for (WebElement element : elements) {
+          if (!element.isDisplayed()){
+            return false;
+          }
+        }
+        
+        return true;
+      } catch (Exception e) {
+        return false;
+      }
+    };
+      
+    new WebDriverWait(getWebDriver(), 60).until(untilPredicate);
+  }
+  
+  @SuppressWarnings ("squid:S1166")
+  protected void waitNotVisible(final String selector) {
+    Predicate<WebDriver> untilPredicate = driver -> {
+      try {
+        List<WebElement> elements = findElementsBySelector(selector);
+        if (elements.isEmpty()) {
+          return true;
+        }
+      
+        for (WebElement element : elements) {
+          if (element.isDisplayed()){
+            return false;
+          }
+        }
+      
+        return true;
+      } catch (Exception e) {
+        return false;
+      }
+    };
+      
+    new WebDriverWait(getWebDriver(), 60).until(untilPredicate);
   }
   
   protected WebDriver createLocalDriver() {
@@ -71,8 +225,34 @@ public class AbstractUITest {
     return null;
   }
 
+  protected LocalDate toLocalDate(int year, int month, int day) {
+    return LocalDate.of(year, month, day);
+  }
+  
+  protected Date toDate(int year, int month, int day) {
+    return toDate(toLocalDate(year, month, day));
+  }
+  
+  protected Date toDate(ZonedDateTime zonedDateTime) {
+    return Date.from(zonedDateTime.toInstant());
+  }
+  
+  protected Date toDate(OffsetDateTime offsetDateTime) {
+    return Date.from(offsetDateTime.toInstant());
+  }
+  
+  protected Date toDate(LocalDate localDate, ZoneId zoneId) {
+    return Date.from(localDate.atStartOfDay(zoneId).toInstant());
+  }
+  
+  protected Date toDate(LocalDate localDate) {
+    return toDate(localDate, ZoneId.systemDefault());
+  }
+  
   protected WebDriver createChromeDriver() {
-    return new ChromeDriver();
+    ChromeDriver driver = new ChromeDriver();
+    driver.manage().window().setSize(new Dimension(1280, 1024));
+    return driver;
   }
 
   protected WebDriver createFirefoxDriver() {
@@ -81,10 +261,11 @@ public class AbstractUITest {
   
   protected WebDriver createPhantomJsDriver() {
     DesiredCapabilities desiredCapabilities = DesiredCapabilities.phantomjs();
-    desiredCapabilities.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, ".phantomjs/bin/phantomjs");
+    
+    desiredCapabilities.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, (new File(".phantomjs/bin/phantomjs")).getAbsolutePath());
     desiredCapabilities.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS, new String[] { "--ignore-ssl-errors=true", "--webdriver-loglevel=NONE", "--load-images=false" } );
     PhantomJSDriver driver = new PhantomJSDriver(desiredCapabilities);
-    driver.manage().window().setSize(new Dimension(1024, 768));
+    driver.manage().window().setSize(new Dimension(1280, 1024));
     return driver;
   }
   
@@ -122,6 +303,10 @@ public class AbstractUITest {
   
   protected int getPortHttp() {
     return Integer.parseInt(System.getProperty("it.port.http"));
+  }
+  
+  protected int getPortSmtp() {
+    return Integer.parseInt(System.getProperty("it.port.smtp"));
   }
   
   protected void waitAndAssertText(String selector, String text) {
@@ -163,10 +348,13 @@ public class AbstractUITest {
     return null;
   }
   
-  protected void waitPresent(final String... selectors) {
-    Predicate<WebDriver> untilPredicate = driver -> !findElements(selectors).isEmpty();
-    new WebDriverWait(getWebDriver(), 60).until(untilPredicate);
+  protected void assertNotPresent(final String... selectors) {
+    for (String selector : selectors) {
+      List<WebElement> elements = findElements(selector);
+      assertTrue(String.format("Found %d elements with selector %s", elements.size(), selector), elements.isEmpty());
+    }
   }
+  
   
   protected List<WebElement> findElements(String... selectors) {
     List<WebElement> result = new ArrayList<>();
@@ -197,25 +385,92 @@ public class AbstractUITest {
     }
   }
   
-  protected void takeScreenshot() throws IOException {
-    takeScreenshot(new File("target", UUID.randomUUID().toString() + ".png"));
+  protected GreenMail getGreenMail() {
+    return greenMail;
+  }
+
+  protected void waitReceivedEmailCount(final int expect) {
+    Predicate<WebDriver> untilPredicate = driver -> {
+      int messageCount = getGreenMail().getReceivedMessages().length;
+      return messageCount == expect;
+    };
+      
+    new WebDriverWait(getWebDriver(), 60).until(untilPredicate);
+  }
+
+  protected void assertReceivedEmailCount(int expected) {
+    assertEquals(expected, getGreenMail().getReceivedMessages().length);
   }
   
+  @SuppressWarnings ("squid:S1166")
+  protected void assertReceivedEmailSubject(int index, String expected) {
+    try {
+      assertEquals(expected, getGreenMail().getReceivedMessages()[index].getSubject());
+    } catch (MessagingException e) {
+      fail(e.getMessage());
+    }
+  }
+  
+  @SuppressWarnings ("squid:S1166")
+  protected void assertReceivedEmailContent(int index, String expected) {
+    try {
+      assertEquals(expected, getGreenMail().getReceivedMessages()[index].getContent());
+    } catch (MessagingException | IOException e) {
+      fail(e.getMessage());
+    }
+  }
+  
+  @SuppressWarnings ("squid:S1166")
+  protected void assertReceivedEmailContentStartsWith(int index, String expected) {
+    try {
+      assertTrue(StringUtils.startsWith(String.valueOf(getGreenMail().getReceivedMessages()[index].getContent()), expected));
+    } catch (MessagingException | IOException e) {
+      fail(e.getMessage());
+    }
+  }
+  
+  protected void takeScreenshot() throws IOException {
+    if (getCI()) {
+      dumpScreenShot();
+    } else {
+      takeScreenshot("itests/target", UUID.randomUUID().toString() + ".png"); 
+    }
+  }
+  
+  @SuppressWarnings ("squid:S1166")
+  protected void takeScreenshot(String parentDirectory, String filename) {
+    try {
+      File file = new File(parentDirectory, filename);
+      if (file.createNewFile()) {
+        takeScreenshot(file);
+        return;
+      }
+    } catch (IOException e) {
+      // Failed to write screenshot
+    }
+
+    dumpScreenShot();
+  }
+
   protected void takeScreenshot(File file) throws IOException {
     TakesScreenshot takesScreenshot = (TakesScreenshot) webDriver;
     
-    if (getCI()) {
-      String imageData = toDataUrl("image/png", takesScreenshot.getScreenshotAs(OutputType.BYTES));
-      logger.warning(String.format("Screenshot: %s: %s", file.getName(), imageData));
-    } else {    
     FileOutputStream fileOuputStream = new FileOutputStream(file);
-      try {
-       fileOuputStream.write(takesScreenshot.getScreenshotAs(OutputType.BYTES));
-      } finally {
-        fileOuputStream.flush();
-        fileOuputStream.close();
-      }
+    try {
+     fileOuputStream.write(takesScreenshot.getScreenshotAs(OutputType.BYTES));
+    } finally {
+      fileOuputStream.flush();
+      fileOuputStream.close();
     }
+  }
+  
+  private void dumpScreenShot() {
+    dumpScreenShot((TakesScreenshot) webDriver);
+  }
+  
+  private void dumpScreenShot(TakesScreenshot takesScreenshot) {
+    String imageData = toDataUrl("image/png", takesScreenshot.getScreenshotAs(OutputType.BYTES));
+    logger.warning(String.format("Screenshot: %s", imageData));
   }
   
   private String toDataUrl(String contentType, byte[] data) {
@@ -237,6 +492,20 @@ public class AbstractUITest {
     long id = createResource(name, urlName, description, parentFolderId, "FOLDER", visible, archived, created, lastModifierId, lastModified);
     executeInsert("insert into Folder (id) values (?)", id);
     return id;
+  }
+  
+  protected void updateUserSubscription(Long userId, String subscriptionLevel, Date subscriptionStarted, Date subscriptionEnds) {
+    String sql =
+       "UPDATE " +
+       "   User " +
+       "SET " +
+       "  subscriptionLevel = ?, " +
+       "  subscriptionStarted = ?, " +
+       "  subscriptionEnds = ? " +
+       "WHERE " +
+       "  id = ? ";
+    
+    executeUpdate(sql, subscriptionLevel, subscriptionStarted, subscriptionEnds, userId);
   }
   
   @SuppressWarnings ("squid:S00107")
@@ -272,6 +541,25 @@ public class AbstractUITest {
     }
     
     return -1;
+  }
+  
+  private void executeUpdate(String sql, Object... params) {
+    try (Connection connection = getConnection()) {
+      connection.setAutoCommit(true);
+      PreparedStatement statement = connection.prepareStatement(sql);
+      try {
+        for (int i = 0, l = params.length; i < l; i++) {
+          statement.setObject(i + 1, params[i]);
+        }
+
+        statement.execute();
+      } finally {
+        statement.close();
+      }
+    } catch (Exception e) {
+      logger.log(Level.SEVERE, "Failed to execute update", e);
+      fail(e.getMessage());
+    }
   }
   
   protected boolean getCI() {

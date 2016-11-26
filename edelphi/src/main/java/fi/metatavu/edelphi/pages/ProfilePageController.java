@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.dao.panels.PanelDAO;
 import fi.metatavu.edelphi.dao.panels.PanelInvitationDAO;
@@ -26,9 +25,12 @@ import fi.metatavu.edelphi.domainmodel.users.UserIdentification;
 import fi.metatavu.edelphi.domainmodel.users.UserPassword;
 import fi.metatavu.edelphi.domainmodel.users.UserSetting;
 import fi.metatavu.edelphi.domainmodel.users.UserSettingKey;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.utils.ActionUtils;
 import fi.metatavu.edelphi.utils.AuthUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.SubscriptionLevelUtils;
+import fi.metatavu.edelphi.utils.SubscriptionLevelUtils.SubscriptionLevelSettings;
 
 public class ProfilePageController extends PageController {
 
@@ -45,12 +47,7 @@ public class ProfilePageController extends PageController {
     
     if (loggedUser != null) {
       List<Panel> myPanels = panelDAO.listByDelfoiAndUser(delfoi, loggedUser);
-      Collections.sort(myPanels, new Comparator<Panel>() {
-        @Override
-        public int compare(Panel o1, Panel o2) {
-          return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
-        }
-      });
+      Collections.sort(myPanels, new PanelComparator());
       pageRequestContext.getRequest().setAttribute("myPanels", myPanels);
 
       // Invitations (pending to left side panel listing, all in profile view)
@@ -58,31 +55,19 @@ public class ProfilePageController extends PageController {
       if (loggedUser.getDefaultEmail() != null) {
         UserEmailDAO userEmailDAO = new UserEmailDAO();
         PanelInvitationDAO panelInvitationDAO = new PanelInvitationDAO();
-        List<PanelInvitation> pendingInvitations = new ArrayList<PanelInvitation>();
-        List<PanelInvitation> allInvitations = new ArrayList<PanelInvitation>();
+        List<PanelInvitation> pendingInvitations = new ArrayList<>();
+        List<PanelInvitation> allInvitations = new ArrayList<>();
         List<UserEmail> emails = userEmailDAO.listByUser(loggedUser);
+        
         for (UserEmail email : emails) {
           List<PanelInvitation> invitations = panelInvitationDAO.listByEmailAndState(email.getAddress(), PanelInvitationState.PENDING); 
           pendingInvitations.addAll(invitations);
           allInvitations.addAll(invitations);
           allInvitations.addAll(panelInvitationDAO.listByEmailAndState(email.getAddress(), PanelInvitationState.ACCEPTED));
         }
-        Collections.sort(pendingInvitations, new Comparator<PanelInvitation>() {
-          @Override
-          public int compare(PanelInvitation o1, PanelInvitation o2) {
-            String s1 = o1.getQuery() == null ? o1.getPanel().getName() : o1.getQuery().getName(); 
-            String s2 = o2.getQuery() == null ? o2.getPanel().getName() : o2.getQuery().getName(); 
-            return s1.toLowerCase().compareTo(s2.toLowerCase());
-          }
-        });
-        Collections.sort(allInvitations, new Comparator<PanelInvitation>() {
-          @Override
-          public int compare(PanelInvitation o1, PanelInvitation o2) {
-            String s1 = o1.getQuery() == null ? o1.getPanel().getName() : o1.getQuery().getName(); 
-            String s2 = o2.getQuery() == null ? o2.getPanel().getName() : o2.getQuery().getName(); 
-            return s1.toLowerCase().compareTo(s2.toLowerCase());
-          }
-        });
+        
+        Collections.sort(pendingInvitations, new PanelInvitationComparator());
+        Collections.sort(allInvitations, new PanelInvitationComparator());
         pageRequestContext.getRequest().setAttribute("myPanelInvitations", pendingInvitations); // panel listing
         pageRequestContext.getRequest().setAttribute("myInvitations", allInvitations); // profile view
       }
@@ -110,6 +95,12 @@ public class ProfilePageController extends PageController {
       AuthUtils.storeRedirectUrl(pageRequestContext, RequestUtils.getCurrentUrl(pageRequestContext.getRequest(), true));
       
       pageRequestContext.getRequest().setAttribute("userHasPassword", hasPassword);
+      
+      SubscriptionLevelSettings subscriptionLevelSettings = SubscriptionLevelUtils.getSubscriptionLevelSettings(loggedUser.getSubscriptionLevel());
+      pageRequestContext.getRequest().setAttribute("subscriptionLevelSettings", subscriptionLevelSettings);
+      pageRequestContext.getRequest().setAttribute("subscriptionStarted", loggedUser.getSubscriptionStarted());
+      pageRequestContext.getRequest().setAttribute("subscriptionEnds", loggedUser.getSubscriptionEnds());
+      pageRequestContext.getRequest().setAttribute("activePanelCount", SubscriptionLevelUtils.countManagedActivePanels(loggedUser));
     }
 
     ActionUtils.includeRoleAccessList(pageRequestContext);
@@ -117,15 +108,30 @@ public class ProfilePageController extends PageController {
     // Open panels
     
     List<Panel> openPanels = panelDAO.listByDelfoiAndAccessLevelAndState(delfoi, PanelAccessLevel.OPEN, PanelState.IN_PROGRESS); 
-    Collections.sort(openPanels, new Comparator<Panel>() {
-      @Override
-      public int compare(Panel o1, Panel o2) {
-        return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
-      }
-    });
+    Collections.sort(openPanels, new PanelComparator());
     pageRequestContext.getRequest().setAttribute("openPanels", openPanels);
     
     pageRequestContext.setIncludeJSP("/jsp/pages/profile.jsp");
+  }
+  
+  private class PanelComparator implements Comparator<Panel> {
+
+    @Override
+    public int compare(Panel o1, Panel o2) {
+      return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
+    }
+    
+  }
+  
+  private class PanelInvitationComparator implements Comparator<PanelInvitation> {
+
+    @Override
+    public int compare(PanelInvitation o1, PanelInvitation o2) {
+      String s1 = o1.getQuery() == null ? o1.getPanel().getName() : o1.getQuery().getName(); 
+      String s2 = o2.getQuery() == null ? o2.getPanel().getName() : o2.getQuery().getName(); 
+      return s1.toLowerCase().compareTo(s2.toLowerCase());
+    }
+    
   }
 
 }

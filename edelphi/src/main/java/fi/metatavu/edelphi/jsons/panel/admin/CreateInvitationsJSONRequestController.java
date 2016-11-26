@@ -5,13 +5,8 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
-import fi.metatavu.edelphi.smvcj.PageNotFoundException;
-import fi.metatavu.edelphi.smvcj.Severity;
-import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
-import fi.metatavu.edelphi.dao.base.EmailMessageDAO;
 import fi.metatavu.edelphi.dao.panels.PanelInvitationDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserDAO;
 import fi.metatavu.edelphi.dao.resources.QueryDAO;
@@ -22,7 +17,6 @@ import fi.metatavu.edelphi.dao.users.UserPasswordDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiUser;
-import fi.metatavu.edelphi.domainmodel.base.EmailMessage;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitation;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitationState;
@@ -30,10 +24,16 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelUser;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserJoinType;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.DelfoiUserRole;
+import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.i18n.Messages;
 import fi.metatavu.edelphi.jsons.JSONController;
+import fi.metatavu.edelphi.smvcj.PageNotFoundException;
+import fi.metatavu.edelphi.smvcj.Severity;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
+import fi.metatavu.edelphi.utils.MailUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 
 public class CreateInvitationsJSONRequestController extends JSONController {
@@ -53,7 +53,6 @@ public class CreateInvitationsJSONRequestController extends JSONController {
     UserDAO userDAO = new UserDAO();
     QueryDAO queryDAO = new QueryDAO();
     PanelUserDAO panelUserDAO = new PanelUserDAO();
-    EmailMessageDAO emailMessageDAO = new EmailMessageDAO();
     PanelInvitationDAO panelInvitationDAO = new PanelInvitationDAO();
 
     User creator = userDAO.findById(jsonRequestContext.getLoggedUserId());
@@ -144,28 +143,19 @@ public class CreateInvitationsJSONRequestController extends JSONController {
           // Create or update the invitation
           
           if (invitation == null) {
-            
             // Invitation doesn't exist, so create both a new e-mail message and the actual invitation
-            
-            EmailMessage emailMessage = emailMessageDAO.create(creator.getDefaultEmailAsString(), email, mailSubject, mailContent, creator);
-            invitation = panelInvitationDAO.create(panel, query, email, invitationHash, panel.getDefaultPanelUserRole(), PanelInvitationState.IN_QUEUE,
-                emailMessage, creator);
-          }
-          else {
-            
-            // Invitation exists and should be associated with a corresponding e-mail message. Create or update
-            // the e-mail as applicable and reset the state of the invitation back to being in queue, so that the
-            // scheduler will eventually send it again
-            
-            EmailMessage emailMessage = invitation.getEmailMessage();
-            if (emailMessage == null) {
-              emailMessage = emailMessageDAO.create(creator.getDefaultEmailAsString(), email, mailSubject, mailContent, creator);
-            }
-            else {
-              emailMessageDAO.update(emailMessage, creator.getDefaultEmailAsString(), email, mailSubject, mailContent, creator);
-            }
+            invitation = panelInvitationDAO.create(panel, query, email, invitationHash, panel.getDefaultPanelUserRole(), PanelInvitationState.IN_QUEUE, creator);
+          } else {
+            // Otherwise, send new invitation
             invitation = panelInvitationDAO.updateState(invitation, PanelInvitationState.IN_QUEUE, creator);
           }
+          
+          if (MailUtils.sendMail(creator.getDefaultEmailAsString(), email, mailSubject, mailContent)) {
+            panelInvitationDAO.updateState(invitation, PanelInvitationState.PENDING, creator);
+          } else {
+            panelInvitationDAO.updateState(invitation, PanelInvitationState.SEND_FAIL, creator);
+          }
+          
           invitationsHandled++;
         }
       }
@@ -188,7 +178,7 @@ public class CreateInvitationsJSONRequestController extends JSONController {
           UserEmail userEmail = userEmailDAO.findByAddress(email);
           user = userEmail == null ? null : userEmail.getUser();
           if (user == null) {
-            user = userDAO.create(firstName, lastName, null, creator);
+            user = userDAO.create(firstName, lastName, null, creator, SubscriptionLevel.NONE, null, null);
             userEmail = userEmailDAO.create(user, email);
             userDAO.addUserEmail(user, userEmail, true, creator);
             if (passwordGenerationCount == 0) {

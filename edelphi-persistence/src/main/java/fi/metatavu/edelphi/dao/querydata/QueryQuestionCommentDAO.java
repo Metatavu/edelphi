@@ -28,6 +28,7 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
     return create(queryReply, queryPage, parentComment, comment, hidden, creator, now, creator, now);
   }
 
+  @SuppressWarnings ("squid:S00107")
   public QueryQuestionComment create(QueryReply queryReply, QueryPage queryPage, QueryQuestionComment parentComment, String comment, Boolean hidden, User creator, Date created, User modifier, Date modified) {
     QueryQuestionComment questionComment = new QueryQuestionComment();
 
@@ -276,7 +277,7 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
   }
 
   public Map<Long, List<QueryQuestionComment>> listTreesByQueryPageAndStamp(QueryPage queryPage, PanelStamp panelStamp) {
-    Map<Long, List<QueryQuestionComment>> result = new HashMap<Long, List<QueryQuestionComment>>();
+    Map<Long, List<QueryQuestionComment>> result = new HashMap<>();
 
     EntityManager entityManager = getEntityManager();
 
@@ -301,7 +302,7 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
       List<QueryQuestionComment> children = result.get(parentCommentId);
 
       if (children == null) {
-        children = new ArrayList<QueryQuestionComment>();
+        children = new ArrayList<>();
         result.put(parentCommentId, children);
       }
 

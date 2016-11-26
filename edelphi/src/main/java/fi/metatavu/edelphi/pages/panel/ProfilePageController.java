@@ -29,6 +29,8 @@ import fi.metatavu.edelphi.domainmodel.users.UserSettingKey;
 import fi.metatavu.edelphi.utils.ActionUtils;
 import fi.metatavu.edelphi.utils.AuthUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.SubscriptionLevelUtils;
+import fi.metatavu.edelphi.utils.SubscriptionLevelUtils.SubscriptionLevelSettings;
 
 public class ProfilePageController extends PanelPageController {
 
@@ -62,20 +64,13 @@ public class ProfilePageController extends PanelPageController {
       if (loggedUser.getDefaultEmail() != null) {
         UserEmailDAO userEmailDAO = new UserEmailDAO();
         PanelInvitationDAO panelInvitationDAO = new PanelInvitationDAO();
-        List<PanelInvitation> myInvitations = new ArrayList<PanelInvitation>();
+        List<PanelInvitation> myInvitations = new ArrayList<>();
         List<UserEmail> emails = userEmailDAO.listByUser(loggedUser);
         for (UserEmail email : emails) {
           myInvitations.addAll(panelInvitationDAO.listByEmailAndState(email.getAddress(), PanelInvitationState.PENDING));
           myInvitations.addAll(panelInvitationDAO.listByEmailAndState(email.getAddress(), PanelInvitationState.ACCEPTED));
         }
-        Collections.sort(myInvitations, new Comparator<PanelInvitation>() {
-          @Override
-          public int compare(PanelInvitation o1, PanelInvitation o2) {
-            String s1 = o1.getQuery() == null ? o1.getPanel().getName() : o1.getQuery().getName(); 
-            String s2 = o2.getQuery() == null ? o2.getPanel().getName() : o2.getQuery().getName(); 
-            return s1.toLowerCase().compareTo(s2.toLowerCase());
-          }
-        });
+        Collections.sort(myInvitations, new PanelInvitationComparator());
         pageRequestContext.getRequest().setAttribute("myInvitations", myInvitations);
       }
 
@@ -83,6 +78,12 @@ public class ProfilePageController extends PanelPageController {
       AuthUtils.storeRedirectUrl(pageRequestContext, RequestUtils.getCurrentUrl(pageRequestContext.getRequest(), true));
 
       pageRequestContext.getRequest().setAttribute("userHasPassword", hasPassword);
+      
+      SubscriptionLevelSettings subscriptionLevelSettings = SubscriptionLevelUtils.getSubscriptionLevelSettings(loggedUser.getSubscriptionLevel());
+      pageRequestContext.getRequest().setAttribute("subscriptionLevelSettings", subscriptionLevelSettings);
+      pageRequestContext.getRequest().setAttribute("subscriptionStarted", loggedUser.getSubscriptionStarted());
+      pageRequestContext.getRequest().setAttribute("subscriptionEnds", loggedUser.getSubscriptionEnds());
+      pageRequestContext.getRequest().setAttribute("activePanelCount", SubscriptionLevelUtils.countManagedActivePanels(loggedUser));
     }
 
     ActionUtils.includeRoleAccessList(pageRequestContext);
@@ -92,12 +93,7 @@ public class ProfilePageController extends PanelPageController {
     // Open panels
     
     List<Panel> openPanels = panelDAO.listByDelfoiAndAccessLevelAndState(delfoi, PanelAccessLevel.OPEN, PanelState.IN_PROGRESS); 
-    Collections.sort(openPanels, new Comparator<Panel>() {
-      @Override
-      public int compare(Panel o1, Panel o2) {
-        return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
-      }
-    });
+    Collections.sort(openPanels, new PanelComparator());
     pageRequestContext.getRequest().setAttribute("openPanels", openPanels);
 
     // User settings (essentially just comment reply mails for now)
@@ -109,4 +105,23 @@ public class ProfilePageController extends PanelPageController {
     pageRequestContext.setIncludeJSP("/jsp/pages/panel/profile.jsp");
   }
 
+  private class PanelComparator implements Comparator<Panel> {
+
+    @Override
+    public int compare(Panel o1, Panel o2) {
+      return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
+    }
+    
+  }
+  
+  private class PanelInvitationComparator implements Comparator<PanelInvitation> {
+
+    @Override
+    public int compare(PanelInvitation o1, PanelInvitation o2) {
+      String s1 = o1.getQuery() == null ? o1.getPanel().getName() : o1.getQuery().getName(); 
+      String s2 = o2.getQuery() == null ? o2.getPanel().getName() : o2.getQuery().getName(); 
+      return s1.toLowerCase().compareTo(s2.toLowerCase());
+    }
+    
+  }
 }

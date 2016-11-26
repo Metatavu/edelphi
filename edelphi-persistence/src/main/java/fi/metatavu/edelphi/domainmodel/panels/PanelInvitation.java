@@ -19,7 +19,6 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import fi.metatavu.edelphi.domainmodel.base.ArchivableEntity;
-import fi.metatavu.edelphi.domainmodel.base.EmailMessage;
 import fi.metatavu.edelphi.domainmodel.base.ModificationTrackedEntity;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
@@ -117,14 +116,6 @@ public class PanelInvitation implements ArchivableEntity, ModificationTrackedEnt
     return (i < 9 ? email.substring(0, 3) : email.substring(0, 8)) + "..." + email.substring(i);
   }
 
-  public void setEmailMessage(EmailMessage emailMessage) {
-    this.emailMessage = emailMessage;
-  }
-
-  public EmailMessage getEmailMessage() {
-    return emailMessage;
-  }
-
   public void setHash(String hash) {
     this.hash = hash;
   }
@@ -170,9 +161,6 @@ public class PanelInvitation implements ArchivableEntity, ModificationTrackedEnt
   @Enumerated (EnumType.STRING)
   private PanelInvitationState state;
 
-  @ManyToOne
-  private EmailMessage emailMessage;
-  
   @ManyToOne 
   private User creator;
   

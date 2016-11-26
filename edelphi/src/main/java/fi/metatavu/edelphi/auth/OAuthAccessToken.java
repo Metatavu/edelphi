@@ -1,8 +1,15 @@
 package fi.metatavu.edelphi.auth;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class OAuthAccessToken {
+public class OAuthAccessToken implements Serializable {
+  
+  private static final long serialVersionUID = -6305156458835722979L;
+  
+  private Date expires;
+  private String token;
+  private String[] scopes;
   
   public OAuthAccessToken(String token, Date expires, String[] scopes) {
     this.token = token;
@@ -21,8 +28,4 @@ public class OAuthAccessToken {
   public String[] getScopes() {
     return scopes;
   }
-  
-  private Date expires;
-  private String token;
-  private String[] scopes;
 }

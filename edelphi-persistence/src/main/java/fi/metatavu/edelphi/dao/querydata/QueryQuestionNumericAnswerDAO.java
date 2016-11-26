@@ -1,6 +1,7 @@
 package fi.metatavu.edelphi.dao.querydata;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -21,18 +22,18 @@ import fi.metatavu.edelphi.domainmodel.querymeta.QueryField_;
 public class QueryQuestionNumericAnswerDAO extends GenericDAO<QueryQuestionNumericAnswer> {
 
   public QueryQuestionNumericAnswer create(QueryReply queryReply, QueryField queryField, Double data) {
+    Date now = new Date();
+    return create(queryReply, queryField, data, now, now);
+  }
+  
+  public QueryQuestionNumericAnswer create(QueryReply queryReply, QueryField queryField, Double data, Date created, Date lastModified) {
     QueryQuestionNumericAnswer queryQuestionNumericAnswer = new QueryQuestionNumericAnswer();
     queryQuestionNumericAnswer.setData(data);
     queryQuestionNumericAnswer.setQueryField(queryField);
     queryQuestionNumericAnswer.setQueryReply(queryReply);
-    getEntityManager().persist(queryQuestionNumericAnswer);
-    return queryQuestionNumericAnswer;
-  }
-  
-  public QueryQuestionNumericAnswer updateData(QueryQuestionNumericAnswer queryQuestionNumericAnswer, Double data) {
-    queryQuestionNumericAnswer.setData(data);
-    getEntityManager().persist(queryQuestionNumericAnswer);
-    return queryQuestionNumericAnswer;
+    queryQuestionNumericAnswer.setCreated(created);
+    queryQuestionNumericAnswer.setLastModified(lastModified);
+    return persist(queryQuestionNumericAnswer);
   }
   
   public QueryQuestionNumericAnswer findByQueryReplyAndQueryField(QueryReply queryReply, QueryField queryField) {
@@ -110,13 +111,19 @@ public class QueryQuestionNumericAnswerDAO extends GenericDAO<QueryQuestionNumer
   // TOOD: This is not a DAO method
   public List<Double> listAnswers(QueryField queryField) {
     List<QueryQuestionNumericAnswer> listByQueryField = listByQueryField(queryField);
-    List<Double> results = new ArrayList<Double>();
+    List<Double> results = new ArrayList<>();
     
     for (QueryQuestionNumericAnswer answer : listByQueryField) {
       results.add(answer.getData());
     }
     
     return results;
+  }
+  
+  public QueryQuestionNumericAnswer updateData(QueryQuestionNumericAnswer queryQuestionNumericAnswer, Double data) {
+    queryQuestionNumericAnswer.setData(data);
+    queryQuestionNumericAnswer.setLastModified(new Date());
+    return persist(queryQuestionNumericAnswer);
   }
   
 }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<update xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.ofw.fi/xml/2011/java-xmldb-updater/UpdaterSchema.xsd">
+
+  <alterTables>
+    <table name="QueryQuestionAnswer">
+      <addFields>
+        <field name="created" type="Types.TIMESTAMP" nullable="false" unique="false" />
+        <field name="lastModified" type="Types.TIMESTAMP" nullable="false" unique="false" />
+      </addFields>
+    </table>
+  </alterTables>
+  
+  <sql>
+    update 
+      QueryReply r, 
+      QueryQuestionAnswer a
+    set 
+      a.created = r.created,
+      a.lastModified = r.lastModified
+    where
+      r.id = a.queryReply_id
+  </sql>
+
+</update>

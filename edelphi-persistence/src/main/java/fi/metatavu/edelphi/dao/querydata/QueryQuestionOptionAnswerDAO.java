@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.dao.querydata;
 
+import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -16,12 +17,18 @@ import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption;
 public class QueryQuestionOptionAnswerDAO extends GenericDAO<QueryQuestionOptionAnswer> {
 
   public QueryQuestionOptionAnswer create(QueryReply queryReply, QueryField queryField, QueryOptionFieldOption option) {
+    Date now = new Date();
+    return create(queryReply, queryField, option, now, now);
+  }
+  
+  public QueryQuestionOptionAnswer create(QueryReply queryReply, QueryField queryField, QueryOptionFieldOption option, Date created, Date lastModified) {
     QueryQuestionOptionAnswer queryQuestionOptionAnswer = new QueryQuestionOptionAnswer();
     queryQuestionOptionAnswer.setOption(option);
     queryQuestionOptionAnswer.setQueryField(queryField);
     queryQuestionOptionAnswer.setQueryReply(queryReply);
-    getEntityManager().persist(queryQuestionOptionAnswer);
-    return queryQuestionOptionAnswer;
+    queryQuestionOptionAnswer.setCreated(created);
+    queryQuestionOptionAnswer.setLastModified(lastModified);
+    return persist(queryQuestionOptionAnswer);
   }
   
   public QueryQuestionOptionAnswer findByQueryReplyAndQueryField(QueryReply queryReply, QueryField queryField) {
@@ -105,8 +112,8 @@ public class QueryQuestionOptionAnswerDAO extends GenericDAO<QueryQuestionOption
 
   public QueryQuestionOptionAnswer updateOption(QueryQuestionOptionAnswer queryQuestionOptionAnswer, QueryOptionFieldOption option) {
     queryQuestionOptionAnswer.setOption(option);
-    getEntityManager().persist(queryQuestionOptionAnswer);
-    return queryQuestionOptionAnswer;
+    queryQuestionOptionAnswer.setLastModified(new Date());
+    return persist(queryQuestionOptionAnswer);
   }
 
 }

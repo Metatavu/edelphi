@@ -2,19 +2,13 @@ package fi.metatavu.edelphi.jsons.queries;
 
 import java.util.Locale;
 
-import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
-import fi.metatavu.edelphi.dao.base.EmailMessageDAO;
-import fi.metatavu.edelphi.dao.base.MailQueueItemDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.dao.users.UserSettingDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
-import fi.metatavu.edelphi.domainmodel.base.EmailMessage;
-import fi.metatavu.edelphi.domainmodel.base.MailQueueItemState;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
@@ -25,6 +19,9 @@ import fi.metatavu.edelphi.domainmodel.users.UserSetting;
 import fi.metatavu.edelphi.domainmodel.users.UserSettingKey;
 import fi.metatavu.edelphi.i18n.Messages;
 import fi.metatavu.edelphi.jsons.JSONController;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
+import fi.metatavu.edelphi.utils.MailUtils;
 import fi.metatavu.edelphi.utils.QueryDataUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 import fi.metatavu.edelphi.utils.SystemUtils;
@@ -95,11 +92,8 @@ public class SaveQueryQuestionCommentJSONRequestController extends JSONControlle
           Locale locale = jsonRequestContext.getRequest().getLocale();
           String subject = messages.getText(locale, "mail.newReply.template.subject");
           String content = messages.getText(locale, "mail.newReply.template.content", new Object[] {panel.getName(), query.getName(), commentUrl.toString()});
-          EmailMessageDAO emailMessageDAO = new EmailMessageDAO();
           // TODO system e-mail address could probably be fetched from somewhere?
-          EmailMessage emailMessage = emailMessageDAO.create("edelfoi-system@otavanopisto.fi", user.getDefaultEmailAsString(), subject, content, loggedUser);
-          MailQueueItemDAO mailQueueItemDAO = new MailQueueItemDAO();
-          mailQueueItemDAO.create(MailQueueItemState.IN_QUEUE, emailMessage, loggedUser);
+          MailUtils.sendMail("edelfoi-system@otavanopisto.fi", user.getDefaultEmailAsString(), subject, content);
         }
       }
     }

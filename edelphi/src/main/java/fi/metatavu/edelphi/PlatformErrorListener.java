@@ -72,7 +72,7 @@ public class PlatformErrorListener implements fi.metatavu.edelphi.smvcj.dispatch
         
         e.printStackTrace(new PrintWriter(contentWriter));
         
-        MailUtils.sendMail(request.getLocale(), address, subject, contentWriter.toString());
+        MailUtils.sendMail(address, subject, contentWriter.toString());
       }
     } catch (Exception ex) {
       // There is very little we can do anymore so we just eat away this exception

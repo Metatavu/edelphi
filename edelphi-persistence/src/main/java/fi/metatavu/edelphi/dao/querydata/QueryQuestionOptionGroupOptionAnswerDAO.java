@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.dao.querydata;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -18,14 +19,22 @@ import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOptionGroup;
 
 public class QueryQuestionOptionGroupOptionAnswerDAO extends GenericDAO<QueryQuestionOptionGroupOptionAnswer> {
 
-  public QueryQuestionOptionGroupOptionAnswer create(QueryReply queryReply, QueryField queryField, QueryOptionFieldOption option, QueryOptionFieldOptionGroup group) {
+  public QueryQuestionOptionGroupOptionAnswer create(QueryReply queryReply, QueryField queryField,
+      QueryOptionFieldOption option, QueryOptionFieldOptionGroup group) {
+    Date now = new Date();
+    return create(queryReply, queryField, option, group, now, now);
+  }
+  
+  public QueryQuestionOptionGroupOptionAnswer create(QueryReply queryReply, QueryField queryField,
+      QueryOptionFieldOption option, QueryOptionFieldOptionGroup group, Date created, Date lastModified) {
     QueryQuestionOptionGroupOptionAnswer queryQuestionOptionGroupOptionAnswer = new QueryQuestionOptionGroupOptionAnswer();
     queryQuestionOptionGroupOptionAnswer.setOption(option);
     queryQuestionOptionGroupOptionAnswer.setQueryField(queryField);
     queryQuestionOptionGroupOptionAnswer.setQueryReply(queryReply);
     queryQuestionOptionGroupOptionAnswer.setGroup(group);
-    getEntityManager().persist(queryQuestionOptionGroupOptionAnswer);
-    return queryQuestionOptionGroupOptionAnswer;
+    queryQuestionOptionGroupOptionAnswer.setCreated(created);
+    queryQuestionOptionGroupOptionAnswer.setLastModified(lastModified);
+    return persist(queryQuestionOptionGroupOptionAnswer);
   }
 
   public Long countByQueryOptionFieldOptionGroup(QueryOptionFieldOptionGroup queryOptionFieldOptionGroup) {
@@ -112,8 +121,8 @@ public class QueryQuestionOptionGroupOptionAnswerDAO extends GenericDAO<QueryQue
 
   public QueryQuestionOptionGroupOptionAnswer updateOption(QueryQuestionOptionGroupOptionAnswer answer, QueryOptionFieldOption option) {
     answer.setOption(option);
-    getEntityManager().persist(answer);
-    return answer;
+    answer.setLastModified(new Date());
+    return persist(answer);
   }
   
 }
