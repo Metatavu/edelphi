@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.auth;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.Api;
 import org.scribe.builder.api.DefaultApi10a;
@@ -12,6 +13,10 @@ import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 
 public abstract class OAuthAuthenticationStrategy extends AbstractAuthenticationStrategy {
 
+  private static final String OAUTH_REQUEST_TOKEN_ATTRIBUTE = "OAuthRequestToken";
+  private static final String REQUESTED_SCOPES_ATTRIBUTE = ".requestedScopes";
+  private String[] defaultScopes;
+
   public OAuthAuthenticationStrategy(String... defaultScopes) {
     this.defaultScopes = defaultScopes;
   }
@@ -20,9 +25,6 @@ public abstract class OAuthAuthenticationStrategy extends AbstractAuthentication
     return defaultScopes;
   }
 
-  @Override
-  public abstract String getName();
-  
   protected abstract Class<? extends Api> getApiClass();
 
   protected abstract String getApiKey();
@@ -31,6 +33,7 @@ public abstract class OAuthAuthenticationStrategy extends AbstractAuthentication
 
   protected abstract AuthenticationResult processResponse(RequestContext requestContext, OAuthService service, String[] requestedScopes);
   
+  @Override
   public boolean requiresCredentials() {
     return false;
   }
@@ -57,17 +60,17 @@ public abstract class OAuthAuthenticationStrategy extends AbstractAuthentication
         scopes = requestContext.getStrings("scope");
       }
       
-      if (scopes == null)
+      if (scopes == null) {
         scopes = defaultScopes;
-
-      session.setAttribute(getName() + ".requestedScopes", scopes);
+      }
       
+      session.setAttribute(String.format("%s%s", getName(), REQUESTED_SCOPES_ATTRIBUTE), scopes);
       performDiscovery(requestContext, scopes);
       
       return AuthenticationResult.PROCESSING;
     } else {
-      String[] requestedScopes = (String[]) session.getAttribute(getName() + ".requestedScopes");
-      session.removeAttribute(getName() + ".requestedScopes");
+      String[] requestedScopes = (String[]) session.getAttribute(String.format("%s%s", getName(), REQUESTED_SCOPES_ATTRIBUTE));
+      session.removeAttribute(String.format("%s%s", getName(), REQUESTED_SCOPES_ATTRIBUTE));
       OAuthService service = getOAuthService(requestContext, requestedScopes);
       return processResponse(requestContext, service, requestedScopes);
     }
@@ -104,15 +107,15 @@ public abstract class OAuthAuthenticationStrategy extends AbstractAuthentication
     HttpSession session = requestContext.getRequest().getSession();
 
     if (requestToken != null)
-      session.setAttribute("OAuthRequestToken", requestToken);
+      session.setAttribute(OAUTH_REQUEST_TOKEN_ATTRIBUTE, requestToken);
     else
-      session.removeAttribute("OAuthRequestToken");
+      session.removeAttribute(OAUTH_REQUEST_TOKEN_ATTRIBUTE);
   }
 
   protected Token getRequestToken(RequestContext requestContext) {
     HttpSession session = requestContext.getRequest().getSession();
     
-    return (Token) session.getAttribute("OAuthRequestToken");
+    return (Token) session.getAttribute(OAUTH_REQUEST_TOKEN_ATTRIBUTE);
   }
   
   public void performDiscovery(RequestContext requestContext, String... scopes) {
@@ -132,5 +135,41 @@ public abstract class OAuthAuthenticationStrategy extends AbstractAuthentication
     requestContext.setRedirectURL(authUrl);
   }
 
-  private String[] defaultScopes;
+  /**
+   * Extracts a last name of full name string
+   * 
+   * @param name full name
+   * @return last name if it could be extracted
+   */
+  protected String extractLastName(String name) {
+    if (StringUtils.isBlank(name)) {
+      return null;
+    }
+   
+    int lastIndexOf = name.lastIndexOf(' ');
+    
+    if (lastIndexOf == -1)
+      return null;
+    else
+      return name.substring(lastIndexOf + 1);
+  }
+  
+  /**
+   * Extracts a first name of full name string
+   * 
+   * @param name full name
+   * @return first name if it could be extracted
+   */
+  protected String extractFirstName(String name) {
+    if (StringUtils.isBlank(name)) {
+      return null;
+    }
+    
+    int lastIndexOf = name.lastIndexOf(' ');
+    
+    if (lastIndexOf == -1)
+      return null;
+    else
+      return name.substring(0, lastIndexOf);
+  }
 }
