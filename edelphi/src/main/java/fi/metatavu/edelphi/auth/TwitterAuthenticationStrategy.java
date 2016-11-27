@@ -47,6 +47,7 @@ public class TwitterAuthenticationStrategy extends OAuthAuthenticationStrategy {
     return TwitterApi.class;
   }
 
+  @Override
   protected AuthenticationResult processResponse(RequestContext requestContext, OAuthService service, String[] requestedScopes) {
     String verifier = requestContext.getString("oauth_verifier");
     
@@ -58,11 +59,9 @@ public class TwitterAuthenticationStrategy extends OAuthAuthenticationStrategy {
     service.signRequest(accessToken, request);
     Response response = request.send();
     
-    // TODO: Store token...
-    
     try {
       JSONObject responseJson = JSONObject.fromObject(response.getBody());
-      List<String> emails = new ArrayList<String>();
+      List<String> emails = new ArrayList<>();
       String externalId = responseJson.getString("id");
       String name = responseJson.getString("name");
       String firstName = extractFirstName(name);
@@ -79,24 +78,6 @@ public class TwitterAuthenticationStrategy extends OAuthAuthenticationStrategy {
     }
   }
 
-  private String extractLastName(String name) {
-    int lastIndexOf = name.lastIndexOf(' ');
-    
-    if (lastIndexOf == -1)
-      return null;
-    else
-      return name.substring(lastIndexOf + 1);
-  }
-  
-  private String extractFirstName(String name) {
-    int lastIndexOf = name.lastIndexOf(' ');
-    
-    if (lastIndexOf == -1)
-      return null;
-    else
-      return name.substring(0, lastIndexOf);
-  }
-
   @Override
   public String[] getKeys() {
     return new String[] {"oauth.twitter.apiKey", "oauth.twitter.apiSecret", "oauth.twitter.callbackUrl"};
@@ -104,7 +85,6 @@ public class TwitterAuthenticationStrategy extends OAuthAuthenticationStrategy {
 
   @Override
   public String localizeKey(Locale locale, String key) {
-    // TODO localize :)
     return key;
   }
 }
