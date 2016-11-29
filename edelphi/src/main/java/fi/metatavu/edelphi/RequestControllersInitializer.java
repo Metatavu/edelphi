@@ -38,7 +38,7 @@ public class RequestControllersInitializer {
     try {
       mapRequestControllers("pagemappings.properties", ".page");
       mapRequestControllers("jsonmappings.properties", ".json");
-      mapRequestControllers("binarymappings.properties", "binary");
+      mapRequestControllers("binarymappings.properties", ".binary");
     } catch (Exception e) {
       logger.log(Level.SEVERE, "Initialization failed", e);
       throw new ExceptionInInitializerError(e);
