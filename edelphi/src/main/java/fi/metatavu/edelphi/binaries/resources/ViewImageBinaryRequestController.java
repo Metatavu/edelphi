@@ -21,6 +21,7 @@ import fi.metatavu.edelphi.domainmodel.resources.Image;
 import fi.metatavu.edelphi.domainmodel.resources.LinkedImage;
 import fi.metatavu.edelphi.domainmodel.resources.LocalImage;
 import fi.metatavu.edelphi.i18n.Messages;
+import fi.metatavu.edelphi.smvcj.PageNotFoundException;
 import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 import fi.metatavu.edelphi.smvcj.controllers.BinaryRequestContext;
 import fi.metatavu.edelphi.smvcj.logging.Logging;
@@ -48,8 +49,9 @@ public class ViewImageBinaryRequestController extends BinaryController {
       } else if (image instanceof GoogleImage) {
         handleGoogleImage(binaryRequestContext, (GoogleImage) image);
       }
-    } else
-      throw new RuntimeException("image not found");
+    } else {
+      throw new PageNotFoundException(binaryRequestContext.getRequest().getLocale());
+    }
   }
 
   private void handleLocalImage(BinaryRequestContext binaryRequestContext, LocalImage image) {
@@ -61,8 +63,8 @@ public class ViewImageBinaryRequestController extends BinaryController {
       URL imageUrl = new URL(image.getUrl());
       URLConnection uc = imageUrl.openConnection();
       binaryRequestContext.getResponse().setContentType(uc.getContentType());
-      InputStream in = uc.getInputStream();
-      try {
+      
+      try (InputStream in = uc.getInputStream()) {
         ServletOutputStream out = binaryRequestContext.getResponse().getOutputStream();
 
         byte[] buf = new byte[1024];
@@ -72,32 +74,25 @@ public class ViewImageBinaryRequestController extends BinaryController {
           out.write(buf, 0, len);
         }
       }
-      finally {
-        if (in != null) {
-          try {
-            in.close();
-          }
-          catch (IOException ioe) {
-            Logging.logException(ioe);
-          }
-        }
-      }
-    }
-    catch (Exception ex) {
-      throw new RuntimeException(ex);
+      
+    } catch (Exception ex) {
+      logger.log(Level.SEVERE, "Failed to process linked image", ex);
+      throw new PageNotFoundException(binaryRequestContext.getRequest().getLocale());
     }
   }
 
   private void handleGoogleImage(BinaryRequestContext binaryRequestContext, GoogleImage googleImage) {
   	Drive drive = GoogleDriveUtils.getAdminService();
+	  
+  	File file;
+    try {
+      file = GoogleDriveUtils.getFile(drive, googleImage.getResourceId());
+    } catch (IOException e) {
+      logger.log(Level.SEVERE, "Failed to download file for Google Drive", e);
+      throw new PageNotFoundException(binaryRequestContext.getRequest().getLocale());
+    }
+
 	  try {
-	    File file = GoogleDriveUtils.getFile(drive, googleImage.getResourceId());
-	    DownloadResponse pngFile = GoogleDriveUtils.exportFile(drive, file, "image/png");
-      if (pngFile != null) {
-        binaryRequestContext.setResponseContent(pngFile.getData(), pngFile.getMimeType());
-        return;
-      }
-      
       DownloadResponse response = GoogleDriveUtils.downloadFile(drive, file);
       if (response == null) {
         Messages messages = Messages.getInstance();

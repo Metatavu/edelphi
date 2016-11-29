@@ -322,7 +322,7 @@ public class GoogleDriveUtils {
 	  String contentType = request.executeUsingHead().getContentType();
 	  if (StringUtils.isNotBlank(contentType)) {
   	  try (InputStream inputStream = request.executeAsInputStream()) {
-	      return new DownloadResponse(TEXT_HTML, IOUtils.toByteArray(inputStream));
+	      return new DownloadResponse(contentType, IOUtils.toByteArray(inputStream));
       }
 	  }
 	  
