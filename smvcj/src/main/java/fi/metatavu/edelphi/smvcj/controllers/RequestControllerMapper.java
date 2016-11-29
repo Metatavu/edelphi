@@ -8,6 +8,11 @@ import java.util.Properties;
 import fi.metatavu.edelphi.smvcj.logging.Logging;
 
 public class RequestControllerMapper {
+  
+  /**
+   * Hashmap for page request controller names and their instances.
+   */
+  private static Map<String, RequestController> requestControllers = new HashMap<>();
 
   private RequestControllerMapper() {
   }
@@ -17,7 +22,7 @@ public class RequestControllerMapper {
   }
 
   @SuppressWarnings("unchecked")
-  public final static void mapControllers(Properties properties, String urlPostfix) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+  public static final void mapControllers(Properties properties, String urlPostfix) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
     Enumeration<Object> keys = properties.keys();
     while (keys.hasMoreElements()) {
       String name = (String) keys.nextElement();
@@ -39,9 +44,4 @@ public class RequestControllerMapper {
     return requestControllers;
   }
   
-  /**
-   * Hashmap for page request controller names and their instances.
-   */
-  private static Map<String, RequestController> requestControllers = new HashMap<>();
-
 }
