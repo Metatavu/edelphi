@@ -1,7 +1,5 @@
 package fi.metatavu.edelphi;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.Date;
 import java.util.List;
 
@@ -75,23 +73,19 @@ public class EdelfoiGoogleDriveScheduler {
 
   private void refreshGoogleDriveFiles() {
     GoogleDocumentDAO googleDocumentDAO = new GoogleDocumentDAO();
-    
-    try {
-    	 Drive drive = GoogleDriveUtils.getAdminService();
-    	
-    	 List<GoogleDocument> googleDocuments = googleDocumentDAO.listByArchivedOrderByLastSynchronizedAsc(Boolean.FALSE, 0, 5);
-    	 for (GoogleDocument googleDocument : googleDocuments) {
-    		 refreshDocument(drive, googleDocument);
-    	 }
+  
+  	 Drive drive = GoogleDriveUtils.getAdminService();
+  	
+  	 List<GoogleDocument> googleDocuments = googleDocumentDAO.listByArchivedOrderByLastSynchronizedAsc(Boolean.FALSE, 0, 5);
+  	 for (GoogleDocument googleDocument : googleDocuments) {
+  		 refreshDocument(drive, googleDocument);
+  	 }
 
-    	 GoogleImageDAO googleImageDAO = new GoogleImageDAO();
-    	 List<GoogleImage> googleImages = googleImageDAO.listByArchivedOrderByLastSynchronizedAsc(Boolean.FALSE, 0, 5);
-    	 for (GoogleImage googleImage : googleImages) {
-    		 refreshImage(drive, googleImage);
-    	 }
-    } catch (GeneralSecurityException | IOException e1) {
-    	Logging.logException("Failed to obtain Google drive service", e1);
-		}
+  	 GoogleImageDAO googleImageDAO = new GoogleImageDAO();
+  	 List<GoogleImage> googleImages = googleImageDAO.listByArchivedOrderByLastSynchronizedAsc(Boolean.FALSE, 0, 5);
+  	 for (GoogleImage googleImage : googleImages) {
+  		 refreshImage(drive, googleImage);
+  	 }
   }
 
   private void refreshImage(Drive drive, GoogleImage googleImage) {

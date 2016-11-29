@@ -1,13 +1,11 @@
 package fi.metatavu.edelphi.pages.panel;
 
+import java.io.IOException;
 import java.util.Locale;
 
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
-import fi.metatavu.edelphi.smvcj.PageNotFoundException;
-import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.resources.DocumentDAO;
@@ -20,9 +18,12 @@ import fi.metatavu.edelphi.domainmodel.resources.GoogleDocument;
 import fi.metatavu.edelphi.domainmodel.resources.LocalDocument;
 import fi.metatavu.edelphi.domainmodel.resources.LocalDocumentPage;
 import fi.metatavu.edelphi.i18n.Messages;
+import fi.metatavu.edelphi.smvcj.PageNotFoundException;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.utils.GoogleDriveUtils;
-import fi.metatavu.edelphi.utils.RequestUtils;
 import fi.metatavu.edelphi.utils.GoogleDriveUtils.DownloadResponse;
+import fi.metatavu.edelphi.utils.RequestUtils;
 
 public class ViewDocumentPageController extends PanelPageController {
 
@@ -48,6 +49,7 @@ public class ViewDocumentPageController extends PanelPageController {
 		if (document == null) {
 			throw new PageNotFoundException(pageRequestContext.getRequest().getLocale());
 		}
+		
 		Integer page = pageRequestContext.getInteger("page");
 		if (page == null) {
 			page = 0;
@@ -68,17 +70,9 @@ public class ViewDocumentPageController extends PanelPageController {
 				Drive drive = GoogleDriveUtils.getAdminService();
 				File file = GoogleDriveUtils.getFile(drive, googleDocument.getResourceId());
 				if ("application/vnd.google-apps.document".equals(file.getMimeType())) {
-			    DownloadResponse response = GoogleDriveUtils.exportFile(drive, file, "text/html");
-					String content = GoogleDriveUtils.extractGoogleDocumentContent(response.getData());
-					String styleSheet = GoogleDriveUtils.extractGoogleDocumentStyleSheet(response.getData());
-					pageRequestContext.getRequest().setAttribute("content", content);
-					pageRequestContext.getRequest().setAttribute("styleSheet", styleSheet);
+			    handleDocument(pageRequestContext, drive, file);
 				} else if ("application/vnd.google-apps.spreadsheet".equals(file.getMimeType())) {
-			    DownloadResponse response = GoogleDriveUtils.exportSpreadsheet(drive, file);
-					String content = GoogleDriveUtils.extractGoogleDocumentContent(response.getData());
-					String styleSheet = GoogleDriveUtils.extractGoogleDocumentStyleSheet(response.getData());
-					pageRequestContext.getRequest().setAttribute("content", content);
-					pageRequestContext.getRequest().setAttribute("styleSheet", styleSheet);
+			    handleSpreadsheet(pageRequestContext, drive, file);
 				} else {
 					pageRequestContext.setRedirectURL(pageRequestContext.getRequest().getContextPath() + "/resources/viewdocument.binary?documentId=" + documentId);
 				}
@@ -96,5 +90,31 @@ public class ViewDocumentPageController extends PanelPageController {
 
 		pageRequestContext.setIncludeJSP("/jsp/pages/panel/viewdocument.jsp");
 	}
+
+  private void handleSpreadsheet(PageRequestContext pageRequestContext, Drive drive, File file) throws IOException {
+    DownloadResponse response = GoogleDriveUtils.exportSpreadsheet(drive, file);
+    String content = GoogleDriveUtils.extractGoogleDocumentContent(response.getData());
+    String styleSheet = GoogleDriveUtils.extractGoogleDocumentStyleSheet(response.getData());
+    
+    if (content != null && styleSheet != null) {
+      pageRequestContext.getRequest().setAttribute("content", content);
+      pageRequestContext.getRequest().setAttribute("styleSheet", styleSheet);
+    } else {
+      throw new PageNotFoundException(pageRequestContext.getRequest().getLocale());
+    }
+  }
+
+  private void handleDocument(PageRequestContext pageRequestContext, Drive drive, File file) throws IOException {
+    DownloadResponse response = GoogleDriveUtils.exportFile(drive, file, "text/html");
+    String content = GoogleDriveUtils.extractGoogleDocumentContent(response.getData());
+    String styleSheet = GoogleDriveUtils.extractGoogleDocumentStyleSheet(response.getData());
+    
+    if (content != null && styleSheet != null) {
+    	pageRequestContext.getRequest().setAttribute("content", content);
+    	pageRequestContext.getRequest().setAttribute("styleSheet", styleSheet);
+    } else {
+      throw new PageNotFoundException(pageRequestContext.getRequest().getLocale());
+    }
+  }
 
 }
