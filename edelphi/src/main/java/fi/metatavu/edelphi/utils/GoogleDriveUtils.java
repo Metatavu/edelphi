@@ -291,8 +291,9 @@ public class GoogleDriveUtils {
    * @throws IOException thrown when exporting fails unexpectedly
    */
 	public static DownloadResponse exportSpreadsheet(Drive drive, String fileId) throws IOException {
-	  try (InputStream inputStream = drive.files().export(fileId, TEXT_HTML).executeAsInputStream()) {
-      return new DownloadResponse(TEXT_HTML, IOUtils.toByteArray(inputStream));
+	  try (InputStream inputStream = drive.files().export(fileId, "text/csv").executeAsInputStream()) {
+	    CSVRenderer csvRenderer = new CSVRenderer(inputStream, "google-spreadsheet", true);
+	    return new DownloadResponse(TEXT_HTML, csvRenderer.renderHtmlTable().getBytes("UTF-8"));
     }
 	}
   

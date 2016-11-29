@@ -1,0 +1,27 @@
+@CHARSET "UTF-8";
+
+table.google-spreadsheet {
+  font-size: 12px;
+}
+
+table.google-spreadsheet tr td {
+  min-height: 20px;
+  min-width: 80px;
+  border: 1px solid #aaa;
+  text-align: left;
+}
+
+table.google-spreadsheet tr td.header,
+table.google-spreadsheet tr th {
+  background: #eee;
+  border: 1px solid #aaa;
+  text-align: center;
+}
+
+table.google-spreadsheet tr td {
+  padding-left: 2px;
+}
+
+table.google-spreadsheet tr td.header {
+  min-width: 40px;
+}

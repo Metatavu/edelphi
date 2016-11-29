@@ -3,6 +3,8 @@ package fi.metatavu.edelphi.pages.panel;
 import java.io.IOException;
 import java.util.Locale;
 
+import org.apache.commons.io.IOUtils;
+
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
@@ -93,14 +95,10 @@ public class ViewDocumentPageController extends PanelPageController {
 
   private void handleSpreadsheet(PageRequestContext pageRequestContext, Drive drive, File file) throws IOException {
     DownloadResponse response = GoogleDriveUtils.exportSpreadsheet(drive, file);
-    String content = GoogleDriveUtils.extractGoogleDocumentContent(response.getData());
-    String styleSheet = GoogleDriveUtils.extractGoogleDocumentStyleSheet(response.getData());
-    
-    if (content != null && styleSheet != null) {
-      pageRequestContext.getRequest().setAttribute("content", content);
-      pageRequestContext.getRequest().setAttribute("styleSheet", styleSheet);
+    if (response != null) {
+      pageRequestContext.getRequest().setAttribute("content", IOUtils.toString(response.getData(), "UTF-8"));
     } else {
-      throw new PageNotFoundException(pageRequestContext.getRequest().getLocale());
+      throw new PageNotFoundException(pageRequestContext.getRequest().getLocale()); 
     }
   }
 
