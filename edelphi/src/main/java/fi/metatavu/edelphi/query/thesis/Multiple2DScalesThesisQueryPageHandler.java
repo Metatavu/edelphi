@@ -2,15 +2,19 @@ package fi.metatavu.edelphi.query.thesis;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionOptionAnswerDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionField;
 import fi.metatavu.edelphi.domainmodel.users.User;
+import fi.metatavu.edelphi.i18n.Messages;
 import fi.metatavu.edelphi.query.QueryExportContext;
 import fi.metatavu.edelphi.query.QueryOption;
 import fi.metatavu.edelphi.query.QueryOptionEditor;
@@ -88,12 +92,49 @@ public class Multiple2DScalesThesisQueryPageHandler extends AbstractScaleThesisQ
 
   @Override
   protected void renderReport(PageRequestContext requestContext, QueryPage queryPage) {
-    // TODO Implement
+    // Live reports are not supported by multiple 2d scale pages
   }
 
   @Override
   public void exportData(QueryExportContext exportContext) {
-    // TODO Implement
+    QueryFieldDAO queryFieldDAO = new QueryFieldDAO();
+    QueryQuestionCommentDAO queryQuestionCommentDAO = new QueryQuestionCommentDAO();
+    QueryQuestionOptionAnswerDAO queryQuestionOptionAnswerDAO = new QueryQuestionOptionAnswerDAO();
+
+    List<QueryReply> queryReplies = exportContext.getQueryReplies();
+    
+    QueryPage queryPage = exportContext.getQueryPage();
+    
+    boolean commentable = Boolean.TRUE.equals(this.getBooleanOptionValue(queryPage, getDefinedOption("thesis.commentable")));    
+    
+    List<String> theses = getListOptionValue(queryPage, getDefinedOption(THESES_OPTION));
+    for (int thesisIndex = 0, thesisCount = theses.size(); thesisIndex < thesisCount; thesisIndex++) {
+      String fieldNameX = getFieldName(thesisIndex, "x");
+      String fieldNameY = getFieldName(thesisIndex, "y");
+      
+      QueryOptionField queryFieldX = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldNameX);
+      QueryOptionField queryFieldY = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldNameY);
+
+      Messages messages = Messages.getInstance();
+      Locale locale = exportContext.getLocale();
+
+      int columnIndexX = exportContext.addColumn(String.format("%s/%s", queryPage.getTitle(), queryFieldX.getCaption()));
+      int columnIndexY = exportContext.addColumn(String.format("%s/%s", queryPage.getTitle(), queryFieldY.getCaption()));
+      int commentColumnIndex = commentable ? exportContext.addColumn(queryPage.getTitle() + "/" + messages.getText(locale, "panelAdmin.query.export.comment")) : -1; 
+      
+      for (QueryReply queryReply : queryReplies) {
+        QueryQuestionOptionAnswer answerX = queryQuestionOptionAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryFieldX);
+        QueryQuestionOptionAnswer answerY = queryQuestionOptionAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryFieldY);
+
+        exportContext.addCellValue(queryReply, columnIndexX, answerX != null ? answerX.getOption().getText() : null);
+        exportContext.addCellValue(queryReply, columnIndexY, answerY != null ? answerY.getOption().getText() : null);
+
+        if (commentable) {
+          QueryQuestionComment comment = queryQuestionCommentDAO.findRootCommentByQueryReplyAndQueryPage(queryReply, queryPage);
+          exportContext.addCellValue(queryReply, commentColumnIndex, comment != null ? comment.getComment() : null);
+        }
+      }
+    }
   }
 
   @Override
@@ -124,8 +165,8 @@ public class Multiple2DScalesThesisQueryPageHandler extends AbstractScaleThesisQ
       
       String fieldNameX = getFieldName(thesisIndex, "x");
       String fieldNameY = getFieldName(thesisIndex, "y");
-      String fieldLabelX = String.format("%s / %s", thesis, labelX);
-      String fieldLabelY = String.format("%s / %s", thesis, labelY);
+      String fieldLabelX = String.format("%s/%s", thesis, labelX);
+      String fieldLabelY = String.format("%s/%s", thesis, labelY);
       Boolean mandatory = false;
       
       if (hasAnswers) {
