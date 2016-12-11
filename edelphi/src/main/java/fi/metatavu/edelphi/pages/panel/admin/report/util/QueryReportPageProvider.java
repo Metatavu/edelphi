@@ -1,6 +1,6 @@
 package fi.metatavu.edelphi.pages.panel.admin.report.util;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageType;
@@ -8,6 +8,7 @@ import fi.metatavu.edelphi.pages.panel.admin.report.expretise.ExpertiseQueryRepo
 import fi.metatavu.edelphi.pages.panel.admin.report.text.TextQueryReportPage;
 import fi.metatavu.edelphi.pages.panel.admin.report.thesis.FormQueryReportPage;
 import fi.metatavu.edelphi.pages.panel.admin.report.thesis.ThesisGroupingQueryReportPage;
+import fi.metatavu.edelphi.pages.panel.admin.report.thesis.ThesisMultipleScale2DQueryReportPage;
 import fi.metatavu.edelphi.pages.panel.admin.report.thesis.ThesisMultiselectQueryReportPage;
 import fi.metatavu.edelphi.pages.panel.admin.report.thesis.ThesisOrderQueryReportPage;
 import fi.metatavu.edelphi.pages.panel.admin.report.thesis.ThesisScale1DQueryReportPage;
@@ -17,16 +18,21 @@ import fi.metatavu.edelphi.pages.panel.admin.report.thesis.ThesisTimelineQueryRe
 
 public class QueryReportPageProvider {
   
+  private static Map<QueryPageType, QueryReportPageController> controllers;
+  
+  private QueryReportPageProvider() {
+  }
+  
   public static QueryReportPageController getController(QueryPageType queryPageType) {
     return controllers.get(queryPageType);
   }
 
-  public static void registerController(QueryReportPageController queryReportPageController) { // QueryPageType queryPageType) {
+  public static void registerController(QueryReportPageController queryReportPageController) {
     controllers.put(queryReportPageController.getQueryPageType(), queryReportPageController);
   }
 
   static {
-    controllers = new HashMap<QueryPageType, QueryReportPageController>();
+    controllers = new EnumMap<>(QueryPageType.class);
 
     registerController(new TextQueryReportPage());
     registerController(new ThesisScale1DQueryReportPage());
@@ -34,11 +40,11 @@ public class QueryReportPageProvider {
     registerController(new ThesisTimeSerieQueryReportPage());
     registerController(new ThesisMultiselectQueryReportPage());
     registerController(new ThesisOrderQueryReportPage());
+    registerController(new ThesisMultipleScale2DQueryReportPage());
     registerController(new ExpertiseQueryReportPage());
     registerController(new ThesisGroupingQueryReportPage());
     registerController(new ThesisTimelineQueryReportPage());
     registerController(new FormQueryReportPage());
   }
   
-  private static Map<QueryPageType, QueryReportPageController> controllers;
 }

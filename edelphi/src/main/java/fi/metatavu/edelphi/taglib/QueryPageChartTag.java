@@ -78,7 +78,7 @@ public class QueryPageChartTag extends BodyTagSupport implements ParamParent {
       QueryPage queryPage = queryPageDAO.findById(queryPageId);
       QueryReportPageController queryReportPageController = QueryReportPageProvider.getController(queryPage.getPageType());
       
-      Map<String, String> chartParameters = new HashMap<String, String>();
+      Map<String, String> chartParameters = new HashMap<>();
       chartParameters.putAll(parameters);
       ChartContext chartContext = new ChartContext(reportContext, chartParameters);
       
