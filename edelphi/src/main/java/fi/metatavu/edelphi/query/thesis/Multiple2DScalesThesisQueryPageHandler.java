@@ -118,8 +118,8 @@ public class Multiple2DScalesThesisQueryPageHandler extends AbstractScaleThesisQ
       Messages messages = Messages.getInstance();
       Locale locale = exportContext.getLocale();
 
-      int columnIndexX = exportContext.addColumn(String.format("%s/%s", queryPage.getTitle(), queryFieldX.getCaption()));
-      int columnIndexY = exportContext.addColumn(String.format("%s/%s", queryPage.getTitle(), queryFieldY.getCaption()));
+      int columnIndexX = exportContext.addColumn(getColumnLabel(queryPage.getTitle(), queryFieldX.getCaption()));
+      int columnIndexY = exportContext.addColumn(getColumnLabel(queryPage.getTitle(), queryFieldY.getCaption()));
       int commentColumnIndex = commentable ? exportContext.addColumn(queryPage.getTitle() + "/" + messages.getText(locale, "panelAdmin.query.export.comment")) : -1; 
       
       for (QueryReply queryReply : queryReplies) {
@@ -165,8 +165,8 @@ public class Multiple2DScalesThesisQueryPageHandler extends AbstractScaleThesisQ
       
       String fieldNameX = getFieldName(thesisIndex, "x");
       String fieldNameY = getFieldName(thesisIndex, "y");
-      String fieldLabelX = String.format("%s/%s", thesis, labelX);
-      String fieldLabelY = String.format("%s/%s", thesis, labelY);
+      String fieldLabelX = getFieldLabel(thesis, labelX);
+      String fieldLabelY = getFieldLabel(thesis, labelY);
       Boolean mandatory = false;
       
       if (hasAnswers) {
@@ -188,6 +188,14 @@ public class Multiple2DScalesThesisQueryPageHandler extends AbstractScaleThesisQ
 
   private String getFieldName(int index, String axis) {
     return String.format("multiple2dscales.%d.%s", index, axis);
+  }
+  
+  private String getFieldLabel(String thesis, String label) {
+    return String.format("%s/%s", thesis, label);
+  }
+  
+  private String getColumnLabel(String pageTitle, String fieldCaption) {
+    return String.format("%s/%s", pageTitle, fieldCaption);
   }
 
 }

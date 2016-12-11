@@ -27,6 +27,7 @@ public class ThesisMultipleScale2DQueryReportPage extends AbstractThesisScale2DQ
   
   private static final Logger logger = Logger.getLogger(ThesisMultipleScale2DQueryReportPage.class.getName());
   
+  private static final String THESES_OPTION = "multiple2dscales.theses";
   private static final String CHART_INDEX_PARAM = "chartIndex";
 
   public ThesisMultipleScale2DQueryReportPage() {
@@ -35,7 +36,7 @@ public class ThesisMultipleScale2DQueryReportPage extends AbstractThesisScale2DQ
 
   @Override
   public QueryReportPageData loadPageData(RequestContext requestContext, ReportContext reportContext, QueryPage queryPage) {
-    List<String> theses = QueryPageUtils.getListSetting(queryPage, "multiple2dscales.theses");
+    List<String> theses = QueryPageUtils.getListSetting(queryPage, THESES_OPTION);
     requestContext.getRequest().setAttribute("multiple2dscalesTheses", theses);
     appendQueryPageComments(requestContext, queryPage);
     return new QueryReportPageData(queryPage, "/jsp/blocks/panel_admin_report/thesis_multiple_scale_2d.jsp", null);
@@ -47,7 +48,7 @@ public class ThesisMultipleScale2DQueryReportPage extends AbstractThesisScale2DQ
     reportPage.setDescription(QueryPageUtils.getSetting(queryPage, "thesis.description"));
     reportPage.setThesis(QueryPageUtils.getSetting(queryPage, "thesis.text"));
     ReportUtils.appendComments(reportPage, queryPage, reportContext);
-    List<String> theses = QueryPageUtils.getListSetting(queryPage, "multiple2dscales.theses");
+    List<String> theses = QueryPageUtils.getListSetting(queryPage, THESES_OPTION);
     requestContext.getRequest().setAttribute("multiple2dscalesTheses", theses);
     return reportPage;
   }
@@ -82,7 +83,7 @@ public class ThesisMultipleScale2DQueryReportPage extends AbstractThesisScale2DQ
     }
     
     Render2dAxis render2dAxis = RENDER_2D_AXIS_X_OPTION.equals(axis) ? Render2dAxis.X : RENDER_2D_AXIS_Y_OPTION.equals(axis) ? Render2dAxis.Y : Render2dAxis.BOTH;
-    List<String> theses = QueryPageUtils.getListSetting(queryPage, "multiple2dscales.theses");
+    List<String> theses = QueryPageUtils.getListSetting(queryPage, THESES_OPTION);
     String thesis = theses.get(thesisIndex);
     
     if (render2dAxis == Render2dAxis.BOTH) {
