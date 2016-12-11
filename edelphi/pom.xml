@@ -68,7 +68,7 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
     <!-- Jsoup -->
    
    <jsoup.version>1.10.1</jsoup.version>
-          
+   
   </properties>
   
   <dependencies>
@@ -357,6 +357,11 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
     <dependency>
       <groupId>org.xhtmlrenderer</groupId>
       <artifactId>flying-saucer-pdf-itext5</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.itextpdf</groupId>
+      <artifactId>itext-asian</artifactId>
     </dependency>
     
     <dependency>

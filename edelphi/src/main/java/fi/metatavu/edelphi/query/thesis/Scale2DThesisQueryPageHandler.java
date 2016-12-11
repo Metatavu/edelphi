@@ -228,7 +228,7 @@ public class Scale2DThesisQueryPageHandler extends AbstractScaleThesisQueryPageH
     int maxX = 0;
     int maxY = 0;
     
-    List<String> xTickLabels = new ArrayList<String>();
+    List<String> xTickLabels = new ArrayList<>();
     
     for (QueryOptionFieldOption optionX : optionsX) {
       int x = NumberUtils.createInteger(optionX.getValue());
@@ -236,7 +236,7 @@ public class Scale2DThesisQueryPageHandler extends AbstractScaleThesisQueryPageH
       xTickLabels.add(optionX.getText());
     }
 
-    List<String> yTickLabels = new ArrayList<String>();
+    List<String> yTickLabels = new ArrayList<>();
     for (QueryOptionFieldOption optionY : optionsY) {
       int y = NumberUtils.createInteger(optionY.getValue());
       maxY = Math.max(maxY, y);
@@ -264,7 +264,7 @@ public class Scale2DThesisQueryPageHandler extends AbstractScaleThesisQueryPageH
           int x = NumberUtils.createInteger(answerX.getOption().getValue());
           int y = NumberUtils.createInteger(answerY.getOption().getValue());
           
-          values[x][y] = new Double(values[x][y] != null ? values[x][y] + 1 : 1); 
+          values[x][y] = values[x][y] != null ? values[x][y] + 1 : 1; 
         }
       }
     }

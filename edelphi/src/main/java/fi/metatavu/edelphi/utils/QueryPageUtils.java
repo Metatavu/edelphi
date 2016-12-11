@@ -13,7 +13,6 @@ import java.util.TreeMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
-import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingDAO;
@@ -22,12 +21,17 @@ import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageSetting;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageSettingKey;
 import fi.metatavu.edelphi.domainmodel.users.User;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 
 
 public class QueryPageUtils {
   
+  private static final String UTF_8 = "UTF-8";
   private static final String JSON_SERIALIZED_FILTER_START = "/**JSS-";
   private static final String JSON_SERIALIZED_FILTER_END = "-JSS**/";
+  
+  private QueryPageUtils() {
+  }
   
   public static String getSetting(QueryPage queryPage, String name) {
     QueryPageSettingDAO queryPageSettingDAO = new QueryPageSettingDAO();
@@ -57,9 +61,13 @@ public class QueryPageUtils {
   public static NavigableMap<String, String> getMapSetting(QueryPage queryPage, String name) {
     return parseSerializedMap(getSetting(queryPage, name));
   }
+  
+  public static List<String> getListSetting(QueryPage queryPage, String name) {
+    return parseSerializedList(getSetting(queryPage, name));
+  }
 
   public static NavigableMap<String, String> parseSerializedMap(String serializedData) {
-    NavigableMap<String, String> parsedMap = new TreeMap<String, String>();
+    NavigableMap<String, String> parsedMap = new TreeMap<>();
 
     if (StringUtils.isNotBlank(serializedData)) {
       String[] keyValuePairs = serializedData.split("&");
@@ -70,8 +78,8 @@ public class QueryPageUtils {
         }
         
         try {
-          String key = URLDecoder.decode(pair[0], "UTF-8");
-          String value = pair.length == 1 ? null : URLDecoder.decode(pair[1], "UTF-8");
+          String key = URLDecoder.decode(pair[0], UTF_8);
+          String value = pair.length == 1 ? null : URLDecoder.decode(pair[1], UTF_8);
           parsedMap.put(key, value);
         }
         catch (UnsupportedEncodingException e) {
@@ -92,10 +100,10 @@ public class QueryPageUtils {
       String value = map.get(key);
       
       try {
-        resultBuilder.append(URLEncode(key));
+        resultBuilder.append(urlEncode(key));
         resultBuilder.append("=");
         if (StringUtils.isNotBlank(value))
-          resultBuilder.append(URLEncode(value));
+          resultBuilder.append(urlEncode(value));
       }
       catch (UnsupportedEncodingException e) {
         throw new SmvcRuntimeException(EdelfoiStatusCode.UNDEFINED, e.getLocalizedMessage(), e);
@@ -109,13 +117,13 @@ public class QueryPageUtils {
   }
   
   public static List<String> parseSerializedList(String serializedData) {
-    List<String> parsedList = new ArrayList<String>();
+    List<String> parsedList = new ArrayList<>();
 
     if (StringUtils.isNotBlank(serializedData)) {
       String[] values = serializedData.split("&");
       for (String value : values) {
         try {
-          parsedList.add(URLDecoder.decode(value, "UTF-8"));
+          parsedList.add(URLDecoder.decode(value, UTF_8));
         }
         catch (UnsupportedEncodingException e) {
           throw new SmvcRuntimeException(EdelfoiStatusCode.UNDEFINED, e.getLocalizedMessage(), e);
@@ -134,7 +142,7 @@ public class QueryPageUtils {
       String value = listIterator.next();
       
       try {
-        resultBuilder.append(URLEncode(value));
+        resultBuilder.append(urlEncode(value));
       }
       catch (UnsupportedEncodingException e) {
         throw new SmvcRuntimeException(EdelfoiStatusCode.UNDEFINED, e.getLocalizedMessage(), e);
@@ -188,9 +196,9 @@ public class QueryPageUtils {
     setSetting(queryPage, name, serializeMap(value), modifier);
   }
 
-  private static String URLEncode(String value) throws UnsupportedEncodingException {
+  private static String urlEncode(String value) throws UnsupportedEncodingException {
     if (StringUtils.isNotBlank(value))
-      return URLEncoder.encode(value, "UTF-8").replace("+", "%20");
+      return URLEncoder.encode(value, UTF_8).replace("+", "%20");
     else
       return null;
   }
