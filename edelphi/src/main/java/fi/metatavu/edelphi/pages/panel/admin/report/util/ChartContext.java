@@ -37,6 +37,12 @@ public class ChartContext implements Serializable {
     return NumberUtils.isNumber(value) ? NumberUtils.toLong(value) : null;  
   }
 
+  @JsonIgnore
+  public Integer getInteger(String key) {
+    String value = getParameter(key);
+    return NumberUtils.isNumber(value) ? NumberUtils.toInt(value) : null;  
+  }
+
   public Map<String, String> getParameters() {
     return parameters;
   }
