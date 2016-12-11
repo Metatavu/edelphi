@@ -5,6 +5,9 @@ import java.util.Map;
 
 public class RequiredQueryFragment {
 
+  private String name;
+  private Map<String, String> attributes = new HashMap<>();
+
   public RequiredQueryFragment(String name) {
     this.name = name;
   }
@@ -21,6 +24,4 @@ public class RequiredQueryFragment {
     return attributes;
   }
   
-  private String name;
-  private Map<String, String> attributes = new HashMap<String, String>();
 }

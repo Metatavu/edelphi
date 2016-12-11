@@ -25,9 +25,9 @@ public abstract class AbstractScaleThesisQueryPageHandler extends AbstractThesis
 
   protected static final String MULTISELECT_OPTION_NAMEPREFIX = "ms";
   
-  public final static int SCALE_TYPE_RADIO = 0;
-  public final static int SCALE_TYPE_SLIDER = 1;
-  public final static int SCALE_TYPE_GRAPH = 2;
+  public static final int SCALE_TYPE_RADIO = 0;
+  public static final int SCALE_TYPE_SLIDER = 1;
+  public static final int SCALE_TYPE_GRAPH = 2;
   
   protected void renderRadioList(PageRequestContext requestContext, String name, String label, QueryOptionField queryField, QueryQuestionOptionAnswer answer) {
     QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
@@ -150,13 +150,24 @@ public abstract class AbstractScaleThesisQueryPageHandler extends AbstractThesis
    * @param mandatory whether field is mandatory
    */
   protected void synchronizeField(Map<String, String> settings, QueryPage queryPage, QueryOption optionsOption, String fieldName, String fieldCaption, Boolean mandatory) {
+    List<String> options = QueryPageUtils.parseSerializedList(settings.get(optionsOption.getName()));
+    synchronizeField(queryPage, options, fieldName, fieldCaption, mandatory);
+  }
+  
+  /**
+   * Synchronizes field meta. Should not be used when field already contains replies
+   * 
+   * @param queryPage query page
+   * @param options field  options
+   * @param fieldName field name
+   * @param fieldCaption field caption 
+   * @param mandatory whether field is mandatory
+   */
+  protected void synchronizeField(QueryPage queryPage, List<String> options, String fieldName, String fieldCaption, Boolean mandatory) {
     QueryFieldDAO queryFieldDAO = new QueryFieldDAO();
     QueryOptionFieldDAO queryOptionFieldDAO = new QueryOptionFieldDAO();
 
     QueryOptionField queryField = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldName);
-    
-    // TODO: Test with instrumented entities
-    
     if (queryField != null) {
       queryFieldDAO.updateMandatory(queryField, mandatory);
       queryFieldDAO.updateCaption(queryField, fieldCaption);
@@ -164,21 +175,20 @@ public abstract class AbstractScaleThesisQueryPageHandler extends AbstractThesis
       queryField = queryOptionFieldDAO.create(queryPage, fieldName, mandatory, fieldCaption);
     }
 
-    synchronizeFieldOptions(settings, queryPage, optionsOption, queryField);
+    synchronizeFieldOptions(options, queryField);
   }
   
-  protected void synchronizeFieldOptions(Map<String, String> settings, QueryPage queryPage, QueryOption optionsOption, QueryOptionField queryField) {
+  private void synchronizeFieldOptions(List<String> options, QueryOptionField queryField) {
     QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
     QueryQuestionOptionAnswerDAO queryQuestionOptionAnswerDAO = new QueryQuestionOptionAnswerDAO();
     
-    List<String> oldOptionValues = new ArrayList<String>();
+    List<String> oldOptionValues = new ArrayList<>();
     List<QueryOptionFieldOption> oldOptions = queryOptionFieldOptionDAO.listByQueryField(queryField);
     for (QueryOptionFieldOption oldOption : oldOptions) {
       oldOptionValues.add(oldOption.getValue());
     }
     
     int i = 0;
-    List<String> options = QueryPageUtils.parseSerializedList(settings.get(optionsOption.getName()));
     for (String option : options) {
       String optionValue = String.valueOf(i);
       
