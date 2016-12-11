@@ -380,8 +380,12 @@ input.buttonInputComponentInput {
 
 /*  Multiple 2d scales */
 
+.queryMultiple2DScalesQuestionContainer {
+  margin-bottom: 20px;
+}
+
 .queryMultiple2DScalesQuestionContainer table {
-  width: 100%;
+  width: 100%;  
 }
 
 .queryMultiple2DScalesQuestionContainer th {
