@@ -39,7 +39,7 @@ public abstract class AbstractThesisScale2DQueryReportPage extends QueryReportPa
     super(queryPageType);
   }
 
-  protected Chart createBubbleChart(ChartContext chartContext, QueryPage queryPage, String fieldNameX, String fieldNameY) {
+  protected Chart createBubbleChart(ChartContext chartContext, QueryPage queryPage, String title, String fieldNameX, String fieldNameY) {
     QueryFieldDAO queryFieldDAO = new QueryFieldDAO();
     QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
     QueryQuestionOptionAnswerDAO queryQuestionOptionAnswerDAO = new QueryQuestionOptionAnswerDAO();
@@ -98,10 +98,10 @@ public abstract class AbstractThesisScale2DQueryReportPage extends QueryReportPa
     queryPageSetting = queryPageSettingDAO.findByKeyAndQueryPage(queryPageSettingKey, queryPage);
     String yLabel = queryPageSetting == null ? null : queryPageSetting.getValue();
 
-    return ChartModelProvider.createBubbleChart(queryPage.getTitle(), xLabel, xTickLabels, yLabel, yTickLabels, 0, 0, values);
+    return ChartModelProvider.createBubbleChart(title, xLabel, xTickLabels, yLabel, yTickLabels, 0, 0, values);
   }
 
-  protected Chart createBarChart(ChartContext chartContext, QueryPage queryPage, Render2dAxis render2dAxis, String fieldName) {
+  protected Chart createBarChart(ChartContext chartContext, QueryPage queryPage, String title, Render2dAxis render2dAxis, String fieldName) {
     QueryFieldDAO queryFieldDAO = new QueryFieldDAO();
     QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
     
@@ -139,7 +139,7 @@ public abstract class AbstractThesisScale2DQueryReportPage extends QueryReportPa
     
     // Bar chart rendering
     
-    return ChartModelProvider.createBarChart(queryPage.getTitle(), labelText, categoryCaptions, values, avg, q1, q3);
+    return ChartModelProvider.createBarChart(title, labelText, categoryCaptions, values, avg, q1, q3);
   }
 
   protected final class ReportCommentComparator implements Comparator<QueryReportPageComment> {
