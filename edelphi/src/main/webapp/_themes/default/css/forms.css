@@ -390,11 +390,29 @@ input.buttonInputComponentInput {
 
 .queryMultiple2DScalesQuestionContainer th {
   text-align: center;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.queryMultiple2DScalesQuestionContainer .label-x,
+.queryMultiple2DScalesQuestionContainer .label-y {
+  color: #0099ff;
+  font-size: 1.5em;
 }
 
 .queryMultiple2DScalesQuestionContainer td {
   text-align: center;
-  padding: 2px;
+  padding: 10px 2px;
+  position: relative;
+}
+
+.queryMultiple2DScalesQuestionContainer td label.cover-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  cursor: pointer;
 }
 
 .queryMultiple2DScalesQuestionContainer td:nth-child(odd) {
