@@ -9,9 +9,9 @@
     
     <tr>
       <th></th>
-      <th colspan="${param.optionCount}">${param.labelX}</th>
+      <th class="label-x" colspan="${param.optionCount}">${param.labelX}</th>
       <th class="scale-separator"></th>
-      <th colspan="${param.optionCount}">${param.labelY}</th>
+      <th class="label-y" colspan="${param.optionCount}">${param.labelY}</th>
     </tr>
     
     <tr>
@@ -39,12 +39,13 @@
         
         <c:forEach begin="0" end="${param.optionCount - 1}" varStatus="svs">
           <td>
+            <label class="cover-label" for="m2ds-${vs.index}-x-${svs.index}"></label>
             <c:choose>
               <c:when test="${svs.index eq param[selectedX]}">
-                <input type="radio" name="multiple2dscales.${vs.index}.x" value="${svs.index}" checked="checked"/>
+                <input type="radio" name="multiple2dscales.${vs.index}.x" value="${svs.index}" checked="checked" id="m2ds-${vs.index}-x-${svs.index}"/>
               </c:when>
               <c:otherwise>
-                <input type="radio" name="multiple2dscales.${vs.index}.x" value="${svs.index}"/>
+                <input type="radio" name="multiple2dscales.${vs.index}.x" value="${svs.index}" id="m2ds-${vs.index}-x-${svs.index}"/>
               </c:otherwise>
             </c:choose>
           </td>
@@ -54,12 +55,13 @@
 
         <c:forEach begin="0" end="${param.optionCount - 1}" varStatus="svs">
           <td>
+            <label class="cover-label" for="m2ds-${vs.index}-y-${svs.index}"></label>
             <c:choose>
               <c:when test="${svs.index eq param[selectedY]}">
-                <input type="radio" name="multiple2dscales.${vs.index}.y" value="${svs.index}" checked="checked"/>
+                <input type="radio" name="multiple2dscales.${vs.index}.y" value="${svs.index}" checked="checked" id="m2ds-${vs.index}-y-${svs.index}"/>
               </c:when>
               <c:otherwise>
-                <input type="radio" name="multiple2dscales.${vs.index}.y" value="${svs.index}"/>
+                <input type="radio" name="multiple2dscales.${vs.index}.y" value="${svs.index}" id="m2ds-${vs.index}-y-${svs.index}"/>
               </c:otherwise>
             </c:choose>
           </td>
