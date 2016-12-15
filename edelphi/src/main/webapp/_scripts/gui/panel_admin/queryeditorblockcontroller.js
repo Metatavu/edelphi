@@ -473,6 +473,9 @@ QueryEditorBlockController = Class.create(BlockController, {
             case 'THESIS_GROUPING':
               this._elementEditor = new QueryEditorGroupingPageEditor(this);
             break;
+            case 'THESIS_MULTIPLE_2D_SCALES':
+              this._elementEditor = new QueryEditorMultipleScale2DThesisPageEditor(this);
+            break;
             case 'COLLAGE_2D':
               this._elementEditor = new QueryEditorCollage2DPageEditor(this);
             break;
@@ -4160,10 +4163,21 @@ QueryEditorThesisPageEditor = Class.create(QueryEditorQuestionEditor, {
   deinitialize: function($super) {
     $super();
     
-    this._thesisTextContainer.remove();
-    this._showLiveReportContainer.remove();
-    this._commentableContainer.remove();
-    this._viewDiscussionsContainer.remove();
+    if (this._thesisTextContainer) {
+      this._thesisTextContainer.remove();
+    }
+    
+    if (this._showLiveReportContainer) {
+      this._showLiveReportContainer.remove();
+    }
+    
+    if (this._commentableContainer) {
+      this._commentableContainer.remove();
+    }
+    
+    if (this._viewDiscussionsContainer) {
+      this._viewDiscussionsContainer.remove();
+    }
     
     this._thesisTextInputButtonInputComponent.deinitialize();
     if (this._thesisDescriptionEditor) {
@@ -4172,7 +4186,9 @@ QueryEditorThesisPageEditor = Class.create(QueryEditorQuestionEditor, {
       this._thesisDescriptionEditor = undefined;
     }
     
-    this._previewContainer.remove();
+    if (this._previewContainer) {
+      this._previewContainer.remove();
+    }
   },
   setup: function ($super) {
     $super();
@@ -4292,6 +4308,24 @@ QueryEditorScale2DThesisPageEditor = Class.create(QueryEditorThesisPageEditor, {
     
     this._preview = new QueryEditorScale2DQuestionPreview(this, this._previewContainer);
     this._preview.setup();
+  }
+});
+
+QueryEditorMultipleScale2DThesisPageEditor = Class.create(QueryEditorThesisPageEditor, {
+  initialize: function ($super,blockController) {
+    $super(blockController);
+  },
+  deinitialize: function($super) {
+    $super();
+  },
+  setup: function ($super) {
+    $super();
+    
+    this._thesisTextContainer.remove();
+    this._showLiveReportContainer.remove();
+    
+    this._thesisTextContainer = null;
+    this._showLiveReportContainer = null;
   }
 });
 
