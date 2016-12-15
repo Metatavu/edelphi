@@ -5124,6 +5124,10 @@ label.queryScaleSliderItemLabel {
   background: url('../gfx/icons/32x32/apps/query_page_backgroundinformationform.png') no-repeat center center #ffffff;
 }
 
+.panelAdminQueryEditorCreatePage .multiple2dscales {
+  background: url('../gfx/icons/32x32/apps/query_page_multiple2dscales.png') no-repeat center center #ffffff;
+}
+
 .panelAdminQueryEditorCreatePage .collage2d {
   background: url('../gfx/icons/32x32/apps/query_page_2dcollage.png') no-repeat center center #ffffff;
 }
