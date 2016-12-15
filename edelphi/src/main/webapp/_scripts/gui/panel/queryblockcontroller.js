@@ -95,6 +95,9 @@ QueryBlockController = Class.create(BlockController, {
       case 'THESIS_TIMELINE':
         this.queryPageController = new TimeLineQueryPageController(this);
       break;
+      case 'THESIS_MULTIPLE_2D_SCALES':
+        this.queryPageController = new Multiple2DScaleQueryPageController(this);
+      break;
       case 'FORM':
         this.queryPageController = new FormQueryPageController(this);
       break;
@@ -257,7 +260,7 @@ addBlockController(new QueryBlockController());
 QueryPageController = Class.create({
   initialize: function (blockController) {
     this._blockController = blockController;
-
+    
     if ($('queryCommentList') != undefined) {
       this._commentControl = new QueryCommentsController();
       this._commentControl.setup();
@@ -442,6 +445,15 @@ Scale1DQueryPageController = Class.create(QueryPageController, {
   _onRadioListValueChange: function (event) {
     this._selected = event.value;
     this._updateReport();
+  }
+});
+
+Multiple2DScaleQueryPageController = Class.create(QueryPageController, {
+  initialize: function ($super, blockController) {
+    $super(blockController);
+  },
+  deinitialize: function ($super) {
+    $super();
   }
 });
 
