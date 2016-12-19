@@ -13,7 +13,6 @@
   <div id="reportIssueBlockContent" class="blockContent">
   
     <p><fmt:message key="reportIssue.block.blockDescription"/></p>
-    <p><fmt:message key="reportIssue.block.googleGroupsPrefix"/> <a href="<fmt:message key="reportIssue.block.googleGroupsGroupLink"/>"><fmt:message key="reportIssue.block.googleGroupsGroupLink"/></a><fmt:message key="reportIssue.block.googleGroupsPostfix"/></p>
   
     <form name="reportIssue">
       <jsp:include page="/jsp/fragments/formfield_text.jsp">
