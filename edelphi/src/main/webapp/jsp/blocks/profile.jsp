@@ -99,7 +99,7 @@
   </div>
   
   <!-- Subscription level -->
-  
+  <!-- 
   <jsp:include page="/jsp/fragments/block_title.jsp">
     <jsp:param value="profile.block.profileSubscriptionLevelBlockTitle" name="titleLocale" />
   </jsp:include>
@@ -155,7 +155,7 @@
     </p>
    
   </div>
-
+  -->
   <!-- Internal password -->
 
   <jsp:include page="/jsp/fragments/block_title.jsp">
