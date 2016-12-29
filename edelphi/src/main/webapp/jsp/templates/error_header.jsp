@@ -9,9 +9,10 @@
 		  <div class="GUI_header">
 		  
 		    <!--  <div class="GUI_header_logo"></div> -->
-		    <div class="GUI_header_text locale_${pageContext.request.locale.language}">
+		    <div class="GUI_header_text">
 		      <a href="${pageContext.request.contextPath}/"></a>
-		    </div>
+		      <span class="GUI_header_text_small"><fmt:message key="generic.header.logoText"/></span>
+        </div>
 		
         <div class="headerLocaleContainer">
           <c:choose>
