@@ -1496,8 +1496,8 @@ QueryBlockTimeSerieFragmentController = Class.create(QueryBlockFragmentControlle
     
     this._columnInputs = element.up('.queryBlock').select('input.queryTimeSerieQuestionInput');
     
-    yTicks = Math.round((this._maxY - this._minY) / this._stepY);
-    xTicks = Math.round((this._maxX - this._minX) / Math.getGCD(this._stepX, this._userStepX));
+    var yTicks = Math.round((this._maxY - this._minY) / this._stepY);
+    var xTicks = Math.round((this._maxX - this._minX) / Math.getGCD(this._stepX, this._userStepX));
     
     var diffX = (this._maxX - this._minX) * 0.02; 
     
@@ -1615,9 +1615,15 @@ QueryBlockTimeSerieFragmentController = Class.create(QueryBlockFragmentControlle
   getUserDataSerie: function () {
     return this._userDataSerie;
   },
+  
   getPredefinedValueCount: function() {
     return this._dataSerie.length;
   },
+  
+  hasPredefinedValues: function () {
+    return this.getPredefinedValueCount() > 0;
+  },
+  
   _renderFlotr: function () {
     this._flotr = Flotr.draw(this._flotrContainer, [ {
       data : this._dataSerie,
@@ -1651,11 +1657,18 @@ QueryBlockTimeSerieFragmentController = Class.create(QueryBlockFragmentControlle
       }
     } ], this._flotrOptions);
   },
+  
   _getNearestDotIndex: function (position) {
-    if (position.x < this._userDataSerie[1][0]) {
-      return 0;
+    var valueCount = this._userDataSerie.length;
+    var firstValue = this._userDataSerie[0][0];
+    var lastValue  = this._userDataSerie[valueCount - 1][0];
+
+    if (position.x < firstValue) {
+      return this.hasPredefinedValues() ? 1 : 0;
+    } else if (position.x >= lastValue) {
+      return valueCount - 1;
     } else {
-      for (var i = 0, l = this._userDataSerie.length - 1; i < l; i++) {
+      for (var i = 0; i < valueCount - 1; i++) {
         var x1 = this._userDataSerie[i][0];
         var x2 = this._userDataSerie[i + 1][0];
        
@@ -1671,13 +1684,14 @@ QueryBlockTimeSerieFragmentController = Class.create(QueryBlockFragmentControlle
     
     return null;
   },
+  
   _onFlotrContainerClick: function (event) {
     var position = event.memo[0];
     
     var dotIndex = this._getNearestDotIndex(position);
-    if (dotIndex !== null && ((dotIndex != 0) || (this._dataSerie.length == 0))) {
+    if (dotIndex !== null) {
       this._userDataSerie[dotIndex][1] = position.y;
-      this._columnInputs[dotIndex - (this._dataSerie.length > 0 ? 1 : 0)].value = position.y;
+      this._columnInputs[dotIndex - (this.hasPredefinedValues() ? 1 : 0)].value = position.y;
     }
     
     this._renderFlotr();
@@ -1690,7 +1704,7 @@ QueryBlockTimeSerieFragmentController = Class.create(QueryBlockFragmentControlle
     var position = event.memo[1];
 
     var dotIndex = this._getNearestDotIndex(position);
-    if (dotIndex !== null && ((dotIndex != 0) || (this._dataSerie.length == 0))) {
+    if (dotIndex !== null) {
       var dotX = this._userDataSerie[dotIndex][0];
       var dotY = this._userDataSerie[dotIndex][1];
       
