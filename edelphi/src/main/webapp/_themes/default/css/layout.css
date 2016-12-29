@@ -416,16 +416,17 @@ body.panel .GUI_breadcrumb {
   top:5px;
   width:273px;
   height:94px;
+  background:url('../gfx/ui/header_text.png');
 }
 
-.GUI_header_text.locale_fi {
-  background:url('../gfx/ui/header_text_fi.png');
+.GUI_header_text_small {
+  position: absolute;
+  top: 75px;
+  left: 18px;
+  white-space: nowrap;
+  color: #fff;
+  font-size: 16px;
 }
-
-.GUI_header_text.locale_en {
-  background:url('../gfx/ui/header_text_en.png');
-}
-
 
 .GUI_header_text a{
   position:absolute;
