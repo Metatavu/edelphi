@@ -8,7 +8,7 @@ public class RegisterInfoTestsBase extends AbstractUITest {
   
   @Test
   public void testTitle() {
-    navigate("/");
+    navigate("/registerinfo.page");
     waitAndAssertText(".documenttitle", "Tietosuojaseloste - eDelfoi");
   }
   
