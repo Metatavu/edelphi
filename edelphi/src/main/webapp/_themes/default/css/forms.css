@@ -430,6 +430,7 @@ input.buttonInputComponentInput {
 .queryMultiple2DScalesQuestionContainer tr td:first-child {
   text-align: left;
   background: transparent;
+  max-width: 150px;
 }
 
 .queryMultiple2DScalesQuestionContainer tr:hover td:first-child {
