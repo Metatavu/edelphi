@@ -1,3 +1,5 @@
+/*global BlockController*/
+
 QueryBlockController = Class.create(BlockController, {
   initialize: function ($super) {
     $super();
