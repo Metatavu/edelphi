@@ -1,5 +1,18 @@
 /*global BlockController*/
 
+var TextQueryPageController;
+var TimeSerieQueryPageController;
+var Scale1DQueryPageController;
+var Scale2DQueryPageController;
+var ExpertiseQueryPageController;
+var MultiSelectQueryPageController;
+var OrderQueryPageController;
+var GroupingQueryPageController;
+var TimeLineQueryPageController;
+var Multiple2DScaleQueryPageController;
+var FormQueryPageController;
+var Collage2DQueryPageController;
+
 QueryBlockController = Class.create(BlockController, {
   initialize: function ($super) {
     $super();
@@ -450,7 +463,7 @@ Scale1DQueryPageController = Class.create(QueryPageController, {
   }
 });
 
-var Multiple2DScaleQueryPageController = Class.create(QueryPageController, {
+Multiple2DScaleQueryPageController = Class.create(QueryPageController, {
   initialize: function ($super, blockController) {
     $super(blockController);
     
