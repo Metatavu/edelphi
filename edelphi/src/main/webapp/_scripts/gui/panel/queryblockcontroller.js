@@ -448,9 +448,23 @@ Scale1DQueryPageController = Class.create(QueryPageController, {
   }
 });
 
-Multiple2DScaleQueryPageController = Class.create(QueryPageController, {
+var Multiple2DScaleQueryPageController = Class.create(QueryPageController, {
   initialize: function ($super, blockController) {
     $super(blockController);
+    
+    var labelCells = this.getBlockElement().select('td:first-child');
+    
+    var maxHeight = 0;
+    labelCells.each(function (labelCell) {
+      var cellLayout = new Element.Layout(labelCell);
+      maxHeight = Math.max(maxHeight, cellLayout.get('height'));
+    });
+    
+    labelCells.each(function (labelCell) {
+      labelCell.setStyle({
+        'height': maxHeight + 'px'
+      });
+    });
   },
   deinitialize: function ($super) {
     $super();
