@@ -6,8 +6,11 @@ import fi.metatavu.edelphi.test.ui.base.AbstractUITest;
 
 public class ProfileTestsBase extends AbstractUITest {
   
+  // Subscription levels are temporarily disabled
+  private static final boolean SUBSCRIPTION_LEVELS_DISABLED = true;
+  
   private static final String PROFILE_PAGE = "/profile.page";
-
+  
   @Test
   public void testLoginRequired() {
     navigate(PROFILE_PAGE);
@@ -16,6 +19,10 @@ public class ProfileTestsBase extends AbstractUITest {
   
   @Test
   public void testSubscriptionLevelNone() {
+    if (SUBSCRIPTION_LEVELS_DISABLED) {
+      return;  
+    }
+    
     login(ADMIN_EMAIL);
     navigate(PROFILE_PAGE);
     waitAndAssertText("#profileSubscriptionLevelBlockContent p:first-child", "You do not have an active subscription");
@@ -23,6 +30,10 @@ public class ProfileTestsBase extends AbstractUITest {
   
   @Test
   public void testSubscriptionLevelEdu() {
+    if (SUBSCRIPTION_LEVELS_DISABLED) {
+      return;  
+    }
+    
     updateUserSubscription(1l, "EDU", toDate(2016, 1, 1), toDate(2016, 10, 10));
     login(ADMIN_EMAIL);
     navigate(PROFILE_PAGE);
@@ -31,6 +42,10 @@ public class ProfileTestsBase extends AbstractUITest {
   
   @Test
   public void testSubscriptionLevelBasic() {
+    if (SUBSCRIPTION_LEVELS_DISABLED) {
+      return;  
+    }
+    
     updateUserSubscription(1l, "BASIC", toDate(2016, 1, 1), toDate(2016, 10, 10));
     login(ADMIN_EMAIL);
     navigate(PROFILE_PAGE);
@@ -39,6 +54,10 @@ public class ProfileTestsBase extends AbstractUITest {
   
   @Test
   public void testSubscriptionLevelPro() {
+    if (SUBSCRIPTION_LEVELS_DISABLED) {
+      return;  
+    }
+    
     updateUserSubscription(1l, "PRO", toDate(2016, 1, 1), toDate(2016, 10, 10));
     login(ADMIN_EMAIL);
     navigate(PROFILE_PAGE);
@@ -47,6 +66,10 @@ public class ProfileTestsBase extends AbstractUITest {
   
   @Test
   public void testSubscriptionLevelUnlimited() {
+    if (SUBSCRIPTION_LEVELS_DISABLED) {
+      return;  
+    }
+    
     updateUserSubscription(1l, "UNLIMITED", toDate(2016, 1, 1), toDate(2016, 10, 10));
     login(ADMIN_EMAIL);
     navigate(PROFILE_PAGE);
