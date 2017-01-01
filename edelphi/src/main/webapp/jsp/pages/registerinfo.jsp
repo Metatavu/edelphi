@@ -28,24 +28,23 @@
         <h3>1. Rekisterin pitäjä</h3>
 
         <p>
-        Otavan Opisto<br/>
-        Mikkelin kaupunki<br/>
-        y-tunnus: 0165116-3
+        Metodix Oy<br/>
+        Y-tunnus: 1036015-7
         </p>
 
         <h3>2. Yhteyshenkilö</h3>
 
         <p>
-        Ville Venäläinen<br/>
-        Otavantie 2 b<br/>
-        50670 OTAVA<br/>
-        puh. 044 794 5102
+        Hannu Linturi<br/>
+        Erik Tulindbergin kuja 1 C 28<br/>
+        01800 HELSINKI<br/>
+        puh. +358 400 815515
         </p>
 
         <h3>3. Rekisterin nimi</h3>
 
         <p>
-        eDelfoi -tietosuojaseloste<br/>
+        eDelphi -tietosuojaseloste<br/>
         </p>
         
         <h3>4. Henkilötietojen käsittelyn tarkoitus</h3>
@@ -75,42 +74,19 @@
         <p>Ei luovuteta tai käytetä ohjelman ulkopuolella</p>
 
         <h3>8. Rekisterin suojauksen periaatteet</h3>
-
-        <p>Henkilötiedot suojataan asiattomalta pääsyltä ja laittomalta
-käsittelyltä (esim. hävittäminen, muuttaminen tai luovuttaminen).
-Salassa pidettävien ja arkaluonteisten tietojen suojaamiseen
-kiinnitetään erityistä huomiota.</p>
-
-        <p>Suojaus perustuu järjestelmätasolla valvottujen käyttäjäoikeuksien
-käyttäjätileihin. Tietokanta varmuuskopioidaan maantieteellisesti
-erillään sijaitsevaan konesaliin kiintolevypohjaiseen
-varmistusjärjestelmään. Levytallennusjärjestelmästä tallennetaan
-tiedot vielä varmuuskopiointinauhoille kolmanteen, edelleen
-maantieteellisesti erillään sijaitsevaan paikkaan.
-Varmistusnauha-asema sijaitsee lukitussa murtovalvonnan alaisena
-olevassa tilassa. Nauhat säilytetään kassakaapissa.</p>
+        
+        <p>Henkilötiedot suojataan asiattomalta pääsyltä ja laittomalta käsittelyltä (esim. hävittäminen, muuttaminen tai luovuttaminen). Salassa pidettävien ja arkaluonteisten tietojen suojaamiseen kiinnitetään erityistä huomiota.</p>
+        <p>Suojaus perustuu järjestelmätasolla valvottujen käyttäjäoikeuksien käyttäjätileihin. Tietokanta varmuuskopioidaan maantieteellisesti erillään sijaitseviin konesaleihin.</p>
 
         <h3>9. Rekisteröidyn tarkastusoikeus</h3>
-
+        
         <p>Rekisteröidyllä on oikeus tarkastaa itseään koskevat rekisterin tiedot.</p>
-
-        <p>Tarkastuspyyntö tehdään henkilökohtaisen käynnin yhteydessä tai
-omakätisesti allekirjoitetulla tai muulla luotettavalla tavalla
-varmennetulla asiakirjalla. Tarkastuspyyntö kohdistetaan rekisterin
-yhteyshenkilölle.</p>
+        <p>Tarkastuspyyntö tehdään henkilökohtaisen käynnin yhteydessä tai omakätisesti allekirjoitetulla tai muulla luotettavalla tavalla varmennetulla asiakirjalla. Tarkastuspyyntö kohdistetaan rekisterin yhteyshenkilölle.</p>
 
         <h3>10. Tiedon korjaaminen</h3>
-
-        <p>Rekisterissä olevien virheellisten, puutteellisten tai vanhentuneiden
-henkilötietojen korjauspyynnöt voidaan osoittaa rekisterin
-yhteyshenkilölle. Henkilöllisyytensä varmistaneen henkilön vaatimat
-rekisteriä koskevat korjaukset ja muut muutokset tehdään viipymättä.</p>
-
-        <p>Jollei muutospyyntöä katsota perustelluksi, annetaan muutospyynnön
-esittäjälle kirjallinen todistus, jossa selvitetään syyt miksi
-muutosvaatimusta ei olla hyväksytty. Rekisteröity voi saattaa asian
-tietosuojavaltuutetun käsiteltäväksi.</p>
-
+        
+        <p>Rekisterissä olevien virheellisten, puutteellisten tai vanhentuneiden henkilötietojen korjauspyynnöt voidaan osoittaa rekisterin yhteyshenkilölle. Henkilöllisyytensä varmistaneen henkilön vaatimat rekisteriä koskevat korjaukset ja muut muutokset tehdään viipymättä.</p>
+        <p>Jollei muutospyyntöä katsota perustelluksi, annetaan muutospyynnön esittäjälle kirjallinen todistus, jossa selvitetään syyt miksi muutosvaatimusta ei olla hyväksytty. Rekisteröity voi saattaa asian tietosuojavaltuutetun käsiteltäväksi.</p>
 	      </div>
 	      <div class="clearBoth"></div>
 	    </div>
