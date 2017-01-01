@@ -1688,25 +1688,36 @@ QueryBlockTimeSerieFragmentController = Class.create(QueryBlockFragmentControlle
   },
   
   _getNearestDotIndex: function (position) {
+    var firstIndex = this.hasPredefinedValues() ? 1 : 0;
     var valueCount = this._userDataSerie.length;
-    var firstValue = this._userDataSerie[0][0];
+    var firstValue = this._userDataSerie.length > firstIndex ? this._userDataSerie[firstIndex][0] : null;
     var lastValue  = this._userDataSerie[valueCount - 1][0];
+    
+    if (firstValue === null) {
+      return null;
+    }
 
     if (position.x < firstValue) {
-      return this.hasPredefinedValues() ? 1 : 0;
+      return firstIndex;
     } else if (position.x >= lastValue) {
       return valueCount - 1;
     } else {
-      for (var i = 0; i < valueCount - 1; i++) {
-        var x1 = this._userDataSerie[i][0];
-        var x2 = this._userDataSerie[i + 1][0];
-       
-        if ((position.x >= x1) && (position.x <= x2)) {
-          if ((position.x - x1) < (x2 - position.x)) {
-            return i;
-          } else {
-            return i + 1;
-          }
+      return this._findNearestDotIndex(position); 
+    }
+  },
+  
+  _findNearestDotIndex: function (position) {
+    var valueCount = this._userDataSerie.length;
+    
+    for (var i = 0; i < valueCount - 1; i++) {
+      var x1 = this._userDataSerie[i][0];
+      var x2 = this._userDataSerie[i + 1][0];
+     
+      if ((position.x >= x1) && (position.x <= x2)) {
+        if ((position.x - x1) < (x2 - position.x)) {
+          return i;
+        } else {
+          return i + 1;
         }
       }
     }
