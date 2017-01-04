@@ -8,7 +8,7 @@
     <div class="GUI_header_inner_wrapper">
       <div class="GUI_header">
       
-        <div class="GUI_panel_header_text_wrapper"><a href="${pageContext.request.contextPath}/">eDelfoi.fi</a> <span class="GUI_panel_header_text_panelname"> - ${panel.name}</span></div>
+        <div class="GUI_panel_header_text_wrapper"><a href="${pageContext.request.contextPath}/"><fmt:message key="generic.header.homeLink"/></a> <span class="GUI_panel_header_text_panelname"> - ${panel.name}</span></div>
       
         <div class="GUI_header_user_container">
           <c:if test="${loggedUserId gt 0}">
