@@ -56,5 +56,5 @@ VALUES
   (53, 'collage2d.dotMultiplier'),
   (54, 'expertise.description');
 
-DELETE FROM hibernate_sequences WHERE sequence_name in ('QueryPageSettingKey');
+DELETE FROM hibernate_sequences WHERE sequence_name IN ('QueryPageSettingKey');
 INSERT INTO hibernate_sequences (sequence_next_hi_value, sequence_name) select max(id) + 1, 'QueryPageSettingKey' from QueryPageSettingKey;

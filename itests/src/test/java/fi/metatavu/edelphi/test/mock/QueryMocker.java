@@ -236,6 +236,11 @@ public class QueryMocker extends AbstractResourceMocker {
 
   private class PageMeta {
 
+    private long id;
+    private long queryId;
+    private long sectionId;
+    private String type;
+
     public PageMeta(long id, long queryId, long sectionId, String type) {
       super();
       this.id = id;
@@ -243,11 +248,6 @@ public class QueryMocker extends AbstractResourceMocker {
       this.sectionId = sectionId;
       this.type = type;
     }
-
-    private long id;
-    private long queryId;
-    private long sectionId;
-    private String type;
 
     public long getId() {
       return id;
