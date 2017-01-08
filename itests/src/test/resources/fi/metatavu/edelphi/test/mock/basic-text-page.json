@@ -1,0 +1,10 @@
+{
+  "visible": true,
+  "title": "Text page",
+  "type": "TEXT",
+  "settings": {
+    "text.content": "<p>Page with text</p>",
+    "text.commentable": "1",
+    "text.viewDiscussions": "1"
+  }
+}

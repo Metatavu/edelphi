@@ -1,0 +1,8 @@
+{
+  "visible": true,
+  "title": "Form",
+  "type": "FORM",
+  "settings": {
+    "form.fields": "[{\"type\":\"TEXT\",\"caption\":\"Text\",\"name\":\"3\"},{\"type\":\"MEMO\",\"caption\":\"Memo\",\"name\":\"2\"},{\"type\":\"LIST\",\"caption\":\"List\",\"options\":[{\"label\":\"Item\",\"value\":\"1\"}],\"listType\":\"RADIO\",\"name\":\"1\"}]"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "visible": true,
+  "title": "Time line",
+  "type": "THESIS_TIMELINE",
+  "settings": {
+    "thesis.commentable": "1",
+    "thesis.showLiveReport": "1",
+    "thesis.viewDiscussions": "1",
+    "thesis.text": "Time line thesis",
+    "thesis.description": "<p>Time line text</p>",
+    "timeline.type": "0",
+    "timeline.min": "1",
+    "timeline.max": "100",
+    "timeline.step": "1",
+    "timeline.value1Label": "Value 1 label",
+    "timeline.value2Label": "Value 2 label"
+  }
+}

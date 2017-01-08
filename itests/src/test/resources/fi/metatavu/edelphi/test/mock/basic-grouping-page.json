@@ -1,0 +1,14 @@
+{
+  "visible": true,
+  "title": "Grouping",
+  "type": "THESIS_GROUPING",
+  "settings": {
+    "thesis.commentable": "1",
+    "thesis.showLiveReport": "1",
+    "thesis.viewDiscussions": "1",
+    "thesis.text": "Grouping thesis",
+    "thesis.description": "<p>Grouping text</p>",
+    "grouping.groups": "Group%201&Group%202",
+    "grouping.items": "Item%201&Item%202&Item%203&Item%204&Item%205"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "visible": true,
+  "title": "Sorting",
+  "type": "THESIS_ORDER",
+  "settings": {
+    "thesis.commentable": "1",
+    "thesis.showLiveReport": "1",
+    "thesis.viewDiscussions": "1",
+    "thesis.text": "Sorting thesis",
+    "thesis.description": "<p>Sorting text</p>",
+    "orderingField.items": "Item%201&Item%202&Item%203&Item%204&Item%205"
+  }
+}
