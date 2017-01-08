@@ -108,6 +108,20 @@
       <version>${greenmail.version}</version>
       <scope>test</scope>
     </dependency>
+    
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>2.7.4</version>
+      <scope>test</scope>
+    </dependency>
+        
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.7.4</version>
+      <scope>test</scope>
+    </dependency>
       
   </dependencies>
   

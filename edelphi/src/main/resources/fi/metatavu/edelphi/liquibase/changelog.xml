@@ -2915,9 +2915,83 @@
     <dropTable tableName="MailQueueItem" />
     <dropTable tableName="EmailMessage" />
   </changeSet>
+  
+  <changeSet id="restore-many-to-many-tables" author="antti.leppa">
+    <createTable tableName="__panelusergroupusers">
+      <column defaultValueNumeric="0" name="panelUserGroup_id"
+        type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column defaultValueNumeric="0" name="user_id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+    </createTable>
+    
+    <createIndex indexName="FK2F951418A20F40B5" tableName="__panelusergroupusers">
+      <column name="panelUserGroup_id" />
+    </createIndex>
+
+    <createIndex indexName="FK2F951418F7635B15" tableName="__panelusergroupusers">
+      <column name="user_id" />
+    </createIndex>
+
+    <addForeignKeyConstraint baseColumnNames="panelUserGroup_id"
+      baseTableName="__panelusergroupusers" constraintName="FK2F951418A20F40B5"
+      deferrable="false" initiallyDeferred="false" onDelete="NO ACTION"
+      onUpdate="NO ACTION" referencedColumnNames="id"
+      referencedTableName="panelusergroup" />
+
+    <addForeignKeyConstraint baseColumnNames="user_id"
+      baseTableName="__panelusergroupusers" constraintName="FK2F951418F7635B15"
+      deferrable="false" initiallyDeferred="false" onDelete="NO ACTION"
+      onUpdate="NO ACTION" referencedColumnNames="id"
+      referencedTableName="user" />
+      
+    <createTable tableName="__queryquestionmultioptionanswers">
+      <column name="answer_id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column name="option_id" type="BIGINT">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+    </createTable>
+    
+    <createIndex indexName="FKBA62EEF5A2CB73B5"
+      tableName="__queryquestionmultioptionanswers">
+      <column name="answer_id" />
+    </createIndex>
+    
+    <createIndex indexName="FKBA62EEF5BC6F48D2"
+      tableName="__queryquestionmultioptionanswers">
+      <column name="option_id" />
+    </createIndex>
+    
+    <addForeignKeyConstraint baseColumnNames="answer_id"
+      baseTableName="__queryquestionmultioptionanswers" constraintName="FKBA62EEF5A2CB73B5"
+      deferrable="false" initiallyDeferred="false" onDelete="NO ACTION"
+      onUpdate="NO ACTION" referencedColumnNames="id"
+      referencedTableName="queryquestionmultioptionanswer" />
+      
+    <addForeignKeyConstraint baseColumnNames="option_id"
+      baseTableName="__queryquestionmultioptionanswers" constraintName="FKBA62EEF5BC6F48D2"
+      deferrable="false" initiallyDeferred="false" onDelete="NO ACTION"
+      onUpdate="NO ACTION" referencedColumnNames="id"
+      referencedTableName="queryoptionfieldoption" />
+  </changeSet>    
 
   <changeSet id="test-data" author="antti.leppa" context="test">
     <sqlFile path="fi/metatavu/edelphi/liquibase/test.sql" />
+  </changeSet>
+
+  <changeSet id="test-query-page-templates" author="antti.leppa" context="test">
+    <sqlFile path="fi/metatavu/edelphi/liquibase/query-page-templates-test.sql" />
+  </changeSet>
+  
+  <changeSet id="query-template-settings" author="antti.leppa">
+    <addUniqueConstraint columnNames="name" tableName="QueryPageSettingKey"/>
+    <sqlFile path="fi/metatavu/edelphi/liquibase/query-page-setting-keys.sql" dbms="mysql"/>
+    <sqlFile path="fi/metatavu/edelphi/liquibase/query-page-setting-keys-h2.sql" dbms="h2"/>
+    <sqlFile path="fi/metatavu/edelphi/liquibase/query-template-settings.sql"/>
   </changeSet>
 
 </databaseChangeLog>

@@ -1,0 +1,16 @@
+{
+  "visible": true,
+  "title": "2D Collage",
+  "type": "COLLAGE_2D",
+  "settings": {
+    "collage2d.includedPages": "THESIS_SCALE_2D",
+    "collage2d.replySource": "ALL",
+    "collage2d.labelVisibility": "HOVER",
+    "collage2d.replyCountsVisible": "TRUE",
+    "collage2d.dotOffset": "1",
+    "collage2d.dotMultiplier": "1"
+  },
+  "settingTypes": {
+    "collage2d.includedPages": "QUERY_PAGE_IDS_BY_TYPE"
+  }
+}

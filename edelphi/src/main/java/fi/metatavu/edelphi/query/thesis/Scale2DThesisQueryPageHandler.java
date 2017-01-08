@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -35,6 +36,8 @@ import fi.metatavu.edelphi.utils.RequestUtils;
 
 public class Scale2DThesisQueryPageHandler extends AbstractScaleThesisQueryPageHandler {
 
+  private static final Logger logger = Logger.getLogger(Scale2DThesisQueryPageHandler.class.getName());
+  
   public Scale2DThesisQueryPageHandler() {
     options.add(new QueryOption(QueryOptionType.QUESTION, "scale2d.label.x", "panelAdmin.block.query.scale2DXLabelOptionLabel", QueryOptionEditor.TEXT, true));
     options.add(new QueryOption(QueryOptionType.QUESTION, "scale2d.label.y", "panelAdmin.block.query.scale2DYLabelOptionLabel", QueryOptionEditor.TEXT, true));
@@ -221,6 +224,11 @@ public class Scale2DThesisQueryPageHandler extends AbstractScaleThesisQueryPageH
     String fieldNameY = getFieldName("y");
     QueryOptionField queryFieldX = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldNameX);
     QueryOptionField queryFieldY = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldNameY);
+    
+    if (queryFieldX == null || queryFieldY == null) {
+      logger.severe(String.format("QueryField missing, could not render report for query page %d", queryPage.getId()));
+      return;
+    }
     
     List<QueryOptionFieldOption> optionsX = queryOptionFieldOptionDAO.listByQueryField(queryFieldX);
     List<QueryOptionFieldOption> optionsY = queryOptionFieldOptionDAO.listByQueryField(queryFieldY);

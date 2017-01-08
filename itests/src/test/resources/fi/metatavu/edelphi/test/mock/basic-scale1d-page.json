@@ -1,0 +1,15 @@
+{
+  "visible": true,
+  "title": "Scale 1d",
+  "type": "THESIS_SCALE_1D",
+  "settings": {
+    "scale1d.type": "0",
+    "scale1d.label": "-- Insert Text --",
+    "scale1d.options": "---&--&-&%2B/-&%2B&%2B%2B&%2B%2B%2B",
+    "thesis.commentable": "1",
+    "thesis.showLiveReport": "1",
+    "thesis.viewDiscussions": "1",
+    "thesis.text": "Scale 1d thesis",
+    "thesis.description": "<p>Scale 1d text</p>"
+  }
+}
