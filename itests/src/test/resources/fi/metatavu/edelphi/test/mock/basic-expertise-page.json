@@ -1,0 +1,8 @@
+{
+  "visible": true,
+  "title": "Expertise matrix",
+  "type": "EXPERTISE",
+  "settings": {
+    "expertise.showLiveReport": "1"
+  }
+}

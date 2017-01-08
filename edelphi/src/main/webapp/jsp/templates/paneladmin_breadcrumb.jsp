@@ -4,7 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
-<a href="${pageContext.request.contextPath}/" class="breadcrumbLink">eDelfoi.fi</a>
+<a href="${pageContext.request.contextPath}/" class="breadcrumbLink"><fmt:message key="generic.header.homeLink"/></a>
 
 <span class="breadCrumbSpacer">&gt;</span>
 

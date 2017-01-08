@@ -1,0 +1,25 @@
+{
+  "visible": true,
+  "title": "Time serie",
+  "type": "THESIS_TIME_SERIE",
+  "settings": {
+    "thesis.commentable": "1",
+    "thesis.showLiveReport": "1",
+    "thesis.viewDiscussions": "1",
+    "thesis.text": "Time serie thesis",
+    "thesis.description": "<p>Time serie text</p>",
+    "time_serie.maxY": "100",
+    "time_serie.maxX": "2020",
+    "time_serie.minY": "0",
+    "time_serie.minX": "2010",
+    "time_serie.stepX": "1",
+    "time_serie.stepY": "5",
+    "time_serie.userStepX": "1",
+    "time_serie.yTickDecimals": "2",
+    "time_serie.xAxisTitle": "-- Insert Label --",
+    "time_serie.yAxisTitle": "-- Insert Label --",
+    "time_serie.predefinedSetLabel": "-- Insert Label --",
+    "time_serie.userSetLabel": "-- Insert Label --",
+    "time_serie.predefinedValues": "2010=&2011=&2012=&2013=&2014=&2015=&2016=&2017=&2018=&2019=&2020="
+  }
+}

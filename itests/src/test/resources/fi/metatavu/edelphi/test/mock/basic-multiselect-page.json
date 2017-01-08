@@ -1,0 +1,13 @@
+{
+  "visible": true,
+  "title": "Multi-select",
+  "type": "THESIS_MULTI_SELECT",
+  "settings": {
+    "thesis.commentable": "1",
+    "thesis.showLiveReport": "1",
+    "thesis.viewDiscussions": "1",
+    "thesis.text": "Multi-select thesis",
+    "thesis.description": "<p>Multi-select text</p>",
+    "multiselect.options": "Multiselect%20option%201&Multiselect%20option%202&Multiselect%20option%203&Multiselect%20option%204&Multiselect%20option%205"
+  }
+}

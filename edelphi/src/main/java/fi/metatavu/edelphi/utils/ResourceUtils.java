@@ -103,16 +103,21 @@ public class ResourceUtils {
   }
 
   public static Delfoi getResourceDelfoi(Resource resource) {
+    if (resource == null) {
+      return null;
+    }
+    
     DelfoiDAO delfoiDAO = new DelfoiDAO();
     
     Resource current = resource;
     Folder parentFolder;
     
-    if (current instanceof Folder)
+    if (current instanceof Folder) {
       parentFolder = (Folder) current;
-    else
+    } else {
       parentFolder = current.getParentFolder();
-
+    }
+    
     while (parentFolder.getParentFolder() != null) {
       parentFolder = parentFolder.getParentFolder();
     }
