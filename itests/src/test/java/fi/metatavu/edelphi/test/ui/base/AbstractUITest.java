@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -37,6 +36,7 @@ import org.junit.runner.Description;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
@@ -48,12 +48,14 @@ import org.openqa.selenium.internal.FindsByCssSelector;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.google.common.base.Predicate;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
 
+@SuppressWarnings ("squid:S2187")
 public class AbstractUITest {
   
   public static final String ADMIN_EMAIL = "admin@example.com";
@@ -80,7 +82,7 @@ public class AbstractUITest {
   public void navigate(String path) {
     webDriver.get(String.format("%s%s", getAppUrl(), path));
   }
-
+  
   protected void login(String email) {
     navigate(String.format("/dologin.json?authSource=%d&username=%s", TEST_AUTH_SOURCE_ID, email));
   }
@@ -323,19 +325,23 @@ public class AbstractUITest {
   }
   
   protected void assertText(String selector, String text, boolean trim, boolean ignoreCase) {
-    WebElement element = findElement(selector);
-    assertNotNull(element);
-    
-    String elementText = element.getText();
-    
-    if (trim) {
-      elementText = StringUtils.trim(elementText);
-    }
-    
-    if (ignoreCase) {
-      assertEquals(StringUtils.lowerCase(trim ? StringUtils.trim(text) : text), StringUtils.lowerCase(elementText));
-    } else {
-      assertEquals(trim ? StringUtils.trim(text) : text, elementText);
+    try {
+      WebElement element = findElement(selector);
+      assertNotNull(element);
+      
+      String elementText = element.getText();
+      
+      if (trim) {
+        elementText = StringUtils.trim(elementText);
+      }
+      
+      if (ignoreCase) {
+        assertEquals(StringUtils.lowerCase(trim ? StringUtils.trim(text) : text), StringUtils.lowerCase(elementText));
+      } else {
+        assertEquals(trim ? StringUtils.trim(text) : text, elementText);
+      }
+    } catch (StaleElementReferenceException serf) {
+      assertText(selector, text, trim, ignoreCase);
     }
   }
   
@@ -355,6 +361,24 @@ public class AbstractUITest {
     }
   }
   
+
+  protected void assertVisible(final String... selectors) {
+    for (String selector : selectors) {
+      List<WebElement> elements = findElements(selector);
+      assertTrue(String.format("Could not find elements with %s", StringUtils.join(selectors, ",")), !elements.isEmpty());
+      boolean visible = false;
+      
+      for (WebElement element : elements) {
+        if (element.isDisplayed()) {
+          visible = true;
+          break;
+        }
+      }
+      
+      assertTrue(String.format("No visible elements for selector %s", StringUtils.join(selectors, ",")), visible);
+      
+    }
+  }
   
   protected List<WebElement> findElements(String... selectors) {
     List<WebElement> result = new ArrayList<>();
@@ -429,6 +453,14 @@ public class AbstractUITest {
     }
   }
   
+  protected void waitUrlMatches(final String regex) {
+    new WebDriverWait(getWebDriver(), 60).until(new ExpectedCondition<Boolean>() {
+      public Boolean apply(WebDriver driver) {
+        return driver.getCurrentUrl().matches(regex);
+      }
+    });
+  }
+  
   protected void takeScreenshot() throws IOException {
     if (getCI()) {
       dumpScreenShot();
@@ -477,23 +509,6 @@ public class AbstractUITest {
     return String.format("data:%s;base64,%s", contentType, Base64.getEncoder().encodeToString(data));
   }
   
-  protected long createFolder(String name, String urlName, Long parentFolderId) {
-    String description = null;
-    boolean visible = true;
-    boolean archived = false;
-    Date created = new Date();
-    Long lastModifierId = 1l;
-    Date lastModified = new Date();
-    return createFolder(name, urlName, description, parentFolderId, visible, archived, created, lastModifierId, lastModified);
-  }
-  
-  @SuppressWarnings ("squid:S00107")
-  protected long createFolder(String name, String urlName, String description, Long parentFolderId, boolean visible, boolean archived, Date created, Long lastModifierId, Date lastModified) {
-    long id = createResource(name, urlName, description, parentFolderId, "FOLDER", visible, archived, created, lastModifierId, lastModified);
-    executeInsert("insert into Folder (id) values (?)", id);
-    return id;
-  }
-  
   protected void updateUserSubscription(Long userId, String subscriptionLevel, Date subscriptionStarted, Date subscriptionEnds) {
     String sql =
        "UPDATE " +
@@ -506,41 +521,6 @@ public class AbstractUITest {
        "  id = ? ";
     
     executeUpdate(sql, subscriptionLevel, subscriptionStarted, subscriptionEnds, userId);
-  }
-  
-  @SuppressWarnings ("squid:S00107")
-  private long createResource(String name, String urlName, String description, Long parentFolderId, String type, boolean visible, boolean archived, Date created, Long lastModifierId, Date lastModified) {
-    String sql = 
-        "insert into " +
-        "  Resource (name, urlName, description, parentFolder_id, type, visible, archived, created, lastModifier_id, lastModified) " +
-        "values " +
-        "  (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    return executeInsert(sql, name, urlName, description, parentFolderId, type, visible, archived, lastModifierId, lastModified);
-  }
-  
-  private long executeInsert(String sql, Object... params) {
-    try (Connection connection = getConnection()) {
-      connection.setAutoCommit(true);
-      PreparedStatement statement = connection.prepareStatement(sql);
-      try {
-        for (int i = 0, l = params.length; i < l; i++) {
-          statement.setObject(i + 1, params[i]);
-        }
-
-        statement.execute();
-        
-        try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
-          return getGeneratedKey(generatedKeys);
-        }
-      } finally {
-        statement.close();
-      }
-    } catch (Exception e) {
-      logger.log(Level.SEVERE, "Failed to execute insert", e);
-      fail(e.getMessage());
-    }
-    
-    return -1;
   }
   
   private void executeUpdate(String sql, Object... params) {
@@ -566,7 +546,7 @@ public class AbstractUITest {
     return StringUtils.equals(System.getProperty("ci"), "true");
   }
   
-  private Connection getConnection() {
+  protected Connection getConnection() {
     String username = System.getProperty("it.jdbc.username");
     String password = System.getProperty("it.jdbc.password");
     String url = System.getProperty("it.jdbc.url");
@@ -585,14 +565,6 @@ public class AbstractUITest {
     }
     
     return null;
-  }
-  
-  private long getGeneratedKey(ResultSet generatedKeys) throws SQLException {
-    if (generatedKeys.next()) {
-      return generatedKeys.getLong(1);
-    }
-    
-    return -1;
   }
   
   private class TestBaseWatcher extends TestWatcher {
