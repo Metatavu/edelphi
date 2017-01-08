@@ -98,3 +98,5 @@ INSERT INTO
   AuthSource (id, name, strategy)
 VALUES 
   (1, 'test', 'test');
+
+INSERT INTO hibernate_sequences (sequence_next_hi_value, sequence_name) VALUES ((SELECT max(id) + 1 FROM Resource), 'Resource');
