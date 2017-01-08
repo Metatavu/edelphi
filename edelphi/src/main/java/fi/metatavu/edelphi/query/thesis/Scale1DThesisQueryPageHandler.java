@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
@@ -33,10 +34,9 @@ import fi.metatavu.edelphi.utils.ReportUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 
 public class Scale1DThesisQueryPageHandler extends AbstractScaleThesisQueryPageHandler {
-
-  private final static int SCALE_TYPE_RADIO = 0;
-  private final static int SCALE_TYPE_SLIDER = 1;
   
+  private static final Logger logger = Logger.getLogger(Scale1DThesisQueryPageHandler.class.getName());
+
   public Scale1DThesisQueryPageHandler() {
     options.add(new QueryOption(QueryOptionType.QUESTION, "scale1d.label", "panelAdmin.block.query.scale1DLabelOptionLabel", QueryOptionEditor.TEXT, true));
     options.add(new QueryOption(QueryOptionType.QUESTION, "scale1d.type", "panelAdmin.block.query.scale1DTypeOptionLabel", QueryOptionEditor.SCALE1D_TYPE, true));
@@ -150,9 +150,14 @@ public class Scale1DThesisQueryPageHandler extends AbstractScaleThesisQueryPageH
     Query query = queryPage.getQuerySection().getQuery();
 
     QueryOptionField queryField = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldName);
+    if (queryField == null) {
+      logger.severe(String.format("QueryField missing, could not render report for query page %d", queryPage.getId()));
+      return;
+    }
+      
     List<QueryOptionFieldOption> queryFieldOptions = queryOptionFieldOptionDAO.listByQueryField(queryField);
     List<QueryReply> queryReplies = queryReplyDAO.listByQueryAndStamp(query, RequestUtils.getActiveStamp(requestContext));
-    List<QueryReply> includeReplies = new ArrayList<QueryReply>();
+    List<QueryReply> includeReplies = new ArrayList<>();
     User loggedUser = requestContext.isLoggedIn() ? userDAO.findById(requestContext.getLoggedUserId()) : null;
     QueryReply excludeReply = QueryDataUtils.findQueryReply(requestContext, loggedUser, query);
     
