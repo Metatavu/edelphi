@@ -176,7 +176,6 @@ public class QueryTestsBase extends AbstractUITest {
     int width = getElementWidth(".queryTimeSerieQuestionFlotrContainer");
     int steps = 11;
     int stepWidth = (width - ((margin * 2) + labelsWidth)) / (steps - 1) - 2;
-    System.out.println(stepWidth);
     int offsetX = 0;
     
     for (int i = 0; i < steps; i++) {
