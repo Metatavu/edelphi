@@ -51,7 +51,7 @@ public class GoogleDriveUtils {
 	private static final String[] REQUIRED_SCOPES = new String[] { "https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/drive.file" };
 	private static final JsonFactory JSON_FACTORY = new JacksonFactory();
 	private static final HttpTransport TRANSPORT = new NetHttpTransport();
-  private static final String FILE_FIELDS = "id,kind,mimeType,name,parents,createdTime,modifiedTime,imageMediaMetadata,videoMediaMetadata,trashed";
+  private static final String FILE_FIELDS = "id,kind,mimeType,name,parents,createdTime,modifiedTime,imageMediaMetadata,videoMediaMetadata,trashed,webViewLink";
 
 	// Service
 
@@ -166,7 +166,7 @@ public class GoogleDriveUtils {
 		return drive.files().get(fileId).setFields(FILE_FIELDS).execute();
 	}
 	
-	public static File insertFile(Drive drive, String title, String description, String parentId, String mimeType, byte[] content, int retryCount) throws IOException {
+	public static String insertFile(Drive drive, String title, String description, String parentId, String mimeType, byte[] content, int retryCount) throws IOException {
     File file = null;
     int retries = 0;
     while (file == null) {
@@ -181,10 +181,10 @@ public class GoogleDriveUtils {
       }
     }
     
-    return file;
+    return file.getId();
   }
   
-  public static File insertFolder(Drive drive, String title, String description, String parentId, int retryCount) throws IOException {
+  public static String insertFolder(Drive drive, String title, String description, String parentId, int retryCount) throws IOException {
   	return insertFile(drive, title, description, parentId, "application/vnd.google-apps.folder", null, retryCount);
   }
   
@@ -263,18 +263,31 @@ public class GoogleDriveUtils {
     }
   }
   
-  public static String getFileUrl(Drive drive, File file) {
+  /**
+   * Returns web view link for the file
+   * 
+   * @param file file 
+   * @return web view link for the file
+   */
+  public static String getWebViewLink(File file) {
     if (file == null) {
       logger.log(Level.SEVERE, "Could not get file url for null file");
       return null;
     }
     
-    return getFileUrl(drive, file.getId());
+    return file.getWebViewLink();
   }
 
-  public static String getFileUrl(Drive drive, String fileId) {
+  /**
+   * Returns web view link for the  file
+   * 
+   * @param drive drive client
+   * @param fileId file id 
+   * @return web view link for the  file
+   */
+  public static String getWebViewLink(Drive drive, String fileId) {
     try {
-      return drive.files().get(fileId).buildHttpRequestUrl().build();
+      return getWebViewLink(getFile(drive, fileId));
     } catch (IOException e) {
       logger.log(Level.SEVERE, String.format( "Failed to build Google Drive URL for file %s",  fileId), e);
     }

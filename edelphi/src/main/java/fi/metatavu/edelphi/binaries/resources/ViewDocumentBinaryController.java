@@ -51,9 +51,9 @@ public class ViewDocumentBinaryController extends BinaryController {
   	Drive drive = GoogleDriveUtils.getAdminService();
   	if (drive != null) {
     	try {
-    		byte[] outputData = null;
-    		String outputMime = null;
-    		String outputFileName = null;
+    		byte[] outputData;
+    		String outputMime;
+    		String outputFileName;
     		
   			File file = GoogleDriveUtils.getFile(drive, googleDocument.getResourceId());
   			String mimeType = file.getMimeType();
@@ -63,15 +63,10 @@ public class ViewDocumentBinaryController extends BinaryController {
   				outputMime = response.getMimeType();
   				outputFileName = ResourceUtils.getUrlName(file.getName()) + ".pdf";
   			} else {
-  			  String fileUrl = GoogleDriveUtils.getFileUrl(drive, file);
-  				if (StringUtils.isNotBlank(fileUrl)) {
-  				  DownloadResponse response = GoogleDriveUtils.downloadFile(drive, file);
-  					outputData = response.getData();
-  					outputMime = response.getMimeType();
-  					outputFileName = ResourceUtils.getUrlName(file.getName());
-  				} else {
-  					throw new IOException("Don't know how to handle GoogleDocument #" + googleDocument.getId());
-  				}
+				  DownloadResponse response = GoogleDriveUtils.downloadFile(drive, file);
+					outputData = response.getData();
+					outputMime = response.getMimeType();
+					outputFileName = ResourceUtils.getUrlName(file.getName());
   			}
   			
   			if (outputData != null && outputMime != null) {
