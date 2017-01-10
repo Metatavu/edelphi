@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -15,21 +17,15 @@ import javax.xml.transform.TransformerException;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.w3c.dom.Document;
 import org.w3c.tidy.Tidy;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xml.sax.SAXException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.model.File;
 
-import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvcj.controllers.BinaryRequestContext;
-import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
-import fi.metatavu.edelphi.smvcj.logging.Logging;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.binaries.BinaryController;
 import fi.metatavu.edelphi.dao.panels.PanelStampDAO;
@@ -37,6 +33,10 @@ import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.ReportContext;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.BinaryRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
+import fi.metatavu.edelphi.smvcj.logging.Logging;
 import fi.metatavu.edelphi.utils.B64ImgReplacedElementFactory;
 import fi.metatavu.edelphi.utils.GoogleDriveUtils;
 import fi.metatavu.edelphi.utils.ReportUtils;
@@ -46,6 +46,8 @@ import fi.metatavu.edelphi.utils.StreamUtils;
 import fi.metatavu.edelphi.utils.SystemUtils;
 
 public class ExportReportPageBinaryController extends BinaryController {
+
+  private static Logger logger = Logger.getLogger(ExportReportPageBinaryController.class.getName());
 
   @Override
   public void process(BinaryRequestContext requestContext) {
@@ -57,10 +59,8 @@ public class ExportReportPageBinaryController extends BinaryController {
       try {
         ObjectMapper om = new ObjectMapper();
         serializedContext = Base64.encodeBase64URLSafeString(om.writeValueAsBytes(reportContext)); 
-      }
-      catch (Exception e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+      } catch (Exception e) {
+        logger.log(Level.SEVERE, "Failed to create serialized context", e);
       }
     }
     
@@ -95,24 +95,16 @@ public class ExportReportPageBinaryController extends BinaryController {
     if (drive != null) {
       try {
         String baseUrl = RequestUtils.getBaseUrl(requestContext.getRequest());
-        URL url = new URL(baseUrl + "/panel/admin/report/page.page?chartFormat=SVG&pageId=" + queryPage.getId() + "&panelId=" + panelStamp.getPanel().getId() + "&serializedContext=" + serializedContext);
+        String chartFormat = imagesOnly ? "SVG" : "PNG";
+        URL url = new URL(String.format("%s/panel/admin/report/page.page?chartFormat=%s&pageId=%d&panelId=%d&serializedContext=%s", baseUrl, chartFormat, queryPage.getId(), panelStamp.getPanel().getId(), serializedContext));
+        
         String title = queryPage.getQuerySection().getQuery().getName() + " - " + queryPage.getTitle();
-        File file = ReportUtils.uploadReportToGoogleDrive(requestContext, drive, url, title, 3, imagesOnly);
-        String fileUrl = GoogleDriveUtils.getFileUrl(drive, file);
+        String fileId = ReportUtils.uploadReportToGoogleDrive(requestContext, drive, url, title, 3, imagesOnly);
+        String fileUrl = GoogleDriveUtils.getWebViewLink(drive, fileId);
         if (StringUtils.isNotBlank(fileUrl)) {
           requestContext.setRedirectURL(fileUrl);
         }
-      }
-      catch (IOException e) {
-        throw new SmvcRuntimeException(EdelfoiStatusCode.REPORT_GOOGLE_DRIVE_EXPORT_FAILED, "exception.1031.reportGoogleDriveExportFailed", e);
-      }
-      catch (ParserConfigurationException e) {
-        throw new SmvcRuntimeException(EdelfoiStatusCode.REPORT_GOOGLE_DRIVE_EXPORT_FAILED, "exception.1031.reportGoogleDriveExportFailed", e);
-      }
-      catch (SAXException e) {
-        throw new SmvcRuntimeException(EdelfoiStatusCode.REPORT_GOOGLE_DRIVE_EXPORT_FAILED, "exception.1031.reportGoogleDriveExportFailed", e);
-      }
-      catch (TransformerException e) {
+      } catch (TransformerException | SAXException | ParserConfigurationException | IOException e) {
         throw new SmvcRuntimeException(EdelfoiStatusCode.REPORT_GOOGLE_DRIVE_EXPORT_FAILED, "exception.1031.reportGoogleDriveExportFailed", e);
       }
     }
@@ -183,10 +175,8 @@ public class ExportReportPageBinaryController extends BinaryController {
 
       requestContext.setResponseContent(outputStream.toByteArray(), "application/pdf");
       requestContext.setFileName(ResourceUtils.getUrlName(queryPage.getTitle()) + ".pdf");
-    }
-    catch (Exception ex) {
-      // TODO: Proper error handling
-      ex.printStackTrace();
+    } catch (Exception e) {
+      logger.log(Level.SEVERE, "Failed to export PDF", e);
     }
   }
 
@@ -204,10 +194,8 @@ public class ExportReportPageBinaryController extends BinaryController {
       }
       requestContext.setResponseContent(outputStream.toByteArray(), "application/zip");
       requestContext.setFileName(ResourceUtils.getUrlName(queryPage.getTitle()) + ".zip");
-    }
-    catch (Exception e) {
-      // TODO: Proper error handling
-      e.printStackTrace();
+    } catch (Exception e) {
+      logger.log(Level.SEVERE, "Failed to export chart as zip", e);
     }
   }
 

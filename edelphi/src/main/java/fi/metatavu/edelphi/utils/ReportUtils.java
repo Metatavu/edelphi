@@ -40,8 +40,6 @@ import org.xml.sax.SAXException;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
-import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
-import fi.metatavu.edelphi.smvcj.logging.Logging;
 import fi.metatavu.edelphi.dao.panels.PanelStampDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionMultiOptionAnswerDAO;
@@ -61,12 +59,13 @@ import fi.metatavu.edelphi.domainmodel.querymeta.QueryField;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionField;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOptionGroup;
-import fi.metatavu.edelphi.i18n.Messages;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryFieldDataStatistics;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReplyFilter;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReportPage;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReportPageComment;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.ReportContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
+import fi.metatavu.edelphi.smvcj.logging.Logging;
 
 public class ReportUtils {
   
@@ -319,12 +318,12 @@ public class ReportUtils {
     zipOutputStream.finish();
   }
 
-  public static File uploadReportToGoogleDrive(RequestContext requestContext, Drive drive, URL url, String queryName, int retryCount, boolean imagesOnly) throws IOException,
+  public static String uploadReportToGoogleDrive(RequestContext requestContext, Drive drive, URL url, String queryName, int retryCount, boolean imagesOnly) throws IOException,
       TransformerException, ParserConfigurationException, SAXException {
     Logging.logInfo("Exporting report into Google Drive from " + url);
 
-    File exportTempFolder = GoogleDriveUtils.insertFolder(drive, queryName, "", null, 3);
-    Set<File> tempFiles = new HashSet<File>();
+    File exportTempFolder = GoogleDriveUtils.getFile(drive, GoogleDriveUtils.insertFolder(drive, queryName, "", null, 3));
+    Set<File> tempFiles = new HashSet<>();
     try {
       // Resolve host URL to help with embedding of styles and images
 
@@ -405,46 +404,6 @@ public class ReportUtils {
         }
       }
 
-      // Then we need to transform SVG images into Google Drawings
-      NodeList svgObjectList = XPathAPI.selectNodeList(reportDocument, "//object");
-      for (int i = 0, l = svgObjectList.getLength(); i < l; i++) {
-        Element svgObjectElement = (Element) svgObjectList.item(i);
-
-        if ("image/svg+xml".equals(svgObjectElement.getAttribute("type"))) {
-          String svgUri = svgObjectElement.getAttribute("data");
-          
-          if (StringUtils.startsWith(svgUri, "/")) {
-            svgUri = hostUrl + svgUri;
-          }
-          
-          byte[] svgContent = downloadUrlAsByteArray(svgUri);
-
-          // Google Drive does not accept EMF but it accepts WMF, so we need to
-          // tell it to handle this file as WMF instead of EMF
-          String chartTitle = Messages.getInstance().getText(requestContext.getRequest().getLocale(), "panel.admin.report.googleReport.chartTitle", new Object[] { queryName, i + 1 });
-
-          File chartFile = GoogleDriveUtils.insertFile(drive, chartTitle, "", exportTempFolder.getId(), "image/svg+xml", svgContent, retryCount);
-          if (chartFile != null) {
-            // If file uploading was a success we publish it with the link
-            GoogleDriveUtils.publishFileWithLink(drive, chartFile);
-
-            if (!imagesOnly) {
-              String charFileUrl = GoogleDriveUtils.getFileUrl(drive, chartFile.getId());
-              Node parent = svgObjectElement.getParentNode();
-              Element imageElement = reportDocument.createElement("img");
-              imageElement.setAttribute("src", charFileUrl);
-              parent.replaceChild(imageElement, svgObjectElement);
-              tempFiles.add(chartFile);
-            }
-
-            Logging.logInfo("SVG file from " + svgUri + " uploaded into Google Drive with id: " + chartFile.getId());
-          }
-          else {
-            Logging.logInfo("Uploading failed to Google Drive for SVG file: " + svgUri);
-          }
-        }
-      }
-
       if (!imagesOnly) {
 
         // After document has been altered to fit the purpose, we just serialize
@@ -466,17 +425,15 @@ public class ReportUtils {
 
         byte[] documentContent = resultStream.toByteArray();
 
-        File file = GoogleDriveUtils.insertFile(drive, queryName, "", null, "text/html", documentContent, retryCount);
+        String fileId = GoogleDriveUtils.insertFile(drive, queryName, "", null, "text/html", documentContent, retryCount);
 
-        Logging.logInfo("Report exported into Google Drive from " + url + " with id " + file.getId());
+        Logging.logInfo("Report exported into Google Drive from " + url + " with id " + fileId);
 
-        return file;
+        return fileId;
+      } else {
+        return exportTempFolder.getId();
       }
-      else {
-        return exportTempFolder;
-      }
-    }
-    finally {
+    } finally {
       if (!imagesOnly) {
         Logging.logInfo("Cleaning temporary files");
 

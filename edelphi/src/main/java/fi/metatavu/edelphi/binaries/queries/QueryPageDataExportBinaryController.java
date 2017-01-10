@@ -3,17 +3,15 @@ package fi.metatavu.edelphi.binaries.queries;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.model.File;
 
-import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvcj.controllers.BinaryRequestContext;
-import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.binaries.BinaryController;
 import fi.metatavu.edelphi.dao.panels.PanelStampDAO;
@@ -25,12 +23,17 @@ import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.i18n.Messages;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReplyFilter;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.ReportContext;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.BinaryRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.GoogleDriveUtils;
 import fi.metatavu.edelphi.utils.QueryDataUtils;
-import fi.metatavu.edelphi.utils.ResourceUtils;
 import fi.metatavu.edelphi.utils.QueryDataUtils.ReplierExportStrategy;
+import fi.metatavu.edelphi.utils.ResourceUtils;
 
 public class QueryPageDataExportBinaryController extends BinaryController {
+
+  private static Logger logger = Logger.getLogger(QueryDataExportBinaryController.class.getName());
 
   @Override
   public void process(BinaryRequestContext requestContext) {
@@ -46,10 +49,8 @@ public class QueryPageDataExportBinaryController extends BinaryController {
         byte[] serializedData = Base64.decodeBase64(serializedContext);
         String stringifiedData = new String(serializedData, "UTF-8");
         reportContext = om.readValue(stringifiedData, ReportContext.class); 
-      }
-      catch (Exception e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+      } catch (Exception e) {
+        logger.log(Level.SEVERE, "Failed to create serialized context", e);
       }
     }
 
@@ -100,8 +101,8 @@ public class QueryPageDataExportBinaryController extends BinaryController {
   		try {
   		  String title = queryPage.getQuerySection().getQuery().getName() + " - " + queryPage.getTitle();
   			byte[] csvData = QueryDataUtils.exportQueryPageDataAsCsv(requestContext.getRequest().getLocale(), replierExportStrategy, replies, queryPage, panelStamp);
-  			File file = GoogleDriveUtils.insertFile(drive, title, "", null, "text/csv", csvData, 3);
-  			String fileUrl = GoogleDriveUtils.getFileUrl(drive, file);
+  			String fileId = GoogleDriveUtils.insertFile(drive, title, "", null, "text/csv", csvData, 3);
+  			String fileUrl = GoogleDriveUtils.getWebViewLink(drive, fileId);
   			if (fileUrl != null) {
   			  requestContext.setRedirectURL(fileUrl);
   			}
