@@ -10,8 +10,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -59,6 +59,7 @@ import fi.metatavu.edelphi.domainmodel.querymeta.QueryField;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionField;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOptionGroup;
+import fi.metatavu.edelphi.i18n.Messages;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryFieldDataStatistics;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReplyFilter;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReportPage;
@@ -317,135 +318,154 @@ public class ReportUtils {
     }
     zipOutputStream.finish();
   }
-
-  public static String uploadReportToGoogleDrive(RequestContext requestContext, Drive drive, URL url, String queryName, int retryCount, boolean imagesOnly) throws IOException,
-      TransformerException, ParserConfigurationException, SAXException {
+  
+  public static String uploadReportImagesToGoogleDrive(Locale locale, Drive drive, URL url, String queryName, int retryCount) throws IOException, SAXException, ParserConfigurationException, TransformerException {
     Logging.logInfo("Exporting report into Google Drive from " + url);
 
-    File exportTempFolder = GoogleDriveUtils.getFile(drive, GoogleDriveUtils.insertFolder(drive, queryName, "", null, 3));
-    Set<File> tempFiles = new HashSet<>();
-    try {
-      // Resolve host URL to help with embedding of styles and images
+    File targetFolder = GoogleDriveUtils.getFile(drive, GoogleDriveUtils.insertFolder(drive, queryName, "", null, 3));
 
-      String hostUrl = new StringBuilder().append(url.getProtocol()).append("://").append(url.getHost()).append(':').append(url.getPort()).toString();
+    Document reportDocument = readReportDocument(locale, url);
+    
+    // Then we need to transform SVG images into Google Drawings
+    NodeList svgObjectList = XPathAPI.selectNodeList(reportDocument, "//object");
+    for (int i = 0, l = svgObjectList.getLength(); i < l; i++) {
+      Element svgObjectElement = (Element) svgObjectList.item(i);
 
-      // First we need to fetch report as html
+      if ("image/svg+xml".equals(svgObjectElement.getAttribute("type"))) {
+        String svgUri = svgObjectElement.getAttribute("data");
+        byte[] svgContent = downloadUrlAsByteArray(svgUri);
 
-      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-      connection.setRequestProperty("Authorization", "InternalAuthorization " + SystemUtils.getSettingValue("system.internalAuthorizationHash"));
-      connection.setRequestProperty("Accept-Language", requestContext.getRequest().getLocale().getLanguage());
-      connection.setRequestMethod("GET");
-      connection.setReadTimeout(900000); // 15 minutes; gross overkill but at least eventual termination is guaranteed
-      connection.connect();
-      InputStream is = connection.getInputStream(); 
+        // Google Drive does not accept EMF but it accepts WMF, so we need to
+        // tell it to handle this file as WMF instead of EMF
+        String chartTitle = Messages.getInstance().getText(locale, "panel.admin.report.googleReport.chartTitle", new Object[] { queryName, i + 1 });
 
-      String reportHtml = null;
-      try {
-        reportHtml = StreamUtils.readStreamToString(is, "UTF-8");
-      }
-      finally {
-        if (is != null) {
-          try {
-            is.close();
-          }
-          catch (IOException ioe) {
-            Logging.logException(ioe);
-          }
+        File chartFile = GoogleDriveUtils.getFile(drive, GoogleDriveUtils.insertFile(drive, chartTitle, "", targetFolder.getId(), "image/svg+xml", svgContent, retryCount));
+        if (chartFile != null) {
+          Logging.logInfo("SVG file from " + svgUri + " uploaded into Google Drive with id: " + chartFile.getId());
+        } else {
+          Logging.logInfo("Uploading failed to Google Drive for SVG file: " + svgUri);
         }
-        connection.disconnect();
-      }
-
-      // .. tidy it a bit
-
-      ByteArrayOutputStream tidyXHtml = new ByteArrayOutputStream();
-      Tidy tidy = new Tidy();
-      tidy.setInputEncoding("UTF-8");
-      tidy.setOutputEncoding("UTF-8");
-      tidy.setShowWarnings(true);
-      tidy.setNumEntities(false);
-      tidy.setXmlOut(true);
-      tidy.setXHTML(true);
-      tidy.setWraplen(0);
-      tidy.setQuoteNbsp(false);
-      tidy.parse(new StringReader(reportHtml), tidyXHtml);
-
-      DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-      builderFactory.setNamespaceAware(false);
-      builderFactory.setValidating(false);
-      builderFactory.setFeature("http://xml.org/sax/features/namespaces", false);
-      builderFactory.setFeature("http://xml.org/sax/features/validation", false);
-      builderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
-      builderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-      DocumentBuilder builder = builderFactory.newDocumentBuilder();
-
-      ByteArrayInputStream inputStream = new ByteArrayInputStream(tidyXHtml.toByteArray());
-
-      // Tidied document needs to be parsed into a document, so we can do some
-      // changes into it
-      Document reportDocument = builder.parse(inputStream);
-
-      // Google Drive can not access our style sheets, so we need to embed them
-      // directly into the document
-      NodeList linkList = XPathAPI.selectNodeList(reportDocument, "//link");
-      for (int i = 0, l = linkList.getLength(); i < l; i++) {
-        Element linkElement = (Element) linkList.item(i);
-        String linkRel = linkElement.getAttribute("rel");
-        if (StringUtils.equalsIgnoreCase(linkRel, "stylesheet")) {
-          String href = linkElement.getAttribute("href");
-          Logging.logInfo("Embedding css from " + href + " into Google report");
-          String cssText = CSSUtils.downloadCSS(hostUrl + href, true).replaceAll("[\n\r]", " ");
-
-          Node parent = linkElement.getParentNode();
-          Element styleElement = reportDocument.createElement("style");
-          styleElement.setAttribute("type", "text/css");
-          styleElement.appendChild(reportDocument.createTextNode(cssText));
-
-          parent.replaceChild(styleElement, linkElement);
-        }
-      }
-
-      if (!imagesOnly) {
-
-        // After document has been altered to fit the purpose, we just serialize
-        // it back to html
-
-        Transformer transformer = TransformerFactory.newInstance().newTransformer();
-        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-
-        ByteArrayOutputStream resultStream = new ByteArrayOutputStream();
-        StreamResult streamResult = new StreamResult(resultStream);
-        transformer.transform(new DOMSource(reportDocument), streamResult);
-
-        resultStream.flush();
-        resultStream.close();
-
-        // And upload the final product into Google Drive
-
-        byte[] documentContent = resultStream.toByteArray();
-
-        String fileId = GoogleDriveUtils.insertFile(drive, queryName, "", null, "text/html", documentContent, retryCount);
-
-        Logging.logInfo("Report exported into Google Drive from " + url + " with id " + fileId);
-
-        return fileId;
-      } else {
-        return exportTempFolder.getId();
-      }
-    } finally {
-      if (!imagesOnly) {
-        Logging.logInfo("Cleaning temporary files");
-
-        for (File tempFile : tempFiles) {
-          Logging.logInfo("Deleting export temp file " + tempFile.getId());
-          GoogleDriveUtils.deleteFile(drive, tempFile);
-        }
-
-        Logging.logInfo("Deleting export temp folder " + exportTempFolder.getId());
-        GoogleDriveUtils.deleteFile(drive, exportTempFolder);
       }
     }
+
+    return targetFolder.getId();
+  }
+  
+  public static String uploadReportToGoogleDrive(Locale locale, Drive drive, URL url, String queryName, int retryCount) throws IOException, TransformerException, ParserConfigurationException, SAXException {
+    Logging.logInfo("Exporting report into Google Drive from " + url);
+
+    // Resolve host URL to help with embedding of styles and images
+    String hostUrl = new StringBuilder()
+        .append(url.getProtocol())
+        .append("://")
+        .append(url.getHost())
+        .append(':')
+        .append(url.getPort())
+        .toString();
+
+    Document reportDocument = readReportDocument(locale, url);
+    
+    // Google Drive can not access our style sheets, so we need to embed them
+    // directly into the document
+    NodeList linkList = XPathAPI.selectNodeList(reportDocument, "//link");
+    for (int i = 0, l = linkList.getLength(); i < l; i++) {
+      Element linkElement = (Element) linkList.item(i);
+      String linkRel = linkElement.getAttribute("rel");
+      if (StringUtils.equalsIgnoreCase(linkRel, "stylesheet")) {
+        String href = linkElement.getAttribute("href");
+        Logging.logInfo("Embedding css from " + href + " into Google report");
+        String cssText = CSSUtils.downloadCSS(hostUrl + href, true).replaceAll("[\n\r]", " ");
+
+        Node parent = linkElement.getParentNode();
+        Element styleElement = reportDocument.createElement("style");
+        styleElement.setAttribute("type", "text/css");
+        styleElement.appendChild(reportDocument.createTextNode(cssText));
+
+        parent.replaceChild(styleElement, linkElement);
+      }
+    }
+
+    // After document has been altered to fit the purpose, we just serialize
+    // it back to html
+
+    Transformer transformer = TransformerFactory.newInstance().newTransformer();
+    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+    transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+    transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+
+    ByteArrayOutputStream resultStream = new ByteArrayOutputStream();
+    StreamResult streamResult = new StreamResult(resultStream);
+    transformer.transform(new DOMSource(reportDocument), streamResult);
+
+    resultStream.flush();
+    resultStream.close();
+
+    // And upload the final product into Google Drive
+
+    byte[] documentContent = resultStream.toByteArray();
+
+    String fileId = GoogleDriveUtils.insertFile(drive, queryName, "", null, "text/html", documentContent, retryCount);
+
+    Logging.logInfo("Report exported into Google Drive from " + url + " with id " + fileId);
+
+    return fileId;
+  }
+  
+  private static Document readReportDocument(Locale locale, URL url) throws SAXException, IOException, ParserConfigurationException {
+    // First we need to fetch report as html
+
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestProperty("Authorization", "InternalAuthorization " + SystemUtils.getSettingValue("system.internalAuthorizationHash"));
+    connection.setRequestProperty("Accept-Language", locale.getLanguage());
+    connection.setRequestMethod("GET");
+    connection.setReadTimeout(900000); // 15 minutes; gross overkill but at least eventual termination is guaranteed
+    connection.connect();
+    InputStream is = connection.getInputStream(); 
+
+    String reportHtml = null;
+    try {
+      reportHtml = StreamUtils.readStreamToString(is, "UTF-8");
+    }
+    finally {
+      if (is != null) {
+        try {
+          is.close();
+        }
+        catch (IOException ioe) {
+          Logging.logException(ioe);
+        }
+      }
+      connection.disconnect();
+    }
+
+    // .. tidy it a bit
+
+    ByteArrayOutputStream tidyXHtml = new ByteArrayOutputStream();
+    Tidy tidy = new Tidy();
+    tidy.setInputEncoding("UTF-8");
+    tidy.setOutputEncoding("UTF-8");
+    tidy.setShowWarnings(true);
+    tidy.setNumEntities(false);
+    tidy.setXmlOut(true);
+    tidy.setXHTML(true);
+    tidy.setWraplen(0);
+    tidy.setQuoteNbsp(false);
+    tidy.parse(new StringReader(reportHtml), tidyXHtml);
+
+    DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+    builderFactory.setNamespaceAware(false);
+    builderFactory.setValidating(false);
+    builderFactory.setFeature("http://xml.org/sax/features/namespaces", false);
+    builderFactory.setFeature("http://xml.org/sax/features/validation", false);
+    builderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+    builderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+    DocumentBuilder builder = builderFactory.newDocumentBuilder();
+
+    ByteArrayInputStream inputStream = new ByteArrayInputStream(tidyXHtml.toByteArray());
+
+    // Tidied document needs to be parsed into a document, so we can do some
+    // changes into it
+    return builder.parse(inputStream);
   }
 
   private static byte[] downloadUrlAsByteArray(String urlString) throws IOException {

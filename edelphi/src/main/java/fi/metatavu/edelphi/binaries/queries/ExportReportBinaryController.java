@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -94,8 +95,16 @@ public class ExportReportBinaryController extends BinaryController {
         String baseUrl = RequestUtils.getBaseUrl(requestContext.getRequest());
         String chartFormat = imagesOnly ? "SVG" : "PNG";
         URL url = new URL(String.format("%s/panel/admin/report/query.page?chartFormat=%s&queryId=%d&panelId=%d&serializedContext=%s", baseUrl, chartFormat, query.getId(), panelStamp.getPanel().getId(), serializedContext));
-        String fileId = ReportUtils.uploadReportToGoogleDrive(requestContext, drive, url, query.getName(), 3, imagesOnly);
-        requestContext.setRedirectURL(GoogleDriveUtils.getWebViewLink(drive, fileId));
+        Locale locale = requestContext.getRequest().getLocale();
+        
+        if (imagesOnly) {
+          String fileId = ReportUtils.uploadReportImagesToGoogleDrive(locale, drive, url, query.getName(), 3);
+          requestContext.setRedirectURL(GoogleDriveUtils.getWebViewLink(drive, fileId));
+        } else {
+          String fileId = ReportUtils.uploadReportToGoogleDrive(locale, drive, url, query.getName(), 3);
+          requestContext.setRedirectURL(GoogleDriveUtils.getWebViewLink(drive, fileId));
+        }
+        
       } catch (TransformerException | SAXException | ParserConfigurationException | IOException e) {
         throw new SmvcRuntimeException(EdelfoiStatusCode.REPORT_GOOGLE_DRIVE_EXPORT_FAILED, "exception.1031.reportGoogleDriveExportFailed", e);
       }
@@ -167,10 +176,8 @@ public class ExportReportBinaryController extends BinaryController {
 
       requestContext.setResponseContent(outputStream.toByteArray(), "application/pdf");
       requestContext.setFileName(query.getUrlName() + ".pdf");
-    }
-    catch (Exception e) {
-      // TODO: Proper error handling
-      e.printStackTrace();
+    } catch (Exception e) {
+      logger.log(Level.SEVERE, "Failed to generate report PDF", e);
     }
   }
 
@@ -188,10 +195,8 @@ public class ExportReportBinaryController extends BinaryController {
       }
       requestContext.setResponseContent(outputStream.toByteArray(), "application/zip");
       requestContext.setFileName(query.getUrlName() + ".zip");
-    }
-    catch (Exception e) {
-      // TODO: Proper error handling
-      e.printStackTrace();
+    } catch (Exception e) {
+      logger.log(Level.SEVERE, "Failed to create report chart ZIP", e);
     }
   }
 

@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,7 +17,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.tidy.Tidy;
 import org.xhtmlrenderer.layout.SharedContext;
@@ -97,13 +97,17 @@ public class ExportReportPageBinaryController extends BinaryController {
         String baseUrl = RequestUtils.getBaseUrl(requestContext.getRequest());
         String chartFormat = imagesOnly ? "SVG" : "PNG";
         URL url = new URL(String.format("%s/panel/admin/report/page.page?chartFormat=%s&pageId=%d&panelId=%d&serializedContext=%s", baseUrl, chartFormat, queryPage.getId(), panelStamp.getPanel().getId(), serializedContext));
-        
+        Locale locale = requestContext.getRequest().getLocale();
         String title = queryPage.getQuerySection().getQuery().getName() + " - " + queryPage.getTitle();
-        String fileId = ReportUtils.uploadReportToGoogleDrive(requestContext, drive, url, title, 3, imagesOnly);
-        String fileUrl = GoogleDriveUtils.getWebViewLink(drive, fileId);
-        if (StringUtils.isNotBlank(fileUrl)) {
-          requestContext.setRedirectURL(fileUrl);
+
+        if (imagesOnly) {
+          String fileId = ReportUtils.uploadReportImagesToGoogleDrive(locale, drive, url, title, 3);
+          requestContext.setRedirectURL(GoogleDriveUtils.getWebViewLink(drive, fileId));
+        } else {
+          String fileId = ReportUtils.uploadReportToGoogleDrive(locale, drive, url, title, 3);
+          requestContext.setRedirectURL(GoogleDriveUtils.getWebViewLink(drive, fileId));
         }
+        
       } catch (TransformerException | SAXException | ParserConfigurationException | IOException e) {
         throw new SmvcRuntimeException(EdelfoiStatusCode.REPORT_GOOGLE_DRIVE_EXPORT_FAILED, "exception.1031.reportGoogleDriveExportFailed", e);
       }
