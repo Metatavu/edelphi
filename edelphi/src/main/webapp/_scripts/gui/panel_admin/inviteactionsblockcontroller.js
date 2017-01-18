@@ -1,3 +1,5 @@
+/*globals getGlobalEventQueue,EventQueueItem,getLocale*/
+
 var InviteActionsBlockController = Class.create(BlockController, {
   initialize: function($super) {
     $super();
@@ -139,6 +141,12 @@ var InviteActionsBlockController = Class.create(BlockController, {
       case 'CRITICAL':
         eventQueue.addItem(new EventQueueItem(message, {
           className: "eventQueueCriticalItem",
+          timeout: -1
+        }));
+      break;
+      default:
+        eventQueue.addItem(new EventQueueItem(message, {
+          className: "eventQueueErrorItem",
           timeout: -1
         }));
       break;
