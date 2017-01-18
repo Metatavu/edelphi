@@ -1,5 +1,3 @@
-/*jshint no-undef: getGlobalEventQueue */
-
 function startBlockingOperation() {
   window._blockingOverlay = new S2.UI.Overlay();
   window._blockingOverlay.toElement().addClassName("globalBlockingOverlay");
