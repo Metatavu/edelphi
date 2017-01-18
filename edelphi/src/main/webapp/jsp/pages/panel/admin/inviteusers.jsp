@@ -12,6 +12,7 @@
       <fmt:message key="panel.admin.inviteUsers.pageTitle"/>
     </title>
     <jsp:include page="/jsp/templates/panel_head.jsp"></jsp:include>
+    <script type="text/javascript" src="//cdn.metatavu.io/libs/async/2.1.4/async.min.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/panel_admin/inviteactionsblockcontroller.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/panel_admin/invitelistingblockcontroller.js"></script>
 
