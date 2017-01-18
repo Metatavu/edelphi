@@ -79,13 +79,14 @@ var InviteActionsBlockController = Class.create(BlockController, {
     return null;
   },
   
-  _createInvitationRequest: function (invitationMessage, userId, email, progressCallback) {
+  _createInvitationRequest: function (invitationMessage, userId, queryId, email, progressCallback) {
     return function (callback) {
       JSONUtils.request(CONTEXTPATH + '/panel/admin/createinvitation.json', {
         parameters: {
           invitationMessage: invitationMessage,
           email: email,
-          userId: userId
+          userId: userId,
+          queryId: queryId
         },
         onSuccess : function(response) {
           var error = this._getResponseError(response);
@@ -201,6 +202,7 @@ var InviteActionsBlockController = Class.create(BlockController, {
     var invitationCount = this._invitationList.getSize();
     var invitationFailCount = 0;
     var invitationSuccessCount = 0;
+    var queryId = $(this._formElement.queryId).getValue();
     
     var invitationRequests = [];
     var invitationMessage = $(this._formElement.invitationMessage).getValue();
@@ -223,7 +225,7 @@ var InviteActionsBlockController = Class.create(BlockController, {
     for (var i = 0; i < invitationCount; i++) {
       var userId = $(this._formElement['inviteUser.' + i + '.id']).getValue();
       var email = $(this._formElement['inviteUser.' + i + '.email']).getValue();
-      invitationRequests.push(this._createInvitationRequest(invitationMessage, userId, email, progressCallback));
+      invitationRequests.push(this._createInvitationRequest(invitationMessage, userId, queryId, email, progressCallback));
     }
     
     async.parallelLimit(invitationRequests, 5, function (err, results) {
