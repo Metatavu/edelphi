@@ -153,6 +153,7 @@ public class QueryUtils {
     requestContext.getRequest().setAttribute("queryPageCommentCount", commentCount);
   }
   
+  @SuppressWarnings ("squid:S2629")
   public static Query copyQuery(RequestContext requestContext, Query query, String newName, Panel targetPanel, boolean copyAnswers, boolean copyComments) {
     User user = RequestUtils.getUser(requestContext);
     
