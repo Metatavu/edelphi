@@ -1,9 +1,16 @@
 package fi.metatavu.edelphi.smvcj;
 
+import java.io.Serializable;
+
 /** An error or information message shown to the user.
  *
  */
-public class SmvcMessage {
+public class SmvcMessage implements Serializable {
+  
+  private static final long serialVersionUID = 2738756334339660713L;
+  
+  private Severity severity;
+  private String message;
   
   /** Creates a new message.
    * 
@@ -47,6 +54,4 @@ public class SmvcMessage {
     return message;
   }
 
-  private Severity severity;
-  private String message;
 }
