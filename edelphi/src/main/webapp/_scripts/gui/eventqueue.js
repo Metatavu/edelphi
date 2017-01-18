@@ -103,6 +103,10 @@ EventQueueItem = Class.create({
   getText: function () {
     return this._text;
   },
+  updateText: function (text) {
+    this._text = text;
+    this.domNode.innerHTML = this._text;
+  },
   remove: function () {
     this._remove();
   },

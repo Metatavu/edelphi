@@ -13,9 +13,13 @@ function endBlockingOperation() {
 function startLoadingOperation(messageKey) {
   startBlockingOperation();
   
-  window._loadingQueueItem = getGlobalEventQueue().addItem(new EventQueueItem(getLocale().getText(messageKey), {
+  var item = new EventQueueItem(getLocale().getText(messageKey), {
     className: "eventQueueLoadingItem"
-  }));
+  });
+  
+  window._loadingQueueItem = getGlobalEventQueue().addItem(item);
+  
+  return item;
 }
 
 function endLoadingOperation() {
