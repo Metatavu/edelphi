@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 
-import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionMultiOptionAnswerDAO;
@@ -58,9 +58,12 @@ import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.i18n.Messages;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReportPageThesis;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 
 public class QueryUtils {
 
+  private static Logger logger = Logger.getLogger(QueryUtils.class.getName());
   
   public static void appendQueryPageThesis(RequestContext requestContext, QueryPage queryPage) {
     @SuppressWarnings("unchecked")
@@ -150,6 +153,7 @@ public class QueryUtils {
     requestContext.getRequest().setAttribute("queryPageCommentCount", commentCount);
   }
   
+  @SuppressWarnings ("squid:S2629")
   public static Query copyQuery(RequestContext requestContext, Query query, String newName, Panel targetPanel, boolean copyAnswers, boolean copyComments) {
     User user = RequestUtils.getUser(requestContext);
     
@@ -289,27 +293,39 @@ public class QueryUtils {
         // Comments
         
         if (copyComments) {
-          HashMap<Long, Long> commentMap = new HashMap<Long, Long>();
+          HashMap<Long, Long> commentMap = new HashMap<>();
           List<QueryQuestionComment> queryComments;
           if (sourcePanel.getId().equals(targetPanel.getId())) {
             queryComments = queryQuestionCommentDAO.listByQueryPage(queryPage); 
-          }
-          else {
+          } else {
             queryComments = queryQuestionCommentDAO.listByQueryPageAndStamp(queryPage, sourcePanel.getCurrentStamp());
           }
+          
           Collections.sort(queryComments, new Comparator<QueryQuestionComment>() {
             @Override
             public int compare(QueryQuestionComment o1, QueryQuestionComment o2) {
-              return o1.getId().compareTo(o2.getId());
+              return o1.getCreated().compareTo(o2.getCreated());
             }
           });
+          
           for (QueryQuestionComment queryComment : queryComments) {
             QueryReply newReply = replyMap.get(queryComment.getQueryReply().getId());
-            QueryQuestionComment parentComment = queryComment.getParentComment() == null ? null : queryQuestionCommentDAO.findById(commentMap.get(queryComment.getParentComment().getId()));
+            QueryQuestionComment copiedParentComment = null;
+            
+            if (queryComment.getParentComment() != null) {
+              Long parentCommentId = queryComment.getParentComment().getId();  
+              Long copiedParentCommentId = commentMap.get(parentCommentId);
+              if (copiedParentCommentId != null) {
+                copiedParentComment = queryQuestionCommentDAO.findById(copiedParentCommentId);
+              } else {
+                logger.log(Level.SEVERE, String.format("Could not find %d from commentMap", parentCommentId));
+              }
+            }
+            
             QueryQuestionComment newComment = queryQuestionCommentDAO.create(
                 newReply,
                 newQueryPage,
-                parentComment,
+                copiedParentComment,
                 queryComment.getComment(),
                 queryComment.getHidden(),
                 queryComment.getCreator(),
