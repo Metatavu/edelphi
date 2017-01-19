@@ -6,9 +6,7 @@ import java.util.Map;
 
 import org.eclipse.birt.chart.model.Chart;
 
-import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
-import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldOptionDAO;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageType;
@@ -21,6 +19,7 @@ import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReportPage;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReportPageController;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReportPageData;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.ReportContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
 import fi.metatavu.edelphi.utils.QueryUtils;
 import fi.metatavu.edelphi.utils.ReportUtils;
@@ -61,17 +60,15 @@ public class ThesisMultiselectQueryReportPage extends QueryReportPageController 
   
   @Override
   public Chart constructChart(ChartContext chartContext, QueryPage queryPage) {
-    QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
-
     QueryOptionField queryOptionField = getOptionFieldFromScale1DPage(queryPage);
-    List<QueryOptionFieldOption> queryFieldOptions = queryOptionFieldOptionDAO.listByQueryField(queryOptionField);
+    List<QueryOptionFieldOption> queryFieldOptions = QueryUtils.listQueryOptionFieldOptions(queryOptionField);
 
     List<QueryReply> queryReplies = ReportUtils.getQueryReplies(queryPage, chartContext.getReportContext());
 
     Map<Long, Long> listOptionAnswerCounts = ReportUtils.getMultiselectData(queryOptionField, queryFieldOptions, queryReplies);
     
-    List<String> categoryCaptions = new ArrayList<String>();
-    List<Double> values = new ArrayList<Double>();
+    List<String> categoryCaptions = new ArrayList<>();
+    List<Double> values = new ArrayList<>();
     
     for (QueryOptionFieldOption optionFieldOption : queryFieldOptions) {
       Long optionId = optionFieldOption.getId();

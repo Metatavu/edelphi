@@ -33,6 +33,7 @@ import fi.metatavu.edelphi.query.QueryOptionType;
 import fi.metatavu.edelphi.query.RequiredQueryFragment;
 import fi.metatavu.edelphi.utils.QueryDataUtils;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
+import fi.metatavu.edelphi.utils.QueryUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 
 public class GroupingThesisQueryPageHandler extends AbstractScaleThesisQueryPageHandler {
@@ -94,8 +95,6 @@ public class GroupingThesisQueryPageHandler extends AbstractScaleThesisQueryPage
     QueryFieldDAO queryFieldDAO = new QueryFieldDAO();
     QueryQuestionOptionGroupOptionAnswerDAO questionOptionGroupOptionAnswerDAO = new QueryQuestionOptionGroupOptionAnswerDAO();
     QueryOptionFieldOptionGroupDAO queryOptionFieldOptionGroupDAO = new QueryOptionFieldOptionGroupDAO();
-//    QueryQuestionOptionAnswerDAO queryQuestionOptionAnswerDAO = new QueryQuestionOptionAnswerDAO();
-    QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
     
     JSONObject answerData = new JSONObject();
     
@@ -103,7 +102,7 @@ public class GroupingThesisQueryPageHandler extends AbstractScaleThesisQueryPage
     QueryOptionField queryField = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldName);
     
     List<QueryOptionFieldOptionGroup> fieldGroups = queryOptionFieldOptionGroupDAO.listByQueryField(queryField);
-    List<QueryOptionFieldOption> fieldOptions = queryOptionFieldOptionDAO.listByQueryField(queryField);
+    List<QueryOptionFieldOption> fieldOptions = QueryUtils.listQueryOptionFieldOptions(queryField);
     
     List<QueryQuestionOptionGroupOptionAnswer> answer = questionOptionGroupOptionAnswerDAO.listByQueryReplyAndQueryField(queryReply, queryField);
 
@@ -275,7 +274,6 @@ public class GroupingThesisQueryPageHandler extends AbstractScaleThesisQueryPage
     QueryFieldDAO queryFieldDAO = new QueryFieldDAO();
     QueryOptionFieldOptionGroupDAO queryOptionFieldOptionGroupDAO = new QueryOptionFieldOptionGroupDAO();
     QueryQuestionOptionGroupOptionAnswerDAO queryQuestionOptionGroupOptionAnswerDAO = new QueryQuestionOptionGroupOptionAnswerDAO();
-    QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
     
     QueryOptionField queryField = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, getFieldName());
     List<QueryOptionFieldOptionGroup> fieldGroups = queryOptionFieldOptionGroupDAO.listByQueryField(queryField);
@@ -287,13 +285,13 @@ public class GroupingThesisQueryPageHandler extends AbstractScaleThesisQueryPage
 
     RequiredQueryFragment groupFragment = new RequiredQueryFragment("report_piechart");
     
-    List<QueryOptionFieldOption> queryFieldOptions = queryOptionFieldOptionDAO.listByQueryField(queryField);
+    List<QueryOptionFieldOption> queryFieldOptions = QueryUtils.listQueryOptionFieldOptions(queryField);
 
     int chartIndex = 0;
     for (QueryOptionFieldOptionGroup fieldGroup : fieldGroups) {
-      List<String> ids = new ArrayList<String>(queryFieldOptions.size());
-      List<String> captions = new ArrayList<String>(queryFieldOptions.size());
-      List<Double> values = new ArrayList<Double>(queryFieldOptions.size());
+      List<String> ids = new ArrayList<>(queryFieldOptions.size());
+      List<String> captions = new ArrayList<>(queryFieldOptions.size());
+      List<Double> values = new ArrayList<>(queryFieldOptions.size());
       
       for (QueryOptionFieldOption queryFieldOption : queryFieldOptions) {
         ids.add(queryFieldOption.getValue());

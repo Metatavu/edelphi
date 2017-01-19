@@ -11,14 +11,12 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.birt.chart.model.Chart;
 
-import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionOptionAnswerDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingKeyDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
-import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldOptionDAO;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionAnswer;
@@ -38,6 +36,7 @@ import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReportPageComment;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReportPageController;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReportPageData;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.ReportContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
 import fi.metatavu.edelphi.utils.QueryUtils;
 import fi.metatavu.edelphi.utils.ReportUtils;
@@ -54,10 +53,9 @@ public class ThesisScale1DQueryReportPage extends QueryReportPageController {
     /**
      * Load fields on page
      */
-    QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
-
+    
     QueryOptionField queryOptionField = getOptionFieldFromScale1DPage(queryPage);
-    List<QueryOptionFieldOption> queryFieldOptions = queryOptionFieldOptionDAO.listByQueryField(queryOptionField);
+    List<QueryOptionFieldOption> queryFieldOptions = QueryUtils.listQueryOptionFieldOptions(queryOptionField);
 
     List<QueryReply> queryReplies = ReportUtils.getQueryReplies(queryPage, reportContext);
     Map<Long, Long> data = ReportUtils.getOptionListData(queryOptionField, queryFieldOptions, queryReplies);
@@ -156,10 +154,8 @@ public class ThesisScale1DQueryReportPage extends QueryReportPageController {
   
   @Override
   public Chart constructChart(ChartContext chartContext, QueryPage queryPage) {
-    QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
-    
     QueryOptionField queryOptionField = getOptionFieldFromScale1DPage(queryPage);
-    List<QueryOptionFieldOption> queryFieldOptions = queryOptionFieldOptionDAO.listByQueryField(queryOptionField);
+    List<QueryOptionFieldOption> queryFieldOptions = QueryUtils.listQueryOptionFieldOptions(queryOptionField);
 
     List<QueryReply> queryReplies = ReportUtils.getQueryReplies(queryPage, chartContext.getReportContext());
     Map<Long, Long> data = ReportUtils.getOptionListData(queryOptionField, queryFieldOptions, queryReplies);

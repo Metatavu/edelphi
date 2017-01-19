@@ -8,12 +8,10 @@ import java.util.Map;
 
 import org.eclipse.birt.chart.model.Chart;
 
-import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionOptionGroupOptionAnswerDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
-import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldOptionDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldOptionGroupDAO;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
@@ -33,6 +31,7 @@ import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReportPageControll
 import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReportPageData;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReportPageGrouping;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.ReportContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
 import fi.metatavu.edelphi.utils.QueryUtils;
 import fi.metatavu.edelphi.utils.ReportUtils;
@@ -115,19 +114,18 @@ public class ThesisGroupingQueryReportPage extends QueryReportPageController {
   
   @Override
   public Chart constructChart(ChartContext chartContext, QueryPage queryPage) {
-    QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
     QueryOptionFieldOptionGroupDAO groupDAO = new QueryOptionFieldOptionGroupDAO();
 
     Long groupId = chartContext.getLong("groupId");
     QueryOptionField queryOptionField = getOptionFieldFromGroupingPage(queryPage);
     QueryOptionFieldOptionGroup group = groupDAO.findById(groupId);
-    List<QueryOptionFieldOption> queryFieldOptions = queryOptionFieldOptionDAO.listByQueryField(queryOptionField);
+    List<QueryOptionFieldOption> queryFieldOptions = QueryUtils.listQueryOptionFieldOptions(queryOptionField);
 
     List<QueryReply> queryReplies = ReportUtils.getQueryReplies(queryPage, chartContext.getReportContext());
     Map<Long, Long> listOptionAnswerCounts = ReportUtils.getGroupData(queryOptionField, group, queryFieldOptions, queryReplies);
     
-    List<String> categoryCaptions = new ArrayList<String>();
-    List<Double> values = new ArrayList<Double>();
+    List<String> categoryCaptions = new ArrayList<>();
+    List<Double> values = new ArrayList<>();
     
     for (QueryOptionFieldOption optionFieldOption : queryFieldOptions) {
       Long optionId = optionFieldOption.getId();
