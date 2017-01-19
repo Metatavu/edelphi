@@ -33,6 +33,7 @@ import fi.metatavu.edelphi.query.QueryOptionType;
 import fi.metatavu.edelphi.query.RequiredQueryFragment;
 import fi.metatavu.edelphi.utils.QueryDataUtils;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
+import fi.metatavu.edelphi.utils.QueryUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 
 public class MultiSelectThesisQueryPageHandler extends AbstractScaleThesisQueryPageHandler {
@@ -46,15 +47,14 @@ public class MultiSelectThesisQueryPageHandler extends AbstractScaleThesisQueryP
     String fieldName = getFieldName();
 
     QueryFieldDAO queryFieldDAO = new QueryFieldDAO();
-    QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
     QueryQuestionMultiOptionAnswerDAO queryQuestionMultiOptionAnswerDAO = new QueryQuestionMultiOptionAnswerDAO();
 
     QueryOptionField queryField = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldName);
     Query query = queryPage.getQuerySection().getQuery();
 
-    List<QueryOptionFieldOption> options = queryOptionFieldOptionDAO.listByQueryField(queryField);
+    List<QueryOptionFieldOption> options = QueryUtils.listQueryOptionFieldOptions(queryField);
     QueryQuestionMultiOptionAnswer answer = queryQuestionMultiOptionAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryField);
-    Set<QueryOptionFieldOption> newOptions = new HashSet<QueryOptionFieldOption>();
+    Set<QueryOptionFieldOption> newOptions = new HashSet<>();
 
     for (QueryOptionFieldOption option : options) {
       String paramName = MULTISELECT_OPTION_NAMEPREFIX + "." + option.getValue();
@@ -81,12 +81,11 @@ public class MultiSelectThesisQueryPageHandler extends AbstractScaleThesisQueryP
     String fieldName = getFieldName();
 
     QueryFieldDAO queryFieldDAO = new QueryFieldDAO();
-    QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
     QueryQuestionMultiOptionAnswerDAO queryQuestionMultiOptionAnswerDAO = new QueryQuestionMultiOptionAnswerDAO();
 
     QueryOptionField queryField = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldName);
 
-    List<QueryOptionFieldOption> options = queryOptionFieldOptionDAO.listByQueryField(queryField);
+    List<QueryOptionFieldOption> options = QueryUtils.listQueryOptionFieldOptions(queryField);
 
     QueryQuestionMultiOptionAnswer answer = queryQuestionMultiOptionAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryField);
 
@@ -230,7 +229,6 @@ public class MultiSelectThesisQueryPageHandler extends AbstractScaleThesisQueryP
     QueryReplyDAO queryReplyDAO = new QueryReplyDAO();
     UserDAO userDAO = new UserDAO();
     QueryFieldDAO queryFieldDAO = new QueryFieldDAO();
-    QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
     QueryQuestionMultiOptionAnswerDAO queryQuestionMultiOptionAnswerDAO = new QueryQuestionMultiOptionAnswerDAO();
     
     RequiredQueryFragment requiredFragment = new RequiredQueryFragment("report_barchart");
@@ -239,10 +237,10 @@ public class MultiSelectThesisQueryPageHandler extends AbstractScaleThesisQueryP
     Query query = queryPage.getQuerySection().getQuery();
     
     QueryOptionField queryField = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldName);
-    List<QueryOptionFieldOption> options = queryOptionFieldOptionDAO.listByQueryField(queryField);
+    List<QueryOptionFieldOption> options = QueryUtils.listQueryOptionFieldOptions(queryField);
     List<QueryReply> queryReplies = queryReplyDAO.listByQueryAndStamp(query, RequestUtils.getActiveStamp(requestContext));
 
-    List<QueryReply> includeReplies = new ArrayList<QueryReply>();
+    List<QueryReply> includeReplies = new ArrayList<>();
 
     User loggedUser = requestContext.isLoggedIn() ? userDAO.findById(requestContext.getLoggedUserId()) : null;
     QueryReply excludeReply = QueryDataUtils.findQueryReply(requestContext, loggedUser, query);
