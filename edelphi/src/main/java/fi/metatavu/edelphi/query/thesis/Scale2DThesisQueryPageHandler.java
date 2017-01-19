@@ -8,13 +8,10 @@ import java.util.logging.Logger;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
-import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
-import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionOptionAnswerDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
-import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldOptionDAO;
 import fi.metatavu.edelphi.dao.users.UserDAO;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionAnswer;
@@ -30,27 +27,40 @@ import fi.metatavu.edelphi.query.QueryOption;
 import fi.metatavu.edelphi.query.QueryOptionEditor;
 import fi.metatavu.edelphi.query.QueryOptionType;
 import fi.metatavu.edelphi.query.RequiredQueryFragment;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.QueryDataUtils;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
+import fi.metatavu.edelphi.utils.QueryUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 
 public class Scale2DThesisQueryPageHandler extends AbstractScaleThesisQueryPageHandler {
 
   private static final Logger logger = Logger.getLogger(Scale2DThesisQueryPageHandler.class.getName());
+
+  private static final String VALUE_Y = "valueY";
+  private static final String VALUE_X = "valueX";
+  private static final String FIELD_Y = "y";
+  private static final String FIELD_X = "x";
+  private static final String SCALE2D_OPTIONS_Y = "scale2d.options.y";
+  private static final String SCALE2D_OPTIONS_X = "scale2d.options.x";
+  private static final String SCALE2D_TYPE = "scale2d.type";
+  private static final String SCALE2D_LABEL_Y = "scale2d.label.y";
+  private static final String SCALE2D_LABEL_X = "scale2d.label.x";
   
   public Scale2DThesisQueryPageHandler() {
-    options.add(new QueryOption(QueryOptionType.QUESTION, "scale2d.label.x", "panelAdmin.block.query.scale2DXLabelOptionLabel", QueryOptionEditor.TEXT, true));
-    options.add(new QueryOption(QueryOptionType.QUESTION, "scale2d.label.y", "panelAdmin.block.query.scale2DYLabelOptionLabel", QueryOptionEditor.TEXT, true));
-    options.add(new QueryOption(QueryOptionType.QUESTION, "scale2d.type", "panelAdmin.block.query.scale2DTypeOptionLabel", QueryOptionEditor.SCALE2D_TYPE, true));
-    options.add(new QueryOption(QueryOptionType.QUESTION, "scale2d.options.x", "panelAdmin.block.query.scale2DOptionsXOptionLabel", QueryOptionEditor.OPTION_SET, false));
-    options.add(new QueryOption(QueryOptionType.QUESTION, "scale2d.options.y", "panelAdmin.block.query.scale2DOptionsYOptionLabel", QueryOptionEditor.OPTION_SET, false));
+    options.add(new QueryOption(QueryOptionType.QUESTION, SCALE2D_LABEL_X, "panelAdmin.block.query.scale2DXLabelOptionLabel", QueryOptionEditor.TEXT, true));
+    options.add(new QueryOption(QueryOptionType.QUESTION, SCALE2D_LABEL_Y, "panelAdmin.block.query.scale2DYLabelOptionLabel", QueryOptionEditor.TEXT, true));
+    options.add(new QueryOption(QueryOptionType.QUESTION, SCALE2D_TYPE, "panelAdmin.block.query.scale2DTypeOptionLabel", QueryOptionEditor.SCALE2D_TYPE, true));
+    options.add(new QueryOption(QueryOptionType.QUESTION, SCALE2D_OPTIONS_X, "panelAdmin.block.query.scale2DOptionsXOptionLabel", QueryOptionEditor.OPTION_SET, false));
+    options.add(new QueryOption(QueryOptionType.QUESTION, SCALE2D_OPTIONS_Y, "panelAdmin.block.query.scale2DOptionsYOptionLabel", QueryOptionEditor.OPTION_SET, false));
   }
   @Override
   protected void saveThesisAnswers(RequestContext requestContext, QueryPage queryPage, QueryReply queryReply) {
-    String fieldNameX = getFieldName("x");
-    String fieldNameY = getFieldName("y");
-    String valueX = requestContext.getString("valueX");
-    String valueY = requestContext.getString("valueY");
+    String fieldNameX = getFieldName(FIELD_X);
+    String fieldNameY = getFieldName(FIELD_Y);
+    String valueX = requestContext.getString(VALUE_X);
+    String valueY = requestContext.getString(VALUE_Y);
     
     saveAnswer(requestContext, queryPage, queryReply, fieldNameX, valueX);
     saveAnswer(requestContext, queryPage, queryReply, fieldNameY, valueY);
@@ -58,10 +68,10 @@ public class Scale2DThesisQueryPageHandler extends AbstractScaleThesisQueryPageH
 
   @Override
   protected void renderQuestion(PageRequestContext requestContext, QueryPage queryPage, QueryReply queryReply) {
-    int type = getIntegerOptionValue(queryPage, getDefinedOption("scale2d.type"));
+    int type = getIntegerOptionValue(queryPage, getDefinedOption(SCALE2D_TYPE));
 
-    String fieldNameX = getFieldName("x");
-    String fieldNameY = getFieldName("y");
+    String fieldNameX = getFieldName(FIELD_X);
+    String fieldNameY = getFieldName(FIELD_Y);
 
     QueryFieldDAO queryFieldDAO = new QueryFieldDAO();
     QueryQuestionOptionAnswerDAO queryQuestionOptionAnswerDAO = new QueryQuestionOptionAnswerDAO();
@@ -72,40 +82,38 @@ public class Scale2DThesisQueryPageHandler extends AbstractScaleThesisQueryPageH
     QueryQuestionOptionAnswer answerX = queryQuestionOptionAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryFieldX);
     QueryQuestionOptionAnswer answerY = queryQuestionOptionAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryFieldY);
 
-    String labelX = getStringOptionValue(queryPage, getDefinedOption("scale2d.label.x"));
-    String labelY = getStringOptionValue(queryPage, getDefinedOption("scale2d.label.y"));
+    String labelX = getStringOptionValue(queryPage, getDefinedOption(SCALE2D_LABEL_X));
+    String labelY = getStringOptionValue(queryPage, getDefinedOption(SCALE2D_LABEL_Y));
     
     if (type == SCALE_TYPE_RADIO) {
-      renderRadioList(requestContext, "valueX", labelX, queryFieldX, answerX);
-      renderRadioList(requestContext, "valueY", labelY, queryFieldY, answerY);
+      renderRadioList(requestContext, VALUE_X, labelX, queryFieldX, answerX);
+      renderRadioList(requestContext, VALUE_Y, labelY, queryFieldY, answerY);
     } else if (type == SCALE_TYPE_SLIDER) {
-      renderSlider(requestContext, "valueX", labelX, queryFieldX, answerX);
-      renderSlider(requestContext, "valueY", labelY, queryFieldY, answerY);
+      renderSlider(requestContext, VALUE_X, labelX, queryFieldX, answerX);
+      renderSlider(requestContext, VALUE_Y, labelY, queryFieldY, answerY);
     } else if (type == SCALE_TYPE_GRAPH) {
-      renderGraph(requestContext, "valueX", "valueY", labelX, labelY, queryFieldX, queryFieldY, answerX, answerY);
+      renderGraph(requestContext, VALUE_X, VALUE_Y, labelX, labelY, queryFieldX, queryFieldY, answerX, answerY);
     }
   }
 
   private void renderGraph(PageRequestContext requestContext, String nameX, String nameY, String labelX, String labelY, QueryOptionField queryFieldX, QueryOptionField queryFieldY, QueryQuestionOptionAnswer answerX, QueryQuestionOptionAnswer answerY) {
-    QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
-    
     RequiredQueryFragment requiredFragment = new RequiredQueryFragment("scale_graph");
-    
-    List<QueryOptionFieldOption> optionsX = queryOptionFieldOptionDAO.listByQueryField(queryFieldX);
-    List<QueryOptionFieldOption> optionsY = queryOptionFieldOptionDAO.listByQueryField(queryFieldY);
+
+    List<QueryOptionFieldOption> optionsX = QueryUtils.listQueryOptionFieldOptions(queryFieldX);
+    List<QueryOptionFieldOption> optionsY = QueryUtils.listQueryOptionFieldOptions(queryFieldY);
 
     if (answerX != null) {
-      requiredFragment.addAttribute("valueX", answerX.getOption().getValue());
+      requiredFragment.addAttribute(VALUE_X, answerX.getOption().getValue());
     } else {
-      if (optionsX.size() > 0)
-        requiredFragment.addAttribute("valueX", optionsX.get(0).getValue());
+      if (!optionsX.isEmpty())
+        requiredFragment.addAttribute(VALUE_X, optionsX.get(0).getValue());
     }
 
     if (answerY != null) {
-      requiredFragment.addAttribute("valueY", answerY.getOption().getValue());
+      requiredFragment.addAttribute(VALUE_Y, answerY.getOption().getValue());
     } else {
-      if (optionsY.size() > 0)
-        requiredFragment.addAttribute("valueY", optionsY.get(0).getValue());
+      if (!optionsY.isEmpty())
+        requiredFragment.addAttribute(VALUE_Y, optionsY.get(0).getValue());
     }
     
     int i = 0;
@@ -135,10 +143,10 @@ public class Scale2DThesisQueryPageHandler extends AbstractScaleThesisQueryPageH
   public void updatePageOptions(Map<String, String> settings, QueryPage queryPage, User modifier, boolean hasAnswers) {
     super.updatePageOptions(settings, queryPage, modifier, hasAnswers);
 
-    String fieldNameX = getFieldName("x");
-    String fieldNameY = getFieldName("y");
-    String labelX = settings.get(getDefinedOption("scale2d.label.x").getName());
-    String labelY = settings.get(getDefinedOption("scale2d.label.y").getName());
+    String fieldNameX = getFieldName(FIELD_X);
+    String fieldNameY = getFieldName(FIELD_Y);
+    String labelX = settings.get(getDefinedOption(SCALE2D_LABEL_X).getName());
+    String labelY = settings.get(getDefinedOption(SCALE2D_LABEL_Y).getName());
 
     for (QueryOption queryOption : getDefinedOptions()) {
       if (queryOption.getType() == QueryOptionType.QUESTION) {
@@ -148,8 +156,8 @@ public class Scale2DThesisQueryPageHandler extends AbstractScaleThesisQueryPageH
     }
 
     if (!hasAnswers) {
-      QueryOption optionsOptionX = getDefinedOption("scale2d.options.x");
-      QueryOption optionsOptionY = getDefinedOption("scale2d.options.y");
+      QueryOption optionsOptionX = getDefinedOption(SCALE2D_OPTIONS_X);
+      QueryOption optionsOptionY = getDefinedOption(SCALE2D_OPTIONS_Y);
   
       // TODO: Mandarory ???
   
@@ -182,8 +190,8 @@ public class Scale2DThesisQueryPageHandler extends AbstractScaleThesisQueryPageH
     
     boolean commentable = Boolean.TRUE.equals(this.getBooleanOptionValue(queryPage,  getDefinedOption("thesis.commentable")));    
     
-    String fieldNameX = getFieldName("x");
-    String fieldNameY = getFieldName("y");
+    String fieldNameX = getFieldName(FIELD_X);
+    String fieldNameY = getFieldName(FIELD_Y);
     
     QueryOptionField queryFieldX = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldNameX);
     QueryOptionField queryFieldY = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldNameY);
@@ -215,13 +223,12 @@ public class Scale2DThesisQueryPageHandler extends AbstractScaleThesisQueryPageH
     
     QueryFieldDAO queryFieldDAO = new QueryFieldDAO();
     QueryReplyDAO queryReplyDAO = new QueryReplyDAO();
-    QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
     QueryQuestionOptionAnswerDAO queryQuestionOptionAnswerDAO = new QueryQuestionOptionAnswerDAO();
     UserDAO userDAO = new UserDAO();
 
     Query query = queryPage.getQuerySection().getQuery();
-    String fieldNameX = getFieldName("x");
-    String fieldNameY = getFieldName("y");
+    String fieldNameX = getFieldName(FIELD_X);
+    String fieldNameY = getFieldName(FIELD_Y);
     QueryOptionField queryFieldX = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldNameX);
     QueryOptionField queryFieldY = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldNameY);
     
@@ -230,8 +237,8 @@ public class Scale2DThesisQueryPageHandler extends AbstractScaleThesisQueryPageH
       return;
     }
     
-    List<QueryOptionFieldOption> optionsX = queryOptionFieldOptionDAO.listByQueryField(queryFieldX);
-    List<QueryOptionFieldOption> optionsY = queryOptionFieldOptionDAO.listByQueryField(queryFieldY);
+    List<QueryOptionFieldOption> optionsX = QueryUtils.listQueryOptionFieldOptions(queryFieldX);
+    List<QueryOptionFieldOption> optionsY = QueryUtils.listQueryOptionFieldOptions(queryFieldY);
     
     int maxX = 0;
     int maxY = 0;

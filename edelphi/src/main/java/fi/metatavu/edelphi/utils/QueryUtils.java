@@ -675,4 +675,11 @@ public class QueryUtils {
     }
   }
 
+  public static List<QueryOptionFieldOption> listQueryOptionFieldOptions(QueryOptionField queryField) {
+    QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
+    List<QueryOptionFieldOption> result = queryOptionFieldOptionDAO.listByQueryField(queryField);
+    Collections.sort(result, new QueryOptionFieldOptionComparator());
+    return result;
+  }
+
 }

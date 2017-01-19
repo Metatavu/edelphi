@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
-import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionOptionAnswerDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldDAO;
@@ -19,7 +17,10 @@ import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.query.QueryOption;
 import fi.metatavu.edelphi.query.RequiredQueryFragment;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
+import fi.metatavu.edelphi.utils.QueryUtils;
 
 public abstract class AbstractScaleThesisQueryPageHandler extends AbstractThesisQueryPageHandler {
 
@@ -30,10 +31,8 @@ public abstract class AbstractScaleThesisQueryPageHandler extends AbstractThesis
   public static final int SCALE_TYPE_GRAPH = 2;
   
   protected void renderRadioList(PageRequestContext requestContext, String name, String label, QueryOptionField queryField, QueryQuestionOptionAnswer answer) {
-    QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
-
-    List<QueryOptionFieldOption> options = queryOptionFieldOptionDAO.listByQueryField(queryField);
-
+    List<QueryOptionFieldOption> options = QueryUtils.listQueryOptionFieldOptions(queryField);
+    
     RequiredQueryFragment requiredFragment = new RequiredQueryFragment("scale_radiolist");
     requiredFragment.addAttribute("optionsCount", String.valueOf(options.size()));
     
@@ -64,10 +63,8 @@ public abstract class AbstractScaleThesisQueryPageHandler extends AbstractThesis
   }
   
   protected void renderSlider(PageRequestContext requestContext, String name, String label, QueryOptionField queryField, QueryQuestionOptionAnswer answer) {
-    QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
-
-    List<QueryOptionFieldOption> options = queryOptionFieldOptionDAO.listByQueryField(queryField);
-
+    List<QueryOptionFieldOption> options = QueryUtils.listQueryOptionFieldOptions(queryField);
+        
     RequiredQueryFragment requiredFragment = new RequiredQueryFragment("scale_slider");
     requiredFragment.addAttribute("optionsCount", String.valueOf(options.size()));
     
@@ -77,14 +74,12 @@ public abstract class AbstractScaleThesisQueryPageHandler extends AbstractThesis
     for (QueryOptionFieldOption option : options) {
       requiredFragment.addAttribute("option." + i + ".value", option.getValue());
       requiredFragment.addAttribute("option." + i + ".text", option.getText());
-      
-      if (answer != null) {
-        if (option.getValue().equals(answer.getOption().getValue())) {
-          requiredFragment.addAttribute("option." + i + ".selected", "1");
-          selectedFound = true;
-        }
+    
+      if ((answer != null) && option.getValue().equals(answer.getOption().getValue())) {
+        requiredFragment.addAttribute("option." + i + ".selected", "1");
+        selectedFound = true;
       }
-
+    
       i++;
     }
     

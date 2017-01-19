@@ -185,8 +185,8 @@ public class FormQueryReportPage extends QueryReportPageController {
     List<QueryReply> queryReplies = ReportUtils.getQueryReplies(queryPage, chartContext.getReportContext());
     Map<Long, Long> data = ReportUtils.getOptionListData(queryOptionField, queryFieldOptions, queryReplies);
 
-    List<Double> values = new ArrayList<Double>();
-    List<String> categoryCaptions = new ArrayList<String>();
+    List<Double> values = new ArrayList<>();
+    List<String> categoryCaptions = new ArrayList<>();
 
     for (QueryOptionFieldOption optionFieldOption : queryFieldOptions) {
       Long optionId = optionFieldOption.getId();
