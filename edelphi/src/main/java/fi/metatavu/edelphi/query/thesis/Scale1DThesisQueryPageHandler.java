@@ -6,13 +6,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
-import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionOptionAnswerDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
-import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldOptionDAO;
 import fi.metatavu.edelphi.dao.users.UserDAO;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionAnswer;
@@ -28,31 +25,39 @@ import fi.metatavu.edelphi.query.QueryOption;
 import fi.metatavu.edelphi.query.QueryOptionEditor;
 import fi.metatavu.edelphi.query.QueryOptionType;
 import fi.metatavu.edelphi.query.RequiredQueryFragment;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.QueryDataUtils;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
+import fi.metatavu.edelphi.utils.QueryUtils;
 import fi.metatavu.edelphi.utils.ReportUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 
 public class Scale1DThesisQueryPageHandler extends AbstractScaleThesisQueryPageHandler {
-  
+
   private static final Logger logger = Logger.getLogger(Scale1DThesisQueryPageHandler.class.getName());
 
+  private static final String VALUE = "value";
+  private static final String SCALE1D_OPTIONS = "scale1d.options";
+  private static final String SCALE1D_TYPE = "scale1d.type";
+  private static final String SCALE1D_LABEL = "scale1d.label";
+  
   public Scale1DThesisQueryPageHandler() {
-    options.add(new QueryOption(QueryOptionType.QUESTION, "scale1d.label", "panelAdmin.block.query.scale1DLabelOptionLabel", QueryOptionEditor.TEXT, true));
-    options.add(new QueryOption(QueryOptionType.QUESTION, "scale1d.type", "panelAdmin.block.query.scale1DTypeOptionLabel", QueryOptionEditor.SCALE1D_TYPE, true));
-    options.add(new QueryOption(QueryOptionType.QUESTION, "scale1d.options", "panelAdmin.block.query.scale1DOptionsOptionLabel", QueryOptionEditor.OPTION_SET, false));
+    options.add(new QueryOption(QueryOptionType.QUESTION, SCALE1D_LABEL, "panelAdmin.block.query.scale1DLabelOptionLabel", QueryOptionEditor.TEXT, true));
+    options.add(new QueryOption(QueryOptionType.QUESTION, SCALE1D_TYPE, "panelAdmin.block.query.scale1DTypeOptionLabel", QueryOptionEditor.SCALE1D_TYPE, true));
+    options.add(new QueryOption(QueryOptionType.QUESTION, SCALE1D_OPTIONS, "panelAdmin.block.query.scale1DOptionsOptionLabel", QueryOptionEditor.OPTION_SET, false));
   }
   
   @Override
   protected void saveThesisAnswers(RequestContext requestContext, QueryPage queryPage, QueryReply queryReply) {
     String fieldName = getFieldName();
-    String value = requestContext.getString("value");
+    String value = requestContext.getString(VALUE);
     saveAnswer(requestContext, queryPage, queryReply, fieldName, value);
   }
 
   @Override
   protected void renderQuestion(PageRequestContext requestContext, QueryPage queryPage, QueryReply queryReply) {
-    int type = getIntegerOptionValue(queryPage, getDefinedOption("scale1d.type"));
+    int type = getIntegerOptionValue(queryPage, getDefinedOption(SCALE1D_TYPE));
     String fieldName = getFieldName();
     
     QueryFieldDAO queryFieldDAO = new QueryFieldDAO();
@@ -60,12 +65,12 @@ public class Scale1DThesisQueryPageHandler extends AbstractScaleThesisQueryPageH
     
     QueryOptionField queryField = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldName);
     QueryQuestionOptionAnswer answer = queryQuestionOptionAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryField);
-    String label = getStringOptionValue(queryPage, getDefinedOption("scale1d.label"));
+    String label = getStringOptionValue(queryPage, getDefinedOption(SCALE1D_LABEL));
     
     if (type == SCALE_TYPE_RADIO) {
-      renderRadioList(requestContext, "value", label, queryField, answer);
+      renderRadioList(requestContext, VALUE, label, queryField, answer);
     } else if (type == SCALE_TYPE_SLIDER) {
-      renderSlider(requestContext, "value", label, queryField, answer);
+      renderSlider(requestContext, VALUE, label, queryField, answer);
     }
   }
 
@@ -74,7 +79,7 @@ public class Scale1DThesisQueryPageHandler extends AbstractScaleThesisQueryPageH
     super.updatePageOptions(settings, queryPage, modifier, hasAnswers);
     
     String fieldName = getFieldName();
-    String fieldCaption = settings.get("scale1d.label");
+    String fieldCaption = settings.get(SCALE1D_LABEL);
 
     for (QueryOption queryOption : getDefinedOptions()) {
       if (queryOption.getType() == QueryOptionType.QUESTION) {
@@ -84,7 +89,7 @@ public class Scale1DThesisQueryPageHandler extends AbstractScaleThesisQueryPageH
     }
     
     if (!hasAnswers) {
-      QueryOption optionsOption = getDefinedOption("scale1d.options");
+      QueryOption optionsOption = getDefinedOption(SCALE1D_OPTIONS);
       
       // TODO: Mandarory ???
       
@@ -140,7 +145,6 @@ public class Scale1DThesisQueryPageHandler extends AbstractScaleThesisQueryPageH
   @Override
   protected void renderReport(PageRequestContext requestContext, QueryPage queryPage) {
     QueryFieldDAO queryFieldDAO = new QueryFieldDAO();
-    QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
     QueryReplyDAO queryReplyDAO = new QueryReplyDAO();
     UserDAO userDAO = new UserDAO();
     
@@ -155,7 +159,7 @@ public class Scale1DThesisQueryPageHandler extends AbstractScaleThesisQueryPageH
       return;
     }
       
-    List<QueryOptionFieldOption> queryFieldOptions = queryOptionFieldOptionDAO.listByQueryField(queryField);
+    List<QueryOptionFieldOption> queryFieldOptions = QueryUtils.listQueryOptionFieldOptions(queryField);
     List<QueryReply> queryReplies = queryReplyDAO.listByQueryAndStamp(query, RequestUtils.getActiveStamp(requestContext));
     List<QueryReply> includeReplies = new ArrayList<>();
     User loggedUser = requestContext.isLoggedIn() ? userDAO.findById(requestContext.getLoggedUserId()) : null;

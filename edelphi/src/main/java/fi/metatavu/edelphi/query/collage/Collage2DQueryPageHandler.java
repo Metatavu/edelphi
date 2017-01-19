@@ -8,14 +8,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.NavigableMap;
 
-import net.sf.json.JSONArray;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
-import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
-import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.actions.DelfoiActionDAO;
@@ -25,7 +20,6 @@ import fi.metatavu.edelphi.dao.querydata.QueryQuestionOptionAnswerDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
-import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldOptionDAO;
 import fi.metatavu.edelphi.dao.users.DelfoiUserDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiAction;
 import fi.metatavu.edelphi.domainmodel.actions.PanelUserRoleAction;
@@ -53,8 +47,13 @@ import fi.metatavu.edelphi.query.QueryOptionType;
 import fi.metatavu.edelphi.query.QueryPageHandler;
 import fi.metatavu.edelphi.query.QueryPageHandlerFactory;
 import fi.metatavu.edelphi.query.RequiredQueryFragment;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
+import fi.metatavu.edelphi.utils.QueryUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import net.sf.json.JSONArray;
 
 public class Collage2DQueryPageHandler extends AbstractQueryPageHandler {
 
@@ -76,7 +75,6 @@ public class Collage2DQueryPageHandler extends AbstractQueryPageHandler {
   public void renderPage(PageRequestContext requestContext, QueryPage queryPage, QueryReply queryReply) {
   	QueryPageDAO queryPageDAO = new QueryPageDAO();
   	QueryFieldDAO queryFieldDAO = new QueryFieldDAO();
-  	QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
   	QueryReplyDAO queryReplyDAO = new QueryReplyDAO();
     QueryQuestionOptionAnswerDAO queryQuestionOptionAnswerDAO = new QueryQuestionOptionAnswerDAO();
     
@@ -143,8 +141,8 @@ public class Collage2DQueryPageHandler extends AbstractQueryPageHandler {
     		  	
     		  	if ((optionsX == null) || (optionsY == null)) {
     		  		// and first found options as x and y options
-      		    optionsX = queryOptionFieldOptionDAO.listByQueryField(includedQueryFieldX);
-      		    optionsY = queryOptionFieldOptionDAO.listByQueryField(includedQueryFieldY);
+      		    optionsX = QueryUtils.listQueryOptionFieldOptions(includedQueryFieldX);
+      		    optionsY = QueryUtils.listQueryOptionFieldOptions(includedQueryFieldY);
     		  	}
     		  	
     		  	String label = includedQueryPage.getTitle();

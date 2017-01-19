@@ -12,7 +12,6 @@ import fi.metatavu.edelphi.dao.querydata.QueryQuestionOptionAnswerDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingKeyDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
-import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldOptionDAO;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
@@ -27,6 +26,7 @@ import fi.metatavu.edelphi.pages.panel.admin.report.util.ChartModelProvider;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryFieldDataStatistics;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReportPageComment;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReportPageController;
+import fi.metatavu.edelphi.utils.QueryUtils;
 import fi.metatavu.edelphi.utils.ReportUtils;
 
 public abstract class AbstractThesisScale2DQueryReportPage extends QueryReportPageController {
@@ -41,15 +41,14 @@ public abstract class AbstractThesisScale2DQueryReportPage extends QueryReportPa
 
   protected Chart createBubbleChart(ChartContext chartContext, QueryPage queryPage, String title, String fieldNameX, String fieldNameY) {
     QueryFieldDAO queryFieldDAO = new QueryFieldDAO();
-    QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
     QueryQuestionOptionAnswerDAO queryQuestionOptionAnswerDAO = new QueryQuestionOptionAnswerDAO();
     
     QueryOptionField queryFieldX = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldNameX);
     QueryOptionField queryFieldY = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldNameY);
 
-    List<QueryOptionFieldOption> optionsX = queryOptionFieldOptionDAO.listByQueryField(queryFieldX);
-    List<QueryOptionFieldOption> optionsY = queryOptionFieldOptionDAO.listByQueryField(queryFieldY);
-
+    List<QueryOptionFieldOption> optionsX = QueryUtils.listQueryOptionFieldOptions(queryFieldX);
+    List<QueryOptionFieldOption> optionsY = QueryUtils.listQueryOptionFieldOptions(queryFieldY);
+    
     int maxX = 0;
     int maxY = 0;
 
@@ -103,10 +102,9 @@ public abstract class AbstractThesisScale2DQueryReportPage extends QueryReportPa
 
   protected Chart createBarChart(ChartContext chartContext, QueryPage queryPage, String title, Render2dAxis render2dAxis, String fieldName) {
     QueryFieldDAO queryFieldDAO = new QueryFieldDAO();
-    QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
     
     QueryOptionField queryField = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldName);
-    List<QueryOptionFieldOption> queryFieldOptions = queryOptionFieldOptionDAO.listByQueryField(queryField);
+    List<QueryOptionFieldOption> queryFieldOptions = QueryUtils.listQueryOptionFieldOptions(queryField);
 
     List<QueryReply> queryReplies = ReportUtils.getQueryReplies(queryPage, chartContext.getReportContext());
     Map<Long, Long> data = ReportUtils.getOptionListData(queryField, queryFieldOptions, queryReplies);

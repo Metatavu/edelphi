@@ -57,7 +57,6 @@ public class QueryOptionFieldOptionDAO extends GenericDAO<QueryOptionFieldOption
     );
     
     return entityManager.createQuery(criteria).getResultList();
-
   }
 
   public Long countByQueryField(QueryOptionField queryField) {
