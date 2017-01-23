@@ -215,6 +215,27 @@ public class QueryTestsBase extends AbstractUITest {
     assertFinishNotDisabled();
   }
 
+  @Test
+  public void testMultipleScale2dGraphNextDisabledPage() {
+    login(ADMIN_EMAIL);
+    createTestPanel();
+    createTestQuery("test", "basic-multile-scale2d-page");
+    navigate("/test/test-query");
+    assertFinishDisabled();
+    
+    int thesisCount = 3;
+    for (int thesisIndex = 0; thesisIndex < thesisCount; thesisIndex++) {
+      assertFinishDisabled();
+      clickMultipleScale2dRadio(thesisIndex, 1, "x");
+      clickMultipleScale2dRadio(thesisIndex, 2, "y");
+    }
+    
+    assertFinishNotDisabled();
+    finishQuery();
+    navigate("/test/test-query");
+    assertFinishNotDisabled();
+  }
+
   private void createTestPanel() {
     navigate("/");
     createPanel("test");
@@ -236,6 +257,11 @@ public class QueryTestsBase extends AbstractUITest {
   private void saveQuery(long panelId, long queryId) {
     navigate(String.format("/panel/admin/editquery.page?panelId=%d&queryId=%d", panelId, queryId));
     waitAndClick("#panelAdminQueryEditorBlockContent input[name='save']");
+  }
+  
+  private void clickMultipleScale2dRadio(int thesisIndex, int valueIndex, String axis) {
+    String selector = String.format("label[for='m2ds-%d-%s-%d']", thesisIndex, axis, valueIndex);
+    waitAndClick(selector);
   }
 
   private void drag(String selector, String toSelector) {
