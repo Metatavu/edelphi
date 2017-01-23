@@ -1,4 +1,4 @@
-/*global BlockController*/
+/*global BlockController,QueryBlockFragmentController*/
 
 var TextQueryPageController;
 var TimeSerieQueryPageController;
