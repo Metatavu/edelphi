@@ -146,7 +146,7 @@ var QueryBlockController = Class.create(BlockController, {
   },
   
   disableNext: function () {
-    var button = this._nextButton || this._finishButton;
+    var button = this._nextButton || this._finishButton;
     
     var originalTitle = $(button).readAttribute('data-original-title');
     var title = $(button).readAttribute('title');
@@ -160,7 +160,7 @@ var QueryBlockController = Class.create(BlockController, {
   },
   
   enableNext: function () {
-    var button = this._nextButton || this._finishButton;
+    var button = this._nextButton || this._finishButton;
     var originalTitle = $(button).readAttribute('data-original-title');
     $(button).writeAttribute('title', originalTitle);
     $(button).removeAttribute('disabled');
@@ -471,7 +471,7 @@ Scale1DQueryPageController = Class.create(QueryPageController, {
     this._selected = this._sliderController.getSelected();
     this._tickLabels = this._sliderController.getValueLabels();
 
-    if (this._selected === null) {
+    if (this._selected === null) {
       this.getBlockController().disableNext();
     }
   },
@@ -485,7 +485,7 @@ Scale1DQueryPageController = Class.create(QueryPageController, {
     this._selected = this._radioListController.getSelected();
     this._tickLabels = this._radioListController.getValueLabels();
     
-    if (this._selected === null) {
+    if (this._selected === null) {
       this.getBlockController().disableNext();
     }
   },
@@ -501,7 +501,7 @@ Scale1DQueryPageController = Class.create(QueryPageController, {
   
   _onSliderValueChange: function (event) {
     this._selected = event.value;
-    if (this._selected !== null) {
+    if (this._selected !== null) {
       this.getBlockController().enableNext();
     }
     
@@ -510,7 +510,7 @@ Scale1DQueryPageController = Class.create(QueryPageController, {
   
   _onRadioListValueChange: function (event) {
     this._selected = event.value;
-    if (this._selected !== null) {
+    if (this._selected !== null) {
       this.getBlockController().enableNext();
     }
     
@@ -553,12 +553,12 @@ Multiple2DScaleQueryPageController = Class.create(QueryPageController, {
     $super();
   },
   
-  _getOptionCount: function () {
+  _getOptionCount: function () {
     var table = this.getBlockElement().select('.queryMultiple2DScalesQuestionContainer table')[0];
     return parseInt($(table).getAttribute('data-option-count'));
   },
   
-  _getThesisCount: function () {
+  _getThesisCount: function () {
     var table = this.getBlockElement().select('.queryMultiple2DScalesQuestionContainer table')[0];
     return parseInt($(table).getAttribute('data-thesis-count'));
   },
@@ -578,7 +578,7 @@ Multiple2DScaleQueryPageController = Class.create(QueryPageController, {
     for (var thesisIndex = 0, thesisCount = this._getThesisCount(); thesisIndex < thesisCount; thesisIndex++) {
       var optionX = this._getSelectedThesisOption(thesisIndex, 'x');
       var optionY = this._getSelectedThesisOption(thesisIndex, 'y');
-      if (optionX === null || optionY === null) {
+      if (optionX === null || optionY === null) {
         return false;
       }
     }
@@ -689,7 +689,7 @@ Scale2DQueryPageController = Class.create(QueryPageController, {
   },
   
   _updateNextButton: function () {
-    if (this._value1 === null || this._value2 === null) {
+    if (this._value1 === null || this._value2 === null) {
       this.getBlockController().disableNext();
     } else {
       this.getBlockController().enableNext();
@@ -1420,7 +1420,7 @@ var QueryBlockScaleSliderFragmentController = Class.create(QueryBlockFragmentCon
   },
   
   _onSliderMouseUp: function () {
-    if (this._parseSelectedValue() === null) {
+    if (this._parseSelectedValue() === null) {
       this._handleValueChange(this._getDefaultValue());
     }
   }
