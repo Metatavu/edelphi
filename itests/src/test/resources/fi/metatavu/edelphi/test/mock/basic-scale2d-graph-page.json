@@ -1,0 +1,17 @@
+{
+  "visible": true,
+  "title": "Scale 2d",
+  "type": "THESIS_SCALE_2D",
+  "settings": {
+    "scale2d.type": "2",
+    "scale2d.label.x": "-- Insert Text --",
+    "scale2d.label.y": "-- Insert Text --",
+    "scale2d.options.x": "---&--&-&%2B/-&%2B&%2B%2B&%2B%2B%2B",
+    "scale2d.options.y": "---&--&-&%2B/-&%2B&%2B%2B&%2B%2B%2B",
+    "thesis.commentable": "1",
+    "thesis.showLiveReport": "1",
+    "thesis.viewDiscussions": "1",
+    "thesis.text": "Scale 2d thesis",
+    "thesis.description": "<p>Scale 2d text</p>"
+  }
+}

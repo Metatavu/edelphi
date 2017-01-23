@@ -3,9 +3,12 @@ package fi.metatavu.edelphi.test.ui.base.panel;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
 import fi.metatavu.edelphi.test.mock.FolderMocker;
@@ -14,7 +17,10 @@ import fi.metatavu.edelphi.test.mock.QueryMocker;
 import fi.metatavu.edelphi.test.ui.base.AbstractUITest;
 
 public class QueryTestsBase extends AbstractUITest {
-  
+
+  private static final int SCALE2D_GRAPH_MARGIN_X = 87;
+  private static final int SCALE2D_GRAPH_MARGIN_Y = 3;
+
   private FolderMocker folderMocker;
   private QueryMocker queryMocker;
   private PanelMocker panelMocker;
@@ -38,7 +44,7 @@ public class QueryTestsBase extends AbstractUITest {
     login(ADMIN_EMAIL);
     createTestPanel();
     
-    createTestQuery("test", "basic-text-page", "basic-expertise-page", "basic-scale1d-radio-page", "basic-scale2d-page", 
+    createTestQuery("test", "basic-text-page", "basic-expertise-page", "basic-scale1d-radio-page", "basic-scale2d-radio-page", 
         "basic-timeserie-page", "basic-timeline-page", "basic-grouping-page", "basic-multiselect-page", "basic-order-page", 
         "basic-form-page", "basic-background-form-page", "basic-collage2d-page");
     
@@ -157,13 +163,58 @@ public class QueryTestsBase extends AbstractUITest {
     createTestQuery("test", "basic-scale1d-slider-page");
     navigate("/test/test-query");
     assertFinishDisabled();
-    clickSlider(".queryScaleSliderTrack", 7, 2);
+    clickSlider(0, 7, 2);
     assertFinishNotDisabled();
     finishQuery();
     navigate("/test/test-query");
     assertFinishNotDisabled();
   }
-  
+
+  @Test
+  public void testScale2dRadioNextDisabledPage() {
+    login(ADMIN_EMAIL);
+    createTestPanel();
+    createTestQuery("test", "basic-scale2d-radio-page");
+    navigate("/test/test-query");
+    assertFinishDisabled();
+    waitPresent("input[name='queryPageType'][value='THESIS_SCALE_2D']");
+    waitAndClick(".queryScaleRadioListItemInput[name='valueX'][value='5']");
+    waitAndClick(".queryScaleRadioListItemInput[name='valueY'][value='2']");
+    assertFinishNotDisabled();
+    finishQuery();
+    navigate("/test/test-query");
+    assertFinishNotDisabled();
+  }
+
+  @Test
+  public void testScale2dSliderNextDisabledPage() {
+    login(ADMIN_EMAIL);
+    createTestPanel();
+    createTestQuery("test", "basic-scale2d-slider-page");
+    navigate("/test/test-query");
+    assertFinishDisabled();
+    clickSlider(0, 7, 2);
+    clickSlider(1, 6, 3);
+    assertFinishNotDisabled();
+    finishQuery();
+    navigate("/test/test-query");
+    assertFinishNotDisabled();
+  }
+
+  @Test
+  public void testScale2dGraphNextDisabledPage() {
+    login(ADMIN_EMAIL);
+    createTestPanel();
+    createTestQuery("test", "basic-scale2d-graph-page");
+    navigate("/test/test-query");
+    assertFinishDisabled();
+    clickScale2dGraph(7,7, 2, 3);
+    assertFinishNotDisabled();
+    finishQuery();
+    navigate("/test/test-query");
+    assertFinishNotDisabled();
+  }
+
   private void createTestPanel() {
     navigate("/");
     createPanel("test");
@@ -231,9 +282,20 @@ public class QueryTestsBase extends AbstractUITest {
   private void assertFinishNotDisabled() {
     assertNull(findElement(String.format("input[name='%s']", "finish")).getAttribute("disabled"));
   }
-
-  private void clickSlider(String selector, int valueCount, int value) {
-    int width = getElementWidth(selector);
-    clickOffset(selector, width / valueCount * value, 0);
+  
+  private void clickScale2dGraph(int xCount, int yCount, int x, int y) {
+    String selector = ".queryScaleGraphQuestionFlotrContainer .flotr-canvas";
+    int offsetX = SCALE2D_GRAPH_MARGIN_X + getElementWidth(selector) / xCount * x;
+    int offsetY = SCALE2D_GRAPH_MARGIN_Y + getElementHeight(selector) / yCount * y;
+    
+    clickOffset(selector, offsetX, offsetY);
   }
+
+  private void clickSlider(int index, int valueCount, int value) {
+    String selector = ".queryScaleSliderTrack";
+    List<WebElement> elements = findElements(selector);
+    int width = getElementWidth(elements.get(index));
+    clickOffset(elements.get(index), width / valueCount * value, 0);
+  }
+
 }
