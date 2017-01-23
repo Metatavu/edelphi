@@ -36,25 +36,16 @@ public abstract class AbstractScaleThesisQueryPageHandler extends AbstractThesis
     RequiredQueryFragment requiredFragment = new RequiredQueryFragment("scale_radiolist");
     requiredFragment.addAttribute("optionsCount", String.valueOf(options.size()));
     
-    boolean selectedFound = false;
-    
     int i = 0;
     for (QueryOptionFieldOption option : options) {
-      requiredFragment.addAttribute("option." + i + ".value", option.getValue());
-      requiredFragment.addAttribute("option." + i + ".text", option.getText());
+      requiredFragment.addAttribute(String.format("option.%d.value", i), option.getValue());
+      requiredFragment.addAttribute(String.format("option.%d.text", i), option.getText());
       
-      if (answer != null) {
-        if (option.getValue().equals(answer.getOption().getValue())) {
-          requiredFragment.addAttribute("option." + i + ".selected", "1");
-          selectedFound = true;
-        }
+      if ((answer != null) && option.getValue().equals(answer.getOption().getValue())) {
+        requiredFragment.addAttribute(String.format("option.%d.selected", i), "1");
       }
 
       i++;
-    }
-    
-    if (selectedFound == false) {
-      requiredFragment.addAttribute("option.0.selected", "1");
     }
     
     requiredFragment.addAttribute("name", name);
@@ -68,23 +59,16 @@ public abstract class AbstractScaleThesisQueryPageHandler extends AbstractThesis
     RequiredQueryFragment requiredFragment = new RequiredQueryFragment("scale_slider");
     requiredFragment.addAttribute("optionsCount", String.valueOf(options.size()));
     
-    boolean selectedFound = false;
-    
     int i = 0;
     for (QueryOptionFieldOption option : options) {
-      requiredFragment.addAttribute("option." + i + ".value", option.getValue());
-      requiredFragment.addAttribute("option." + i + ".text", option.getText());
-    
+      requiredFragment.addAttribute(String.format("option.%d.value", i), option.getValue());
+      requiredFragment.addAttribute(String.format("option.%d.text", i), option.getText());
+      
       if ((answer != null) && option.getValue().equals(answer.getOption().getValue())) {
-        requiredFragment.addAttribute("option." + i + ".selected", "1");
-        selectedFound = true;
+        requiredFragment.addAttribute(String.format("option.%d.selected", i), "1");
       }
     
       i++;
-    }
-    
-    if (selectedFound == false) {
-      requiredFragment.addAttribute("option.0.selected", "1");
     }
     
     requiredFragment.addAttribute("name", name);

@@ -13,7 +13,7 @@ var Multiple2DScaleQueryPageController;
 var FormQueryPageController;
 var Collage2DQueryPageController;
 
-QueryBlockController = Class.create(BlockController, {
+var QueryBlockController = Class.create(BlockController, {
   initialize: function ($super) {
     $super();
     
@@ -119,10 +119,14 @@ QueryBlockController = Class.create(BlockController, {
       case 'COLLAGE_2D':
         this.queryPageController = new Collage2DQueryPageController(this);
       break;
+      default:
+      break;
     }
+    
     startPing();
   },
-  deinitialize: function ($super) {
+  
+  deinitialize: function () {
     if (this._nextButton)
       Event.stopObserving(this._nextButton, "click", this._nextButtonClickListener);
     if (this._finishButton)
@@ -139,8 +143,26 @@ QueryBlockController = Class.create(BlockController, {
       Event.stopObserving(this._sortTimeAscending, "click", this._sortCommentsAscendingTimeClickListener);
     if (this._sortTimeDescending)
       Event.stopObserving(this._sortTimeDescending, "click", this._sortCommentsDescendingTimeClickListener);
-   
   },
+  
+  disableNext: function () {
+    var originalTitle = $(this._nextButton).readAttribute('data-original-title');
+    var title = $(this._nextButton).readAttribute('title');
+    
+    $(this._nextButton).writeAttribute('disabled', 'disabled');
+    $(this._nextButton).writeAttribute('title', getLocale().getText('query.buttonDisabledNotReplied'));
+    
+    if (!originalTitle) {
+      $(this._nextButton).writeAttribute('data-original-title', title);
+    }
+  },
+  
+  enableNext: function () {
+    var originalTitle = $(this._nextButton).readAttribute('data-original-title');
+    $(this._nextButton).writeAttribute('title', originalTitle);
+    $(this._nextButton).removeAttribute('disabled');
+  },
+  
   _onNextButtonClick: function (event) {
     Event.stop(event);
     
@@ -159,6 +181,7 @@ QueryBlockController = Class.create(BlockController, {
       }
     });
   },
+  
   _onFinishButtonClick: function (event) {
     Event.stop(event);
     var button = Event.element(event);
@@ -186,6 +209,7 @@ QueryBlockController = Class.create(BlockController, {
       }
     });
   },
+  
   _onPreviousButtonClick: function (event) {
     Event.stop(event);
     
@@ -204,10 +228,12 @@ QueryBlockController = Class.create(BlockController, {
       }
     });
   },
+  
   _onSkipButtonClick: function (event) {
     Event.stop(event);
     window.location.search = "?page=" + this._nextPageNumber;
   },
+  
   _onSkipLastButtonClick: function (event) {
     Event.stop(event);
     var button = Event.element(event);
@@ -226,6 +252,7 @@ QueryBlockController = Class.create(BlockController, {
       }
     });
   },
+  
   _onToggleCommentsClickListener: function (event) {
     var element = Event.element(event);
     Event.stop(event);
@@ -243,14 +270,17 @@ QueryBlockController = Class.create(BlockController, {
       commentsShowHideToggle.addClassName("hideIcon");
     }
   },
+  
   _onSortCommentsAscendingTimeClickListener: function (event) {
     Event.stop(event);
     this._sortComments(true);
   },
+  
   _onSortCommentsDescendingTimeClickListener: function (event) {
     Event.stop(event);
     this._sortComments(false);
   },
+  
   _sortComments: function(ascending) {
     this.getBlockElement().select('.queryCommentsContainer>.queryComment').sort(function(a, b) {
       var aId = 0;
@@ -417,6 +447,7 @@ Scale1DQueryPageController = Class.create(QueryPageController, {
       this._updateReport();
     }
   },
+  
   deinitialize: function ($super) {
     $super();
     if (this._sliderController)
@@ -426,6 +457,7 @@ Scale1DQueryPageController = Class.create(QueryPageController, {
     if (this._liveReportController)
       this._liveReportController.deinitialize();
   },
+  
   _initializeSlider: function (questionContainer) {
     this._sliderController = new QueryBlockScaleSliderFragmentController(questionContainer);
     this._sliderController.addListener("valueChange", this, this._onSliderValueChange);
@@ -435,7 +467,12 @@ Scale1DQueryPageController = Class.create(QueryPageController, {
     
     this._selected = this._sliderController.getSelected();
     this._tickLabels = this._sliderController.getValueLabels();
+
+    if (this._selected === null) {
+      this.getBlockController().disableNext();
+    }
   },
+  
   _initializeRadioList: function (questionContainer) {
     this._radioListController = new QueryBlockScaleRadioListFragmentController(questionContainer);
     this._radioListController.addListener("valueChange", this, this._onRadioListValueChange);
@@ -444,7 +481,12 @@ Scale1DQueryPageController = Class.create(QueryPageController, {
     this._min = this._radioListController.getMin();
     this._selected = this._radioListController.getSelected();
     this._tickLabels = this._radioListController.getValueLabels();
+    
+    if (this._selected === null) {
+      this.getBlockController().disableNext();
+    }
   },
+  
   _updateReport: function () {
     if (this._liveReportController) {
       for (var i = this._min, l = this._max + 1; i < l; i++) {
@@ -453,12 +495,22 @@ Scale1DQueryPageController = Class.create(QueryPageController, {
       this._liveReportController.draw();
     }
   },
+  
   _onSliderValueChange: function (event) {
     this._selected = event.value;
+    if (this._selected !== null) {
+      this.getBlockController().enableNext();
+    }
+    
     this._updateReport();
   },
+  
   _onRadioListValueChange: function (event) {
     this._selected = event.value;
+    if (this._selected !== null) {
+      this.getBlockController().enableNext();
+    }
+    
     this._updateReport();
   }
 });
@@ -1144,21 +1196,19 @@ Collage2DFragmentController = Class.create(QueryBlockFragmentController, {
   }
 });
 
-QueryBlockScaleSliderFragmentController = Class.create(QueryBlockFragmentController, {
+var QueryBlockScaleSliderFragmentController = Class.create(QueryBlockFragmentController, {
   initialize: function ($super, element) {
     $super('scale_slider', element);
-    
+
+    this._sliderMouseUpListener = this._onSliderMouseUp.bindAsEventListener(this);
     this._sliderValueChangedListener = this._onSliderValueChanged.bindAsEventListener(this);
     
     this._track = element.down('.queryScaleSliderTrack');
     this._input = element.down('input.sliderValue');
-    this._possibleValues = new Array();
-    this._valueLabels = new Array();
+    this._possibleValues = [];
+    this._valueLabels = [];
     this._minValue = 0;
     this._maxValue = 0;
-    this._selectedValue = parseFloat(this._input.value);
-    if (isNaN(this._selectedValue))
-      this._selectedValue = 0;
     
     var trackDimensions = this._track.getDimensions();
     var labels = element.select('.queryScaleSliderItemLabel');
@@ -1181,11 +1231,19 @@ QueryBlockScaleSliderFragmentController = Class.create(QueryBlockFragmentControl
       element.remove();
     });
     
-    this._sliderHandle = this._createHandle(this._valueLabels[this._selectedValue]);
+    var selectedValue = this._parseSelectedValue();
+    if (selectedValue == null) {
+      this._selectedValue = null;
+      selectedValue = this._getDefaultValue();
+    } else {
+      this._selectedValue = selectedValue;
+    }
+    
+    this._sliderHandle = this._createHandle(this._valueLabels[selectedValue]);
     
     this._slider = new S2.UI.Slider(this._track, {
       value: {
-        initial: this._selectedValue,
+        initial: selectedValue,
         min: this._minValue,
         max: this._maxValue
       },
@@ -1194,29 +1252,51 @@ QueryBlockScaleSliderFragmentController = Class.create(QueryBlockFragmentControl
         this._sliderHandle
       ]
     });
-    
+
+    Event.observe(this._slider.element, "mouseup", this._sliderMouseUpListener);
     Event.observe(this._slider.element, "ui:slider:value:changed", this._sliderValueChangedListener);
   },
+  
   deinitialize: function ($super) {
+    Event.stopObserving(this._slider.element, "mouseup", this._sliderMouseUpListener);
     Event.stopObserving(this._slider.element, "ui:slider:value:changed", this._sliderValueChangedListener);
     this._slider.destroy();
     $super();
   },
+  
   getMin: function () {
     return this._minValue;
   },
+  
   getMax: function () {
     return this._maxValue;
   },
+  
   getPossibleValues: function () {
     return this._possibleValues;
   },
+  
   getValueLabels: function () {
     return this._valueLabels;
   },
+  
   getSelected: function () {
     return this._selectedValue;
   },
+  
+  _getDefaultValue: function () {
+    return Math.floor(this._possibleValues.length / 2);
+  },
+  
+  _parseSelectedValue: function () {
+    var result = parseFloat(this._input.value);
+    if (isNaN(result)) {
+      return null;
+    }
+    
+    return result;
+  },
+  
   _createHandle: function (label) {
     var handle = new Element("a", {
       href: "#",
@@ -1236,9 +1316,10 @@ QueryBlockScaleSliderFragmentController = Class.create(QueryBlockFragmentControl
     
     return handle;
   },
-  _onSliderValueChanged: function (event) {
-    this._input.value = event.memo.values[0];
-    this._selectedValue = this._input.value;
+  
+  _handleValueChange: function (value) {
+    this._input.value = value;
+    this._selectedValue = value;
     
     this._sliderHandle.down('.queryScaleHandleLabel').update(this._valueLabels[this._selectedValue]);
     this._sliderHandle.title = this._valueLabels[this._selectedValue];
@@ -1246,6 +1327,16 @@ QueryBlockScaleSliderFragmentController = Class.create(QueryBlockFragmentControl
     this.fire("valueChange", {
       value: this._selectedValue
     });
+  },
+  
+  _onSliderValueChanged: function (event) {
+    this._handleValueChange(event.memo.values[0]);
+  },
+  
+  _onSliderMouseUp: function () {
+    if (this._parseSelectedValue() === null) {
+      this._handleValueChange(this._getDefaultValue());
+    }
   }
 });
 
