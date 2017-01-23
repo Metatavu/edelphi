@@ -12,6 +12,8 @@ var TimeLineQueryPageController;
 var Multiple2DScaleQueryPageController;
 var FormQueryPageController;
 var Collage2DQueryPageController;
+var QueryBlockScaleSliderFragmentController;
+var QueryBlockScaleGraphFragmentController;
 
 var QueryBlockController = Class
     .create(
@@ -1469,7 +1471,7 @@ Collage2DFragmentController = Class
           }
         });
 
-var QueryBlockScaleSliderFragmentController = Class.create(
+QueryBlockScaleSliderFragmentController = Class.create(
     QueryBlockFragmentController, {
       initialize : function($super, element) {
         $super('scale_slider', element);
@@ -2215,7 +2217,7 @@ QueryBlockTimeSerieFragmentController = Class
           }
         });
 
-var QueryBlockScaleGraphFragmentController = Class
+QueryBlockScaleGraphFragmentController = Class
     .create(
         QueryBlockFragmentController,
         {
