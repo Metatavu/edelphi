@@ -18,6 +18,8 @@ import fi.metatavu.edelphi.test.ui.base.AbstractUITest;
 
 public class QueryTestsBase extends AbstractUITest {
 
+  private static final String FINISH = "finish";
+  private static final String DISABLED = "disabled";
   private static final int SCALE2D_GRAPH_MARGIN_X = 87;
   private static final int SCALE2D_GRAPH_MARGIN_Y = 3;
 
@@ -298,15 +300,15 @@ public class QueryTestsBase extends AbstractUITest {
   }
   
   private void finishQuery() {
-    waitAndClick(String.format("input[name='%s']", "finish"));
+    waitAndClick(String.format("input[name='%s']", FINISH));
   }
   
   private void assertFinishDisabled() {
-    assertNotNull("disabled", findElement(String.format("input[name='%s']", "finish")).getAttribute("disabled"));
+    assertNotNull(DISABLED, findElement(String.format("input[name='%s']", FINISH)).getAttribute(DISABLED));
   }
   
   private void assertFinishNotDisabled() {
-    assertNull(findElement(String.format("input[name='%s']", "finish")).getAttribute("disabled"));
+    assertNull(findElement(String.format("input[name='%s']", FINISH)).getAttribute(DISABLED));
   }
   
   private void clickScale2dGraph(int xCount, int yCount, int x, int y) {
