@@ -146,21 +146,24 @@ var QueryBlockController = Class.create(BlockController, {
   },
   
   disableNext: function () {
-    var originalTitle = $(this._nextButton).readAttribute('data-original-title');
-    var title = $(this._nextButton).readAttribute('title');
+    var button = this._nextButton || this._finishButton;
     
-    $(this._nextButton).writeAttribute('disabled', 'disabled');
-    $(this._nextButton).writeAttribute('title', getLocale().getText('query.buttonDisabledNotReplied'));
+    var originalTitle = $(button).readAttribute('data-original-title');
+    var title = $(button).readAttribute('title');
+    
+    $(button).writeAttribute('disabled', 'disabled');
+    $(button).writeAttribute('title', getLocale().getText('query.buttonDisabledNotReplied'));
     
     if (!originalTitle) {
-      $(this._nextButton).writeAttribute('data-original-title', title);
+      $(button).writeAttribute('data-original-title', title);
     }
   },
   
   enableNext: function () {
-    var originalTitle = $(this._nextButton).readAttribute('data-original-title');
-    $(this._nextButton).writeAttribute('title', originalTitle);
-    $(this._nextButton).removeAttribute('disabled');
+    var button = this._nextButton || this._finishButton;
+    var originalTitle = $(button).readAttribute('data-original-title');
+    $(button).writeAttribute('title', originalTitle);
+    $(button).removeAttribute('disabled');
   },
   
   _onNextButtonClick: function (event) {
@@ -563,6 +566,7 @@ Scale2DQueryPageController = Class.create(QueryPageController, {
       this._updateReport();
     }
   },
+  
   deinitialize: function ($super) {
     $super();
     if (this._sliderController1)
@@ -578,6 +582,7 @@ Scale2DQueryPageController = Class.create(QueryPageController, {
     if (this._liveReportController)
       this._liveReportController.deinitialize();
   },
+  
   _initializeSlider: function (questionContainer1, questionContainer2) {
     this._sliderController1 = new QueryBlockScaleSliderFragmentController(questionContainer1);
     this._sliderController1.addListener("valueChange", this, this._onSlider1ValueChange);
@@ -592,7 +597,9 @@ Scale2DQueryPageController = Class.create(QueryPageController, {
     this._min2 = this._sliderController2.getMin();
     this._max2 = this._sliderController2.getMax();
     this._value2 = this._sliderController2.getSelected();
+    this._updateNextButton();
   },
+  
   _initializeRadioList: function (questionContainer1, questionContainer2) {
     this._radioListController1 = new QueryBlockScaleRadioListFragmentController(questionContainer1);
     this._radioListController1.addListener("valueChange", this, this._onRadioList1ValueChange);
@@ -606,8 +613,10 @@ Scale2DQueryPageController = Class.create(QueryPageController, {
 
     this._min2 = this._radioListController2.getMin();
     this._max2 = this._radioListController2.getMax();
-    this._value2 = this._radioListController2.getSelected();  
+    this._value2 = this._radioListController2.getSelected();
+    this._updateNextButton();
   },
+  
   _initializeGraph: function (questionContainer) {
     this._graphController = new QueryBlockScaleGraphFragmentController(questionContainer);
     this._graphController.addListener("valueChange", this, this._onGraphValueChange);
@@ -617,34 +626,53 @@ Scale2DQueryPageController = Class.create(QueryPageController, {
     this._value1 = this._graphController.getSelectedX();
     this._min2 = this._graphController.getMinY();
     this._max2 = this._graphController.getMaxY();
-    this._value2 = this._graphController.getSelectedY();  
+    this._value2 = this._graphController.getSelectedY();
+    this._updateNextButton();
   },
+  
+  _updateNextButton: function () {
+    if (this._value1 === null || this._value2 === null) {
+      this.getBlockController().disableNext();
+    } else {
+      this.getBlockController().enableNext();
+    }
+  },
+  
   _updateReport: function () {
     if (this._liveReportController) {
       this._liveReportController.setUserValues([[this._value1, this._value2, 1]]);
-      
       this._liveReportController.draw();
     }
   },
+  
   _onSlider1ValueChange: function (event) {
     this._value1 = event.value;
+    this._updateNextButton();
     this._updateReport();
   },
+  
   _onSlider2ValueChange: function (event) {
     this._value2 = event.value;
+    this._updateNextButton();
     this._updateReport();
   },
+  
   _onRadioList1ValueChange: function (event) {
     this._value1 = event.value;
+    this._updateNextButton();
     this._updateReport();
   },
+  
   _onRadioList2ValueChange: function (event) {
     this._value2 = event.value;
+    this._updateNextButton();
     this._updateReport();
   },
+  
   _onGraphValueChange: function (event) {
     this._value1 = event.valueX;
     this._value2 = event.valueY;
+    this._updateNextButton();
     this._updateReport();
   }
 });
@@ -1878,7 +1906,7 @@ QueryBlockTimeSerieFragmentController = Class.create(QueryBlockFragmentControlle
   }
 });
 
-QueryBlockScaleGraphFragmentController = Class.create(QueryBlockFragmentController, {
+var QueryBlockScaleGraphFragmentController = Class.create(QueryBlockFragmentController, {
   initialize: function ($super, element) {
     $super('scale_graph', element);
     
@@ -1893,7 +1921,7 @@ QueryBlockScaleGraphFragmentController = Class.create(QueryBlockFragmentControll
     this._minY = Infinity;
     this._maxY = -Infinity;
     
-    var xTicks = new Array();
+    var xTicks = [];
     var optionsCount = parseInt(this.getJsDataVariable("options.x.count"));
     for (var i = 0; i < optionsCount; i++) {
       var value = parseInt(this.getJsDataVariable("options.x." + i + ".value"));
@@ -1903,7 +1931,7 @@ QueryBlockScaleGraphFragmentController = Class.create(QueryBlockFragmentControll
       this._maxX = Math.max(this._maxX, value);
     }
     
-    var yTicks = new Array();
+    var yTicks = [];
     var optionsCount = parseInt(this.getJsDataVariable("options.y.count"));
     for (var i = 0; i < optionsCount; i++) {
       var value = parseInt(this.getJsDataVariable("options.y." + i + ".value"));
@@ -1932,12 +1960,17 @@ QueryBlockScaleGraphFragmentController = Class.create(QueryBlockFragmentControll
     };
     
     this._flotrContainer = element.down('.queryScaleGraphQuestionFlotrContainer');
-    this._dataSerie = new Array();
-    var valueX = parseInt(this._xValueInput.value);
-    var valueY = parseInt(this._yValueInput.value);
+    this._dataSerie = [];
+    var valueX = this._parseSelectedX();
+    var valueY = this._parseSelectedY();
     
-    if (!isNaN(valueX) && !isNaN(valueY))
+    if (valueX !== null && valueY !== null) {
       this._dataSerie.push([valueX, valueY]);
+    } else {
+      this._dataSerie.push([this._getDefaultX(), this._getDefaultY()]);
+    }
+    
+    console.log(this._dataSerie);
     
     Event.observe(this._flotrContainer, 'flotr:click', this._flotrContainerClickListener);
     Event.observe(this._flotrContainer, 'flotr:mousemove', this._flotrContainerMouseMoveListener);
@@ -1950,30 +1983,64 @@ QueryBlockScaleGraphFragmentController = Class.create(QueryBlockFragmentControll
     
     this._renderFlotr();
   },
+  
   deinitialize: function ($super) {
     $super();
     
     Event.stopObserving(this._flotrContainer, 'flotr:click', this._flotrContainerClickListener);
     Event.stopObserving(this._flotrContainer, 'flotr:mousemove', this._flotrContainerMouseMoveListener);
   },
+  
   getMinX: function () {
     return this._minX;
   },
+  
   getMaxX: function () {
     return this._maxX;
   },
-  getSelectedX: function () {
-    return parseFloat(this._xValueInput.value);
-  },
+  
   getMinY: function () {
     return this._minY;
   },
+  
   getMaxY: function () {
     return this._maxY;
   },
-  getSelectedY: function () {
-    return parseFloat(this._yValueInput.value);
+  
+  getSelectedX: function () {
+    return this._parseSelectedX();
   },
+  
+  getSelectedY: function () {
+    return this._parseSelectedY();
+  },
+  
+  _getDefaultX: function () {
+    return Math.floor((this.getMaxX() - this.getMinX()) / 2);
+  },
+  
+  _getDefaultY: function () {
+    return Math.floor((this.getMaxY() - this.getMinY()) / 2);
+  },
+
+  _parseSelectedX: function () {
+    var result = parseInt(this._xValueInput.value);
+    if (isNaN(result)) {
+      return null;
+    }
+    
+    return result;
+  },
+
+  _parseSelectedY: function () {
+    var result = parseInt(this._yValueInput.value);
+    if (isNaN(result)) {
+      return null;
+    }
+    
+    return result;
+  },
+  
   _renderFlotr: function () {
     this._flotr = Flotr.draw(this._flotrContainer, [ {
       data : this._dataSerie,
@@ -1991,12 +2058,14 @@ QueryBlockScaleGraphFragmentController = Class.create(QueryBlockFragmentControll
       }
     }], this._flotrOptions);
   },
+  
   _getNearestCoordinates: function (position) {
     return {
       x: this._getNearestValue(position.x, this._minX, this._maxX),
       y: this._getNearestValue(position.y, this._minY, this._maxY)
     };
   },
+  
   _getNearestValue: function (value, min, max) {
     if (value <= (min + 0.5)) {
       return min;
@@ -2014,6 +2083,7 @@ QueryBlockScaleGraphFragmentController = Class.create(QueryBlockFragmentControll
     
     return null;
   },
+  
   _onFlotrContainerClick: function (event) {
     var position = event.memo[0];
     var nearestCoords = this._getNearestCoordinates(position);
@@ -2029,6 +2099,7 @@ QueryBlockScaleGraphFragmentController = Class.create(QueryBlockFragmentControll
       valueY: nearestCoords.y
     });
   },
+  
   _onFlotrContainerMouseMove : function(event) {
     var position = event.memo[1];
     var nearestCoords = this._getNearestCoordinates(position);
