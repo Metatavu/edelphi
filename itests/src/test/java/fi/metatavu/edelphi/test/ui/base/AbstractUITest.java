@@ -113,7 +113,7 @@ public class AbstractUITest {
     waitVisible(selector);
     click(selector);
   }
-  
+
   @SuppressWarnings ("squid:S1166")
   protected int getElementWidth(String selector) {
     waitVisible(selector); 
@@ -121,7 +121,7 @@ public class AbstractUITest {
       try {
         List<WebElement> elements = findElements(selector);
         if (!elements.isEmpty()) {
-          return elements.get(0).getSize().getWidth();
+          return getElementWidth(elements.get(0));
         }
       } catch (Exception e) {
         // Ignore
@@ -129,10 +129,37 @@ public class AbstractUITest {
     }
   }
   
+  protected int getElementWidth(WebElement element) {
+    return element.getSize().getWidth();
+  }
+
+  @SuppressWarnings ("squid:S1166")
+  protected int getElementHeight(String selector) {
+    waitVisible(selector); 
+    while (true) {
+      try {
+        List<WebElement> elements = findElements(selector);
+        if (!elements.isEmpty()) {
+          return getElementHeight(elements.get(0));
+        }
+      } catch (Exception e) {
+        // Ignore
+      }
+    }
+  }
+  
+  protected int getElementHeight(WebElement element) {
+    return element.getSize().getHeight();
+  }
+  
   protected void clickOffset(String selector, int offsetX, int offsetY) {
+    clickOffset(findElements(selector).get(0), offsetX, offsetY);
+  }
+  
+  protected void clickOffset(WebElement element, int offsetX, int offsetY) {
     Actions build = new Actions(webDriver);
     build
-      .moveToElement(findElements(selector).get(0), offsetX, offsetY)
+      .moveToElement(element, offsetX, offsetY)
       .click()
       .build()
       .perform();

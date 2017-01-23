@@ -104,16 +104,10 @@ public class Scale2DThesisQueryPageHandler extends AbstractScaleThesisQueryPageH
 
     if (answerX != null) {
       requiredFragment.addAttribute(VALUE_X, answerX.getOption().getValue());
-    } else {
-      if (!optionsX.isEmpty())
-        requiredFragment.addAttribute(VALUE_X, optionsX.get(0).getValue());
     }
 
     if (answerY != null) {
       requiredFragment.addAttribute(VALUE_Y, answerY.getOption().getValue());
-    } else {
-      if (!optionsY.isEmpty())
-        requiredFragment.addAttribute(VALUE_Y, optionsY.get(0).getValue());
     }
     
     int i = 0;

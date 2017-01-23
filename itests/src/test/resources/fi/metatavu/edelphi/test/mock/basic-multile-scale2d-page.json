@@ -1,0 +1,16 @@
+{
+  "visible": true,
+  "title": "Multiple scale 2d questions",
+  "type": "THESIS_MULTIPLE_2D_SCALES",
+  "settings": {
+    "multiple2dscales.labelx": "-- Insert Text --",
+    "multiple2dscales.labely": "-- Insert Text --",
+    "multiple2dscales.options": "---&--&-&%2B/-&%2B&%2B%2B&%2B%2B%2B",
+    "multiple2dscales.theses": "Thesis%201&Thesis%202&Thesis%203",
+    "thesis.commentable": "1",
+    "thesis.showLiveReport": "1",
+    "thesis.viewDiscussions": "1",
+    "thesis.text": "Multiple 2d scale questions",
+    "thesis.description": "<p>Multiple 2d scale questions</p>"
+  }
+}
