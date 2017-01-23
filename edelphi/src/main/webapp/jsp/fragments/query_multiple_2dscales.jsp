@@ -5,7 +5,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <div class="queryQuestionContainer queryMultiple2DScalesQuestionContainer">
-  <table>
+  <table data-option-count="${param.optionCount}" data-thesis-count="${param.thesisCount}">
     
     <tr>
       <th></th>

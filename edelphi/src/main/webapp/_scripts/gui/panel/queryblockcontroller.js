@@ -519,6 +519,7 @@ Scale1DQueryPageController = Class.create(QueryPageController, {
 });
 
 Multiple2DScaleQueryPageController = Class.create(QueryPageController, {
+  
   initialize: function ($super, blockController) {
     $super(blockController);
     
@@ -535,9 +536,66 @@ Multiple2DScaleQueryPageController = Class.create(QueryPageController, {
         'height': maxHeight + 'px'
       });
     });
+    
+    this._valueChangeListener = this._onValueChange.bindAsEventListener(this);
+    this.getBlockElement().select('.queryMultiple2DScalesQuestionContainer table input[type="radio"]').each(function (input) {
+      $(input).observe("change", this._valueChangeListener);
+    }.bind(this));
+    
+    this._updateNextButton();
   },
+  
   deinitialize: function ($super) {
+    this.getBlockElement().select('.queryMultiple2DScalesQuestionContainer table input[type="radio"]').each(function (input) {
+      $(input).stopObserving("change", this._valueChangeListener);
+    }.bind(this));
+
     $super();
+  },
+  
+  _getOptionCount: function () {
+    var table = this.getBlockElement().select('.queryMultiple2DScalesQuestionContainer table')[0];
+    return parseInt($(table).getAttribute('data-option-count'));
+  },
+  
+  _getThesisCount: function () {
+    var table = this.getBlockElement().select('.queryMultiple2DScalesQuestionContainer table')[0];
+    return parseInt($(table).getAttribute('data-thesis-count'));
+  },
+  
+  _getSelectedThesisOption: function (thesisIndex, axis) {
+    var inputName = 'multiple2dscales.' + thesisIndex + '.' + axis;
+    
+    var selectedInputs = this.getBlockElement().select('.queryMultiple2DScalesQuestionContainer table input[name="' + inputName + '"]:checked');
+    if (selectedInputs.length) {
+      return selectedInputs[0].value;
+    }
+    
+    return null;
+  },
+  
+  _isAllValuesSet: function () {
+    for (var thesisIndex = 0, thesisCount = this._getThesisCount(); thesisIndex < thesisCount; thesisIndex++) {
+      var optionX = this._getSelectedThesisOption(thesisIndex, 'x');
+      var optionY = this._getSelectedThesisOption(thesisIndex, 'y');
+      if (optionX === null || optionY === null) {
+        return false;
+      }
+    }
+    
+    return true;
+  },
+  
+  _updateNextButton: function () {
+    if (!this._isAllValuesSet()) {
+      this.getBlockController().disableNext();
+    } else {
+      this.getBlockController().enableNext();
+    }
+  },
+  
+  _onValueChange: function () {
+    this._updateNextButton();
   }
 });
 
@@ -1969,8 +2027,6 @@ var QueryBlockScaleGraphFragmentController = Class.create(QueryBlockFragmentCont
     } else {
       this._dataSerie.push([this._getDefaultX(), this._getDefaultY()]);
     }
-    
-    console.log(this._dataSerie);
     
     Event.observe(this._flotrContainer, 'flotr:click', this._flotrContainerClickListener);
     Event.observe(this._flotrContainer, 'flotr:mousemove', this._flotrContainerMouseMoveListener);
