@@ -1,5 +1,8 @@
 package fi.metatavu.edelphi.test.ui.base.panel;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +38,7 @@ public class QueryTestsBase extends AbstractUITest {
     login(ADMIN_EMAIL);
     createTestPanel();
     
-    createTestQuery("test", "basic-text-page", "basic-expertise-page", "basic-scale1d-page", "basic-scale2d-page", 
+    createTestQuery("test", "basic-text-page", "basic-expertise-page", "basic-scale1d-radio-page", "basic-scale2d-page", 
         "basic-timeserie-page", "basic-timeline-page", "basic-grouping-page", "basic-multiselect-page", "basic-order-page", 
         "basic-form-page", "basic-background-form-page", "basic-collage2d-page");
     
@@ -131,6 +134,35 @@ public class QueryTestsBase extends AbstractUITest {
     waitAndAssertText(".queryPageTitle", "Text page");
     assertText(".queryTextContainer div p", "Page with text");
   }
+
+  @Test
+  public void testScale1dRadioNextDisabledPage() {
+    login(ADMIN_EMAIL);
+    createTestPanel();
+    createTestQuery("test", "basic-scale1d-radio-page");
+    navigate("/test/test-query");
+    assertFinishDisabled();
+    waitPresent("input[name='queryPageType'][value='THESIS_SCALE_1D']");
+    waitAndClick(".queryScaleRadioListItemInput[value='4']");
+    assertFinishNotDisabled();
+    finishQuery();
+    navigate("/test/test-query");
+    assertFinishNotDisabled();
+  }
+
+  @Test
+  public void testScale1dSliderNextDisabledPage() {
+    login(ADMIN_EMAIL);
+    createTestPanel();
+    createTestQuery("test", "basic-scale1d-slider-page");
+    navigate("/test/test-query");
+    assertFinishDisabled();
+    clickSlider(".queryScaleSliderTrack", 7, 2);
+    assertFinishNotDisabled();
+    finishQuery();
+    navigate("/test/test-query");
+    assertFinishNotDisabled();
+  }
   
   private void createTestPanel() {
     navigate("/");
@@ -191,10 +223,17 @@ public class QueryTestsBase extends AbstractUITest {
   private void finishQuery() {
     waitAndClick(String.format("input[name='%s']", "finish"));
   }
+  
+  private void assertFinishDisabled() {
+    assertNotNull("disabled", findElement(String.format("input[name='%s']", "finish")).getAttribute("disabled"));
+  }
+  
+  private void assertFinishNotDisabled() {
+    assertNull(findElement(String.format("input[name='%s']", "finish")).getAttribute("disabled"));
+  }
 
-  @SuppressWarnings("unused")
-  private void clickSlider(String selector, int value) {
+  private void clickSlider(String selector, int valueCount, int value) {
     int width = getElementWidth(selector);
-    clickOffset(selector, width / 7 * value, 0);
+    clickOffset(selector, width / valueCount * value, 0);
   }
 }
