@@ -2669,8 +2669,11 @@ QueryCommentsController = Class.create({
   },
   
   _onPostReplyClick : function(event) {
-    var commentElement = Event.element(event).up(".queryComment");
-    var newCommentElement = Event.element(event).up(".newCommentEditor");
+    var saveButton = Event.element(event);
+    saveButton.writeAttribute("disabled", "disabled");
+    
+    var commentElement = saveButton.up(".queryComment");
+    var newCommentElement = saveButton.up(".newCommentEditor");
     var textArea = newCommentElement.down("textarea");
     var queryPageId = commentElement.down("input[name='queryPageId']").value;
     var parentCommentId = commentElement.down("input[name='commentId']").value;
@@ -2841,8 +2844,8 @@ QueryCommentsController = Class.create({
             var header = commentElement.down(".queryCommentHeader");
             header.insert({
               after : new Element("div", {
-                className : "queryCommentModified"
-              }).update(getLocale().getText('query.comment.commentModified', [ getLocale().getDate(new Date().getTime()) ])) });
+              className : "queryCommentModified"
+            }).update(getLocale().getText('query.comment.commentModified', [ getLocale().getDate(new Date().getTime()) ])) });
           }
 
           element.purge();
