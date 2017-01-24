@@ -2748,9 +2748,7 @@ QueryCommentsController = Class.create({
   },
   
   _createCommentLinks : function(container) {
-    var g = this._createCommentLink(container, "queryCommentNewComment", "queryCommentNewCommentLink", getLocale().getText("query.comment.commentAnswerLink"), this._commentReplyClickListener);
-    console.log(g);
-    
+    this._createCommentLink(container, "queryCommentNewComment", "queryCommentNewCommentLink", getLocale().getText("query.comment.commentAnswerLink"), this._commentReplyClickListener);
     if (JSDATA['canManageComments'] == 'true') {
       this._createCommentLink(container, "queryCommentShowComment", "queryCommentShowCommentLink", getLocale().getText("query.comment.commentShowLink"), this._commentShowLinkClickListener);
       this._createCommentLink(container, "queryCommentHideComment", "queryCommentHideCommentLink", getLocale().getText("query.comment.commentHideLink"), this._commentHideLinkClickListener);
