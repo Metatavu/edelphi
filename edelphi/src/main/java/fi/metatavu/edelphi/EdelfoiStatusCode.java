@@ -47,5 +47,6 @@ public class EdelfoiStatusCode extends StatusCode {
   public static final int SESSION_TIMEOUT = 1040;
   public static final int EXPERTISE_CONTAINS_USERS = 1041;
   public static final int INTEREST_CONTAINS_USERS = 1042;
+  public static final int NO_PARENT_COMMENT = 1043;
   
 }
