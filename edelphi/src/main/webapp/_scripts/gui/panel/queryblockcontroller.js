@@ -2513,7 +2513,6 @@ QueryBlockMultiSelectFragmentController = Class.create(QueryBlockFragmentControl
 
 QueryCommentsController = Class.create({
   setup : function() {
-    this._newCommentReplyClickListener = this._onNewCommentClick.bindAsEventListener(this);
     this._saveCommentReplyClickListener = this._onPostReplyClick.bindAsEventListener(this);
     this._commentReplyClickListener = this._onReplyClick.bindAsEventListener(this);
     this._commentEditLinkClickListener = this._onCommentEditLinkClick.bindAsEventListener(this);
@@ -2573,44 +2572,6 @@ QueryCommentsController = Class.create({
 
     $$("div.queryCommentShowHideButton").each(function(node) {
       Event.observe(node, "click", _this._toggleCommentShowHideButtonClickListener);
-    });
-  },
-  
-  _onNewCommentClick : function() {
-    var queryPageId = $('queryNewCommentThread').down("input[name='queryPageId']").value;
-    var parentCommentId = undefined;
-    var comment = $('queryNewCommentThread').down("textarea").value;
-    JSONUtils.request(CONTEXTPATH + '/queries/savecomment.json', {
-      parameters : {
-        queryPageId : queryPageId,
-        parentCommentId : parentCommentId,
-        comment : comment
-      },
-      onSuccess : function() {
-        var newComment = new Element("div", {
-          className : "queryComment"
-        });
-      
-        var newCommentText = new Element("div", {
-          className : "queryCommentText"
-        });
-        
-        var newCommentDate = new Element("div", {
-          className : "queryCommentDate"
-        });
-            
-        newCommentText.update(comment);
-        newCommentDate.update("");
-        newComment.appendChild(newCommentText);
-        newComment.appendChild(newCommentDate);
-
-        var childrenParent = $('queryCommentList');
-        if (childrenParent) {
-          childrenParent.appendChild(newComment);
-        }
-            
-        childrenParent.show();
-      }
     });
   },
   
@@ -2787,8 +2748,9 @@ QueryCommentsController = Class.create({
   },
   
   _createCommentLinks : function(container) {
-    this._createCommentLink(container, "queryCommentNewComment", "queryCommentNewCommentLink", getLocale().getText("query.comment.commentAnswerLink"), this._commentReplyClickListener);
-
+    var g = this._createCommentLink(container, "queryCommentNewComment", "queryCommentNewCommentLink", getLocale().getText("query.comment.commentAnswerLink"), this._commentReplyClickListener);
+    console.log(g);
+    
     if (JSDATA['canManageComments'] == 'true') {
       this._createCommentLink(container, "queryCommentShowComment", "queryCommentShowCommentLink", getLocale().getText("query.comment.commentShowLink"), this._commentShowLinkClickListener);
       this._createCommentLink(container, "queryCommentHideComment", "queryCommentHideCommentLink", getLocale().getText("query.comment.commentHideLink"), this._commentHideLinkClickListener);
