@@ -1,4 +1,4 @@
-/*global BlockController,QueryBlockFragmentController,getLocale,JSONUtils,startLoadingOperation,endLoadingOperation,JSDATA*/
+/*global BlockController,QueryBlockFragmentController,getLocale,JSONUtils,startLoadingOperation,endLoadingOperation,JSDATA,ModalPopup*/
 
 var TextQueryPageController;
 var TimeSerieQueryPageController;
