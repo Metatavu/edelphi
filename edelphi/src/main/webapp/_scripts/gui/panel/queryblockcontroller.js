@@ -2478,10 +2478,12 @@ QueryBlockMultiSelectFragmentController = Class.create(QueryBlockFragmentControl
     this._itemChangeListener = this._onItemChangeListener.bindAsEventListener(this);
     this.getElement().select('input.queryMultiselectListItemInput').invoke("observe", "change", this._itemChangeListener);
   },
+  
   deinitialize : function($super) {
     this.getElement().select('input.queryMultiselectListItemInput').invoke("purge");
     $super();
   },
+  
   getLabels : function() {
     var result = [];
     var labels = this.getElement().select('label.queryMultiselectListItemLabel');
@@ -2491,6 +2493,7 @@ QueryBlockMultiSelectFragmentController = Class.create(QueryBlockFragmentControl
 
     return result;
   },
+  
   getSelectedIndexes : function() {
     var result = [];
     var inputs = this.getElement().select('input.queryMultiselectListItemInput');
@@ -2502,7 +2505,8 @@ QueryBlockMultiSelectFragmentController = Class.create(QueryBlockFragmentControl
 
     return result;
   },
-  _onItemChangeListener : function(event) {
+  
+  _onItemChangeListener : function() {
     this.fire("valueChange", {});
   }
 });
@@ -2572,7 +2576,7 @@ QueryCommentsController = Class.create({
     });
   },
   
-  _onNewCommentClick : function(event) {
+  _onNewCommentClick : function() {
     var queryPageId = $('queryNewCommentThread').down("input[name='queryPageId']").value;
     var parentCommentId = undefined;
     var comment = $('queryNewCommentThread').down("textarea").value;
@@ -2582,7 +2586,7 @@ QueryCommentsController = Class.create({
         parentCommentId : parentCommentId,
         comment : comment
       },
-      onSuccess : function(jsonRequest) {
+      onSuccess : function() {
         var newComment = new Element("div", {
           className : "queryComment"
         });
@@ -2836,10 +2840,10 @@ QueryCommentsController = Class.create({
           commentId : commentId,
           comment : newText
         },
-        onComplete : function(transport) {
+        onComplete : function() {
           endLoadingOperation();
         },
-        onSuccess : function(jsonRequest) {
+        onSuccess : function() {
           if (!commentElement.down(".queryCommentModified")) {
             var header = commentElement.down(".queryCommentHeader");
             header.insert({
@@ -2865,7 +2869,7 @@ QueryCommentsController = Class.create({
       parameters : {
         commentId : commentId
       },
-      onSuccess : function(jsonRequest) {
+      onSuccess : function() {
         commentElement.addClassName('queryCommentHidden');
       }
     });
@@ -2880,7 +2884,7 @@ QueryCommentsController = Class.create({
       parameters : {
         commentId : commentId
       },
-      onSuccess : function(jsonRequest) {
+      onSuccess : function() {
         commentElement.removeClassName('queryCommentHidden');
       }
     });
@@ -2917,10 +2921,10 @@ QueryCommentsController = Class.create({
             parameters : {
               commentId : commentId
             },
-            onComplete : function(transport) {
+            onComplete : function() {
               endLoadingOperation();
             },
-            onSuccess : function(jsonRequest) {
+            onSuccess : function() {
               commentElement.remove();
             }
           });
