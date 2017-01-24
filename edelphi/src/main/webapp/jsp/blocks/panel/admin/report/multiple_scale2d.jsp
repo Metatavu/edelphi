@@ -16,9 +16,14 @@
 
     <!-- Thesis -->
 
+    <jsp:include page="/jsp/fragments/query_report_page_thesis.jsp">
+      <jsp:param name="thesis" value="${queryReportPage.thesis}" />
+      <jsp:param name="description" value="${queryReportPage.description}" />
+    </jsp:include>
+
     <!-- Chart(s) -->
     
-    <c:forEach var="multiple2dscalesThesis" items="${multiple2dscalesTheses}" varStatus="vsThesis">
+    <c:forEach var="multiple2dscalesThesis" items="${queryReportPage.theses}" varStatus="vsThesis">
       <jsp:include page="/jsp/fragments/query_report_page_thesis.jsp">
         <jsp:param name="thesis" value="${multiple2dscalesThesis}" />
       </jsp:include>

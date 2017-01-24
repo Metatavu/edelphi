@@ -16,9 +16,15 @@
     
       <h2>${reportPageData.queryPage.title}</h2>  
       
-      <!-- Theses -->
+      <!-- Description -->
+
+      <jsp:include page="/jsp/fragments/query_report_thesis.jsp">
+        <jsp:param value="${reportPageData.queryPage.id}" name="queryPageId"/>
+      </jsp:include>
       
-      <c:forEach var="multiple2dscalesThesis" items="${multiple2dscalesTheses}" varStatus="vsThesis">
+      <!-- Theses -->
+
+      <c:forEach var="multiple2dscalesThesis" items="${multiple2dscalesTheses[reportPageData.queryPage.id]}" varStatus="vsThesis">
         <div class="queryReportThesis">${multiple2dscalesThesis}</div>
 
         <c:choose>

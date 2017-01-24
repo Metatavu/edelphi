@@ -13,8 +13,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class ReportContext implements Serializable {
 
   private static final long serialVersionUID = 8128813216252853554L;
+
+  private String locale;
+  private Long panelStampId;
+  private Map<String, List<String>> filters = new HashMap<>();
+  private Map<String, String> parameters = new HashMap<>();
   
   public ReportContext() {
+    // Zero-arg constructor
   }
 
   public ReportContext(String locale, Long panelStampId) {
@@ -84,10 +90,5 @@ public class ReportContext implements Serializable {
   public void setPanelStampId(Long panelStampId) {
     this.panelStampId = panelStampId;
   }
- 
-  private String locale;
-  private Long panelStampId;
-  private Map<String, List<String>> filters = new HashMap<String, List<String>>();
-  private Map<String, String> parameters = new HashMap<String, String>();
 
 }

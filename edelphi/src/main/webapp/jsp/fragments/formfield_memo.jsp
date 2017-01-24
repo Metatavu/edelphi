@@ -23,7 +23,7 @@
 
   <c:choose>
     <c:when test="${param.disabled eq 'true'}">
-      <textarea id="${param.id}" name="${param.name}" class="${classes}" disabled="" title="${param.title}">${param.value}</textarea>
+      <textarea id="${param.id}" name="${param.name}" class="${classes}" disabled="disabled" title="${param.title}">${param.value}</textarea>
     </c:when>
     <c:otherwise>
       <textarea id="${param.id}" name="${param.name}" class="${classes}" title="${param.title}">${param.value}</textarea>
