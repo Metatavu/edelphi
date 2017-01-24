@@ -1,8 +1,14 @@
 package fi.metatavu.edelphi.test.ui.base.panel;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
 import fi.metatavu.edelphi.test.mock.FolderMocker;
@@ -11,7 +17,13 @@ import fi.metatavu.edelphi.test.mock.QueryMocker;
 import fi.metatavu.edelphi.test.ui.base.AbstractUITest;
 
 public class QueryTestsBase extends AbstractUITest {
-  
+
+  private static final String TEST_QUERY_PATH = "/test/test-query";
+  private static final String FINISH = "finish";
+  private static final String DISABLED = "disabled";
+  private static final int SCALE2D_GRAPH_MARGIN_X = 87;
+  private static final int SCALE2D_GRAPH_MARGIN_Y = 3;
+
   private FolderMocker folderMocker;
   private QueryMocker queryMocker;
   private PanelMocker panelMocker;
@@ -35,11 +47,11 @@ public class QueryTestsBase extends AbstractUITest {
     login(ADMIN_EMAIL);
     createTestPanel();
     
-    createTestQuery("test", "basic-text-page", "basic-expertise-page", "basic-scale1d-page", "basic-scale2d-page", 
+    createTestQuery("test", "basic-text-page", "basic-expertise-page", "basic-scale1d-radio-page", "basic-scale2d-radio-page", 
         "basic-timeserie-page", "basic-timeline-page", "basic-grouping-page", "basic-multiselect-page", "basic-order-page", 
         "basic-form-page", "basic-background-form-page", "basic-collage2d-page");
     
-    navigate("/test/test-query");
+    navigate(TEST_QUERY_PATH);
     
     // Text
     
@@ -127,11 +139,106 @@ public class QueryTestsBase extends AbstractUITest {
     login(ADMIN_EMAIL);
     createTestPanel();
     createTestQuery("test", "basic-text-page");
-    navigate("/test/test-query");
+    navigate(TEST_QUERY_PATH);
     waitAndAssertText(".queryPageTitle", "Text page");
     assertText(".queryTextContainer div p", "Page with text");
   }
-  
+
+  @Test
+  public void testScale1dRadioNextDisabledPage() {
+    login(ADMIN_EMAIL);
+    createTestPanel();
+    createTestQuery("test", "basic-scale1d-radio-page");
+    navigate(TEST_QUERY_PATH);
+    assertFinishDisabled();
+    waitPresent("input[name='queryPageType'][value='THESIS_SCALE_1D']");
+    waitAndClick(".queryScaleRadioListItemInput[value='4']");
+    assertFinishNotDisabled();
+    finishQuery();
+    navigate(TEST_QUERY_PATH);
+    assertFinishNotDisabled();
+  }
+
+  @Test
+  public void testScale1dSliderNextDisabledPage() {
+    login(ADMIN_EMAIL);
+    createTestPanel();
+    createTestQuery("test", "basic-scale1d-slider-page");
+    navigate(TEST_QUERY_PATH);
+    assertFinishDisabled();
+    clickSlider(0, 7, 2);
+    assertFinishNotDisabled();
+    finishQuery();
+    navigate(TEST_QUERY_PATH);
+    assertFinishNotDisabled();
+  }
+
+  @Test
+  public void testScale2dRadioNextDisabledPage() {
+    login(ADMIN_EMAIL);
+    createTestPanel();
+    createTestQuery("test", "basic-scale2d-radio-page");
+    navigate(TEST_QUERY_PATH);
+    assertFinishDisabled();
+    waitPresent("input[name='queryPageType'][value='THESIS_SCALE_2D']");
+    waitAndClick(".queryScaleRadioListItemInput[name='valueX'][value='5']");
+    waitAndClick(".queryScaleRadioListItemInput[name='valueY'][value='2']");
+    assertFinishNotDisabled();
+    finishQuery();
+    navigate(TEST_QUERY_PATH);
+    assertFinishNotDisabled();
+  }
+
+  @Test
+  public void testScale2dSliderNextDisabledPage() {
+    login(ADMIN_EMAIL);
+    createTestPanel();
+    createTestQuery("test", "basic-scale2d-slider-page");
+    navigate(TEST_QUERY_PATH);
+    assertFinishDisabled();
+    clickSlider(0, 7, 2);
+    clickSlider(1, 6, 3);
+    assertFinishNotDisabled();
+    finishQuery();
+    navigate(TEST_QUERY_PATH);
+    assertFinishNotDisabled();
+  }
+
+  @Test
+  public void testScale2dGraphNextDisabledPage() {
+    login(ADMIN_EMAIL);
+    createTestPanel();
+    createTestQuery("test", "basic-scale2d-graph-page");
+    navigate(TEST_QUERY_PATH);
+    assertFinishDisabled();
+    clickScale2dGraph(7,7, 2, 3);
+    assertFinishNotDisabled();
+    finishQuery();
+    navigate(TEST_QUERY_PATH);
+    assertFinishNotDisabled();
+  }
+
+  @Test
+  public void testMultipleScale2dGraphNextDisabledPage() {
+    login(ADMIN_EMAIL);
+    createTestPanel();
+    createTestQuery("test", "basic-multile-scale2d-page");
+    navigate(TEST_QUERY_PATH);
+    assertFinishDisabled();
+    
+    int thesisCount = 3;
+    for (int thesisIndex = 0; thesisIndex < thesisCount; thesisIndex++) {
+      assertFinishDisabled();
+      clickMultipleScale2dRadio(thesisIndex, 1, "x");
+      clickMultipleScale2dRadio(thesisIndex, 2, "y");
+    }
+    
+    assertFinishNotDisabled();
+    finishQuery();
+    navigate(TEST_QUERY_PATH);
+    assertFinishNotDisabled();
+  }
+
   private void createTestPanel() {
     navigate("/");
     createPanel("test");
@@ -153,6 +260,11 @@ public class QueryTestsBase extends AbstractUITest {
   private void saveQuery(long panelId, long queryId) {
     navigate(String.format("/panel/admin/editquery.page?panelId=%d&queryId=%d", panelId, queryId));
     waitAndClick("#panelAdminQueryEditorBlockContent input[name='save']");
+  }
+  
+  private void clickMultipleScale2dRadio(int thesisIndex, int valueIndex, String axis) {
+    String selector = String.format("label[for='m2ds-%d-%s-%d']", thesisIndex, axis, valueIndex);
+    waitAndClick(selector);
   }
 
   private void drag(String selector, String toSelector) {
@@ -182,19 +294,39 @@ public class QueryTestsBase extends AbstractUITest {
       clickOffset(".queryTimeSerieQuestionFlotrContainer", labelsWidth + margin + offsetX + (i * stepWidth), (i + 1) * 20);
     }
   }
-  
+
+  @SuppressWarnings ("squid:S1192")
   private void nextPage(Integer page) {
     waitAndClick(String.format("input[name='%s']", "next"));
     waitUrlMatches(String.format(".*page=%d", page));
   }
-  
+
+  @SuppressWarnings ("squid:S1192")
   private void finishQuery() {
-    waitAndClick(String.format("input[name='%s']", "finish"));
+    waitAndClick(String.format("input[name='%s']", FINISH));
+  }
+  
+  private void assertFinishDisabled() {
+    assertNotNull(DISABLED, findElement(String.format("input[name='%s']", FINISH)).getAttribute(DISABLED));
+  }
+  
+  private void assertFinishNotDisabled() {
+    assertNull(findElement(String.format("input[name='%s']", FINISH)).getAttribute(DISABLED));
+  }
+  
+  private void clickScale2dGraph(int xCount, int yCount, int x, int y) {
+    String selector = ".queryScaleGraphQuestionFlotrContainer .flotr-canvas";
+    int offsetX = SCALE2D_GRAPH_MARGIN_X + getElementWidth(selector) / xCount * x;
+    int offsetY = SCALE2D_GRAPH_MARGIN_Y + getElementHeight(selector) / yCount * y;
+    
+    clickOffset(selector, offsetX, offsetY);
   }
 
-  @SuppressWarnings("unused")
-  private void clickSlider(String selector, int value) {
-    int width = getElementWidth(selector);
-    clickOffset(selector, width / 7 * value, 0);
+  private void clickSlider(int index, int valueCount, int value) {
+    String selector = ".queryScaleSliderTrack";
+    List<WebElement> elements = findElements(selector);
+    int width = getElementWidth(elements.get(index));
+    clickOffset(elements.get(index), width / valueCount * value, 0);
   }
+
 }
