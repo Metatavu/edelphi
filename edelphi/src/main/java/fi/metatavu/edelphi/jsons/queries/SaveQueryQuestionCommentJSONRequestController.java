@@ -39,6 +39,9 @@ public class SaveQueryQuestionCommentJSONRequestController extends JSONControlle
     QueryReplyDAO queryReplyDAO = new QueryReplyDAO();
     QueryQuestionCommentDAO queryQuestionCommentDAO = new QueryQuestionCommentDAO();
     
+    Messages messages = Messages.getInstance();
+    Locale locale = jsonRequestContext.getRequest().getLocale();
+
     Long queryPageId = jsonRequestContext.getLong("queryPageId");
     Long parentCommentId = jsonRequestContext.getLong("parentCommentId");
     String comment = jsonRequestContext.getString("comment");
@@ -50,51 +53,51 @@ public class SaveQueryQuestionCommentJSONRequestController extends JSONControlle
     
     QueryReply queryReply = QueryDataUtils.findQueryReply(jsonRequestContext, loggedUser, query);
     if (queryReply == null) {
-      Messages messages = Messages.getInstance();
-      Locale locale = jsonRequestContext.getRequest().getLocale();
       throw new SmvcRuntimeException(EdelfoiStatusCode.UNKNOWN_REPLICANT, messages.getText(locale, "exception.1026.unknownReplicant"));
     }
+    
     queryReplyDAO.updateLastModified(queryReply, loggedUser);
 
     QueryQuestionComment parentComment = null;
-    if (parentCommentId != null)
+    if (parentCommentId != null) {
       parentComment = queryQuestionCommentDAO.findById(parentCommentId);
-
+    }
+    
+    if (parentComment == null) {
+      throw new SmvcRuntimeException(EdelfoiStatusCode.NO_PARENT_COMMENT, messages.getText(locale, "exception.1043.noParentComment"));
+    }
+    
     QueryQuestionComment questionComment = queryQuestionCommentDAO.create(queryReply, queryPage, parentComment, comment, false, loggedUser);
     QueryDataUtils.storeQueryReplyId(jsonRequestContext.getRequest().getSession(), queryReply);
     
     // Comment reply e-mail support
     
-    if (SystemUtils.isProductionEnvironment()) {
-      if (parentComment != null && parentComment.getCreator() != null && !parentComment.getCreator().getId().equals(loggedUser.getId())) {
-        User user = parentComment.getCreator();
-        UserSettingDAO userSettingDAO = new UserSettingDAO();
-        UserSetting userSetting = userSettingDAO.findByUserAndKey(user, UserSettingKey.MAIL_COMMENT_REPLY);
-        if (userSetting != null && "1".equals(userSetting.getValue())) {
-          
-          // URL to the newly added comment
-          
-          Panel panel = RequestUtils.getPanel(jsonRequestContext);
-          StringBuilder commentUrl = new StringBuilder();
-          commentUrl.append(RequestUtils.getBaseUrl(jsonRequestContext.getRequest()));
-          commentUrl.append('/');
-          commentUrl.append(panel.getUrlName());
-          commentUrl.append('/');
-          commentUrl.append(query.getUrlName());
-          commentUrl.append("?page=");
-          commentUrl.append(queryPage.getPageNumber());
-          commentUrl.append("&comment=");
-          commentUrl.append(questionComment.getId());
-          
-          // Comment mail
-          
-          Messages messages = Messages.getInstance();
-          Locale locale = jsonRequestContext.getRequest().getLocale();
-          String subject = messages.getText(locale, "mail.newReply.template.subject");
-          String content = messages.getText(locale, "mail.newReply.template.content", new Object[] {panel.getName(), query.getName(), commentUrl.toString()});
-          // TODO system e-mail address could probably be fetched from somewhere?
-          MailUtils.sendMail("edelfoi-system@otavanopisto.fi", user.getDefaultEmailAsString(), subject, content);
-        }
+    if (SystemUtils.isProductionEnvironment() && parentComment.getCreator() != null && !parentComment.getCreator().getId().equals(loggedUser.getId())) {
+      User user = parentComment.getCreator();
+      UserSettingDAO userSettingDAO = new UserSettingDAO();
+      UserSetting userSetting = userSettingDAO.findByUserAndKey(user, UserSettingKey.MAIL_COMMENT_REPLY);
+      if (userSetting != null && "1".equals(userSetting.getValue())) {
+        
+        // URL to the newly added comment
+        
+        Panel panel = RequestUtils.getPanel(jsonRequestContext);
+        StringBuilder commentUrl = new StringBuilder();
+        commentUrl.append(RequestUtils.getBaseUrl(jsonRequestContext.getRequest()));
+        commentUrl.append('/');
+        commentUrl.append(panel.getUrlName());
+        commentUrl.append('/');
+        commentUrl.append(query.getUrlName());
+        commentUrl.append("?page=");
+        commentUrl.append(queryPage.getPageNumber());
+        commentUrl.append("&comment=");
+        commentUrl.append(questionComment.getId());
+        
+        // Comment mail
+        
+        String subject = messages.getText(locale, "mail.newReply.template.subject");
+        String content = messages.getText(locale, "mail.newReply.template.content", new Object[] {panel.getName(), query.getName(), commentUrl.toString()});
+        // TODO system e-mail address could probably be fetched from somewhere?
+        MailUtils.sendMail("noreply@edelphi.org", user.getDefaultEmailAsString(), subject, content);
       }
     }
     

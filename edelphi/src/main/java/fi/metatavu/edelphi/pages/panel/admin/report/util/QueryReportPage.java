@@ -5,6 +5,13 @@ import java.util.List;
 
 public class QueryReportPage {
 
+  private String jspFile;
+  private Long queryPageId;
+  private String pageTitle;
+  private String thesis;
+  private String description;
+  private List<QueryReportPageComment> comments = new ArrayList<>();
+
   public QueryReportPage(Long queryPageId, String title, String jspFile) {
     setPageTitle(title);
     setJspFile(jspFile);
@@ -57,13 +64,5 @@ public class QueryReportPage {
   public List<QueryReportPageComment> getComments() {
     return comments;
   }
-
-  private String jspFile;
-  
-  private Long queryPageId;
-  private String pageTitle;
-  private String thesis;
-  private String description;
-  private List<QueryReportPageComment> comments = new ArrayList<QueryReportPageComment>();
 
 }

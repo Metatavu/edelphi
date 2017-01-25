@@ -16,6 +16,7 @@ import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageType;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.ChartContext;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReportPage;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReportPageData;
+import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReportPageThesisMultipleScale2D;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.ReportContext;
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
@@ -37,20 +38,31 @@ public class ThesisMultipleScale2DQueryReportPage extends AbstractThesisScale2DQ
   @Override
   public QueryReportPageData loadPageData(RequestContext requestContext, ReportContext reportContext, QueryPage queryPage) {
     List<String> theses = QueryPageUtils.getListSetting(queryPage, THESES_OPTION);
-    requestContext.getRequest().setAttribute("multiple2dscalesTheses", theses);
+    QueryUtils.appendQueryPageThesis(requestContext, queryPage);
+    appendQueryPageTheses(requestContext, queryPage, theses);
     appendQueryPageComments(requestContext, queryPage);
     return new QueryReportPageData(queryPage, "/jsp/blocks/panel_admin_report/thesis_multiple_scale_2d.jsp", null);
   }
-
+  
   @Override
   public QueryReportPage generateReportPage(RequestContext requestContext, ReportContext reportContext, QueryPage queryPage) {
-    QueryReportPage reportPage = new QueryReportPage(queryPage.getId(), queryPage.getTitle(), "/jsp/blocks/panel/admin/report/multiple_scale2d.jsp");
+    QueryReportPageThesisMultipleScale2D reportPage = new QueryReportPageThesisMultipleScale2D(queryPage.getId(), queryPage.getTitle(), "/jsp/blocks/panel/admin/report/multiple_scale2d.jsp");
     reportPage.setDescription(QueryPageUtils.getSetting(queryPage, "thesis.description"));
     reportPage.setThesis(QueryPageUtils.getSetting(queryPage, "thesis.text"));
+    reportPage.setTheses(QueryPageUtils.getListSetting(queryPage, THESES_OPTION));
     ReportUtils.appendComments(reportPage, queryPage, reportContext);
-    List<String> theses = QueryPageUtils.getListSetting(queryPage, THESES_OPTION);
-    requestContext.getRequest().setAttribute("multiple2dscalesTheses", theses);
     return reportPage;
+  }
+
+  private void appendQueryPageTheses(RequestContext requestContext, QueryPage queryPage, List<String> theses) {
+    @SuppressWarnings("unchecked")
+    Map<Long, List<String>> thesesMap = (Map<Long, List<String>>) requestContext.getRequest().getAttribute("multiple2dscalesTheses");
+    if (thesesMap == null) {
+      thesesMap = new HashMap<>();
+      requestContext.getRequest().setAttribute("multiple2dscalesTheses", thesesMap);
+    }
+    
+    thesesMap.put(queryPage.getId(), theses);
   }
 
   private void appendQueryPageComments(RequestContext requestContext, QueryPage queryPage) {
@@ -72,6 +84,7 @@ public class ThesisMultipleScale2DQueryReportPage extends AbstractThesisScale2DQ
   }
 
   @Override
+  @SuppressWarnings ("squid:S2629")
   public Chart constructChart(ChartContext chartContext, QueryPage queryPage) {
     // Determine whether 2D is rendered as bubble chart or as an X/Y axis bar chart   
 

@@ -1,4 +1,4 @@
-/*global BlockController,QueryBlockFragmentController,getLocale*/
+/*global BlockController,QueryBlockFragmentController,getLocale,JSONUtils,startLoadingOperation,endLoadingOperation,JSDATA,ModalPopup*/
 
 var TextQueryPageController;
 var TimeSerieQueryPageController;
@@ -14,6 +14,8 @@ var FormQueryPageController;
 var Collage2DQueryPageController;
 var QueryBlockScaleSliderFragmentController;
 var QueryBlockScaleGraphFragmentController;
+var QueryBlockMultiSelectFragmentController;
+var QueryCommentsController;
 
 var QueryBlockController = Class
     .create(
@@ -2470,508 +2472,429 @@ QueryBlockScaleGraphFragmentController = Class
           }
         });
 
-QueryBlockMultiSelectFragmentController = Class.create(
-    QueryBlockFragmentController, {
-      initialize : function($super, element) {
-        $super('multiselect', element);
+QueryBlockMultiSelectFragmentController = Class.create(QueryBlockFragmentController, {
+  initialize : function($super, element) {
+    $super('multiselect', element);
+    this._itemChangeListener = this._onItemChangeListener.bindAsEventListener(this);
+    this.getElement().select('input.queryMultiselectListItemInput').invoke("observe", "change", this._itemChangeListener);
+  },
+  
+  deinitialize : function($super) {
+    this.getElement().select('input.queryMultiselectListItemInput').invoke("purge");
+    $super();
+  },
+  
+  getLabels : function() {
+    var result = [];
+    var labels = this.getElement().select('label.queryMultiselectListItemLabel');
+    for (var i = 0, l = labels.length; i < l; i++) {
+      result.push(labels[i].innerHTML);
+    }
 
-        this._itemChangeListener = this._onItemChangeListener
-            .bindAsEventListener(this);
-
-        this.getElement().select('input.queryMultiselectListItemInput').invoke(
-            "observe", "change", this._itemChangeListener);
-      },
-      deinitialize : function($super) {
-        this.getElement().select('input.queryMultiselectListItemInput').invoke(
-            "purge");
-        $super();
-      },
-      getLabels : function() {
-        var result = new Array();
-        var labels = this.getElement().select(
-            'label.queryMultiselectListItemLabel');
-        for (var i = 0, l = labels.length; i < l; i++) {
-          result.push(labels[i].innerHTML);
-        }
-
-        return result;
-      },
-      getSelectedIndexes : function() {
-        var result = new Array();
-        var inputs = this.getElement().select(
-            'input.queryMultiselectListItemInput');
-        for (var i = 0, l = inputs.length; i < l; i++) {
-          if (inputs[i].checked)
-            result.push(i);
-        }
-
-        return result;
-      },
-      _onItemChangeListener : function(event) {
-        this.fire("valueChange", {});
+    return result;
+  },
+  
+  getSelectedIndexes : function() {
+    var result = [];
+    var inputs = this.getElement().select('input.queryMultiselectListItemInput');
+    for (var i = 0, l = inputs.length; i < l; i++) {
+      if (inputs[i].checked) {
+        result.push(i);
       }
+    }
+
+    return result;
+  },
+  
+  _onItemChangeListener : function() {
+    this.fire("valueChange", {});
+  }
+});
+
+QueryCommentsController = Class.create({
+  setup : function() {
+    this._saveCommentReplyClickListener = this._onPostReplyClick.bindAsEventListener(this);
+    this._commentReplyClickListener = this._onReplyClick.bindAsEventListener(this);
+    this._commentEditLinkClickListener = this._onCommentEditLinkClick.bindAsEventListener(this);
+    this._commentHideLinkClickListener = this._onCommentHideLinkClick.bindAsEventListener(this);
+    this._commentShowLinkClickListener = this._onCommentShowLinkClick.bindAsEventListener(this);
+    this._commentDeleteLinkClickListener = this._onCommentDeleteLinkClick.bindAsEventListener(this);
+    this._newReplyCountInput = $('newRepliesCount');
+    this._toggleCommentShowHideButtonClickListener = this._onToggleCommentShowHideButtonClickListener.bindAsEventListener(this);
+    var _this = this;
+    
+    $$('.queryCommentNewCommentLink').each(function(node) {
+      Event.observe(node, 'click', _this._commentReplyClickListener);
     });
 
-QueryCommentsController = Class
-    .create({
-      setup : function() {
-        this._newCommentReplyClickListener = this._onNewCommentClick
-            .bindAsEventListener(this);
-        this._saveCommentReplyClickListener = this._onPostReplyClick
-            .bindAsEventListener(this);
-        this._commentReplyClickListener = this._onReplyClick
-            .bindAsEventListener(this);
-        this._commentEditLinkClickListener = this._onCommentEditLinkClick
-            .bindAsEventListener(this);
-        this._commentHideLinkClickListener = this._onCommentHideLinkClick
-            .bindAsEventListener(this);
-        this._commentShowLinkClickListener = this._onCommentShowLinkClick
-            .bindAsEventListener(this);
-        this._commentDeleteLinkClickListener = this._onCommentDeleteLinkClick
-            .bindAsEventListener(this);
-        this._newReplyCountInput = $('newRepliesCount');
-        this._toggleCommentShowHideButtonClickListener = this._onToggleCommentShowHideButtonClickListener
-            .bindAsEventListener(this);
+    $$('.queryCommentHideCommentLink').each(function(node) {
+      Event.observe(node, 'click', _this._commentHideLinkClickListener);
+    });
 
-        var _this = this;
-        $$('.queryCommentNewCommentLink').each(function(node) {
-          Event.observe(node, 'click', _this._commentReplyClickListener);
-        });
+    $$('.queryCommentShowCommentLink').each(function(node) {
+      Event.observe(node, 'click', _this._commentShowLinkClickListener);
+    });
 
-        $$('.queryCommentHideCommentLink').each(function(node) {
-          Event.observe(node, 'click', _this._commentHideLinkClickListener);
-        });
+    $$('.queryCommentEditCommentLink').each(function(node) {
+      Event.observe(node, 'click', _this._commentEditLinkClickListener);
+    });
 
-        $$('.queryCommentShowCommentLink').each(function(node) {
-          Event.observe(node, 'click', _this._commentShowLinkClickListener);
-        });
+    $$('.queryCommentDeleteCommentLink').each(function(node) {
+      Event.observe(node, 'click', _this._commentDeleteLinkClickListener);
+    });
 
-        $$('.queryCommentEditCommentLink').each(function(node) {
-          Event.observe(node, 'click', _this._commentEditLinkClickListener);
-        });
+    $$("div.queryCommentShowHideButton").each(function(node) {
+      Event.observe(node, "click", _this._toggleCommentShowHideButtonClickListener);
+    });
 
-        $$('.queryCommentDeleteCommentLink').each(function(node) {
-          Event.observe(node, 'click', _this._commentDeleteLinkClickListener);
-        });
+  },
+  deinitialize : function() {
+    var _this = this;
+    $$('.queryCommentNewCommentLink').each(function(node) {
+      Event.stopObserving(node, 'click', _this._commentReplyClickListener);
+    });
 
-        $$("div.queryCommentShowHideButton").each(
-            function(node) {
-              Event.observe(node, "click",
-                  _this._toggleCommentShowHideButtonClickListener);
-            });
+    $$('.queryCommentHideCommentLink').each(function(node) {
+      Event.stopObserving(node, 'click', _this._commentHideLinkClickListener);
+    });
 
+    $$('.queryCommentShowCommentLink').each(function(node) {
+      Event.stopObserving(node, 'click', _this._commentShowLinkClickListener);
+    });
+
+    $$('.queryCommentEditCommentLink').each(function(node) {
+      Event.stopObserving(node, 'click', _this._commentEditLinkClickListener);
+    });
+
+    $$('.queryCommentDeleteCommentLink').each(function(node) {
+      Event.stopObserving(node, 'click', _this._commentDeleteLinkClickListener);
+    });
+
+    $$("div.queryCommentShowHideButton").each(function(node) {
+      Event.observe(node, "click", _this._toggleCommentShowHideButtonClickListener);
+    });
+  },
+  
+  _onToggleCommentShowHideButtonClickListener : function(event) {
+    var element = Event.element(event);
+    Event.stop(event);
+    var commentContainer = element.up(".queryComment").down(".queryCommentContainerWrapper");
+    
+    if (commentContainer.visible()) {
+      commentContainer.fade();
+      element.removeClassName("hideIcon");
+      element.addClassName("showIcon");
+    } else {
+      commentContainer.appear();
+      element.removeClassName("showIcon");
+      element.addClassName("hideIcon");
+    }
+  },
+  
+  _onReplyClick : function(event) {
+    Event.stop(event);
+    var commentElement = Event.element(event).up(".queryComment");
+
+    var oldEditor = commentElement.down(".newCommentEditor");
+    if ((oldEditor != undefined) && (oldEditor.parentNode == commentElement)) {
+      return;
+    }
+    
+    var replyNum = parseInt(this._newReplyCountInput.value);
+    this._newReplyCountInput.value = replyNum + 1;
+
+    var parentCommentId = commentElement.down("input[name='commentId']").value;
+    var editorElement = new Element("div", {
+      className : "newCommentEditor"
+    });
+    
+    var textEditorElement = new Element("textarea", {
+      name : "commentReply." + replyNum
+    });
+    
+    var newReplyParentCommentElement = new Element("input", {
+      name : "commentReplyParent." + replyNum,
+      value : parentCommentId,
+      type : "hidden"
+    });
+    
+    var saveButtonElement = new Element("input", {
+      type : "button",
+      className : "formButton",
+      value : getLocale().getText("query.comment.saveCommentButton")
+    });
+
+    editorElement.appendChild(textEditorElement);
+    editorElement.appendChild(saveButtonElement);
+    editorElement.appendChild(newReplyParentCommentElement);
+
+    Event.observe(saveButtonElement, 'click', this._saveCommentReplyClickListener);
+
+    commentElement.appendChild(editorElement);
+  },
+  
+  _onPostReplyClick : function(event) {
+    var saveButton = Event.element(event);
+    saveButton.writeAttribute("disabled", "disabled");
+    
+    var commentElement = saveButton.up(".queryComment");
+    var newCommentElement = saveButton.up(".newCommentEditor");
+    var textArea = newCommentElement.down("textarea");
+    var queryPageId = commentElement.down("input[name='queryPageId']").value;
+    var parentCommentId = commentElement.down("input[name='commentId']").value;
+    var comment = textArea.value;
+    var _this = this;
+
+    JSONUtils.request(CONTEXTPATH + '/queries/savecomment.json', {
+      parameters : {
+        queryPageId : queryPageId,
+        parentCommentId : parentCommentId,
+        comment : comment
       },
-      deinitialize : function() {
-        var _this = this;
-        $$('.queryCommentNewCommentLink').each(function(node) {
-          Event.stopObserving(node, 'click', _this._commentReplyClickListener);
+      onSuccess : function(jsonRequest) {
+        var newComment = new Element("div", {
+          className : "queryComment"
         });
-
-        $$('.queryCommentHideCommentLink').each(
-            function(node) {
-              Event.stopObserving(node, 'click',
-                  _this._commentHideLinkClickListener);
-            });
-
-        $$('.queryCommentShowCommentLink').each(
-            function(node) {
-              Event.stopObserving(node, 'click',
-                  _this._commentShowLinkClickListener);
-            });
-
-        $$('.queryCommentEditCommentLink').each(
-            function(node) {
-              Event.stopObserving(node, 'click',
-                  _this._commentEditLinkClickListener);
-            });
-
-        $$('.queryCommentDeleteCommentLink').each(
-            function(node) {
-              Event.stopObserving(node, 'click',
-                  _this._commentDeleteLinkClickListener);
-            });
-
-        $$("div.queryCommentShowHideButton").each(
-            function(node) {
-              Event.observe(node, "click",
-                  _this._toggleCommentShowHideButtonClickListener);
-            });
-      },
-      _onNewCommentClick : function(event) {
-        var queryPageId = $('queryNewCommentThread').down(
-            "input[name='queryPageId']").value;
-        var parentCommentId = undefined;
-        var comment = $('queryNewCommentThread').down("textarea").value;
-
-        JSONUtils.request(CONTEXTPATH + '/queries/savecomment.json', {
-          parameters : {
-            queryPageId : queryPageId,
-            parentCommentId : parentCommentId,
-            comment : comment
-          },
-          onSuccess : function(jsonRequest) {
-            var newComment = new Element("div", {
-              className : "queryComment"
-            });
-            var newCommentText = new Element("div", {
-              className : "queryCommentText"
-            });
-            var newCommentDate = new Element("div", {
-              className : "queryCommentDate"
-            });
-            newCommentText.update(comment);
-            newCommentDate.update("");
-
-            newComment.appendChild(newCommentText);
-            newComment.appendChild(newCommentDate);
-
-            var childrenParent = $('queryCommentList');
-            if (childrenParent)
-              childrenParent.appendChild(newComment);
-            childrenParent.show();
-          }
+        
+        var newCommentHeader = new Element("div", {
+          className : "queryCommentHeader"
         });
-      },
-      _onToggleCommentShowHideButtonClickListener : function(event) {
-        var element = Event.element(event);
-        Event.stop(event);
+        
+        var newCommentWrapper = new Element("div", {
+          className : "queryCommentContainerWrapper"
+        });
+        
+        var newCommentMeta = new Element("div", {
+          className : "queryCommentMeta"
+        });
+        
+        var newCommentText = new Element("div", {
+          className : "queryCommentText"
+        });
+        
+        var newCommentDate = new Element("div", {
+          className : "queryCommentDate"
+        });
+        
+        var commentDate = new Date();
+        newCommentText.update(comment.replace(/\n/g, '<br/>'));
+        newCommentDate.update(getLocale().getText("query.comment.commentDate") + " " + getLocale().getDate(commentDate));
+          
+        var childrenContainer = new Element("div", {
+          className : "queryCommentChildren",
+          id : "queryCommentChildren." + jsonRequest.commentId
+        });
+        
+        var newCommentAnchor = new Element("a", {
+          id : "comment." + jsonRequest.commentId
+        });
+        
+        var newCommentHideShowButton = new Element("div", {
+          className : "queryCommentShowHideButton hideIcon"
+        });
+        
+        newCommentHeader.appendChild(newCommentDate);
+        _this._createCommentLinks(newCommentMeta);
+        newComment.appendChild(newCommentAnchor);
+        newComment.appendChild(newCommentHideShowButton);
+        newComment.appendChild(newCommentHeader);
+        newComment.appendChild(newCommentWrapper);
 
-        var commentContainer = element.up(".queryComment").down(
-            ".queryCommentContainerWrapper");
+        newCommentWrapper.appendChild(new Element("input", {
+          type : "hidden",
+          name : "commentId",
+          value : jsonRequest.commentId
+        }));
+        
+        newCommentWrapper.appendChild(new Element("input", {
+          type : "hidden",
+          name : "queryPageId",
+          value : jsonRequest.queryPageId
+        }));
 
-        if (commentContainer.visible()) {
-          commentContainer.fade();
-          element.removeClassName("hideIcon");
-          element.addClassName("showIcon");
-        } else {
-          commentContainer.appear();
-          element.removeClassName("showIcon");
-          element.addClassName("hideIcon");
+        newCommentWrapper.appendChild(newCommentText);
+        newCommentWrapper.appendChild(newCommentMeta);
+
+        newCommentWrapper.appendChild(childrenContainer);
+
+        var childrenParent = $('queryCommentChildren.' + parentCommentId);
+        if (childrenParent) {
+          childrenParent.appendChild(newComment);
         }
-      },
-      _onReplyClick : function(event) {
-        Event.stop(event);
-        var commentElement = Event.element(event).up(".queryComment");
+            
+        Event.observe(newCommentHideShowButton, "click", _this._toggleCommentShowHideButtonClickListener);
+        Event.stopObserving(newCommentElement.down("input"), 'click', _this._saveCommentReplyClickListener);
+        newCommentElement.remove();
+      }
+    });
+  },
+  
+  _createCommentLink : function(parent, containerClass, linkClass, linkText, listener) {
+    var container = new Element("div", {
+      className : containerClass
+    });
+    
+    var link = new Element("a", {
+      href : "#",
+      className : linkClass
+    });
+    
+    container.appendChild(link.update(linkText));
 
-        var oldEditor = commentElement.down(".newCommentEditor");
-        if ((oldEditor != undefined)
-            && (oldEditor.parentNode == commentElement))
-          return;
+    parent.appendChild(container);
+    Event.observe(link, 'click', listener);
 
-        var replyNum = parseInt(this._newReplyCountInput.value);
-        this._newReplyCountInput.value = replyNum + 1;
+    return container;
+  },
+  
+  _createCommentLinks : function(container) {
+    this._createCommentLink(container, "queryCommentNewComment", "queryCommentNewCommentLink", getLocale().getText("query.comment.commentAnswerLink"), this._commentReplyClickListener);
+    if (JSDATA['canManageComments'] == 'true') {
+      this._createCommentLink(container, "queryCommentShowComment", "queryCommentShowCommentLink", getLocale().getText("query.comment.commentShowLink"), this._commentShowLinkClickListener);
+      this._createCommentLink(container, "queryCommentHideComment", "queryCommentHideCommentLink", getLocale().getText("query.comment.commentHideLink"), this._commentHideLinkClickListener);
+      this._createCommentLink(container, "queryCommentEditComment", "queryCommentEditCommentLink", getLocale().getText("query.comment.commentEditLink"), this._commentEditLinkClickListener);
+      this._createCommentLink(container, "queryCommentDeleteComment", "queryCommentDeleteCommentLink", getLocale().getText("query.comment.commentDeleteLink"), this._commentDeleteLinkClickListener);
+    }
+  },
+  
+  _onCommentEditLinkClick : function(event) {
+    Event.stop(event);
+    var commentElement = Event.element(event).up(".queryComment");
 
-        var parentCommentId = commentElement.down("input[name='commentId']").value;
+    var oldEditor = commentElement.down(".editCommentEditor");
+    if ((oldEditor != undefined) && (oldEditor.parentNode == commentElement.down(".queryCommentContainerWrapper"))) {
+      return;
+    }
+    
+    var commentId = commentElement.down("input[name='commentId']").value;
+    var commentTextElement = commentElement.down(".queryCommentText");
+    var commentText = commentTextElement.innerHTML.replace(/<br\/>/ig, '\n').replace(/<br>/ig, '\n');
+    var editorElement = new Element("div", {
+      className : "editCommentEditor"
+    });
+    
+    var textEditorElement = new Element("textarea", {
+      name : "commentEditor." + commentId
+    }).update(commentText);
+    
+    var saveButtonElement = new Element("input", {
+      type : "button",
+      className : "formButton",
+      value : getLocale().getText("query.comment.saveCommentButton")
+    });
 
-        var editorElement = new Element("div", {
-          className : "newCommentEditor"
-        });
-        var textEditorElement = new Element("textarea", {
-          name : "commentReply." + replyNum
-        });
-        var newReplyParentCommentElement = new Element("input", {
-          name : "commentReplyParent." + replyNum,
-          value : parentCommentId,
-          type : "hidden"
-        });
-        var saveButtonElement = new Element("input", {
-          type : "button",
-          className : "formButton",
-          value : getLocale().getText("query.comment.saveCommentButton")
-        });
+    commentTextElement.hide();
+    editorElement.appendChild(textEditorElement);
+    editorElement.appendChild(saveButtonElement);
+    commentTextElement.insert({
+      before : editorElement
+    });
 
-        editorElement.appendChild(textEditorElement);
-        editorElement.appendChild(saveButtonElement);
-        editorElement.appendChild(newReplyParentCommentElement);
-
-        Event.observe(saveButtonElement, 'click',
-            this._saveCommentReplyClickListener);
-
-        commentElement.appendChild(editorElement);
-      },
-      _onPostReplyClick : function(event) {
-        var commentElement = Event.element(event).up(".queryComment");
-        var newCommentElement = Event.element(event).up(".newCommentEditor");
-        var textArea = newCommentElement.down("textarea");
-
-        var queryPageId = commentElement.down("input[name='queryPageId']").value;
-        var parentCommentId = commentElement.down("input[name='commentId']").value;
-        var comment = textArea.value;
-
-        var _this = this;
-
-        JSONUtils.request(CONTEXTPATH + '/queries/savecomment.json', {
-          parameters : {
-            queryPageId : queryPageId,
-            parentCommentId : parentCommentId,
-            comment : comment
-          },
-          onSuccess : function(jsonRequest) {
-            var newComment = new Element("div", {
-              className : "queryComment"
-            });
-            var newCommentHeader = new Element("div", {
-              className : "queryCommentHeader"
-            });
-            var newCommentWrapper = new Element("div", {
-              className : "queryCommentContainerWrapper"
-            });
-            var newCommentMeta = new Element("div", {
-              className : "queryCommentMeta"
-            });
-            var newCommentText = new Element("div", {
-              className : "queryCommentText"
-            });
-            var newCommentDate = new Element("div", {
-              className : "queryCommentDate"
-            });
-            var commentDate = new Date();
-            newCommentText.update(comment.replace(/\n/g, '<br/>'));
-            newCommentDate.update(getLocale().getText(
-                "query.comment.commentDate")
-                + " " + getLocale().getDate(commentDate));
-            var childrenContainer = new Element("div", {
-              className : "queryCommentChildren",
-              id : "queryCommentChildren." + jsonRequest.commentId
-            });
-            var newCommentAnchor = new Element("a", {
-              id : "comment." + jsonRequest.commentId
-            });
-            var newCommentHideShowButton = new Element("div", {
-              className : "queryCommentShowHideButton hideIcon"
-            });
-            newCommentHeader.appendChild(newCommentDate);
-
-            _this._createCommentLinks(newCommentMeta);
-
-            newComment.appendChild(newCommentAnchor);
-
-            newComment.appendChild(newCommentHideShowButton);
-
-            newComment.appendChild(newCommentHeader);
-            newComment.appendChild(newCommentWrapper);
-
-            newCommentWrapper.appendChild(new Element("input", {
-              type : "hidden",
-              name : "commentId",
-              value : jsonRequest.commentId
-            }));
-            newCommentWrapper.appendChild(new Element("input", {
-              type : "hidden",
-              name : "queryPageId",
-              value : jsonRequest.queryPageId
-            }));
-
-            newCommentWrapper.appendChild(newCommentText);
-            newCommentWrapper.appendChild(newCommentMeta);
-
-            newCommentWrapper.appendChild(childrenContainer);
-
-            var childrenParent = $('queryCommentChildren.' + parentCommentId);
-            if (childrenParent)
-              childrenParent.appendChild(newComment);
-
-            Event.observe(newCommentHideShowButton, "click",
-                _this._toggleCommentShowHideButtonClickListener);
-
-            Event.stopObserving(newCommentElement.down("input"), 'click',
-                _this._saveCommentReplyClickListener);
-            newCommentElement.remove();
+    Event.observe(saveButtonElement, "click", function(event) {
+      Event.stop(event);
+      var element = Event.element(event);
+      var newText = textEditorElement.value;
+      startLoadingOperation('query.comment.updatingComment');
+      JSONUtils.request(CONTEXTPATH + '/queries/updatecomment.json', {
+        parameters : {
+          commentId : commentId,
+          comment : newText
+        },
+        onComplete : function() {
+          endLoadingOperation();
+        },
+        onSuccess : function() {
+          if (!commentElement.down(".queryCommentModified")) {
+            var header = commentElement.down(".queryCommentHeader");
+            header.insert({
+              after : new Element("div", {
+              className : "queryCommentModified"
+            }).update(getLocale().getText('query.comment.commentModified', [ getLocale().getDate(new Date().getTime()) ])) });
           }
-        });
-      },
-      _createCommentLink : function(parent, containerClass, linkClass,
-          linkText, listener) {
-        var container = new Element("div", {
-          className : containerClass
-        });
-        var link = new Element("a", {
-          href : "#",
-          className : linkClass
-        });
-        container.appendChild(link.update(linkText));
 
-        parent.appendChild(container);
-        Event.observe(link, 'click', listener);
-
-        return container;
-      },
-      _createCommentLinks : function(container) {
-        this._createCommentLink(container, "queryCommentNewComment",
-            "queryCommentNewCommentLink", getLocale().getText(
-                "query.comment.commentAnswerLink"),
-            this._commentReplyClickListener);
-
-        if (JSDATA['canManageComments'] == 'true') {
-          this._createCommentLink(container, "queryCommentShowComment",
-              "queryCommentShowCommentLink", getLocale().getText(
-                  "query.comment.commentShowLink"),
-              this._commentShowLinkClickListener);
-          this._createCommentLink(container, "queryCommentHideComment",
-              "queryCommentHideCommentLink", getLocale().getText(
-                  "query.comment.commentHideLink"),
-              this._commentHideLinkClickListener);
-          this._createCommentLink(container, "queryCommentEditComment",
-              "queryCommentEditCommentLink", getLocale().getText(
-                  "query.comment.commentEditLink"),
-              this._commentEditLinkClickListener);
-          this._createCommentLink(container, "queryCommentDeleteComment",
-              "queryCommentDeleteCommentLink", getLocale().getText(
-                  "query.comment.commentDeleteLink"),
-              this._commentDeleteLinkClickListener);
+          element.purge();
+          editorElement.remove();
+          commentTextElement.show();
+          commentTextElement.update(newText.replace(/\n/g, '<br/>'));
         }
+      });
+    });
+  },
+  
+  _onCommentHideLinkClick : function(event) {
+    Event.stop(event);
+    var commentElement = Event.element(event).up(".queryComment");
+    var commentId = commentElement.down("input[name='commentId']").value;
+    JSONUtils.request(CONTEXTPATH + '/queries/hidecomment.json', {
+      parameters : {
+        commentId : commentId
       },
-      _onCommentEditLinkClick : function(event) {
-        Event.stop(event);
-        var commentElement = Event.element(event).up(".queryComment");
+      onSuccess : function() {
+        commentElement.addClassName('queryCommentHidden');
+      }
+    });
+  },
+  
+  _onCommentShowLinkClick : function(event) {
+    Event.stop(event);
+    var commentElement = Event.element(event).up(".queryComment");
+    var commentId = commentElement.down("input[name='commentId']").value;
+    
+    JSONUtils.request(CONTEXTPATH + '/queries/showcomment.json', {
+      parameters : {
+        commentId : commentId
+      },
+      onSuccess : function() {
+        commentElement.removeClassName('queryCommentHidden');
+      }
+    });
+  
+  },
+  
+  _onCommentDeleteLinkClick : function(event) {
+    Event.stop(event);
+    
+    var linkElement = Event.element(event);
+    var commentElement = linkElement.up(".queryComment");
 
-        var oldEditor = commentElement.down(".editCommentEditor");
-        if ((oldEditor != undefined)
-            && (oldEditor.parentNode == commentElement
-                .down(".queryCommentContainerWrapper")))
-          return;
+    var commentId = commentElement.down("input[name='commentId']").value;
+    var commentText = commentElement.down(".queryCommentText").innerHTML;
+    if (!commentText) {
+      commentText = '-';
+    }
 
-        var commentId = commentElement.down("input[name='commentId']").value;
-        var commentTextElement = commentElement.down(".queryCommentText");
-        var commentText = commentTextElement.innerHTML
-            .replace(/<br\/>/ig, '\n').replace(/<br>/ig, '\n');
-
-        var editorElement = new Element("div", {
-          className : "editCommentEditor"
-        });
-        var textEditorElement = new Element("textarea", {
-          name : "commentEditor." + commentId
-        }).update(commentText);
-        var saveButtonElement = new Element("input", {
-          type : "button",
-          className : "formButton",
-          value : getLocale().getText("query.comment.saveCommentButton")
-        });
-
-        commentTextElement.hide();
-        editorElement.appendChild(textEditorElement);
-        editorElement.appendChild(saveButtonElement);
-        commentTextElement.insert({
-          before : editorElement
-        });
-
-        Event.observe(saveButtonElement, "click", function(event) {
-          Event.stop(event);
-          var element = Event.element(event);
-
-          var newText = textEditorElement.value;
-
-          startLoadingOperation('query.comment.updatingComment');
-          JSONUtils.request(CONTEXTPATH + '/queries/updatecomment.json', {
+    var popup = new ModalPopup({
+      content : getLocale().getText('query.comment.deleteCommentDialogText', [ commentText.truncate(15) ]),
+      buttons : [{
+        text : getLocale().getText('query.comment.deleteCommentDialogCancelButton'),
+        action : function(instance) {
+          instance.close();
+        }
+      }, {
+        text : getLocale().getText('query.comment.deleteCommentDialogDeleteButton'),
+        classNames : "modalPopupButtonRed",
+        action : function(instance) {
+          startLoadingOperation('query.comment.deletingComment');
+          instance.close(true);
+          
+          JSONUtils.request(CONTEXTPATH + '/queries/deletecomment.json', {
             parameters : {
-              commentId : commentId,
-              comment : newText
+              commentId : commentId
             },
-            onComplete : function(transport) {
+            onComplete : function() {
               endLoadingOperation();
             },
-            onSuccess : function(jsonRequest) {
-              if (!commentElement.down(".queryCommentModified")) {
-                var header = commentElement.down(".queryCommentHeader");
-                header.insert({
-                  after : new Element("div", {
-                    className : "queryCommentModified"
-                  }).update(getLocale().getText(
-                      'query.comment.commentModified',
-                      [ getLocale().getDate(new Date().getTime()) ]))
-                });
-              }
-
-              element.purge();
-              editorElement.remove();
-              commentTextElement.show();
-              commentTextElement.update(newText.replace(/\n/g, '<br/>'));
+            onSuccess : function() {
+              commentElement.remove();
             }
           });
-        });
-      },
-      _onCommentHideLinkClick : function(event) {
-        Event.stop(event);
-
-        var commentElement = Event.element(event).up(".queryComment");
-        var commentId = commentElement.down("input[name='commentId']").value;
-
-        JSONUtils.request(CONTEXTPATH + '/queries/hidecomment.json', {
-          parameters : {
-            commentId : commentId
-          },
-          onSuccess : function(jsonRequest) {
-            commentElement.addClassName('queryCommentHidden');
-          }
-        });
-      },
-      _onCommentShowLinkClick : function(event) {
-        Event.stop(event);
-
-        var commentElement = Event.element(event).up(".queryComment");
-        var commentId = commentElement.down("input[name='commentId']").value;
-
-        JSONUtils.request(CONTEXTPATH + '/queries/showcomment.json', {
-          parameters : {
-            commentId : commentId
-          },
-          onSuccess : function(jsonRequest) {
-            commentElement.removeClassName('queryCommentHidden');
-          }
-        });
-      },
-      _onCommentDeleteLinkClick : function(event) {
-        Event.stop(event);
-
-        var linkElement = Event.element(event);
-        var commentElement = linkElement.up(".queryComment");
-
-        var commentId = commentElement.down("input[name='commentId']").value;
-        var commentText = commentElement.down(".queryCommentText").innerHTML;
-        if (!commentText) {
-          commentText = '-';
         }
-
-        var popup = new ModalPopup({
-          content : getLocale().getText(
-              'query.comment.deleteCommentDialogText',
-              [ commentText.truncate(15) ]),
-          buttons : [
-              {
-                text : getLocale().getText(
-                    'query.comment.deleteCommentDialogCancelButton'),
-                action : function(instance) {
-                  instance.close();
-                }
-              },
-              {
-                text : getLocale().getText(
-                    'query.comment.deleteCommentDialogDeleteButton'),
-                classNames : "modalPopupButtonRed",
-                action : function(instance) {
-                  startLoadingOperation('query.comment.deletingComment');
-                  instance.close(true);
-
-                  JSONUtils.request(
-                      CONTEXTPATH + '/queries/deletecomment.json', {
-                        parameters : {
-                          commentId : commentId
-                        },
-                        onComplete : function(transport) {
-                          endLoadingOperation();
-                        },
-                        onSuccess : function(jsonRequest) {
-                          commentElement.remove();
-                        }
-                      });
-
-                }
-              } ]
-        });
-
-        popup.open(linkElement);
-      }
+      }]
     });
+
+    popup.open(linkElement);
+  }
+});
 
 QueryBlockOrderingFragmentController = Class
     .create(
