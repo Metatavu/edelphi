@@ -32,7 +32,7 @@ import fi.metatavu.edelphi.utils.ResourceUtils;
 @Singleton
 public class EdelfoiGoogleDriveScheduler {
 
-  private static final int TIMER_INTERVAL = 1000 * 60;
+  private static final int TIMER_INTERVAL = 1000 * 60 * 10;
 
   @PersistenceContext
   private EntityManager entityManager;
