@@ -20,6 +20,8 @@ import fi.metatavu.edelphi.domainmodel.resources.GoogleImage;
 import fi.metatavu.edelphi.domainmodel.resources.Image;
 import fi.metatavu.edelphi.domainmodel.resources.LinkedImage;
 import fi.metatavu.edelphi.domainmodel.resources.LocalImage;
+import fi.metatavu.edelphi.drive.DriveImageCache;
+import fi.metatavu.edelphi.drive.DriveImageCache.ImageEntry;
 import fi.metatavu.edelphi.i18n.Messages;
 import fi.metatavu.edelphi.smvcj.PageNotFoundException;
 import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
@@ -82,28 +84,34 @@ public class ViewImageBinaryRequestController extends BinaryController {
   }
 
   private void handleGoogleImage(BinaryRequestContext binaryRequestContext, GoogleImage googleImage) {
-  	Drive drive = GoogleDriveUtils.getAdminService();
-	  
-  	File file;
-    try {
-      file = GoogleDriveUtils.getFile(drive, googleImage.getResourceId());
-    } catch (IOException e) {
-      logger.log(Level.SEVERE, "Failed to download file for Google Drive", e);
-      throw new PageNotFoundException(binaryRequestContext.getRequest().getLocale());
-    }
-
-	  try {
-      DownloadResponse response = GoogleDriveUtils.downloadFile(drive, file);
-      if (response == null) {
-        Messages messages = Messages.getInstance();
-        Locale locale = binaryRequestContext.getRequest().getLocale();
-        Logging.logError(String.format("Failed to export google image %d", googleImage.getId()));
-        throw new SmvcRuntimeException(EdelfoiStatusCode.GOOGLE_DOCS_FAILURE, messages.getText(locale, GOOGLE_DOCS_FAILURE));
-      } else {
-        binaryRequestContext.setResponseContent(response.getData(), response.getMimeType());
+    ImageEntry cachedEntry = DriveImageCache.get(googleImage.getResourceId());
+    if (cachedEntry != null) {
+      binaryRequestContext.setResponseContent(cachedEntry.getData(), cachedEntry.getContentType());
+    } else {
+      Drive drive = GoogleDriveUtils.getAdminService();
+      
+      File file;
+      try {
+        file = GoogleDriveUtils.getFile(drive, googleImage.getResourceId());
+      } catch (IOException e) {
+        logger.log(Level.SEVERE, "Failed to download file for Google Drive", e);
+        throw new PageNotFoundException(binaryRequestContext.getRequest().getLocale());
       }
-    } catch (IOException e) {
-      logger.log(Level.SEVERE, "Failed to download image", e);
+        
+      try {
+        DownloadResponse response = GoogleDriveUtils.downloadFile(drive, file);
+        if (response == null) {
+          Messages messages = Messages.getInstance();
+          Locale locale = binaryRequestContext.getRequest().getLocale();
+          Logging.logError(String.format("Failed to export google image %d", googleImage.getId()));
+          throw new SmvcRuntimeException(EdelfoiStatusCode.GOOGLE_DOCS_FAILURE, messages.getText(locale, GOOGLE_DOCS_FAILURE));
+        } else {
+          binaryRequestContext.setResponseContent(response.getData(), response.getMimeType());
+        }
+
+      } catch (IOException e) {
+        logger.log(Level.SEVERE, "Failed to download image", e);
+      }
     }
   }
   
