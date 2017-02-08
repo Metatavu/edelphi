@@ -84,21 +84,21 @@ public class ViewImageBinaryRequestController extends BinaryController {
   }
 
   private void handleGoogleImage(BinaryRequestContext binaryRequestContext, GoogleImage googleImage) {
-  	Drive drive = GoogleDriveUtils.getAdminService();
-	  
-  	File file;
-    try {
-      file = GoogleDriveUtils.getFile(drive, googleImage.getResourceId());
-    } catch (IOException e) {
-      logger.log(Level.SEVERE, "Failed to download file for Google Drive", e);
-      throw new PageNotFoundException(binaryRequestContext.getRequest().getLocale());
-    }
-
-	  try {
-      ImageEntry cachedEntry = DriveImageCache.get(file.getId());
-      if (cachedEntry != null) {
-        binaryRequestContext.setResponseContent(cachedEntry.getData(), cachedEntry.getContentType());
-      } else {
+    ImageEntry cachedEntry = DriveImageCache.get(googleImage.getResourceId());
+    if (cachedEntry != null) {
+      binaryRequestContext.setResponseContent(cachedEntry.getData(), cachedEntry.getContentType());
+    } else {
+      Drive drive = GoogleDriveUtils.getAdminService();
+      
+      File file;
+      try {
+        file = GoogleDriveUtils.getFile(drive, googleImage.getResourceId());
+      } catch (IOException e) {
+        logger.log(Level.SEVERE, "Failed to download file for Google Drive", e);
+        throw new PageNotFoundException(binaryRequestContext.getRequest().getLocale());
+      }
+        
+      try {
         DownloadResponse response = GoogleDriveUtils.downloadFile(drive, file);
         if (response == null) {
           Messages messages = Messages.getInstance();
@@ -108,9 +108,10 @@ public class ViewImageBinaryRequestController extends BinaryController {
         } else {
           binaryRequestContext.setResponseContent(response.getData(), response.getMimeType());
         }
+
+      } catch (IOException e) {
+        logger.log(Level.SEVERE, "Failed to download image", e);
       }
-    } catch (IOException e) {
-      logger.log(Level.SEVERE, "Failed to download image", e);
     }
   }
   
