@@ -18,6 +18,7 @@
             <module name="org.apache.commons.beanutils"/>
             <module name="org.apache.commons.logging"/>
             <module name="org.apache.xalan"/>
+            <module name="org.infinispan" services="export" />
         </dependencies>
     </deployment>
 </jboss-deployment-structure>

@@ -23,14 +23,16 @@ import fi.metatavu.edelphi.dao.resources.GoogleDocumentDAO;
 import fi.metatavu.edelphi.dao.resources.GoogleImageDAO;
 import fi.metatavu.edelphi.domainmodel.resources.GoogleDocument;
 import fi.metatavu.edelphi.domainmodel.resources.GoogleImage;
+import fi.metatavu.edelphi.drive.DriveImageCache;
 import fi.metatavu.edelphi.smvcj.logging.Logging;
 import fi.metatavu.edelphi.utils.GoogleDriveUtils;
+import fi.metatavu.edelphi.utils.GoogleDriveUtils.DownloadResponse;
 import fi.metatavu.edelphi.utils.ResourceUtils;
 
 @Singleton
 public class EdelfoiGoogleDriveScheduler {
 
-  private static final int TIMER_INTERVAL = 1000 * 60 * 6;
+  private static final int TIMER_INTERVAL = 1000 * 60;
 
   @PersistenceContext
   private EntityManager entityManager;
@@ -101,7 +103,12 @@ public class EdelfoiGoogleDriveScheduler {
     			 String urlName = ResourceUtils.getUniqueUrlName(file.getName(), googleImage.getParentFolder());
     			 googleImageDAO.updateName(googleImage, file.getName(), urlName);
     		 }
-    		 
+
+         DownloadResponse response = GoogleDriveUtils.downloadFile(drive, file);
+         if (response != null) {
+           DriveImageCache.put(file.getId(), response.getMimeType(), response.getData());
+         }
+         
     		 googleImageDAO.updateLastModified(googleImage, new Date(file.getModifiedTime().getValue()));
     		 googleImageDAO.updateLastSynchronized(googleImage, new Date(System.currentTimeMillis()));
     	 }
