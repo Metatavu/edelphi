@@ -32,7 +32,7 @@
 <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/_themes/default/gfx/edelfoi.png"/>    
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/prototype/prototype.js"></script>
+<script type="text/javascript" src="//cdn.metatavu.io/libs/prototype/1.7/prototype.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/uiutils.js"></script>
 <script type="text/javascript">
   function setLocale(locale) {
