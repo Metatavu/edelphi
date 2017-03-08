@@ -17,34 +17,23 @@ var QueryBlockScaleGraphFragmentController;
 var QueryBlockMultiSelectFragmentController;
 var QueryCommentsController;
 
-var QueryBlockController = Class
-    .create(
-        BlockController,
-        {
-          initialize : function($super) {
-            $super();
+var QueryBlockController = Class.create(BlockController, {
+  initialize : function($super) {
+     $super();
 
-            this._nextButtonClickListener = this._onNextButtonClick
-                .bindAsEventListener(this);
-            this._finishButtonClickListener = this._onFinishButtonClick
-                .bindAsEventListener(this);
-            this._previousButtonClickListener = this._onPreviousButtonClick
-                .bindAsEventListener(this);
-            this._skipButtonClickListener = this._onSkipButtonClick
-                .bindAsEventListener(this);
-            this._skipLastButtonClickListener = this._onSkipLastButtonClick
-                .bindAsEventListener(this);
-            this._toggleCommentsClickListener = this._onToggleCommentsClickListener
-                .bindAsEventListener(this);
-            this._sortCommentsAscendingTimeClickListener = this._onSortCommentsAscendingTimeClickListener
-                .bindAsEventListener(this);
-            this._sortCommentsDescendingTimeClickListener = this._onSortCommentsDescendingTimeClickListener
-                .bindAsEventListener(this);
+     this._nextButtonClickListener = this._onNextButtonClick.bindAsEventListener(this);
+     this._finishButtonClickListener = this._onFinishButtonClick.bindAsEventListener(this);
+     this._previousButtonClickListener = this._onPreviousButtonClick.bindAsEventListener(this);
+     this._skipButtonClickListener = this._onSkipButtonClick.bindAsEventListener(this);
+     this._skipLastButtonClickListener = this._onSkipLastButtonClick.bindAsEventListener(this);
+     this._toggleCommentsClickListener = this._onToggleCommentsClickListener.bindAsEventListener(this);
+     this._sortCommentsAscendingTimeClickListener = this._onSortCommentsAscendingTimeClickListener.bindAsEventListener(this);
+     this._sortCommentsDescendingTimeClickListener = this._onSortCommentsDescendingTimeClickListener.bindAsEventListener(this);
 
-            this._currentPage = 0;
-            this._nextPageNumber = null;
-            this._previousPageNumber = null;
-          },
+     this._currentPage = 0;
+     this._nextPageNumber = null;
+     this._previousPageNumber = null;
+   },
           setup : function($super) {
             $super($('panelQueryBlock'));
 
@@ -189,14 +178,14 @@ var QueryBlockController = Class
           },
 
           disableNext : function() {
+            this._disableNextButton();
+            
             var button = this._nextButton || this._finishButton;
 
             var originalTitle = $(button).readAttribute('data-original-title');
             var title = $(button).readAttribute('title');
 
-            $(button).writeAttribute('disabled', 'disabled');
-            $(button).writeAttribute('title',
-                getLocale().getText('query.buttonDisabledNotReplied'));
+            $(button).writeAttribute('title', getLocale().getText('query.buttonDisabledNotReplied'));
 
             if (!originalTitle) {
               $(button).writeAttribute('data-original-title', title);
@@ -209,10 +198,20 @@ var QueryBlockController = Class
             $(button).writeAttribute('title', originalTitle);
             $(button).removeAttribute('disabled');
           },
+          
+          _disablePreviousButton: function () {
+            $(this._previousButton).writeAttribute('disabled', 'disabled');
+          },
+          
+          _disableNextButton: function () {
+            var button = this._nextButton || this._finishButton;
+            $(button).writeAttribute('disabled', 'disabled');
+          },
 
           _onNextButtonClick : function(event) {
             Event.stop(event);
-
+            this._disableNextButton();
+            
             var button = Event.element(event);
             var form = button.form;
             var _this = this;
@@ -231,6 +230,8 @@ var QueryBlockController = Class
 
           _onFinishButtonClick : function(event) {
             Event.stop(event);
+            this._disableNextButton();
+            
             var button = Event.element(event);
             var form = button.form;
             var _this = this;
@@ -261,6 +262,7 @@ var QueryBlockController = Class
 
           _onPreviousButtonClick : function(event) {
             Event.stop(event);
+            this._disablePreviousButton();
 
             var button = Event.element(event);
             var form = button.form;
@@ -2792,6 +2794,8 @@ QueryCommentsController = Class.create({
 
     Event.observe(saveButtonElement, "click", function(event) {
       Event.stop(event);
+      saveButtonElement.writeAttribute("disabled", "disabled");
+      
       var element = Event.element(event);
       var newText = textEditorElement.value;
       startLoadingOperation('query.comment.updatingComment');
