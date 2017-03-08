@@ -288,7 +288,18 @@ var InviteActionsBlockController = Class.create(BlockController, {
         }
       });
     } else {
-      this._sendInvitations();
+      var invitationMessage = $(this._formElement.invitationMessage).getValue();
+      
+      JSONUtils.request(CONTEXTPATH + '/panel/admin/validateinvitation.json', {
+        parameters: {
+          invitationMessage: invitationMessage
+        },
+        onSuccess : function() {
+          this._sendInvitations();
+        }.bind(this)
+      });  
+      
+     
     }
   },
   _onResendInvitations: function (event) {
