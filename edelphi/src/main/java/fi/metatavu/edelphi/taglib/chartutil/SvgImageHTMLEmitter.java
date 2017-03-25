@@ -30,9 +30,9 @@ public class SvgImageHTMLEmitter implements ImageHTMLEmitter {
 
   public String generateHTML() throws IOException, BirtException {
     byte[] chartData = ChartModelProvider.getChartData(chartModel, "SVG");
-
+    
     StringBuilder dataUrlBuilder = new StringBuilder();
-    dataUrlBuilder.append("data:image/svg+xml;base64,");
+    dataUrlBuilder.append("data:image/svg+xml;charset=UTF-8;base64,");
     dataUrlBuilder.append(Base64.encodeBase64String(chartData));
     
     StringBuilder html = new StringBuilder();
