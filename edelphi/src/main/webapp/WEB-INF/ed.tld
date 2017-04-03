@@ -80,6 +80,13 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
 
+    <attribute>
+      <description>Whether report is expected to be loaded lazyly</description>
+      <name>lazy</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+
   </tag>
 
 </taglib>

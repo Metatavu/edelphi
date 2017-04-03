@@ -1,6 +1,9 @@
+/*global BlockController*/
+
 QueryResultsListingBlockController = Class.create(BlockController, {
   initialize: function ($super) {
     $super();
+    this._windowLoadListener = this._onWindowLoad.bindAsEventListener(this);
     this._clearQueryDataLinkClickListener = this._onClearQueryDataLinkClick.bindAsEventListener(this);
     this._clearPageDataLinkClickListener = this._onClearPageDataLinkClick.bindAsEventListener(this);
     this._downloadOrExportLinkClickListener = this._onDownloadOrExportLinkClick.bindAsEventListener(this);
@@ -8,6 +11,8 @@ QueryResultsListingBlockController = Class.create(BlockController, {
   },
   setup: function ($super) {
     $super($('panelQueryResultsListingBlockContent'));
+    
+    Event.observe(window, 'load', this._windowLoadListener);
 
     var _this = this;
     this.getBlockElement().select('.deleteAllAnswers>a').each(function (link) {
@@ -32,8 +37,21 @@ QueryResultsListingBlockController = Class.create(BlockController, {
       Event.stopObserving(link, "click", _this._clearPageDataLinkClickListener);
     });
 
+    Event.stopObserving(window, 'load', this._windowLoadListener);
+
     $super();
   },
+  
+  _onWindowLoad: function () {
+    $$('object[data-data]').each(function (object) {
+      var data = $(object).readAttribute('data-data');
+      if (data) {
+        $(object).removeAttribute('data-data');
+        $(object).writeAttribute('data', data);
+      }
+    });
+  },
+  
   _onClearQueryDataLinkClick: function (event) {
     Event.stop(event);
 

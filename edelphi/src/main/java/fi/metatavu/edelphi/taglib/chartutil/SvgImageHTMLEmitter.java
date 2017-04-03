@@ -21,31 +21,41 @@ import fi.metatavu.edelphi.pages.panel.admin.report.util.ChartModelProvider;
 
 public class SvgImageHTMLEmitter implements ImageHTMLEmitter {
 
+  private Chart chartModel;
+  private int width;
+  private int height;
+  private boolean lazy;
+
   public SvgImageHTMLEmitter(Chart chartModel, int width, int height) {
     super();
     this.chartModel = chartModel;
     this.width = width;
     this.height = height;
+    this.lazy = false;
+  }
+  
+  public void setLazy(boolean lazy) {
+    this.lazy = lazy;
   }
 
+  @Override
   public String generateHTML() throws IOException, BirtException {
     byte[] chartData = ChartModelProvider.getChartData(chartModel, "SVG");
     
     StringBuilder dataUrlBuilder = new StringBuilder();
     dataUrlBuilder.append("data:image/svg+xml;charset=UTF-8;base64,");
     dataUrlBuilder.append(Base64.encodeBase64String(chartData));
+    String dataAttribute = lazy ? "data-data" : "data";
     
     StringBuilder html = new StringBuilder();
     html.append("<object type=\"image/svg+xml\"")
-      .append(" data=\"").append(dataUrlBuilder.toString()).append('"')
+      .append(String.format(" %s=\"%s\"", dataAttribute, dataUrlBuilder.toString()))
       .append(" width=\"").append(width).append('"')
       .append(" height=\"").append(height).append('"')
       .append(" style=\"display: block\"")
       .append("></object>");
+    
     return html.toString();
   }
-
-  private Chart chartModel;
-  private int width;
-  private int height;
+  
 }

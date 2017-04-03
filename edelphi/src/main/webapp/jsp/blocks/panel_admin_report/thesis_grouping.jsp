@@ -18,7 +18,7 @@
       </jsp:include>
 
       <c:forEach var="optionGroup" items="${reportPageData.groups}">
-        <ed:queryPageChart reportContext="${reportContext}" output="${param.reportChartFormat}" width="${param.reportChartWidth}" height="${param.reportChartHeight}" queryPageId="${reportPageData.queryPage.id}">
+        <ed:queryPageChart reportContext="${reportContext}" output="${param.reportChartFormat}" lazy="${param.reportChartsLazy}" width="${param.reportChartWidth}" height="${param.reportChartHeight}" queryPageId="${reportPageData.queryPage.id}">
           <ed:param name="groupId" value="${optionGroup.id}"/>
         </ed:queryPageChart>
       </c:forEach>
