@@ -54,12 +54,7 @@
               <jsp:param value="${helpMaterialFolderId}" name="parentFolderId"/>
             </jsp:include>
           </div>
-          
-          <c:if test="${actions['MANAGE_SUBSCRIPTION_LEVELS']}">
-            <div id="GUI_indexAdminDashboardSettingsContainer" class="pagePanel">
-              <jsp:include page="/jsp/blocks/admin/settings.jsp"/>
-            </div>
-          </c:if>
+
         </div>
 
         <div class="GUI_indexAdminDashboardNarrowColumn">
