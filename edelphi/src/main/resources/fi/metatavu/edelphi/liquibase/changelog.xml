@@ -2993,22 +2993,5 @@
     <sqlFile path="fi/metatavu/edelphi/liquibase/query-page-setting-keys-h2.sql" dbms="h2"/>
     <sqlFile path="fi/metatavu/edelphi/liquibase/query-template-settings.sql"/>
   </changeSet>
-  
-  
-  <changeSet author="antti.leppa" id="subscription-level-feature">
-    <createTable tableName="SubscriptionLevelFeature">
-      <column name="id" type="BIGINT(20)">
-        <constraints nullable="false" primaryKey="true" />
-      </column>
-      <column name="subscriptionLevel" type="VARCHAR(255)">
-        <constraints nullable="false" />
-      </column>
-      <column name="feature" type="VARCHAR(255)">
-        <constraints nullable="false" />
-      </column>
-    </createTable>
-    
-    <sqlFile path="fi/metatavu/edelphi/liquibase/subscription-level-features.sql"/>
-  </changeSet>
-  
+
 </databaseChangeLog>
