@@ -27,6 +27,7 @@
       <ed:param name="reportChartWidth" value="${reportChartWidth}"/>
       <ed:param name="reportChartHeight" value="${reportChartHeight}"/>
       <ed:param name="reportChartFormat" value="${param.reportChartFormat}"/>
+      <ed:param name="reportChartsLazy" value="${param.reportChartsLazy}"/>
     </ed:include>
   </div>
     
