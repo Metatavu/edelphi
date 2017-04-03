@@ -29,18 +29,18 @@
 
         <c:choose>
           <c:when test="${!empty reportContext.parameters['show2dAs1d']}">
-            <ed:queryPageChart reportContext="${reportContext}" output="${param.reportChartFormat}" width="${param.reportChartWidth}" height="${param.reportChartHeight}" queryPageId="${reportPageData.queryPage.id}">
+            <ed:queryPageChart reportContext="${reportContext}" output="${param.reportChartFormat}" lazy="${param.reportChartsLazy}" width="${param.reportChartWidth}" height="${param.reportChartHeight}" queryPageId="${reportPageData.queryPage.id}">
   	          <ed:param name="render2dAxis" value="x"/>
               <ed:param name="chartIndex" value="${vsThesis.index}" />
             </ed:queryPageChart>
             
-            <ed:queryPageChart reportContext="${reportContext}" output="${param.reportChartFormat}" width="${param.reportChartWidth}" height="${param.reportChartHeight}" queryPageId="${reportPageData.queryPage.id}">
+            <ed:queryPageChart reportContext="${reportContext}" output="${param.reportChartFormat}" lazy="${param.reportChartsLazy}" width="${param.reportChartWidth}" height="${param.reportChartHeight}" queryPageId="${reportPageData.queryPage.id}">
     	        <ed:param name="render2dAxis" value="y"/>
               <ed:param name="chartIndex" value="${vsThesis.index}" />
             </ed:queryPageChart>
           </c:when>
           <c:otherwise>
-            <ed:queryPageChart reportContext="${reportContext}" output="${param.reportChartFormat}" width="${param.reportChartWidth}" height="${param.reportChartHeight}" queryPageId="${reportPageData.queryPage.id}">
+            <ed:queryPageChart reportContext="${reportContext}" output="${param.reportChartFormat}" lazy="${param.reportChartsLazy}" width="${param.reportChartWidth}" height="${param.reportChartHeight}" queryPageId="${reportPageData.queryPage.id}">
   	          <ed:param name="render2dAxis" value="both"/>
               <ed:param name="chartIndex" value="${vsThesis.index}" />
             </ed:queryPageChart>

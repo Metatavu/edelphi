@@ -25,16 +25,16 @@
       <c:choose>
         <c:when test="${!empty reportContext.parameters['show2dAs1d']}">
           <!-- two 1D charts -->
-          <ed:queryPageChart reportContext="${reportContext}" output="${param.reportChartFormat}" width="${param.reportChartWidth}" height="${param.reportChartHeight}" queryPageId="${reportPageData.queryPage.id}">
+          <ed:queryPageChart reportContext="${reportContext}" output="${param.reportChartFormat}" lazy="${param.reportChartsLazy}" width="${param.reportChartWidth}" height="${param.reportChartHeight}" queryPageId="${reportPageData.queryPage.id}">
 	        <ed:param name="render2dAxis" value="x"/>
           </ed:queryPageChart>
-          <ed:queryPageChart reportContext="${reportContext}" output="${param.reportChartFormat}" width="${param.reportChartWidth}" height="${param.reportChartHeight}" queryPageId="${reportPageData.queryPage.id}">
+          <ed:queryPageChart reportContext="${reportContext}" output="${param.reportChartFormat}" lazy="${param.reportChartsLazy}" width="${param.reportChartWidth}" height="${param.reportChartHeight}" queryPageId="${reportPageData.queryPage.id}">
 	        <ed:param name="render2dAxis" value="y"/>
           </ed:queryPageChart>
         </c:when>
         <c:otherwise>
           <!-- 2D chart -->
-          <ed:queryPageChart reportContext="${reportContext}" output="${param.reportChartFormat}" width="${param.reportChartWidth}" height="${param.reportChartHeight}" queryPageId="${reportPageData.queryPage.id}">
+          <ed:queryPageChart reportContext="${reportContext}" output="${param.reportChartFormat}" lazy="${param.reportChartsLazy}" width="${param.reportChartWidth}" height="${param.reportChartHeight}" queryPageId="${reportPageData.queryPage.id}">
 	        <ed:param name="render2dAxis" value="both"/>
           </ed:queryPageChart>
         </c:otherwise>

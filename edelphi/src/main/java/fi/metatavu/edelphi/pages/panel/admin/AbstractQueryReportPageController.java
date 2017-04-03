@@ -206,6 +206,7 @@ public abstract class AbstractQueryReportPageController extends PanelPageControl
     pageRequestContext.getRequest().setAttribute("panel", panel);
     pageRequestContext.getRequest().setAttribute("queryId", queryId);
     pageRequestContext.getRequest().setAttribute("chartFormat", ReportChartFormat.SVG);
+    pageRequestContext.getRequest().setAttribute("chartsLazy", true);
     pageRequestContext.getRequest().setAttribute("reportPageDatas", pageDatas);
     pageRequestContext.getRequest().setAttribute("reportContext", reportContext);
     pageRequestContext.getRequest().setAttribute("serializedContext", serializedContext);

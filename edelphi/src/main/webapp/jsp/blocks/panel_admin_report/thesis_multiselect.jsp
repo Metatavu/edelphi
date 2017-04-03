@@ -22,7 +22,7 @@
         <jsp:param value="${reportPageData.queryPage.id}" name="queryPageId"/>
       </jsp:include>
 
-      <ed:queryPageChart reportContext="${reportContext}" output="${param.reportChartFormat}" width="${param.reportChartWidth}" height="${param.reportChartHeight}" queryPageId="${reportPageData.queryPage.id}"/>
+      <ed:queryPageChart reportContext="${reportContext}" output="${param.reportChartFormat}" lazy="${param.reportChartsLazy}" width="${param.reportChartWidth}" height="${param.reportChartHeight}" queryPageId="${reportPageData.queryPage.id}"/>
 
       <!-- Applying of comments -->
 

@@ -53,6 +53,8 @@ public class QueryPageChartTag extends BodyTagSupport implements ParamParent {
 
 	// TODO: output type
 	private String output = "PNG";
+	
+	private boolean lazy = false;
 
 	private Long queryPageId;
 	
@@ -104,21 +106,22 @@ public class QueryPageChartTag extends BodyTagSupport implements ParamParent {
   }
 
   private ImageHTMLEmitter createEmitter(Chart chartModel) {
-    ImageHTMLEmitter emitter = null;
+    ImageHTMLEmitter emitter;
+    
     if ("SVG".equals(output)) {
       SvgImageHTMLEmitter svgEmitter = new SvgImageHTMLEmitter(chartModel, width, height);
+      svgEmitter.setLazy(isLazy());
       emitter = svgEmitter;
-    }
-    else if ("PNG".equals(output)) {
+    } else if ("PNG".equals(output)) {
       PngImageHTMLEmitter pngEmitter = new PngImageHTMLEmitter(chartModel, width, height);
       if ("true".equals(parameters.get("dynamicSize"))) {
         pngEmitter.setDynamicSize(true);
       }
       emitter = pngEmitter;
-    }
-    else {
+    } else {
       throw new RuntimeException("Could not find an Image emitter for " + output);
     }
+    
     return emitter;
   }
 
@@ -180,6 +183,14 @@ public class QueryPageChartTag extends BodyTagSupport implements ParamParent {
    */
   public String getOutput() {
     return output;
+  }
+  
+  public boolean isLazy() {
+    return lazy;
+  }
+  
+  public void setLazy(boolean lazy) {
+    this.lazy = lazy;
   }
 
   protected ServletContext getServletContext() {

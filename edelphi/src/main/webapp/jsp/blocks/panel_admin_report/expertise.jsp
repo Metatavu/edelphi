@@ -13,7 +13,7 @@
     <div class="blockContent">
       <h2>${reportPageData.queryPage.title}</h2>
     
-      <ed:queryPageChart reportContext="${reportContext}" output="${param.reportChartFormat}" width="${param.reportChartWidth}" height="${param.reportChartHeight}" queryPageId="${reportPageData.queryPage.id}"/>
+      <ed:queryPageChart reportContext="${reportContext}" output="${param.reportChartFormat}" lazy="${param.reportChartsLazy}" width="${param.reportChartWidth}" height="${param.reportChartHeight}" queryPageId="${reportPageData.queryPage.id}"/>
 
       <!-- Applying of comments -->
 
