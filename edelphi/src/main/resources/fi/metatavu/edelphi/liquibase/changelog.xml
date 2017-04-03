@@ -2994,4 +2994,8 @@
     <sqlFile path="fi/metatavu/edelphi/liquibase/query-template-settings.sql"/>
   </changeSet>
 
+  <changeSet id="query-template-settings-enc" author="antti.leppa">
+    <sqlFile path="fi/metatavu/edelphi/liquibase/query-template-settings-enc.sql"/>
+  </changeSet>
+  
 </databaseChangeLog>
