@@ -41,7 +41,7 @@ QueryResultsListingBlockController = Class.create(BlockController, {
 
     $super();
   },
-  
+
   _onWindowLoad: function () {
     $$('object[data-data]').each(function (object) {
       var data = $(object).readAttribute('data-data');
@@ -51,7 +51,7 @@ QueryResultsListingBlockController = Class.create(BlockController, {
       }
     });
   },
-  
+
   _onClearQueryDataLinkClick: function (event) {
     Event.stop(event);
 
