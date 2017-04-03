@@ -72,9 +72,11 @@ public class SubscriptionLevelUtils {
   
   static {
     DEFAULTS = new EnumMap<>(SubscriptionLevel.class);
-    DEFAULTS.put(SubscriptionLevel.BASIC, new SubscriptionLevelSettings(SubscriptionLevel.BASIC, true, 1, Integer.MAX_VALUE, Integer.MAX_VALUE));
-    DEFAULTS.put(SubscriptionLevel.PLUS, new SubscriptionLevelSettings(SubscriptionLevel.PLUS, true, 5, Integer.MAX_VALUE, Integer.MAX_VALUE));
-    DEFAULTS.put(SubscriptionLevel.PREMIUM, new SubscriptionLevelSettings(SubscriptionLevel.PREMIUM, true, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE));
+    DEFAULTS.put(SubscriptionLevel.NONE, new SubscriptionLevelSettings(SubscriptionLevel.NONE, false, 0, 0, 0));
+    DEFAULTS.put(SubscriptionLevel.EDU, new SubscriptionLevelSettings(SubscriptionLevel.EDU, false, 1, 1, 25));
+    DEFAULTS.put(SubscriptionLevel.BASIC, new SubscriptionLevelSettings(SubscriptionLevel.BASIC, true, 1, 1, 50));
+    DEFAULTS.put(SubscriptionLevel.PRO, new SubscriptionLevelSettings(SubscriptionLevel.PRO, true, 2, 2, 100));
+    DEFAULTS.put(SubscriptionLevel.UNLIMITED, new SubscriptionLevelSettings(SubscriptionLevel.UNLIMITED, true, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE));
   }
   
 }

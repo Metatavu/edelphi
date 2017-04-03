@@ -178,7 +178,7 @@ public class CreateInvitationsJSONRequestController extends JSONController {
           UserEmail userEmail = userEmailDAO.findByAddress(email);
           user = userEmail == null ? null : userEmail.getUser();
           if (user == null) {
-            user = userDAO.create(firstName, lastName, null, creator, SubscriptionLevel.BASIC, null, null);
+            user = userDAO.create(firstName, lastName, null, creator, SubscriptionLevel.NONE, null, null);
             userEmail = userEmailDAO.create(user, email);
             userDAO.addUserEmail(user, userEmail, true, creator);
             if (passwordGenerationCount == 0) {

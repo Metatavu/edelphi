@@ -89,7 +89,7 @@ public class JoinPanelPageController extends PageController {
           // No one is logged in and the invitation email is available
           // -> automatically create a new account
           
-          user = userDAO.create(null, null, null,  null, SubscriptionLevel.BASIC, null, null);
+          user = userDAO.create(null, null, null,  null, SubscriptionLevel.NONE, null, null);
           userEmail = userEmailDAO.create(user, panelInvitation.getEmail());
           userDAO.addUserEmail(user, userEmail, true, user);
           Delfoi delfoi = RequestUtils.getDelfoi(pageRequestContext);
