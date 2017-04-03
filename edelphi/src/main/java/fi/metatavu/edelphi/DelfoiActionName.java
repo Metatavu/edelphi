@@ -8,7 +8,6 @@ public enum DelfoiActionName {
   MANAGE_DELFOI,                          // Manage Delfoi
   MANAGE_DELFOI_MATERIALS,                // Delfoi management, help texts etc
   MANAGE_BULLETINS,                       // the ability to manage bulletins
-  MANAGE_SUBSCRIPTION_LEVELS,             // the ability to manage subscription levels
     // Panel scoped actions
   ACCESS_PANEL,                           // the ability to view a panel and its materials, i.e. documents, images, and queries
   ACCESS_PANEL_REPORTS,                   // the ability to view reports published in the panel
