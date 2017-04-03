@@ -228,7 +228,7 @@ public class EntityResolver {
       UserEmail userEmail = userEmailDAO.findByAddress(email);
       if (userEmail == null) {
         UserDAO userDAO = new UserDAO();
-        user = userDAO.create(null, null, null, null, SubscriptionLevel.NONE, null, null);
+        user = userDAO.create(null, null, null, null, SubscriptionLevel.BASIC, null, null);
         userEmail = userEmailDAO.create(user, email);
         userDAO.addUserEmail(user, userEmail, true, user);
       }

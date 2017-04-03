@@ -43,7 +43,7 @@ public class CreateUserJSONRequestController extends JSONController {
     User creator = userDAO.findById(jsonRequestContext.getLoggedUserId());
     
     Panel panel = panelDAO.findById(jsonRequestContext.getLong("panelId"));
-    User user = userDAO.create(firstName, lastName, nickname, creator, SubscriptionLevel.NONE, null, null);
+    User user = userDAO.create(firstName, lastName, nickname, creator, SubscriptionLevel.BASIC, null, null);
     
     Delfoi delfoi = RequestUtils.getDelfoi(jsonRequestContext);
     DelfoiUserDAO delfoiUserDAO = new DelfoiUserDAO();

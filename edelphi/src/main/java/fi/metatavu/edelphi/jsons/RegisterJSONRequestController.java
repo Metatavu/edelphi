@@ -61,7 +61,7 @@ public class RegisterJSONRequestController extends JSONController {
     }
     User user;
     if (userEmail == null) {
-      user = userDAO.create(firstName, lastName, null,  null, SubscriptionLevel.NONE, null, null);
+      user = userDAO.create(firstName, lastName, null,  null, SubscriptionLevel.BASIC, null, null);
     }
     else {
       user = userDAO.update(userEmail.getUser(), firstName, lastName, null, userEmail.getUser());

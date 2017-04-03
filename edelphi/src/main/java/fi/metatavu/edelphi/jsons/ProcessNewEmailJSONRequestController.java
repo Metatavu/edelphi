@@ -39,7 +39,7 @@ public class ProcessNewEmailJSONRequestController extends JSONController {
       DelfoiUserDAO delfoiUserDAO = new DelfoiUserDAO();
       UserEmail userEmail = userEmailDAO.findByAddress(email);
       if (userEmail == null) {
-        User user = userDAO.create(null, null, null, null, SubscriptionLevel.NONE, null, null);
+        User user = userDAO.create(null, null, null, null, SubscriptionLevel.BASIC, null, null);
         userEmail = userEmailDAO.create(user, email);
         userDAO.addUserEmail(user, userEmail, true, user);
         Delfoi delfoi = RequestUtils.getDefaults(jsonRequestContext).getDelfoi();

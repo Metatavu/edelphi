@@ -52,7 +52,7 @@ public abstract class AbstractAuthenticationStrategy implements AuthenticationPr
     User creatorModifier = null;
     
     // Create User
-    User user = userDAO.create(firstName, lastName, null, creatorModifier, SubscriptionLevel.NONE, null, null);
+    User user = userDAO.create(firstName, lastName, null, creatorModifier, SubscriptionLevel.BASIC, null, null);
 
     if (email != null) {
       // Create UserEmail
