@@ -2994,7 +2994,6 @@
     <sqlFile path="fi/metatavu/edelphi/liquibase/query-template-settings.sql"/>
   </changeSet>
   
-  
   <changeSet author="antti.leppa" id="subscription-level-feature">
     <createTable tableName="SubscriptionLevelFeature">
       <column name="id" type="BIGINT(20)">
@@ -3009,6 +3008,10 @@
     </createTable>
     
     <sqlFile path="fi/metatavu/edelphi/liquibase/subscription-level-features.sql"/>
+  </changeSet>
+  
+  <changeSet author="antti.leppa" id="subscription-level-migrate">
+    <sql>UPDATE User SET subscriptionLevel = 'PREMIUM'</sql>
   </changeSet>
   
 </databaseChangeLog>
