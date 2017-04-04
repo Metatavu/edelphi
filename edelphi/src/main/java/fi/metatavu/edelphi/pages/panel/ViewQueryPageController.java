@@ -18,6 +18,7 @@ import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.dao.resources.QueryDAO;
 import fi.metatavu.edelphi.dao.users.UserDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
@@ -38,6 +39,11 @@ public class ViewQueryPageController extends PanelPageController {
   public ViewQueryPageController() {
     super();
     setAccessAction(DelfoiActionName.ACCESS_PANEL, DelfoiActionScope.PANEL);
+  }
+  
+  @Override
+  public Feature getFeature() {
+    return Feature.BASIC_USAGE;
   }
 
   @Override

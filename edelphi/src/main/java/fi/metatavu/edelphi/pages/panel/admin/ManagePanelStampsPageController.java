@@ -9,6 +9,7 @@ import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.dao.panels.PanelStampDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.pages.panel.PanelPageController;
@@ -20,6 +21,11 @@ public class ManagePanelStampsPageController extends PanelPageController {
   public ManagePanelStampsPageController() {
     super();
     setAccessAction(DelfoiActionName.MANAGE_PANEL, DelfoiActionScope.PANEL);
+  }
+
+  @Override
+  public Feature getFeature() {
+    return Feature.MANAGE_PANEL_TIMESTAMPS;
   }
 
   @Override

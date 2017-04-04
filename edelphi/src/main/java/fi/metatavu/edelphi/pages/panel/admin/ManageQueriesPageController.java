@@ -9,6 +9,7 @@ import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.dao.resources.QueryDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.pages.panel.PanelPageController;
@@ -22,6 +23,11 @@ public class ManageQueriesPageController extends PanelPageController {
     setAccessAction(DelfoiActionName.MANAGE_PANEL_MATERIALS, DelfoiActionScope.PANEL);
   }
 
+  @Override
+  public Feature getFeature() {
+    return Feature.MANAGE_PANEL_QUERIES;
+  }
+  
   @Override
   public void processPageRequest(PageRequestContext pageRequestContext) {
     QueryDAO queryDAO = new QueryDAO();

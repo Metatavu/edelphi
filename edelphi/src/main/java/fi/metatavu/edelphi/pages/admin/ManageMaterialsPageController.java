@@ -15,6 +15,7 @@ import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.resources.Folder;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.i18n.Messages;
@@ -29,6 +30,11 @@ public class ManageMaterialsPageController extends DelfoiPageController {
   public ManageMaterialsPageController() {
     super();
     setAccessAction(DelfoiActionName.MANAGE_DELFOI_MATERIALS, DelfoiActionScope.DELFOI);
+  }
+
+  @Override
+  public Feature getFeature() {
+    return Feature.BASIC_USAGE;
   }
 
   @Override

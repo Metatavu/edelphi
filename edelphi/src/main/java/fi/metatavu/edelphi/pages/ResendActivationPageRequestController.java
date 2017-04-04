@@ -11,6 +11,7 @@ import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.users.UserActivationDAO;
 import fi.metatavu.edelphi.dao.users.UserEmailDAO;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.users.UserActivation;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.i18n.Messages;
@@ -18,6 +19,11 @@ import fi.metatavu.edelphi.utils.MailUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 
 public class ResendActivationPageRequestController extends PageController {
+
+  @Override
+  public Feature getFeature() {
+    return Feature.BASIC_USAGE;
+  }
 
   @Override
   public void process(PageRequestContext pageRequestContext) {

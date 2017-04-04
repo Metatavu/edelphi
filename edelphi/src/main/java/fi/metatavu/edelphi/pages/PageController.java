@@ -13,6 +13,7 @@ import fi.metatavu.edelphi.ActionedController;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.utils.ActionUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
@@ -21,6 +22,13 @@ public abstract class PageController implements fi.metatavu.edelphi.smvcj.contro
 
   private DelfoiActionName accessActionName = null;
   private DelfoiActionScope accessActionScope;
+  
+  /**
+   * Returns a feature this page belongs to
+   * 
+   * @return a feature this page belongs to
+   */
+  public abstract Feature getFeature();
   
   @Override
   public void authorize(RequestContext requestContext) {

@@ -13,6 +13,7 @@ import fi.metatavu.edelphi.dao.panels.PanelUserDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
 import fi.metatavu.edelphi.dao.resources.QueryDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUser;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
@@ -27,6 +28,11 @@ public class PanelistActivityPageController extends PanelPageController {
   public PanelistActivityPageController() {
     super();
     setAccessAction(DelfoiActionName.MANAGE_PANEL, DelfoiActionScope.PANEL);
+  }
+
+  @Override
+  public Feature getFeature() {
+    return Feature.ACCESS_PANEL_QUERY_ACTIVITY;
   }
 
   @Override

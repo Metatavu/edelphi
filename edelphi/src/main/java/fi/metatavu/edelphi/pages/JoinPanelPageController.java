@@ -13,6 +13,7 @@ import fi.metatavu.edelphi.dao.users.UserDAO;
 import fi.metatavu.edelphi.dao.users.UserEmailDAO;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiDefaults;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitation;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitationState;
@@ -27,6 +28,11 @@ import fi.metatavu.edelphi.utils.AuthUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 
 public class JoinPanelPageController extends PageController {
+
+  @Override
+  public Feature getFeature() {
+    return Feature.BASIC_USAGE;
+  }
 
   @Override
   public void process(PageRequestContext pageRequestContext) {

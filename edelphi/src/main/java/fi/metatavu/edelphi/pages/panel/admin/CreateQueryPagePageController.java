@@ -5,12 +5,18 @@ import java.util.List;
 
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageTemplateDAO;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageTemplate;
 import fi.metatavu.edelphi.pages.panel.PanelPageController;
 import fi.metatavu.edelphi.utils.LocalizationUtils;
 
 public class CreateQueryPagePageController extends PanelPageController {
 
+  @Override
+  public Feature getFeature() {
+    return Feature.MANAGE_PANEL_QUERIES;
+  }
+  
   @Override
   public void processPageRequest(PageRequestContext pageRequestContext) {
     QueryPageTemplateDAO queryPageTemplateDAO = new QueryPageTemplateDAO();

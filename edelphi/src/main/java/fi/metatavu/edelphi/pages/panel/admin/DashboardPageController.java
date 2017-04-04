@@ -13,6 +13,7 @@ import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.resources.QueryDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.i18n.Messages;
@@ -29,6 +30,11 @@ public class DashboardPageController extends PanelPageController {
     setAccessAction(DelfoiActionName.MANAGE_PANEL, DelfoiActionScope.PANEL);
   }
 
+  @Override
+  public Feature getFeature() {
+    return Feature.BASIC_USAGE;
+  }
+  
   @Override
   public void processPageRequest(PageRequestContext pageRequestContext) {
     QueryDAO queryDAO = new QueryDAO();

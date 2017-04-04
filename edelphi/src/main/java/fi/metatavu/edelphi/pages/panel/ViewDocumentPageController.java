@@ -14,6 +14,7 @@ import fi.metatavu.edelphi.dao.resources.DocumentDAO;
 import fi.metatavu.edelphi.dao.resources.LocalDocumentDAO;
 import fi.metatavu.edelphi.dao.resources.LocalDocumentPageDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.resources.Document;
 import fi.metatavu.edelphi.domainmodel.resources.GoogleDocument;
@@ -33,6 +34,11 @@ public class ViewDocumentPageController extends PanelPageController {
 		super();
 		setAccessAction(DelfoiActionName.ACCESS_PANEL, DelfoiActionScope.PANEL);
 	}
+  
+  @Override
+  public Feature getFeature() {
+    return Feature.BASIC_USAGE;
+  }
 
 	@Override
 	public void processPageRequest(PageRequestContext pageRequestContext) {

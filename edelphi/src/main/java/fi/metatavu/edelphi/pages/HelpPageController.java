@@ -15,6 +15,7 @@ import fi.metatavu.edelphi.dao.resources.LocalDocumentDAO;
 import fi.metatavu.edelphi.dao.resources.LocalDocumentPageDAO;
 import fi.metatavu.edelphi.dao.resources.ResourceDAO;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.resources.Document;
 import fi.metatavu.edelphi.domainmodel.resources.Folder;
 import fi.metatavu.edelphi.domainmodel.resources.LocalDocument;
@@ -27,6 +28,11 @@ import fi.metatavu.edelphi.utils.MaterialUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 
 public class HelpPageController extends DelfoiPageController {
+
+  @Override
+  public Feature getFeature() {
+    return Feature.BASIC_USAGE;
+  }
 
   @Override
   public void processPageRequest(PageRequestContext pageRequestContext) {

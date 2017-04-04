@@ -21,6 +21,11 @@ public class ManageSubscriptionLevelsPageController extends DelfoiPageController
   }
 
   @Override
+  public Feature getFeature() {
+    return Feature.BASIC_USAGE;
+  }
+
+  @Override
   public void processPageRequest(PageRequestContext pageRequestContext) {
     Delfoi delfoi = RequestUtils.getDelfoi(pageRequestContext);
     Map<SubscriptionLevel, Map<Feature, Boolean>> subscriptionLevelFeatureMap = SubscriptionLevelUtils.getSubscriptionLevelFeatureMap();
