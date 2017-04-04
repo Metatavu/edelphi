@@ -24,6 +24,16 @@ public class SubscriptionLevelUtils {
   public static SubscriptionLevelSettings getSubscriptionLevelSettings(SubscriptionLevel subscriptionLevel) {
     return DEFAULTS.get(subscriptionLevel);
   }
+
+  public static SubscriptionLevel getMinimumLevelFor(Feature feature) {
+    for (SubscriptionLevel subscriptionLevel : SubscriptionLevel.values()) {
+      if (isFeatureEnabled(subscriptionLevel, feature)) {
+        return subscriptionLevel;
+      }
+    }
+    
+    return null;
+  }
   
   public static boolean isFeatureEnabled(SubscriptionLevel subscriptionLevel, Feature feature) {
     SubscriptionLevelFeatureDAO subscriptionLevelFeatureDAO = new SubscriptionLevelFeatureDAO();

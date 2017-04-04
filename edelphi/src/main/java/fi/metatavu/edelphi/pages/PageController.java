@@ -11,12 +11,17 @@ import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.ActionedController;
 import fi.metatavu.edelphi.DelfoiActionName;
+import fi.metatavu.edelphi.FeatureNotAvailableOnSubscriptionLevelException;
+import fi.metatavu.edelphi.dao.users.UserDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
+import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
+import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.utils.ActionUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.SubscriptionLevelUtils;
 
 public abstract class PageController implements fi.metatavu.edelphi.smvcj.controllers.PageController, ActionedController {
 
@@ -47,6 +52,20 @@ public abstract class PageController implements fi.metatavu.edelphi.smvcj.contro
         break;
       }
     }
+    
+    if (requestContext.isLoggedIn()) {
+      UserDAO userDAO = new UserDAO();
+      User user = userDAO.findById(requestContext.getLoggedUserId());
+      if (user != null) {
+        Feature feature = getFeature();
+        
+        if (!SubscriptionLevelUtils.isFeatureEnabled(user.getSubscriptionLevel(), feature)) {
+          SubscriptionLevel minimumSubscriptionLevel = SubscriptionLevelUtils.getMinimumLevelFor(feature);
+          throw new FeatureNotAvailableOnSubscriptionLevelException(requestContext.getRequest().getLocale(), user.getSubscriptionLevel(), minimumSubscriptionLevel); 
+        }
+      }
+    }
+    
   }
 
   private void authorizePanel(RequestContext requestContext, String actionAccessName) {
