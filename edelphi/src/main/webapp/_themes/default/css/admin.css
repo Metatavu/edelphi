@@ -36,3 +36,13 @@
 .settingsBlock {
   margin-top: 10px;
 }
+
+.panel_admin .featureNotAvailableOnSubscriptionLevel {
+  background: rgba(250, 250, 250, 1);
+  cursor: not-allowed;
+}
+
+.panel_admin .featureNotAvailableOnSubscriptionLevel a {
+  color: #555;
+  cursor: not-allowed;
+}
