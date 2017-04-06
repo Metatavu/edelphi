@@ -102,6 +102,7 @@ public class PanelMocker extends AbstractMocker {
 
   private void deletePanel(Long panelId) {
     long folderId = executeSqlLong("SELECT rootFolder_id from Panel WHERE id = ?", panelId);
+    executeSql("DELETE FROM PanelInvitation WHERE panel_id = ?", panelId);
     executeSql("DELETE FROM PanelUserRoleAction where panel_id = ?", panelId);
     executeSql("DELETE FROM PanelUser WHERE panel_id = ?", panelId);
     executeSql("UPDATE Panel SET currentStamp_id = null, rootFolder_id = null WHERE id = ?", panelId);

@@ -3,6 +3,7 @@ package fi.metatavu.edelphi.test.ui.base;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -27,6 +28,7 @@ import java.util.logging.Logger;
 
 import javax.mail.MessagingException;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -108,7 +110,7 @@ public class AbstractUITest {
     waitAndClick(".createPanel_donePageLink");
     waitNotVisible(".createPanelBlock_createPanelDialogOverlay");
   }
-  
+
   protected void waitAndClick(String selector) {
     waitVisible(selector);
     click(selector);
@@ -387,7 +389,20 @@ public class AbstractUITest {
       assertTrue(String.format("Found %d elements with selector %s", elements.size(), selector), elements.isEmpty());
     }
   }
-  
+
+  protected void assertClassNotPresent(String selector, String className) {
+    WebElement element = findElement(selector);
+    assertNotNull(element);
+    String[] classes = StringUtils.split(element.getAttribute("class"));
+    assertFalse(String.format("%s contains css class %s", selector, className), ArrayUtils.contains(classes, className));
+  }
+
+  protected void assertClassPresent(String selector, String className) {
+    WebElement element = findElement(selector);
+    assertNotNull(element);
+    String[] classes = StringUtils.split(element.getAttribute("class"));
+    assertTrue(String.format("%s does not contain css class %s", selector, className), ArrayUtils.contains(classes, className));
+  }
 
   protected void assertVisible(final String... selectors) {
     for (String selector : selectors) {
