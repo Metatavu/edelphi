@@ -45,6 +45,7 @@ public class FeatureTag extends BodyTagSupport {
   public int doStartTag() throws JspException {
     List<String> classes = new ArrayList<>();
     Map<String, String> attributes = new HashMap<>();
+    String tooltip = null;
     
     classes.add("feature");
     
@@ -62,7 +63,7 @@ public class FeatureTag extends BodyTagSupport {
         if (loggedUser != null && !SubscriptionLevelUtils.isFeatureEnabled(loggedUser.getSubscriptionLevel(), resolvedFeature)) {
           classes.add("featureNotAvailableOnSubscriptionLevel");
           Locale locale = pageContext.getRequest().getLocale();
-          attributes.put("title", getTooltip(resolvedFeature, loggedUser, locale));
+          tooltip = getTooltip(resolvedFeature, loggedUser, locale);
         }
       }
     }
@@ -70,6 +71,9 @@ public class FeatureTag extends BodyTagSupport {
     attributes.put("class", StringUtils.join(classes, ' '));
     
     writeOut(String.format("<div %s>", getAttributesAsString(attributes)));
+    if (tooltip != null) {
+      writeOut(String.format("<div class=\"tooltip\">%s</div>", StringEscapeUtils.escapeHtml4(tooltip)));  
+    }
     
     return EVAL_BODY_INCLUDE;
   }
