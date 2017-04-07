@@ -10,6 +10,7 @@ import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
  * Exception that is thrown when requested feature is not 
  * available on current user's subscription level
  */
+@SuppressWarnings ("squid:S2166")
 public class FeatureNotAvailableOnSubscriptionLevelException extends SmvcRuntimeException {
 
   private static final long serialVersionUID = -902755199311607327L;
