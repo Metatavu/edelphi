@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
+import fi.metatavu.edelphi.Defaults;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.panels.PanelInvitationDAO;
@@ -24,7 +25,6 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelUser;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserJoinType;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.DelfoiUserRole;
-import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.i18n.Messages;
@@ -178,7 +178,7 @@ public class CreateInvitationsJSONRequestController extends JSONController {
           UserEmail userEmail = userEmailDAO.findByAddress(email);
           user = userEmail == null ? null : userEmail.getUser();
           if (user == null) {
-            user = userDAO.create(firstName, lastName, null, creator, SubscriptionLevel.BASIC, null, null);
+            user = userDAO.create(firstName, lastName, null, creator, Defaults.NEW_USER_SUBSCRIPTION_LEVEL, null, null);
             userEmail = userEmailDAO.create(user, email);
             userDAO.addUserEmail(user, userEmail, true, creator);
             if (passwordGenerationCount == 0) {

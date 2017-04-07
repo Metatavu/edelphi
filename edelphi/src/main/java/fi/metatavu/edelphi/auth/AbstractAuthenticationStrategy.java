@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
+import fi.metatavu.edelphi.Defaults;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.base.AuthSourceSettingDAO;
 import fi.metatavu.edelphi.dao.users.DelfoiUserDAO;
@@ -17,7 +18,6 @@ import fi.metatavu.edelphi.domainmodel.base.AuthSource;
 import fi.metatavu.edelphi.domainmodel.base.AuthSourceSetting;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.users.DelfoiUserRole;
-import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.domainmodel.users.UserIdentification;
@@ -52,7 +52,7 @@ public abstract class AbstractAuthenticationStrategy implements AuthenticationPr
     User creatorModifier = null;
     
     // Create User
-    User user = userDAO.create(firstName, lastName, null, creatorModifier, SubscriptionLevel.BASIC, null, null);
+    User user = userDAO.create(firstName, lastName, null, creatorModifier, Defaults.NEW_USER_SUBSCRIPTION_LEVEL, null, null);
 
     if (email != null) {
       // Create UserEmail
