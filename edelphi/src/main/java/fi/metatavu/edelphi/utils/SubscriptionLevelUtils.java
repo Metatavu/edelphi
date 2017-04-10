@@ -5,8 +5,11 @@ import java.util.Map;
 
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.dao.actions.DelfoiActionDAO;
+import fi.metatavu.edelphi.dao.features.SubscriptionLevelFeatureDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiAction;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
+import fi.metatavu.edelphi.domainmodel.features.SubscriptionLevelFeature;
 import fi.metatavu.edelphi.domainmodel.panels.PanelState;
 import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 import fi.metatavu.edelphi.domainmodel.users.User;
@@ -20,6 +23,51 @@ public class SubscriptionLevelUtils {
   
   public static SubscriptionLevelSettings getSubscriptionLevelSettings(SubscriptionLevel subscriptionLevel) {
     return DEFAULTS.get(subscriptionLevel);
+  }
+
+  public static SubscriptionLevel getMinimumLevelFor(Feature feature) {
+    for (SubscriptionLevel subscriptionLevel : SubscriptionLevel.values()) {
+      if (isFeatureEnabled(subscriptionLevel, feature)) {
+        return subscriptionLevel;
+      }
+    }
+    
+    return null;
+  }
+  
+  public static boolean isFeatureEnabled(SubscriptionLevel subscriptionLevel, Feature feature) {
+    SubscriptionLevelFeatureDAO subscriptionLevelFeatureDAO = new SubscriptionLevelFeatureDAO();
+    return subscriptionLevelFeatureDAO.findBySubscriptionLevelAndFeature(subscriptionLevel, feature) != null;
+  }
+  
+  public static void setFeatureEnabled(SubscriptionLevel subscriptionLevel, Feature feature, boolean enabled) {
+    SubscriptionLevelFeatureDAO subscriptionLevelFeatureDAO = new SubscriptionLevelFeatureDAO();
+    SubscriptionLevelFeature subscriptionLevelFeature = subscriptionLevelFeatureDAO.findBySubscriptionLevelAndFeature(subscriptionLevel, feature);
+    if (subscriptionLevelFeature != null) {
+      if (!enabled) {
+        subscriptionLevelFeatureDAO.delete(subscriptionLevelFeature);
+      }
+    } else {
+      if (enabled) {
+        subscriptionLevelFeatureDAO.create(subscriptionLevel, feature);
+      }
+    }
+  }
+  
+  public static Map<SubscriptionLevel, Map<Feature, Boolean>> getSubscriptionLevelFeatureMap() {
+    EnumMap<SubscriptionLevel, Map<Feature, Boolean>> result = new EnumMap<>(SubscriptionLevel.class);
+    
+    for (SubscriptionLevel subscriptionLevel : SubscriptionLevel.values()) {
+      EnumMap<Feature, Boolean> featureMap = new EnumMap<>(Feature.class);
+      
+      for (Feature feature : Feature.values()) {
+        featureMap.put(feature, isFeatureEnabled(subscriptionLevel, feature));
+      }
+      
+      result.put(subscriptionLevel, featureMap);
+    }
+    
+    return result;
   }
   
   public static Long countManagedActivePanels(User user) {
@@ -72,11 +120,9 @@ public class SubscriptionLevelUtils {
   
   static {
     DEFAULTS = new EnumMap<>(SubscriptionLevel.class);
-    DEFAULTS.put(SubscriptionLevel.NONE, new SubscriptionLevelSettings(SubscriptionLevel.NONE, false, 0, 0, 0));
-    DEFAULTS.put(SubscriptionLevel.EDU, new SubscriptionLevelSettings(SubscriptionLevel.EDU, false, 1, 1, 25));
-    DEFAULTS.put(SubscriptionLevel.BASIC, new SubscriptionLevelSettings(SubscriptionLevel.BASIC, true, 1, 1, 50));
-    DEFAULTS.put(SubscriptionLevel.PRO, new SubscriptionLevelSettings(SubscriptionLevel.PRO, true, 2, 2, 100));
-    DEFAULTS.put(SubscriptionLevel.UNLIMITED, new SubscriptionLevelSettings(SubscriptionLevel.UNLIMITED, true, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE));
+    DEFAULTS.put(SubscriptionLevel.BASIC, new SubscriptionLevelSettings(SubscriptionLevel.BASIC, true, 1, Integer.MAX_VALUE, Integer.MAX_VALUE));
+    DEFAULTS.put(SubscriptionLevel.PLUS, new SubscriptionLevelSettings(SubscriptionLevel.PLUS, true, 5, Integer.MAX_VALUE, Integer.MAX_VALUE));
+    DEFAULTS.put(SubscriptionLevel.PREMIUM, new SubscriptionLevelSettings(SubscriptionLevel.PREMIUM, true, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE));
   }
   
 }

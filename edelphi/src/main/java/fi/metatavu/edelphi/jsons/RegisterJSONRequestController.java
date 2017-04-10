@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import fi.metatavu.edelphi.smvcj.Severity;
 import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
+import fi.metatavu.edelphi.Defaults;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.users.DelfoiUserDAO;
 import fi.metatavu.edelphi.dao.users.UserActivationDAO;
@@ -19,7 +20,6 @@ import fi.metatavu.edelphi.dao.users.UserPasswordDAO;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiDefaults;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiUser;
-import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserActivation;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
@@ -61,7 +61,7 @@ public class RegisterJSONRequestController extends JSONController {
     }
     User user;
     if (userEmail == null) {
-      user = userDAO.create(firstName, lastName, null,  null, SubscriptionLevel.NONE, null, null);
+      user = userDAO.create(firstName, lastName, null,  null, Defaults.NEW_USER_SUBSCRIPTION_LEVEL, null, null);
     }
     else {
       user = userDAO.update(userEmail.getUser(), firstName, lastName, null, userEmail.getUser());

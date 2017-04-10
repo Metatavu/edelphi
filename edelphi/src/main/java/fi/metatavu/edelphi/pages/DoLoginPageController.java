@@ -8,12 +8,18 @@ import fi.metatavu.edelphi.dao.base.AuthSourceDAO;
 import fi.metatavu.edelphi.dao.users.UserActivationDAO;
 import fi.metatavu.edelphi.dao.users.UserDAO;
 import fi.metatavu.edelphi.domainmodel.base.AuthSource;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserActivation;
 import fi.metatavu.edelphi.utils.AuthUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 
 public class DoLoginPageController extends PageController {
+
+  @Override
+  public Feature getFeature() {
+    return Feature.BASIC_USAGE;
+  }
 
   @Override
   public void process(PageRequestContext pageRequestContext) {

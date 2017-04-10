@@ -23,6 +23,7 @@ import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldOptionDAO;
 import fi.metatavu.edelphi.dao.resources.QueryDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseClass;
@@ -45,6 +46,11 @@ public class ReportOptionsPageController extends PanelPageController {
 
   public ReportOptionsPageController() {
     setAccessAction(DelfoiActionName.MANAGE_PANEL, DelfoiActionScope.PANEL);
+  }
+
+  @Override
+  public Feature getFeature() {
+    return Feature.ACCESS_PANEL_QUERY_RESULTS;
   }
   
   @Override

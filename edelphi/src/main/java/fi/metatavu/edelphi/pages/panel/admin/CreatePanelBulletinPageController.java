@@ -9,6 +9,7 @@ import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.dao.panels.PanelBulletinDAO;
 import fi.metatavu.edelphi.dao.panels.PanelDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelBulletin;
 import fi.metatavu.edelphi.pages.panel.PanelPageController;
@@ -19,6 +20,11 @@ public class CreatePanelBulletinPageController extends PanelPageController {
   public CreatePanelBulletinPageController() {
     super();
     setAccessAction(DelfoiActionName.MANAGE_PANEL_BULLETINS, DelfoiActionScope.PANEL);
+  }
+  
+  @Override
+  public Feature getFeature() {
+    return Feature.MANAGE_PANEL_MATERIALS;
   }
 
   @Override

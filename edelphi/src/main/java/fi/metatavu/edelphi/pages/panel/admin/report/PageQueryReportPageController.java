@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.metatavu.edelphi.smvcj.AccessDeniedException;
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
@@ -33,6 +34,11 @@ import fi.metatavu.edelphi.utils.SystemUtils;
 public class PageQueryReportPageController extends PanelPageController {
   
   public PageQueryReportPageController() {
+  }
+
+  @Override
+  public Feature getFeature() {
+    return Feature.ACCESS_PANEL_QUERY_RESULTS;
   }
 
   @Override

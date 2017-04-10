@@ -8,10 +8,16 @@ import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.base.DelfoiDefaultsDAO;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiDefaults;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.pages.PageController;
 import fi.metatavu.edelphi.utils.RequestUtils;
 
 public class StatusCheckPageController extends PageController {
+
+  @Override
+  public Feature getFeature() {
+    return Feature.BASIC_USAGE;
+  }
 
   @Override
   public void process(PageRequestContext pageRequestContext) {

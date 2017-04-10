@@ -4,6 +4,7 @@ import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.dao.resources.FolderDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.resources.Folder;
 import fi.metatavu.edelphi.utils.ActionUtils;
 
@@ -12,6 +13,11 @@ public class ManagePanelFolderPageController extends PanelPageController {
   public ManagePanelFolderPageController() {
     super();
     setAccessAction(DelfoiActionName.MANAGE_PANEL_MATERIALS, DelfoiActionScope.PANEL);
+  }
+
+  @Override
+  public Feature getFeature() {
+    return Feature.MANAGE_PANEL_MATERIALS;
   }
 
   @Override

@@ -14,6 +14,7 @@ import fi.metatavu.edelphi.dao.base.DelfoiBulletinDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiBulletin;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.resources.Folder;
 import fi.metatavu.edelphi.i18n.Messages;
 import fi.metatavu.edelphi.pages.DelfoiPageController;
@@ -27,6 +28,11 @@ public class DashboardPageController extends DelfoiPageController {
   public DashboardPageController() {
     super();
     setAccessAction(DelfoiActionName.MANAGE_DELFOI, DelfoiActionScope.DELFOI);
+  }
+
+  @Override
+  public Feature getFeature() {
+    return Feature.BASIC_USAGE;
   }
 
   @Override

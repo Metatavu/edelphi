@@ -14,6 +14,7 @@ import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.panels.PanelDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.i18n.Messages;
 import fi.metatavu.edelphi.pages.panel.PanelPageController;
@@ -26,6 +27,11 @@ public class ImportMaterialsGDocsPageController extends PanelPageController {
   public ImportMaterialsGDocsPageController() {
     super();
     setAccessAction(DelfoiActionName.MANAGE_PANEL_MATERIALS, DelfoiActionScope.PANEL);
+  }
+  
+  @Override
+  public Feature getFeature() {
+    return Feature.MANAGE_PANEL_MATERIALS;
   }
   
   @Override

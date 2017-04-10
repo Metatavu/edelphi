@@ -27,6 +27,7 @@
     <jsp:include page="/jsp/templates/index_head.jsp">
       <jsp:param name="skipErrorProcessing" value="true"/>
     </jsp:include>
+    <link rel="stylesheet" href="//cdn.metatavu.io/libs/font-awesome/4.6.3/css/font-awesome.min.css"/>
   </head>
   <body class="environment error">
   
@@ -55,6 +56,25 @@
               <div class="errorPageGoToFrontPageLinkContainer"><a href="${pageContext.request.contextPath}/index.page"><fmt:message key="generic.errorPage.goToFrontPageLabel" /></a></div>
             </div>
           
+          </c:when>
+          <c:when test="${statusCode == 1044}">
+            <!-- Feature not available on subscription level -->
+            <div class="errorPageContentWrapper">
+              <div class="errorPageTitleContainer featureNotAvailableOnSubscriptionLevelError">
+                <fmt:message key="exception.featureNotAvailableNotSubscriptionLevel"/>
+              </div>
+              <div class="errorPageIconContainer featureNotAvailableOnSubscriptionLevelIcon"><i class="fa fa-eur" aria-hidden="true"></i></div>
+              <div class="errorPageDescriptionContainer">
+                <c:forEach var="message" items="${messages}">
+                  <div>${message.message}</div>
+                </c:forEach>
+              </div>
+              <div class="clearBoth"></div>
+              <c:if test="${!empty panel}">
+                <div class="errorPageGoToPanelFrontPageLinkContainer"><a href="${pageContext.request.contextPath}${panel.fullPath}"><fmt:message key="generic.errorPage.goToPanelFrontPageLabel" /></a></div>
+              </c:if>
+              <div class="errorPageGoToFrontPageLinkContainer"><a href="${pageContext.request.contextPath}/index.page"><fmt:message key="generic.errorPage.goToFrontPageLabel" /></a></div>
+            </div>
           </c:when>
           <c:when test="${statusCode == 102}">
             <!-- Page Not Found -->

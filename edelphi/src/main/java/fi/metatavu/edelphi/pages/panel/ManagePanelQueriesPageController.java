@@ -2,10 +2,16 @@ package fi.metatavu.edelphi.pages.panel;
 
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.dao.panels.PanelDAO;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.utils.ActionUtils;
 
 public class ManagePanelQueriesPageController extends PanelPageController {
+
+  @Override
+  public Feature getFeature() {
+    return Feature.MANAGE_PANEL_QUERIES;
+  }
 
   @Override
   public void processPageRequest(PageRequestContext pageRequestContext) {

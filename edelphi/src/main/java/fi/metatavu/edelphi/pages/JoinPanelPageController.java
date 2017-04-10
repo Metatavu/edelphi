@@ -5,6 +5,7 @@ import java.util.Locale;
 import fi.metatavu.edelphi.smvcj.Severity;
 import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
+import fi.metatavu.edelphi.Defaults;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.panels.PanelInvitationDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserDAO;
@@ -13,13 +14,13 @@ import fi.metatavu.edelphi.dao.users.UserDAO;
 import fi.metatavu.edelphi.dao.users.UserEmailDAO;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiDefaults;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitation;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitationState;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUser;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserJoinType;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
-import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.i18n.Messages;
@@ -27,6 +28,11 @@ import fi.metatavu.edelphi.utils.AuthUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 
 public class JoinPanelPageController extends PageController {
+
+  @Override
+  public Feature getFeature() {
+    return Feature.BASIC_USAGE;
+  }
 
   @Override
   public void process(PageRequestContext pageRequestContext) {
@@ -89,7 +95,7 @@ public class JoinPanelPageController extends PageController {
           // No one is logged in and the invitation email is available
           // -> automatically create a new account
           
-          user = userDAO.create(null, null, null,  null, SubscriptionLevel.NONE, null, null);
+          user = userDAO.create(null, null, null,  null, Defaults.NEW_USER_SUBSCRIPTION_LEVEL, null, null);
           userEmail = userEmailDAO.create(user, panelInvitation.getEmail());
           userDAO.addUserEmail(user, userEmail, true, user);
           Delfoi delfoi = RequestUtils.getDelfoi(pageRequestContext);

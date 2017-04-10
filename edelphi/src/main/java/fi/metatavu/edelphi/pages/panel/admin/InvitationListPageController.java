@@ -14,6 +14,7 @@ import fi.metatavu.edelphi.dao.panels.PanelInvitationDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserDAO;
 import fi.metatavu.edelphi.dao.users.UserEmailDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitation;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitationState;
@@ -27,6 +28,11 @@ public class InvitationListPageController extends PanelPageController {
   public InvitationListPageController() {
     super();
     setAccessAction(DelfoiActionName.MANAGE_PANEL_INVITATIONS, DelfoiActionScope.PANEL);
+  }
+
+  @Override
+  public Feature getFeature() {
+    return Feature.MANAGE_PANEL_INVITATIONS;
   }
 
   @Override
