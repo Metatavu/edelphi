@@ -8,7 +8,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Cache;
@@ -19,6 +21,9 @@ import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 @Entity
 @Cacheable
 @Cache (usage = CacheConcurrencyStrategy.TRANSACTIONAL)
+@Table (
+  uniqueConstraints = @UniqueConstraint (columnNames = {"subscriptionLevel", "feature"}, name = "UN_SUBSCRIPTION_LEVEL_FEATURE")
+)
 public class SubscriptionLevelFeature {
 
   @Id
