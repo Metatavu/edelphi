@@ -23,6 +23,7 @@ import fi.metatavu.edelphi.dao.querydata.QueryQuestionMultiOptionAnswerDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelExpertiseGroupUser;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUser;
@@ -43,6 +44,11 @@ public class PanelExpertsPageController extends PanelPageController {
     super();
     
     setAccessAction(DelfoiActionName.MANAGE_PANEL, DelfoiActionScope.PANEL);
+  }
+
+  @Override
+  public Feature getFeature() {
+    return Feature.BASIC_USAGE;
   }
 
   @Override

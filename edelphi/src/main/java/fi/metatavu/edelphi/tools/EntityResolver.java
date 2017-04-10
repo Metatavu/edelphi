@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import fi.metatavu.edelphi.Defaults;
 import fi.metatavu.edelphi.dao.panels.PanelExpertiseGroupUserDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserExpertiseClassDAO;
@@ -33,7 +34,6 @@ import fi.metatavu.edelphi.domainmodel.querymeta.QueryField;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionField;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
-import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.utils.ResourceUtils;
@@ -228,7 +228,7 @@ public class EntityResolver {
       UserEmail userEmail = userEmailDAO.findByAddress(email);
       if (userEmail == null) {
         UserDAO userDAO = new UserDAO();
-        user = userDAO.create(null, null, null, null, SubscriptionLevel.NONE, null, null);
+        user = userDAO.create(null, null, null, null, Defaults.NEW_USER_SUBSCRIPTION_LEVEL, null, null);
         userEmail = userEmailDAO.create(user, email);
         userDAO.addUserEmail(user, userEmail, true, user);
       }

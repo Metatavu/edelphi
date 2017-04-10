@@ -21,6 +21,7 @@ import fi.metatavu.edelphi.dao.resources.LocalDocumentDAO;
 import fi.metatavu.edelphi.dao.resources.LocalDocumentPageDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.resources.Folder;
 import fi.metatavu.edelphi.domainmodel.resources.LocalDocument;
 import fi.metatavu.edelphi.domainmodel.resources.LocalDocumentPage;
@@ -38,6 +39,11 @@ public class EditLocalDocumentPageController extends DelfoiPageController {
   public EditLocalDocumentPageController() {
     super();
     setAccessAction(DelfoiActionName.MANAGE_DELFOI_MATERIALS, DelfoiActionScope.DELFOI);
+  }
+
+  @Override
+  public Feature getFeature() {
+    return Feature.BASIC_USAGE;
   }
 
   @Override

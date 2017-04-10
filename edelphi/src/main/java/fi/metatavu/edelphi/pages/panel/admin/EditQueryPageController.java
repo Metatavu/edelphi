@@ -20,6 +20,7 @@ import fi.metatavu.edelphi.dao.querylayout.QuerySectionDAO;
 import fi.metatavu.edelphi.dao.resources.QueryDAO;
 import fi.metatavu.edelphi.dao.users.UserDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseClass;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseGroup;
@@ -47,6 +48,11 @@ public class EditQueryPageController extends PanelPageController {
     setAccessAction(DelfoiActionName.MANAGE_PANEL_MATERIALS, DelfoiActionScope.PANEL);
   }
 
+  @Override
+  public Feature getFeature() {
+    return Feature.MANAGE_PANEL_QUERIES;
+  }
+  
   @Override
   public void processPageRequest(PageRequestContext pageRequestContext) {
     QueryDAO queryDAO = new QueryDAO();

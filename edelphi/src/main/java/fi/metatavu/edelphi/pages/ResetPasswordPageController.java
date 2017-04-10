@@ -6,10 +6,16 @@ import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.users.PasswordResetDAO;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.users.PasswordReset;
 import fi.metatavu.edelphi.i18n.Messages;
 
 public class ResetPasswordPageController extends PageController {
+
+  @Override
+  public Feature getFeature() {
+    return Feature.BASIC_USAGE;
+  }
 
   @Override
   public void process(PageRequestContext pageRequestContext) {

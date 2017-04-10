@@ -10,6 +10,7 @@ import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.dao.querylayout.QuerySectionDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageType;
@@ -30,6 +31,11 @@ public class QueryResultsQueryReportPageController extends AbstractQueryReportPa
   public QueryResultsQueryReportPageController() {
     super("/jsp/pages/panel/admin/queryresults_queryreport.jsp");
     setAccessAction(DelfoiActionName.MANAGE_QUERY_RESULTS, DelfoiActionScope.PANEL);
+  }
+
+  @Override
+  public Feature getFeature() {
+    return Feature.ACCESS_PANEL_QUERY_RESULTS;
   }
 
   @Override

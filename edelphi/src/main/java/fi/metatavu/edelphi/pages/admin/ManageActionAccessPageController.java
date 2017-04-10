@@ -16,6 +16,7 @@ import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiUserRoleAction;
 import fi.metatavu.edelphi.domainmodel.base.SystemUserRole;
 import fi.metatavu.edelphi.domainmodel.base.SystemUserRoleType;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.users.DelfoiUserRole;
 import fi.metatavu.edelphi.domainmodel.users.UserRole;
 import fi.metatavu.edelphi.pages.PageController;
@@ -28,6 +29,11 @@ public class ManageActionAccessPageController extends PageController {
     super();
     
     setAccessAction(DelfoiActionName.MANAGE_SYSTEM_SETTINGS, DelfoiActionScope.DELFOI);
+  }
+
+  @Override
+  public Feature getFeature() {
+    return Feature.BASIC_USAGE;
   }
 
   @Override

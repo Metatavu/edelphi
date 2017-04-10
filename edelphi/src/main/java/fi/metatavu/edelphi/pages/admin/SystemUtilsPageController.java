@@ -32,6 +32,7 @@ import fi.metatavu.edelphi.dao.resources.QueryDAO;
 import fi.metatavu.edelphi.dao.users.UserDAO;
 import fi.metatavu.edelphi.dao.users.UserSettingDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionGroupOptionAnswer;
@@ -62,6 +63,11 @@ public class SystemUtilsPageController extends PageController {
   public SystemUtilsPageController() {
     super();
     setAccessAction(DelfoiActionName.MANAGE_SYSTEM_SETTINGS, DelfoiActionScope.DELFOI);
+  }
+
+  @Override
+  public Feature getFeature() {
+    return Feature.BASIC_USAGE;
   }
 
   @Override

@@ -1,0 +1,12 @@
+.featureNotAvailableOnSubscriptionLevelError {
+  color: #0099ff;
+}
+
+.featureNotAvailableOnSubscriptionLevelIcon {
+  padding-left: 10px;
+}
+
+.featureNotAvailableOnSubscriptionLevelIcon .fa {
+  font-size: 128px;
+  color: #0099ff;
+}

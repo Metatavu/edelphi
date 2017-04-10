@@ -21,6 +21,7 @@ import fi.metatavu.edelphi.dao.panels.PanelUserIntressClassDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserRoleDAO;
 import fi.metatavu.edelphi.dao.users.UserIdentificationDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelExpertiseGroupUser;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
@@ -39,6 +40,11 @@ public class ManagePanelUsersPageController extends PanelPageController {
   
   public ManagePanelUsersPageController() {
     setAccessAction(DelfoiActionName.MANAGE_PANEL_USERS, DelfoiActionScope.PANEL);
+  }
+
+  @Override
+  public Feature getFeature() {
+    return Feature.BASIC_USAGE;
   }
 
   @Override

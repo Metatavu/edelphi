@@ -16,6 +16,7 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/panel_admin/settingsblockcontroller.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/panel_blocks/materiallistingblockcontroller.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/panel_blocks/querylistingblockcontroller.js"></script>
+    <link rel="stylesheet" href="//cdn.metatavu.io/libs/font-awesome/4.6.3/css/font-awesome.min.css"/>
   </head>
   <body class="panel_admin index">
   

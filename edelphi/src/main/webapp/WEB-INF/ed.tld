@@ -33,6 +33,23 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>
+  
+  <tag>
+    <name>feature</name>
+    <tag-class>fi.metatavu.edelphi.taglib.FeatureTag</tag-class> 
+    <body-content>JSP</body-content>
+   
+    <attribute>
+      <name>feature</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>featurePage</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
 
   <tag>
     <description>Tag library for chart definitions in eDelfoi. Based on BIRT sample chart viewer.</description>

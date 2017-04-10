@@ -5,6 +5,7 @@ import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.dao.resources.ImageDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.resources.Image;
 import fi.metatavu.edelphi.utils.RequestUtils;
@@ -14,6 +15,11 @@ public class ViewImagePageController extends PanelPageController {
   public ViewImagePageController() {
     super();
     setAccessAction(DelfoiActionName.ACCESS_PANEL, DelfoiActionScope.PANEL);
+  }
+  
+  @Override
+  public Feature getFeature() {
+    return Feature.BASIC_USAGE;
   }
 
   @Override

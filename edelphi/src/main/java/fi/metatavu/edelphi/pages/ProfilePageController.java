@@ -14,6 +14,7 @@ import fi.metatavu.edelphi.dao.users.UserPasswordDAO;
 import fi.metatavu.edelphi.dao.users.UserSettingDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelAccessLevel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitation;
@@ -37,6 +38,11 @@ public class ProfilePageController extends PageController {
   public ProfilePageController() {
     super();
     setAccessAction(DelfoiActionName.MANAGE_USER_PROFILE, DelfoiActionScope.DELFOI);
+  }
+
+  @Override
+  public Feature getFeature() {
+    return Feature.BASIC_USAGE;
   }
 
   @Override

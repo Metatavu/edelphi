@@ -15,6 +15,7 @@ import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.dao.querylayout.QuerySectionDAO;
 import fi.metatavu.edelphi.dao.resources.QueryDAO;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
@@ -40,6 +41,11 @@ import fi.metatavu.edelphi.utils.SystemUtils;
 public class FullQueryReportPageController extends PanelPageController {
 
   public FullQueryReportPageController() {
+  }
+
+  @Override
+  public Feature getFeature() {
+    return Feature.ACCESS_PANEL_QUERY_RESULTS;
   }
   
   @Override

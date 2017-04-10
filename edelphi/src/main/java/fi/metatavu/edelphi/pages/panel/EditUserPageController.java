@@ -11,6 +11,7 @@ import fi.metatavu.edelphi.dao.panels.PanelUserDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserRoleDAO;
 import fi.metatavu.edelphi.dao.users.UserDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUser;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserRole;
@@ -22,6 +23,11 @@ public class EditUserPageController extends PanelPageController {
   public EditUserPageController() {
     super();
     setAccessAction(DelfoiActionName.MANAGE_PANEL_USERS, DelfoiActionScope.PANEL);
+  }
+  
+  @Override
+  public Feature getFeature() {
+    return Feature.BASIC_USAGE;
   }
 
   @Override

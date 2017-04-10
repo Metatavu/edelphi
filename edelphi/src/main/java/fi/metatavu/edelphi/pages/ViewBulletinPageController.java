@@ -10,6 +10,7 @@ import fi.metatavu.edelphi.dao.base.DelfoiBulletinDAO;
 import fi.metatavu.edelphi.dao.panels.PanelDAO;
 import fi.metatavu.edelphi.domainmodel.base.Bulletin;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelAccessLevel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelState;
@@ -18,6 +19,11 @@ import fi.metatavu.edelphi.utils.ActionUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 
 public class ViewBulletinPageController extends DelfoiPageController {
+
+  @Override
+  public Feature getFeature() {
+    return Feature.BASIC_USAGE;
+  }
 
   @Override
   public void processPageRequest(PageRequestContext pageRequestContext) { 
