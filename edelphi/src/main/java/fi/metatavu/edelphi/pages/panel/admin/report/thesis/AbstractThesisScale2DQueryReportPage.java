@@ -38,8 +38,8 @@ public abstract class AbstractThesisScale2DQueryReportPage extends QueryReportPa
   public AbstractThesisScale2DQueryReportPage(QueryPageType queryPageType) {
     super(queryPageType);
   }
-
-  protected Chart createBubbleChart(ChartContext chartContext, QueryPage queryPage, String title, String fieldNameX, String fieldNameY) {
+  
+  protected Chart createBubbleChart(ChartContext chartContext, QueryPage queryPage, String title, String xLabel, String yLabel, String fieldNameX, String fieldNameY) {
     QueryFieldDAO queryFieldDAO = new QueryFieldDAO();
     QueryQuestionOptionAnswerDAO queryQuestionOptionAnswerDAO = new QueryQuestionOptionAnswerDAO();
     
@@ -87,16 +87,7 @@ public abstract class AbstractThesisScale2DQueryReportPage extends QueryReportPa
         values[x][y] = values[x][y] != null ? values[x][y] + 1 : 1; 
       }
     }
-
-    QueryPageSettingDAO queryPageSettingDAO = new QueryPageSettingDAO();
-    QueryPageSettingKeyDAO queryPageSettingKeyDAO = new QueryPageSettingKeyDAO();
-    QueryPageSettingKey queryPageSettingKey = queryPageSettingKeyDAO.findByName("scale2d.label.x");
-    QueryPageSetting queryPageSetting = queryPageSettingDAO.findByKeyAndQueryPage(queryPageSettingKey, queryPage);
-    String xLabel = queryPageSetting == null ? null : queryPageSetting.getValue();
-    queryPageSettingKey = queryPageSettingKeyDAO.findByName("scale2d.label.y");
-    queryPageSetting = queryPageSettingDAO.findByKeyAndQueryPage(queryPageSettingKey, queryPage);
-    String yLabel = queryPageSetting == null ? null : queryPageSetting.getValue();
-
+    
     return ChartModelProvider.createBubbleChart(title, xLabel, xTickLabels, yLabel, yTickLabels, 0, 0, values);
   }
 
