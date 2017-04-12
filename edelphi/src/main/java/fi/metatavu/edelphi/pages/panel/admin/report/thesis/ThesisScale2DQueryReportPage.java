@@ -136,7 +136,9 @@ public class ThesisScale2DQueryReportPage extends AbstractThesisScale2DQueryRepo
       // Render an ordinary 2D bubble chart
       String fieldNameX = getFieldName("x");
       String fieldNameY = getFieldName("y");
-      return createBubbleChart(chartContext, queryPage, queryPage.getTitle(), fieldNameX, fieldNameY);
+      String labelX = QueryPageUtils.getSetting(queryPage, "scale2d.label.x");
+      String labelY = QueryPageUtils.getSetting(queryPage, "scale2d.label.y");
+      return createBubbleChart(chartContext, queryPage, queryPage.getTitle(), labelX, labelY, fieldNameX, fieldNameY);
     } else {
       // Render a bar chart of X or Y axis
       String fieldName = render2dAxis == Render2dAxis.X ? getFieldName("x") : getFieldName("y");
