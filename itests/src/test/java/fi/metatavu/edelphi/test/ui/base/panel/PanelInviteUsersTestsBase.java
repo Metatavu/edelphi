@@ -43,8 +43,8 @@ public class PanelInviteUsersTestsBase extends AbstractUITest {
     waitAndClick("input[name=sendInvitations]");
     
     waitReceivedEmailCount(1);
-    assertReceivedEmailSubject(0, "Invitation to an eDelfoi panel test");
-    assertReceivedEmailContentStartsWith(0, "You have been invited to an eDelfoi panel test");
+    assertReceivedEmailSubject(0, "Invitation to an eDelphi panel test");
+    assertReceivedEmailContentStartsWith(0, "You have been invited to an eDelphi panel test");
   }
   
   private void createTestPanel() {
