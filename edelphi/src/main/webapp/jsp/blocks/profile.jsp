@@ -105,50 +105,18 @@
   </jsp:include>
   
   <div id="profileSubscriptionLevelBlockContent" class="blockContent">
-    <c:choose>
-      <c:when test="${subscriptionLevelSettings.level eq 'NONE'}">
-        <p>
-          <fmt:message key="profile.block.profileNoActiveSubscription"/>
-        </p>
-      </c:when>
-      <c:otherwise>
-       <p class="profileSubscriptionLeveText">
-         <fmt:message key="profile.block.profileSubscriptionLeveText">
-           <fmt:param><fmt:message key="generic.subscriptionLevels.${subscriptionLevelSettings.level}"/></fmt:param>
-         </fmt:message>
-       </p>
-       
-       <c:choose>
-         <c:when test="${subscriptionLevelSettings.level ne 'UNLIMITED'}">
-           <p class="profileSubscriptionFeaturesLabel">
-             <fmt:message key="profile.block.profileSubscriptionFeaturesLabel"/>
-           </p>
-           <div>
-             <ul>
-               <li class="profileSubscriptionPanels">
-                 <fmt:message key="profile.block.profileSubscriptionPanels">
-                   <fmt:param>${subscriptionLevelSettings.panels}</fmt:param>
-                   <fmt:param>${activePanelCount}</fmt:param>
-                 </fmt:message>
-               </li>
-               <li class="profileSubscriptionPanelists">
-                 <fmt:message key="profile.block.profileSubscriptionPanelists">
-                   <fmt:param>${subscriptionLevelSettings.panelists}</fmt:param>
-                 </fmt:message>
-               </li>
-             </ul>
-           </div>
-         </c:when>
-       </c:choose>
-       
-       <p class="profileSubscriptionEnds">
-         <fmt:message key="profile.block.profileSubscriptionEnds">
-           <fmt:param value="${subscriptionEnds}"/>
-         </fmt:message>
-       </p>
-      </c:otherwise>
-    </c:choose>
-
+    <p class="profileSubscriptionLeveText">
+      <fmt:message key="profile.block.profileSubscriptionLeveText">
+        <fmt:param><fmt:message key="generic.subscriptionLevels.${subscriptionLevelSettings.level}"/></fmt:param>
+      </fmt:message>
+    </p>
+     
+    <p class="profileSubscriptionEnds">
+      <fmt:message key="profile.block.profileSubscriptionEnds">
+        <fmt:param value="${subscriptionEnds}"/>
+      </fmt:message>
+    </p>
+     
     <p>
       <span class="profileChangeSubscriptionText"><fmt:message key="profile.block.profileChangeSubscriptionText"/></span>
       <a class="profileChangeSubscriptionLink" href="#"><fmt:message key="profile.block.profileChangeSubscriptionLink"/></a>
