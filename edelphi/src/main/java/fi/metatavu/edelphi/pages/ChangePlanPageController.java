@@ -40,7 +40,7 @@ public class ChangePlanPageController extends PageController {
     User loggedUser = RequestUtils.getUser(pageRequestContext);
     Locale locale = pageRequestContext.getRequest().getLocale();
     
-    List<Plan> plans = planDAO.listAll();
+    List<Plan> plans = planDAO.listByVisible(Boolean.TRUE);
     Map<Long, String> planNames = new HashMap<>();
     Map<Long, String> planDescriptions = new HashMap<>();
     Map<Long, SubscriptionCompareResult> planCompareResults = new HashMap<>();

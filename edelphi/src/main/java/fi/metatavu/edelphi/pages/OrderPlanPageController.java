@@ -95,6 +95,10 @@ public class OrderPlanPageController extends PageController {
       throw new PageNotFoundException(locale);
     }
     
+    if (!plan.getVisible()) {
+      throw new PageNotFoundException(locale);
+    }
+    
     String name = LocalizationUtils.getLocalizedText(plan.getName(), locale);
     User user = userDAO.findById(loggedUserId);
     OrderHistory orderHistory = orderHistoryDAO.create(user, plan, plan.getSubscriptionLevel(), OrderStatus.WAITING_PAYMENT, "EUR", plan.getPrice(), name, plan.getDays());

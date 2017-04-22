@@ -43,6 +43,10 @@ public class Plan {
   @Column (nullable = false)
   @NotNull
   private Double price;
+  
+  @Column (nullable = false)
+  @NotNull
+  private Boolean visible;
 
   /**
    * Returns internal unique id
@@ -101,4 +105,12 @@ public class Plan {
     this.subscriptionLevel = subscriptionLevel;
   }
 
+  public Boolean getVisible() {
+    return visible;
+  }
+  
+  public void setVisible(Boolean visible) {
+    this.visible = visible;
+  }
+  
 }

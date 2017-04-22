@@ -28,6 +28,15 @@
         <div id="panelAdminPlanEditorBlock">
 
           <form>
+            <jsp:include page="/jsp/fragments/formfield_select.jsp">
+              <jsp:param name="labelLocale" value="admin.managePlan.visible"/>
+              <jsp:param name="name" value="visible"/>
+              <jsp:param name="options" value="VISIBLE,HIDDEN"/>
+              <jsp:param name="option.VISIBLE" value="${visibleLocale}"/>
+              <jsp:param name="option.HIDDEN" value="${hiddenLocale}"/>
+              <jsp:param name="value" value="${plan.visible ? 'VISIBLE' : 'HIDDEN'}"/>
+            </jsp:include>
+                  
             <ed:include page="/jsp/fragments/formfield_select.jsp">
               <ed:param name="labelLocale" value="admin.managePlan.subscriptionLevel"/>
               <ed:param name="name" value="subscriptionLevel" />

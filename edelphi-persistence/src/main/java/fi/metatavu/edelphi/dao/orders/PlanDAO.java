@@ -1,13 +1,21 @@
 package fi.metatavu.edelphi.dao.orders;
 
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
 import fi.metatavu.edelphi.dao.GenericDAO;
 import fi.metatavu.edelphi.domainmodel.base.LocalizedEntry;
 import fi.metatavu.edelphi.domainmodel.orders.Plan;
+import fi.metatavu.edelphi.domainmodel.orders.Plan_;
 import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 
 public class PlanDAO extends GenericDAO<Plan> {
 
-  public Plan create(SubscriptionLevel subscriptionLevel, Double price, String currency, Integer days, LocalizedEntry name, LocalizedEntry description) {
+  public Plan create(SubscriptionLevel subscriptionLevel, Double price, String currency, Integer days, LocalizedEntry name, LocalizedEntry description, Boolean visible) {
     Plan plan = new Plan();
     plan.setCurrency(currency);
     plan.setDays(days);
@@ -15,7 +23,20 @@ public class PlanDAO extends GenericDAO<Plan> {
     plan.setName(name);
     plan.setPrice(price);
     plan.setSubscriptionLevel(subscriptionLevel);
+    plan.setVisible(visible);
     return persist(plan);
+  }
+
+  public List<Plan> listByVisible(Boolean visible) {
+    EntityManager entityManager = getEntityManager(); 
+    
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Plan> criteria = criteriaBuilder.createQuery(Plan.class);
+    Root<Plan> root = criteria.from(Plan.class);
+    criteria.select(root);
+    criteria.where(criteriaBuilder.equal(root.get(Plan_.visible), visible));
+    
+    return entityManager.createQuery(criteria).getResultList();
   }
   
   public Plan updatePrice(Plan plan, Double price) {
@@ -37,5 +58,10 @@ public class PlanDAO extends GenericDAO<Plan> {
     plan.setSubscriptionLevel(subscriptionLevel);
     return persist(plan);
   }
-  
+
+  public Plan updateVisible(Plan plan, Boolean visible) {
+    plan.setVisible(visible);
+    return persist(plan);
+  }
+
 }

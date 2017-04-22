@@ -57,7 +57,7 @@ public class ManagePlanPageController extends DelfoiPageController {
         LocalizationUtils.updateText(description, LocaleUtils.toLocale(supportedLocale), messages.getText(locale, "admin.managePlan.description", new Object[] { supportedLocale }));
       }
       
-      plan = planDAO.create(SubscriptionLevel.PLUS, 0d, "EUR", 365, name, description);
+      plan = planDAO.create(SubscriptionLevel.PLUS, 0d, "EUR", 365, name, description, Boolean.FALSE);
     } else {
       Long planId = pageRequestContext.getLong("planId");
       if (planId != null) {
@@ -103,6 +103,8 @@ public class ManagePlanPageController extends DelfoiPageController {
     pageRequestContext.getRequest().setAttribute("descriptionValues", descriptionValues);
     pageRequestContext.getRequest().setAttribute("subscriptionLevelTitles", subscriptionLevelTitles);
     pageRequestContext.getRequest().setAttribute("plan", plan);
+    pageRequestContext.getRequest().setAttribute("visibleLocale", messages.getText(locale, "admin.managePlan.visibleOption"));
+    pageRequestContext.getRequest().setAttribute("hiddenLocale", messages.getText(locale, "admin.managePlan.hiddenOption"));
     
     pageRequestContext.setIncludeJSP("/jsp/pages/admin/manageplan.jsp");
   }

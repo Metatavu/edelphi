@@ -3099,5 +3099,13 @@
       referencedTableName="Plan" referencedColumnNames="id"/>
       
   </changeSet>
-
+  
+  <changeSet author="antti.leppa" id="plan-visible">
+    <addColumn tableName="Plan">
+      <column name="visible" type="BIT(1)">
+        <constraints nullable="false" />
+      </column>
+    </addColumn>
+  </changeSet>
+      
 </databaseChangeLog>

@@ -52,7 +52,8 @@ public class ManagePlanJSONRequestController extends JSONController {
       LocalizationUtils.updateText(plan.getName(), LocaleUtils.toLocale(supportedLocale), name);
       LocalizationUtils.updateText(plan.getDescription(), LocaleUtils.toLocale(supportedLocale), description);
     }
-
+    
+    planDAO.updateVisible(plan, "VISIBLE".equals(jsonRequestContext.getString("visible")));
     planDAO.updateDays(plan, jsonRequestContext.getInteger("days"));
     planDAO.updateSubscriptionLevel(plan, (SubscriptionLevel) jsonRequestContext.getEnum("subscriptionLevel", SubscriptionLevel.class));
     planDAO.updatePrice(plan, jsonRequestContext.getDouble("price"));

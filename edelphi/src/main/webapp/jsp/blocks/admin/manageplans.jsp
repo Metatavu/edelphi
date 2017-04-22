@@ -27,6 +27,9 @@
             <fmt:param value="${plan.days}"/>
             <fmt:param><fmt:message key="generic.subscriptionLevels.${plan.subscriptionLevel}"/></fmt:param>
             <fmt:param><fmt:formatNumber value="${plan.price}" currencyCode="${plan.currency}" type="currency" /></fmt:param>
+            <fmt:param>
+              <c:if test="${plan.visible eq false}"><fmt:message key="admin.managePlans.planDescriptionHidden"/></c:if>
+            </fmt:param>
           </fmt:message>
         </div>
       </div>
