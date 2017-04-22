@@ -9,6 +9,7 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.hibernate.search.jpa.Search;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
+import fi.metatavu.edelphi.domainmodel.orders.Plan;
 import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
@@ -192,6 +193,26 @@ public class UserDAO extends GenericDAO<User> {
     user.setLastModifier(modifier);
     getEntityManager().persist(user);
     return user;
+  }
+
+  public User updateSubscriptionLevel(User user, SubscriptionLevel subscriptionLevel) {
+    user.setSubscriptionLevel(subscriptionLevel);
+    return persist(user);
+  }
+
+  public User updateSubscriptionStarted(User user, Date subscriptionStarted) {
+    user.setSubscriptionStarted(subscriptionStarted);
+    return persist(user);
+  }
+
+  public User updateSubscriptionEnds(User user, Date subscriptionEnds) {
+    user.setSubscriptionEnds(subscriptionEnds);
+    return persist(user);
+  }
+
+  public User updatePlan(User user, Plan plan) {
+    user.setPlan(plan);
+    return persist(user);
   }
 
 }
