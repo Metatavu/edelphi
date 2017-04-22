@@ -1272,6 +1272,7 @@ margin:5px 0px 0px 0px;
  *
  */
 
+.panelAdminGenericRow,
 .panelAdminProcessRow,
 .panelAdminUserRow {
   padding:6px 5px 6px 5px;
@@ -1322,6 +1323,10 @@ margin:5px 0px 0px 0px;
 }
 
 .panelAdminUserRow .panelAdminGenericTitle {
+  color: #0099FF;
+}
+
+.panelAdminGenericRow .panelAdminGenericTitle {
   color: #0099FF;
 }
 
