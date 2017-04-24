@@ -15,16 +15,22 @@ import fi.metatavu.edelphi.test.ui.base.AbstractUITest;
 
 public class ChangePlanTestsBase extends AbstractUITest {
   
+  private static final String PREMIUM_NAME = "Premium";
+  private static final String PREMIUM_TYPE = "PREMIUM";
+  private static final String PLUS_NAME = "Plus";
+  private static final String PLUS_TYPE = "PLUS";
+  private static final String BASIC_NAME = "Basic";
+  private static final String BASIC_TYPE = "BASIC";
   private static final String CHANGEPLAN_PAGE = "/changeplan.page";
   
   private PlanMocker planMocker = new PlanMocker();
   
   @Before
   public void beforeTest() {
-    planMocker.createPlan("Plus 100", "Plus plan for 100 days with 100 euros", 100, "PLUS", "EUR", 100d, true);
-    planMocker.createPlan("Plus 200", "Plus plan for 200 days with 180 euros", 200, "PLUS", "EUR", 180d, true);
-    planMocker.createPlan("Premium 100", "Premium plan for 100 days with 200 euros", 100, "PREMIUM", "EUR", 200d, true);
-    planMocker.createPlan("Premium 200", "Premium plan for 200 days with 360 euros", 200, "PREMIUM", "EUR", 360d, true);
+    planMocker.createPlan("Plus 100", "Plus plan for 100 days with 100 euros", 100, PLUS_TYPE, "EUR", 100d, true);
+    planMocker.createPlan("Plus 200", "Plus plan for 200 days with 180 euros", 200, PLUS_TYPE, "EUR", 180d, true);
+    planMocker.createPlan("Premium 100", "Premium plan for 100 days with 200 euros", 100, PREMIUM_TYPE, "EUR", 200d, true);
+    planMocker.createPlan("Premium 200", "Premium plan for 200 days with 360 euros", 200, PREMIUM_TYPE, "EUR", 360d, true);
     planMocker.mock();
   }
   
@@ -36,46 +42,46 @@ public class ChangePlanTestsBase extends AbstractUITest {
   
   @Test
   public void testBasicToPlus() {
-    testPlanChange(null, "BASIC", "Basic", null, 1, 100, "PLUS", "Plus", 100, null, null);
-    testPlanChange(null, "BASIC", "Basic", null, 2, 200, "PLUS", "Plus", 180, null, null);
+    testPlanChange(null, BASIC_TYPE, BASIC_NAME, null, 1, 100, PLUS_TYPE, PLUS_NAME, 100, null, null);
+    testPlanChange(null, BASIC_TYPE, BASIC_NAME, null, 2, 200, PLUS_TYPE, PLUS_NAME, 180, null, null);
   }
 
   @Test
   public void testBasicToPremium() {
-    testPlanChange(null, "BASIC", "Basic", null, 3, 100, "PREMIUM", "Premium", 200, null, null);
-    testPlanChange(null, "BASIC", "Basic", null, 4, 200, "PREMIUM", "Premium", 360, null, null);
+    testPlanChange(null, BASIC_TYPE, BASIC_NAME, null, 3, 100, PREMIUM_TYPE, PREMIUM_NAME, 200, null, null);
+    testPlanChange(null, BASIC_TYPE, BASIC_NAME, null, 4, 200, PREMIUM_TYPE, PREMIUM_NAME, 360, null, null);
   }
   
   @Test
   public void testPlusToPlus() {
     OffsetDateTime oldEnds = OffsetDateTime.now().plusDays(30);
-    testPlanChange(planMocker.getPlanId(1), "PLUS", "Plus", oldEnds, 1, 100, "PLUS", "Plus", 100, null, 30);
-    testPlanChange(planMocker.getPlanId(1), "PLUS", "Plus", oldEnds, 2, 200, "PLUS", "Plus", 180, null, 30);
+    testPlanChange(planMocker.getPlanId(1), PLUS_TYPE, PLUS_NAME, oldEnds, 1, 100, PLUS_TYPE, PLUS_NAME, 100, null, 30);
+    testPlanChange(planMocker.getPlanId(1), PLUS_TYPE, PLUS_NAME, oldEnds, 2, 200, PLUS_TYPE, PLUS_NAME, 180, null, 30);
   }
   
   @Test
   public void testPlusToPremiumNoCompensation() {
-    testPlanChange(planMocker.getPlanId(1), "PLUS", "Plus", null, 3, 100, "PREMIUM", "Premium", 200, null, null);
-    testPlanChange(planMocker.getPlanId(1), "PLUS", "Plus", null, 4, 200, "PREMIUM", "Premium", 360, null, null);
+    testPlanChange(planMocker.getPlanId(1), PLUS_TYPE, PLUS_NAME, null, 3, 100, PREMIUM_TYPE, PREMIUM_NAME, 200, null, null);
+    testPlanChange(planMocker.getPlanId(1), PLUS_TYPE, PLUS_NAME, null, 4, 200, PREMIUM_TYPE, PREMIUM_NAME, 360, null, null);
   }
   
   @Test
   public void testPlusToPremiumWithCompensation() {
     OffsetDateTime oldEnds = OffsetDateTime.now().plusDays(30);
-    testPlanChange(planMocker.getPlanId(1), "PLUS", "Plus", oldEnds, 3, 100, "PREMIUM", "Premium", 200, 26.1d, null);
-    testPlanChange(planMocker.getPlanId(1), "PLUS", "Plus", oldEnds, 4, 200, "PREMIUM", "Premium", 360, 26.1d, null);
+    testPlanChange(planMocker.getPlanId(1), PLUS_TYPE, PLUS_NAME, oldEnds, 3, 100, PREMIUM_TYPE, PREMIUM_NAME, 200, 26.1d, null);
+    testPlanChange(planMocker.getPlanId(1), PLUS_TYPE, PLUS_NAME, oldEnds, 4, 200, PREMIUM_TYPE, PREMIUM_NAME, 360, 26.1d, null);
   }
   
   @Test
   public void testPremiumToPremium() {
     OffsetDateTime oldEnds = OffsetDateTime.now().plusDays(30);
-    testPlanChange(planMocker.getPlanId(3), "PREMIUM", "Premium", oldEnds, 3, 100, "PREMIUM", "Premium", 200, null, 30);
-    testPlanChange(planMocker.getPlanId(3), "PREMIUM", "Premium", oldEnds, 4, 200, "PREMIUM", "Premium", 360, null, 30);
+    testPlanChange(planMocker.getPlanId(3), PREMIUM_TYPE, PREMIUM_NAME, oldEnds, 3, 100, PREMIUM_TYPE, PREMIUM_NAME, 200, null, 30);
+    testPlanChange(planMocker.getPlanId(3), PREMIUM_TYPE, PREMIUM_NAME, oldEnds, 4, 200, PREMIUM_TYPE, PREMIUM_NAME, 360, null, 30);
   }
   
   @Test
   public void testPremiumToPlus() {
-    updateUserSubscription(1l, "PREMIUM", null, Date.from(OffsetDateTime.now().plusDays(30).toInstant()));
+    updateUserSubscription(1l, PREMIUM_TYPE, null, Date.from(OffsetDateTime.now().plusDays(30).toInstant()));
     updateUserPlan(1l, planMocker.getPlanId(3));
     
     login(ADMIN_EMAIL);
@@ -94,6 +100,7 @@ public class ChangePlanTestsBase extends AbstractUITest {
     assertInputEnabled("#changePlanGenericBlockContent .planFieldContainer:nth-of-type(4) input");
   }
 
+  @SuppressWarnings ("squid:S00107")
   private void testPlanChange(Long oldPlanId, String oldPlanType, String oldPlanName, OffsetDateTime fromEnds, int newPlanIndex, int newPlanDays, String newPlanType, String newPlanName, double newPlanPrice, Double compensation, Integer extraDays) {
     Date oldSubscriptionEnd = fromEnds != null ? Date.from(fromEnds.toInstant()) : null;
     OffsetDateTime newEndDate = OffsetDateTime.now().plusDays(newPlanDays);
@@ -168,6 +175,8 @@ public class ChangePlanTestsBase extends AbstractUITest {
     acceptPaytrailPayment(totalPrice);
     
     waitPresent("#GUI_indexProfilePanel");
+    waitAndAssertText(".profileSubscriptionLevelText", String.format("Your current subscription level is %s.", newPlanName));
+    waitAndAssertText(".profileSubscriptionEnds", String.format("your subscription ends %s", newEndDateFormatted));
     
     navigate(CHANGEPLAN_PAGE);
 

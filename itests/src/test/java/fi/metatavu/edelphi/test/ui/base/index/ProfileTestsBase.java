@@ -73,7 +73,7 @@ public class ProfileTestsBase extends AbstractUITest {
     updateUserSubscription(1l, "UNLIMITED", toDate(2016, 1, 1), toDate(2016, 10, 10));
     login(ADMIN_EMAIL);
     navigate(PROFILE_PAGE);
-    waitAndAssertText(".profileSubscriptionLeveText", String.format("Your current subscription level is \"%s\".", "Unlimited"));
+    waitAndAssertText(".profileSubscriptionLevelText", String.format("Your current subscription level is \"%s\".", "Unlimited"));
     assertNotPresent(".profileSubscriptionFeaturesLabel", ".profileSubscriptionPanels", ".profileSubscriptionPanelists");
     waitAndAssertText(".profileSubscriptionEnds", "your subscription ends Oct 10, 2016");
     waitAndAssertText(".profileChangeSubscriptionText", "You may change or continue your subscription by clicking");
@@ -81,7 +81,7 @@ public class ProfileTestsBase extends AbstractUITest {
   }
 
   private void assertSubscriptionLevelTexts(String level, int panels, int panelists) {
-    waitAndAssertText(".profileSubscriptionLeveText", String.format("Your current subscription level is \"%s\".", level));
+    waitAndAssertText(".profileSubscriptionLevelText", String.format("Your current subscription level is \"%s\".", level));
     waitAndAssertText(".profileSubscriptionFeaturesLabel", "Your subscription level allows you to:");
     waitAndAssertText(".profileSubscriptionPanels", String.format("Be a manager in %d active panel (currently you are a manager in %d panels)", panels, 0));
     waitAndAssertText(".profileSubscriptionPanelists", String.format("Have %d panelists in each panel", panelists));
