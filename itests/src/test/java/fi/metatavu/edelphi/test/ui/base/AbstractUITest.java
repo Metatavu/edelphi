@@ -1,9 +1,9 @@
 package fi.metatavu.edelphi.test.ui.base;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -22,6 +22,7 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -389,6 +390,12 @@ public class AbstractUITest {
       assertTrue(String.format("Found %d elements with selector %s", elements.size(), selector), elements.isEmpty());
     }
   }
+  
+  
+  protected void assertCount(String selector, int expected) {
+    assertEquals(expected, findElements(selector).size());
+  }
+
 
   protected void assertClassNotPresent(String selector, String className) {
     WebElement element = findElement(selector);
@@ -402,6 +409,18 @@ public class AbstractUITest {
     assertNotNull(element);
     String[] classes = StringUtils.split(element.getAttribute("class"));
     assertTrue(String.format("%s does not contain css class %s", selector, className), ArrayUtils.contains(classes, className));
+  }
+
+  protected void assertInputEnabled(String selector) {
+    WebElement element = findElement(selector);
+    assertNotNull(element);
+    assertTrue(element.isEnabled());
+  }
+
+  protected void assertInputDisabled(String selector) {
+    WebElement element = findElement(selector);
+    assertNotNull(element);
+    assertFalse(element.isEnabled());
   }
 
   protected void assertVisible(final String... selectors) {
@@ -537,6 +556,22 @@ public class AbstractUITest {
       fileOuputStream.close();
     }
   }
+
+  protected void acceptPaytrailPayment(Double expectedAmount) {
+    String paymentAmount = String.format(Locale.GERMAN, " %.2f \u20AC", expectedAmount);
+    waitAndAssertText("#payment-amount", paymentAmount, true, true);
+    
+    waitAndClick("input[value=\"Osuuspankki\"]");
+    waitPresent("*[name='ktunn']");
+
+    waitAndType("*[name='id']", "123456");
+    waitAndType("*[name='pw']", "7890");
+    waitAndClick("*[name='ktunn']");
+
+    waitAndType("*[name='avainluku']", "1234");
+    waitAndClick("*[name='avainl']");
+    waitAndClick("#Toiminto");
+  }
   
   private void dumpScreenShot() {
     dumpScreenShot((TakesScreenshot) webDriver);
@@ -563,6 +598,22 @@ public class AbstractUITest {
        "  id = ? ";
     
     executeUpdate(sql, subscriptionLevel, subscriptionStarted, subscriptionEnds, userId);
+  }
+  
+  protected void updateUserPlan(Long userId, Long planId) {
+    String sql =
+        "UPDATE " +
+        "   User " +
+        "SET " +
+        "  plan_id = ? " +
+        "WHERE " +
+        "  id = ? ";
+     
+     executeUpdate(sql, planId, userId);
+  }
+  
+  protected void deleteOrderHistories() {
+    executeUpdate("DELETE FROM OrderHistory");
   }
   
   private void executeUpdate(String sql, Object... params) {

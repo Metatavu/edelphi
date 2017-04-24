@@ -3108,4 +3108,20 @@
     </addColumn>
   </changeSet>
       
+  <changeSet author="antti.leppa" id="localized-value-sequence">
+    <sql dbms="mysql">
+      INSERT INTO 
+        hibernate_sequences (sequence_name, sequence_next_hi_value) 
+      VALUES 
+        ('LocalizedValue', (SELECT max(id) FROM LocalizedValue) + 1)
+      ON DUPLICATE KEY UPDATE sequence_next_hi_value = VALUES(sequence_next_hi_value);
+    </sql>
+    <sql dbms="h2">
+      INSERT INTO 
+        hibernate_sequences (sequence_name, sequence_next_hi_value) 
+      VALUES 
+        ('LocalizedValue', (SELECT max(id) FROM LocalizedValue) + 1);
+    </sql>
+  </changeSet>
+  
 </databaseChangeLog>

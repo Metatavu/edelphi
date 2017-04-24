@@ -7,12 +7,24 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class AbstractMocker {
-  
+
   private static Logger logger = Logger.getLogger(AbstractMocker.class.getName());
+  
+  private List<Long> localizedEntryIds = new ArrayList<>();
+  
+  public AbstractMocker cleanup() {
+    for (Long localizedEntryId : localizedEntryIds) {
+      deleteLocalizedEntry(localizedEntryId);
+    }
+    
+    return this;
+  }
   
   protected Connection getDatabaseConnection() {
     String username = System.getProperty("it.jdbc.username");
@@ -50,7 +62,27 @@ public class AbstractMocker {
     
     return id;
   }
+  
+  protected long createLocalizedEntry() {
+    Long id = getNextId("LocalizedEntry");
+    String sql = "INSERT INTO localizedEntry (id) VALUES (?)";
+    executeSql(sql, id);
+    localizedEntryIds.add(id);
+    return id;
+  }
+  
+  protected void deleteLocalizedEntry(Long id) {
+    executeSql("DELETE FROM LocalizedValue WHERE entry_id = ?", id);
+    executeSql("DELETE FROM LocalizedEntry WHERE id = ?", id);
+  }
 
+  protected long createLocalizedValue(String text, String locale, Long entryId) {
+    Long id = getNextId("LocalizedValue");
+    String sql = "INSERT INTO LocalizedValue (id, text, locale, entry_id) VALUES (?, ?, ?, ?)";
+    executeSql(sql, id, text, locale, entryId);
+    return id;
+  }
+  
   protected void executeSql(String sql, Object... params) {
     try (Connection connection = getDatabaseConnection()) {
       connection.setAutoCommit(true);
