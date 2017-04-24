@@ -41,8 +41,11 @@ public class ProfileTestsBase extends AbstractUITest {
   private void assertSubscriptionLevelTexts(String level, int panels, int panelists) {
     waitAndAssertText(".profileSubscriptionLevelText", String.format("Your current subscription level is %s.", level));
     waitAndAssertText(".profileSubscriptionEnds", "your subscription ends Oct 10, 2016");
+    /**
+    TODO: Re-enable after payment service is enabled in production
     waitAndAssertText(".profileChangeSubscriptionText", "You may change or continue your subscription by clicking");
     waitAndAssertText(".profileChangeSubscriptionLink", "here");
+    **/
   }
   
 }
