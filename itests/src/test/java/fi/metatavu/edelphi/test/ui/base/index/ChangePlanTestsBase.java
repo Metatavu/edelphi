@@ -80,6 +80,60 @@ public class ChangePlanTestsBase extends AbstractUITest {
   }
   
   @Test
+  public void testCancelPayment() {
+    Date oldSubscriptionEnd = Date.from(OffsetDateTime.now().plusDays(30).toInstant());
+    Double newPlanPrice = 200d;
+    Double compensation = 26.1d;
+    DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
+    String oldEndDateFormatted = oldSubscriptionEnd != null ? dateFormat.format(oldSubscriptionEnd) : null;
+    Double totalPrice = Math.max(newPlanPrice - compensation, 0);
+    int newPlanIndex = 3;
+    String oldPlanName = "Plus";
+    
+    NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance();
+    currencyFormatter.setCurrency(Currency.getInstance("EUR"));
+    String compensationFormatted = compensation != null ? currencyFormatter.format(compensation) : null;
+    String totalFormatted = currencyFormatter.format(totalPrice);
+    updateUserPlan(1l, planMocker.getPlanId(1));
+    updateUserSubscription(1l, "PLUS", null, oldSubscriptionEnd);
+    login(ADMIN_EMAIL);
+   
+    navigate(CHANGEPLAN_PAGE);
+    waitPresent("#currentPlanGenericBlockContent");
+    assertText("#currentPlanGenericBlockContent .currentPlanRow:nth-of-type(1) label", "SUBSCRIPTION LEVEL");
+    assertText("#currentPlanGenericBlockContent .currentPlanRow:nth-of-type(1) span", String.format("Your current subscription level is %s", oldPlanName));
+    assertText("#currentPlanGenericBlockContent .currentPlanRow:nth-of-type(2) span", String.format("Your subscription ends %s", oldEndDateFormatted));
+
+    String compensationText = String.format("Remaining time of your old order will be compensated in your new order. Your compensation will be %s", compensationFormatted);
+    assertText(String.format("#changePlanGenericBlockContent .planFieldContainer:nth-of-type(%d) .planHint", newPlanIndex), compensationText);
+    
+    waitPresent("#changePlanGenericBlockContent");
+    assertCount("#changePlanGenericBlockContent .planFieldContainer", 4);
+    waitAndClick(String.format("#changePlanGenericBlockContent .planFieldContainer:nth-of-type(%d) input", newPlanIndex));
+    waitAndClick("input[name='change']");
+    assertText("#orderPlanSummaryBlockContent .compensation", compensationFormatted);
+    
+    assertText("#orderPlanSummaryBlockContent .total", totalFormatted);
+    
+    waitAndType("input[name='mobileNumber']", "+358 12 345 6789");
+    waitAndType("input[name='streetAddress']", "Tester's street 1");
+    waitAndType("input[name='postalCode']", "12345");
+    waitAndType("input[name='postalOffice']", "Test");
+    waitAndClick("input[name='order']");
+
+    cancelPaytrailPayment(totalPrice);
+    
+    waitPresent("#GUI_indexProfilePanel");
+    waitAndAssertText(".profileSubscriptionLevelText", String.format("Your current subscription level is %s.", oldPlanName));
+    waitAndAssertText(".profileSubscriptionEnds", String.format("your subscription ends %s", oldEndDateFormatted));
+    
+    navigate(CHANGEPLAN_PAGE);
+
+    waitAndAssertText("#currentPlanGenericBlockContent .currentPlanRow:nth-of-type(1) span", String.format("Your current subscription level is %s", oldPlanName));
+    waitAndAssertText("#currentPlanGenericBlockContent .currentPlanRow:nth-of-type(2) span", String.format("Your subscription ends %s", oldEndDateFormatted));
+  }
+  
+  @Test
   public void testPremiumToPlus() {
     updateUserSubscription(1l, PREMIUM_TYPE, null, Date.from(OffsetDateTime.now().plusDays(30).toInstant()));
     updateUserPlan(1l, planMocker.getPlanId(3));

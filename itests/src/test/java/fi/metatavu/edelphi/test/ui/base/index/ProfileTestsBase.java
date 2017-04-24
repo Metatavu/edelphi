@@ -19,7 +19,7 @@ public class ProfileTestsBase extends AbstractUITest {
     updateUserSubscription(1l, "BASIC", toDate(2016, 1, 1), toDate(2016, 10, 10));
     login(ADMIN_EMAIL);
     navigate(PROFILE_PAGE);
-    assertSubscriptionLevelTexts("Basic", 1, 50);
+    assertSubscriptionLevelTexts("Basic");
   }
   
   @Test
@@ -27,7 +27,7 @@ public class ProfileTestsBase extends AbstractUITest {
     updateUserSubscription(1l, "PLUS", toDate(2016, 1, 1), toDate(2016, 10, 10));
     login(ADMIN_EMAIL);
     navigate(PROFILE_PAGE);
-    assertSubscriptionLevelTexts("Plus", 2, 100);
+    assertSubscriptionLevelTexts("Plus");
   }
 
   @Test
@@ -35,10 +35,10 @@ public class ProfileTestsBase extends AbstractUITest {
     updateUserSubscription(1l, "PREMIUM", toDate(2016, 1, 1), toDate(2016, 10, 10));
     login(ADMIN_EMAIL);
     navigate(PROFILE_PAGE);
-    assertSubscriptionLevelTexts("Premium", 2, 100);
+    assertSubscriptionLevelTexts("Premium");
   }
   
-  private void assertSubscriptionLevelTexts(String level, int panels, int panelists) {
+  private void assertSubscriptionLevelTexts(String level) {
     waitAndAssertText(".profileSubscriptionLevelText", String.format("Your current subscription level is %s.", level));
     waitAndAssertText(".profileSubscriptionEnds", "your subscription ends Oct 10, 2016");
     /**

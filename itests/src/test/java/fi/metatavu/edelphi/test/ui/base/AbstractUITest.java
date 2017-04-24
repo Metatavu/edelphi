@@ -573,6 +573,23 @@ public class AbstractUITest {
     waitAndClick("#Toiminto");
   }
   
+  protected void cancelPaytrailPayment(Double expectedAmount) {
+    String paymentAmount = String.format(Locale.GERMAN, " %.2f \u20AC", expectedAmount);
+    waitAndAssertText("#payment-amount", paymentAmount, true, true);
+    
+    waitAndClick("input[value=\"Osuuspankki\"]");
+    waitPresent("*[name='ktunn']");
+
+    waitAndType("*[name='id']", "123456");
+    waitAndType("*[name='pw']", "7890");
+    waitAndClick("*[name='ktunn']");
+
+    waitAndType("*[name='avainluku']", "1234");
+    waitAndClick("*[name='avainl']");
+    waitAndClick("*[name='Lopeta']");
+    waitAndClick(".PalveluSisalto a");
+  }
+  
   private void dumpScreenShot() {
     dumpScreenShot((TakesScreenshot) webDriver);
   }
