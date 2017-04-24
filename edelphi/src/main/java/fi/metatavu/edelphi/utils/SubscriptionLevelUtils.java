@@ -48,7 +48,7 @@ public class SubscriptionLevelUtils {
   public static long getDaysRemaining(Date subscriptionEnds) {
     if (subscriptionEnds != null) {
       OffsetDateTime oldEnd = OffsetDateTime.ofInstant(subscriptionEnds.toInstant(), ZoneId.systemDefault());
-      return Math.max(ChronoUnit.DAYS.between(OffsetDateTime.now(), oldEnd), 0);
+      return Math.max(ChronoUnit.DAYS.between(OffsetDateTime.now().minusHours(1), oldEnd), 0);
     }
     
     return 0;
@@ -59,8 +59,8 @@ public class SubscriptionLevelUtils {
       .plusDays(newPlan.getDays());
     
     long daysRemaining = getDaysRemaining(oldSubscriptionEnds);
-    if (isSameSubscriptionPlan(oldPlan, newPlan) && daysRemaining > 0) {
-      result.plusDays(daysRemaining);
+    if ((oldPlan != null && oldPlan.getSubscriptionLevel() != SubscriptionLevel.BASIC) && (comparePlans(oldPlan, newPlan) == SubscriptionCompareResult.EQUAL) && daysRemaining > 0) {
+      result = result.plusDays(daysRemaining);
     }
     
     return Date.from(result.toInstant());
@@ -71,35 +71,39 @@ public class SubscriptionLevelUtils {
       return null;
     }
     
+    if (oldPlan == null || newPlan == null) {
+      return null;
+    }
+    
+    if (subscriptionEnds == null) {
+      return null;
+    }
+    
     if (!StringUtils.equals(oldPlan.getCurrency(), newPlan.getCurrency())) {
       logger.log(Level.SEVERE, () -> String.format("Could not calculate compensation because plans have different currencies (%s, %s)", oldPlan.getCurrency(), newPlan.getCurrency()));
       return null;
     }
-    
+
     double dailyPrice = oldPlan.getPrice() / oldPlan.getDays();
     OffsetDateTime oldEnd = OffsetDateTime.ofInstant(subscriptionEnds.toInstant(), ZoneId.systemDefault());
     double daysLeft = ChronoUnit.DAYS.between(OffsetDateTime.now(), oldEnd);
+    
     return Math.min(Math.max(dailyPrice * daysLeft, 0), newPlan.getPrice());
   }
   
-  public static boolean isSameSubscriptionPlan(Plan plan1, Plan plan2) {
-    if (plan1 != null && plan2 != null) {
-      return plan1.getSubscriptionLevel().equals(plan2.getSubscriptionLevel());
-    }
-    
-    return false;
-  }
-  
   public static SubscriptionCompareResult comparePlans(Plan plan1, Plan plan2) {
-     return compareSubscriptionLevels(plan1.getSubscriptionLevel(), plan2.getSubscriptionLevel());
+    SubscriptionLevel subscriptionLevel1 = plan1 != null ? plan1.getSubscriptionLevel() : SubscriptionLevel.BASIC;
+    SubscriptionLevel subscriptionLevel2 = plan2 != null ? plan2.getSubscriptionLevel() : SubscriptionLevel.BASIC;
+    
+    return compareSubscriptionLevels(subscriptionLevel1, subscriptionLevel2);
   }
   
-  public static SubscriptionCompareResult compareSubscriptionLevels(SubscriptionLevel plan1, SubscriptionLevel plan2) {
-    if (plan1.ordinal() == plan2.ordinal()) {
+  public static SubscriptionCompareResult compareSubscriptionLevels(SubscriptionLevel subscriptionLevel1, SubscriptionLevel subscriptionLevel2) {
+    if (subscriptionLevel1.ordinal() == subscriptionLevel2.ordinal()) {
       return SubscriptionCompareResult.EQUAL;
     }
     
-    return plan1.ordinal() < plan2.ordinal() ? SubscriptionCompareResult.LOWER : SubscriptionCompareResult.HIGHER;    
+    return subscriptionLevel1.ordinal() < subscriptionLevel2.ordinal() ? SubscriptionCompareResult.LOWER : SubscriptionCompareResult.HIGHER;    
   }
 
   public static boolean isFeatureEnabled(SubscriptionLevel subscriptionLevel, Feature feature) {

@@ -52,7 +52,7 @@ public class ChangePlanPageController extends PageController {
       Plan oldPlan = loggedUser.getPlan();
       Date subscriptionEnds = loggedUser.getSubscriptionEnds();
       
-      SubscriptionCompareResult compareResult = SubscriptionLevelUtils.comparePlans(plan, loggedUser.getPlan());
+      SubscriptionCompareResult compareResult = SubscriptionLevelUtils.comparePlans(plan, oldPlan);
       
       planNames.put(planId, LocalizationUtils.getLocalizedText(plan.getName(), locale));
       planDescriptions.put(planId, LocalizationUtils.getLocalizedText(plan.getDescription(), locale));
@@ -60,9 +60,11 @@ public class ChangePlanPageController extends PageController {
       
       if (compareResult == SubscriptionCompareResult.HIGHER) {
         Double compensation = SubscriptionLevelUtils.calculateCompensation(oldPlan, plan, subscriptionEnds);
-        NumberFormat formatter = NumberFormat.getCurrencyInstance();
-        formatter.setCurrency(Currency.getInstance(plan.getCurrency()));
-        planCompensiotions.put(planId, formatter.format(compensation));
+        if (compensation != null) {
+          NumberFormat formatter = NumberFormat.getCurrencyInstance();
+          formatter.setCurrency(Currency.getInstance(plan.getCurrency()));
+          planCompensiotions.put(planId, formatter.format(compensation));
+        }
       }
     }
     

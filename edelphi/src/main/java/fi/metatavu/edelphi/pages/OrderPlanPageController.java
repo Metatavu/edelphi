@@ -82,8 +82,8 @@ public class OrderPlanPageController extends PageController {
     String postalOffice = pageRequestContext.getString("postalOffice");
     String country = pageRequestContext.getString("country");
     String company = pageRequestContext.getString("company");
-    Double discount = 0d;
     Plan plan = null;
+    User loggedUser = RequestUtils.getUser(pageRequestContext);
     Long loggedUserId = pageRequestContext.getLoggedUserId();
     
     Long planId = pageRequestContext.getLong("planId");
@@ -99,6 +99,7 @@ public class OrderPlanPageController extends PageController {
       throw new PageNotFoundException(locale);
     }
     
+    Double compensation = SubscriptionLevelUtils.calculateCompensation(loggedUser.getPlan(), plan, loggedUser.getSubscriptionEnds());        
     String name = LocalizationUtils.getLocalizedText(plan.getName(), locale);
     User user = userDAO.findById(loggedUserId);
     OrderHistory orderHistory = orderHistoryDAO.create(user, plan, plan.getSubscriptionLevel(), OrderStatus.WAITING_PAYMENT, "EUR", plan.getPrice(), name, plan.getDays());
@@ -124,9 +125,9 @@ public class OrderPlanPageController extends PageController {
       paytrailService.addProduct(payment, name, 
           String.format("#%d", plan.getId()), 
           1d, 
-          plan.getPrice(), 
+          plan.getPrice() - (compensation != null ? compensation : 0d), 
           getVatPercent(), 
-          discount, 
+          0d, 
           Product.TYPE_NORMAL);
     } catch (PaytrailException e) {
       throw new PaytrailCommunicationError(locale, e);
@@ -159,22 +160,24 @@ public class OrderPlanPageController extends PageController {
     if (newPlan == null) {
       throw new PageNotFoundException(locale);
     }
-    
-    if (SubscriptionLevelUtils.comparePlans(loggedUser.getPlan(), newPlan) == SubscriptionCompareResult.LOWER) {
-      logger.log(Level.SEVERE, "Tried to order lower plan that existing plan");
-      throw new PageNotFoundException(pageRequestContext.getRequest().getLocale());
-    }
-    
+
     Double compensation = null;
-    
     Plan oldPlan = loggedUser.getPlan();
     if (oldPlan != null) {
+      if (SubscriptionLevelUtils.comparePlans(newPlan, oldPlan) == SubscriptionCompareResult.LOWER) {
+        if (logger.isLoggable(Level.SEVERE)) {
+          logger.log(Level.SEVERE, String.format("Tried to order lower plan (%d - %s) that existing plan (%d - %s)", newPlan.getId(), newPlan.getSubscriptionLevel().name(), oldPlan.getId(), oldPlan.getSubscriptionLevel().name()));
+        }
+        
+        throw new PageNotFoundException(pageRequestContext.getRequest().getLocale());
+      }
+    
       compensation = SubscriptionLevelUtils.calculateCompensation(oldPlan, newPlan, loggedUser.getSubscriptionEnds());        
     }
     
     double totalPrice = newPlan.getPrice();
     if (compensation != null) {
-      totalPrice =- compensation;
+      totalPrice = Math.max(totalPrice - compensation, 0);
     }
     
     Date subscriptionEnds = SubscriptionLevelUtils.getNewSubscriptionEnd(loggedUser.getSubscriptionEnds(), oldPlan, newPlan); 
