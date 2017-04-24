@@ -98,7 +98,7 @@ public class ManagePlanPageController extends DelfoiPageController {
     pageRequestContext.getRequest().setAttribute("subscriptionLevels", subscriptionLevels.toArray(new String[0]));
     pageRequestContext.getRequest().setAttribute("locales", supportedLocales);
     pageRequestContext.getRequest().setAttribute("nameLocales", nameLocales);
-    pageRequestContext.getRequest().setAttribute("descriptionLocales", descriptionLocales);;
+    pageRequestContext.getRequest().setAttribute("descriptionLocales", descriptionLocales);
     pageRequestContext.getRequest().setAttribute("nameValues", nameValues);
     pageRequestContext.getRequest().setAttribute("descriptionValues", descriptionValues);
     pageRequestContext.getRequest().setAttribute("subscriptionLevelTitles", subscriptionLevelTitles);
