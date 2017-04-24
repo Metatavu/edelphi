@@ -1,4 +1,4 @@
-/*global CONTEXTPATH,BlockController,JSONUtils,addBlockController,startLoadingOperation,endLoadingOperation */
+/*global CONTEXTPATH,BlockController,addBlockController*/
 (function() {
   'use strict';
   

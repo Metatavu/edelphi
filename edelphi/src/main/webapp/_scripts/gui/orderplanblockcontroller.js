@@ -1,4 +1,4 @@
-/*global CONTEXTPATH,BlockController,JSONUtils,addBlockController,startLoadingOperation,endLoadingOperation */
+/*global CONTEXTPATH,BlockController,addBlockController,startLoadingOperation */
 (function() {
   'use strict';
   
@@ -17,7 +17,7 @@
       Event.stopObserving(this._orderButton, "click", this._orderButtonClickListener);
       $super();
     },
-    _onOrderButtonClick: function (event) {
+    _onOrderButtonClick: function () {
       startLoadingOperation("orderplan.block.preparingOrder");
     }
   });
