@@ -2,7 +2,6 @@ package fi.metatavu.edelphi;
 
 import java.text.MessageFormat;
 import java.time.OffsetDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -23,22 +22,17 @@ import com.bertoncelj.wildflysingletonservice.Stop;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
 import fi.metatavu.edelphi.dao.users.UserDAO;
-import fi.metatavu.edelphi.domainmodel.users.Notification;
-import fi.metatavu.edelphi.domainmodel.users.NotificationType;
 import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.i18n.Messages;
-import fi.metatavu.edelphi.jsons.users.NotificationUtils;
-import fi.metatavu.edelphi.utils.LocalizationUtils;
 import fi.metatavu.edelphi.utils.MailUtils;
-import fi.metatavu.edelphi.utils.SubscriptionLevelUtils;
 import fi.metatavu.edelphi.utils.SystemUtils;
 
 @Singleton
-public class NotificationMailScheduler {
+public class SubscriptionEndScheduler {
 
   private static final int TIMER_INTERVAL = 1000 * 60 * 60 * 4;
-
+  
   @PersistenceContext
   private EntityManager entityManager;
   
@@ -72,20 +66,18 @@ public class NotificationMailScheduler {
       try {
         UserDAO userDAO = new UserDAO();
         
-        for (Notification notification : NotificationUtils.listNotificationsByType(NotificationType.SUBSCRIPTION_END)) {
           Date subscriptionEnd = Date.from(OffsetDateTime.now()
-            .plus(notification.getMillisBefore(), ChronoUnit.MILLIS)
             .toInstant());
           
           List<User> users = userDAO.listByNeSubscriptionLevelAndSubscriptionEndsBefore(SubscriptionLevel.BASIC, subscriptionEnd);
           for (User user : users) {
-            if (!NotificationUtils.isAlreadyNotified(notification, user)) {
-              sendNotification(user, notification);
-              NotificationUtils.markNotified(notification, user);
-            }
+            SubscriptionLevel oldSubscriptionLevel = user.getSubscriptionLevel();
+            userDAO.updateSubscriptionLevel(user, SubscriptionLevel.BASIC);
+            userDAO.updateSubscriptionEnds(user, null);
+            userDAO.updateSubscriptionStarted(user, null);
+            sendNotification(oldSubscriptionLevel, user);
           }
-        }
-
+        
         startTimer(SystemUtils.isTestEnvironment() ? 1000 : TIMER_INTERVAL);
       } finally {
         GenericDAO.setEntityManager(null);
@@ -93,18 +85,17 @@ public class NotificationMailScheduler {
     }
   }
   
-  private void sendNotification(User user, Notification notification) {
+  private void sendNotification(SubscriptionLevel subscriptionLevel, User user) {
+    Messages messages = Messages.getInstance();
+    
     Locale locale = LocaleUtils.toLocale(user.getLocale());
     
-    SubscriptionLevel subscriptionLevel = user.getSubscriptionLevel();
-    if (subscriptionLevel != null) {
-      String subjectTemplate = LocalizationUtils.getLocalizedText(notification.getSubjectTemplate(), locale);
-      String contentTemplate = LocalizationUtils.getLocalizedText(notification.getContentTemplate(), locale);
-     
+    if (subscriptionLevel != null) {  
+      String subjectTemplate = messages.getText(locale, "generic.subscriptionEndedMailSubject");
+      String contentTemplate = messages.getText(locale, "generic.subscriptionEndedMailContent");
       String subscriptionName = Messages.getInstance().getText(locale, String.format("generic.subscriptionLevels.%s", subscriptionLevel.name()));
-      long daysRemaining = SubscriptionLevelUtils.getDaysRemaining(user.getSubscriptionEnds());
       
-      Object[] templateParameters = new Object[] { subscriptionName, daysRemaining };
+      Object[] templateParameters = new Object[] { subscriptionName };
   
       String email = user.getDefaultEmailAsString();
       String subject = subjectTemplate;
