@@ -587,7 +587,7 @@ public class AbstractUITest {
     waitAndType("*[name='avainluku']", "1234");
     waitAndClick("*[name='avainl']");
     waitAndClick("*[name='Lopeta']");
-    waitAndClick(".PalveluSisalto a")
+    waitAndClick(".PalveluSisalto a");
   }
   
   private void dumpScreenShot() {
