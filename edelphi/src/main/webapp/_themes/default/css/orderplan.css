@@ -1,0 +1,22 @@
+@CHARSET "UTF-8";
+
+.blockContent {
+  margin-left: 2px;
+}
+
+.summaryRow label {
+  font-size: 0.9em;
+  text-transform: uppercase;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.summaryRow span {
+  margin-bottom: 15px;
+  display: block;
+}
+
+#orderPlanDetailsBlockContent select {
+  display: block;
+}

@@ -55,7 +55,7 @@
             </jsp:include>
           </div>
           
-          <c:if test="${actions['MANAGE_SUBSCRIPTION_LEVELS']}">
+          <c:if test="${actions['MANAGE_SUBSCRIPTION_LEVELS'] or actions['MANAGE_PLANS']}">
             <div id="GUI_indexAdminDashboardSettingsContainer" class="pagePanel">
               <jsp:include page="/jsp/blocks/admin/settings.jsp"/>
             </div>

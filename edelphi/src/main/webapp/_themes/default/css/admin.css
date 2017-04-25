@@ -1,5 +1,13 @@
 @CHARSET "UTF-8";
 
+/* Manage plan */
+
+.planmanagement .formSelectContainer select {
+  display: block;
+}
+
+/* Subscription levels */
+
 .subscriptionlevels table {
   width: 100%;
 }

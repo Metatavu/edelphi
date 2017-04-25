@@ -17,6 +17,8 @@ public class FolderMocker extends AbstractResourceMocker {
       deleteFolder(folderId);
     }
     
+    super.cleanup();
+    
     return this;
   }
   

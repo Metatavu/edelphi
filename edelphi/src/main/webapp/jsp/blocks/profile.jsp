@@ -99,31 +99,33 @@
   </div>
   
   <!-- Subscription level -->
-  <!-- 
+
   <jsp:include page="/jsp/fragments/block_title.jsp">
     <jsp:param value="profile.block.profileSubscriptionLevelBlockTitle" name="titleLocale" />
   </jsp:include>
   
   <div id="profileSubscriptionLevelBlockContent" class="blockContent">
-    <p class="profileSubscriptionLeveText">
-      <fmt:message key="profile.block.profileSubscriptionLeveText">
+    <p class="profileSubscriptionLevelText">
+      <fmt:message key="profile.block.profileSubscriptionLevelText">
         <fmt:param><fmt:message key="generic.subscriptionLevels.${subscriptionLevelSettings.level}"/></fmt:param>
       </fmt:message>
     </p>
      
-    <p class="profileSubscriptionEnds">
-      <fmt:message key="profile.block.profileSubscriptionEnds">
-        <fmt:param value="${subscriptionEnds}"/>
-      </fmt:message>
-    </p>
-     
+    <c:if test="${subscriptionEnds ne null}">
+      <p class="profileSubscriptionEnds">
+        <fmt:message key="profile.block.profileSubscriptionEnds">
+          <fmt:param value="${subscriptionEnds}"/>
+        </fmt:message>
+      </p>
+    </c:if>
+    <!-- 
     <p>
       <span class="profileChangeSubscriptionText"><fmt:message key="profile.block.profileChangeSubscriptionText"/></span>
-      <a class="profileChangeSubscriptionLink" href="#"><fmt:message key="profile.block.profileChangeSubscriptionLink"/></a>
+      <a class="profileChangeSubscriptionLink" href="/changeplan.page"><fmt:message key="profile.block.profileChangeSubscriptionLink"/></a>
     </p>
-   
+    -->
   </div>
-  -->
+
   <!-- Internal password -->
 
   <jsp:include page="/jsp/fragments/block_title.jsp">

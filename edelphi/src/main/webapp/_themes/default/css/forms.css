@@ -18,6 +18,7 @@ button {
 }
 
 .formTextField,
+.formMemoField,
 .formPasswordField {
   border: 3px solid #e5e5e5;
   width:100%;

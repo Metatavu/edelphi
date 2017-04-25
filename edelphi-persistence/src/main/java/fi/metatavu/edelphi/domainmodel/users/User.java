@@ -36,6 +36,7 @@ import org.hibernate.search.annotations.Store;
 
 import fi.metatavu.edelphi.domainmodel.base.ArchivableEntity;
 import fi.metatavu.edelphi.domainmodel.base.ModificationTrackedEntity;
+import fi.metatavu.edelphi.domainmodel.orders.Plan;
 
 @Entity
 @Indexed
@@ -99,6 +100,9 @@ public class User implements ArchivableEntity, ModificationTrackedEntity {
   
   @Temporal (value=TemporalType.TIMESTAMP)
   private Date subscriptionEnds;
+  
+  @ManyToOne 
+  private Plan plan;
   
   /**
    * Returns internal unique id
@@ -301,6 +305,14 @@ public class User implements ArchivableEntity, ModificationTrackedEntity {
   
   public void setSubscriptionEnds(Date subscriptionEnds) {
     this.subscriptionEnds = subscriptionEnds;
+  }
+  
+  public Plan getPlan() {
+    return plan;
+  }
+  
+  public void setPlan(Plan plan) {
+    this.plan = plan;
   }
   
 }

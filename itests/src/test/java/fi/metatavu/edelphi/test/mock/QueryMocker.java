@@ -47,6 +47,8 @@ public class QueryMocker extends AbstractResourceMocker {
     for (Long queryId : queryIds) {
       deleteQuery(queryId);
     }
+    
+    super.cleanup();
 
     return this;
   }

@@ -92,7 +92,11 @@
     <!-- JTidy -->
     
     <jtidy.version>r938</jtidy.version>
-    
+
+    <!-- Paytrail -->
+
+    <paytrail-sdk.version>1.2.1</paytrail-sdk.version>
+
   </properties>
 
   <dependencyManagement>
@@ -189,6 +193,15 @@
         <artifactId>jtidy</artifactId>
         <version>${jtidy.version}</version>
       </dependency>
+
+      <!-- Paytrail -->
+
+      <dependency>
+        <groupId>fi.metatavu.paytrail</groupId>
+        <artifactId>paytrail-sdk</artifactId>
+        <version>${paytrail-sdk.version}</version>
+      </dependency>
+      
     </dependencies>
   </dependencyManagement>
   
