@@ -26,6 +26,7 @@ import fi.metatavu.edelphi.search.SearchResult;
 
 public class UserDAO extends GenericDAO<User> {
   
+  @SuppressWarnings ("squid:S00107")
   public User create(String firstName, String lastName, String nickname, User creator, SubscriptionLevel subscriptionLevel, Date subscriptionStarted, Date subscriptionEnds, String locale) {
     Date now = new Date();
     
