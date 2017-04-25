@@ -1,7 +1,15 @@
 package fi.metatavu.edelphi.utils;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.apache.commons.codec.binary.StringUtils;
 
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.dao.actions.DelfoiActionDAO;
@@ -10,12 +18,14 @@ import fi.metatavu.edelphi.dao.panels.PanelUserDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiAction;
 import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.features.SubscriptionLevelFeature;
+import fi.metatavu.edelphi.domainmodel.orders.Plan;
 import fi.metatavu.edelphi.domainmodel.panels.PanelState;
 import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 public class SubscriptionLevelUtils {
 
+  private static Logger logger = Logger.getLogger(SubscriptionLevelUtils.class.getName());
   private static final Map<SubscriptionLevel, SubscriptionLevelSettings> DEFAULTS;
   
   private SubscriptionLevelUtils() {
@@ -34,7 +44,68 @@ public class SubscriptionLevelUtils {
     
     return null;
   }
+
+  public static long getDaysRemaining(Date subscriptionEnds) {
+    if (subscriptionEnds != null) {
+      OffsetDateTime oldEnd = OffsetDateTime.ofInstant(subscriptionEnds.toInstant(), ZoneId.systemDefault());
+      return Math.max(ChronoUnit.DAYS.between(OffsetDateTime.now().minusHours(1), oldEnd), 0);
+    }
+    
+    return 0;
+  }
+
+  public static Date getNewSubscriptionEnd(Date oldSubscriptionEnds, Plan oldPlan, Plan newPlan) {
+    OffsetDateTime result = OffsetDateTime.now()
+      .plusDays(newPlan.getDays());
+    
+    long daysRemaining = getDaysRemaining(oldSubscriptionEnds);
+    if ((oldPlan != null && oldPlan.getSubscriptionLevel() != SubscriptionLevel.BASIC) && (comparePlans(oldPlan, newPlan) == SubscriptionCompareResult.EQUAL) && daysRemaining > 0) {
+      result = result.plusDays(daysRemaining);
+    }
+    
+    return Date.from(result.toInstant());
+  }
   
+  public static Double calculateCompensation(Plan oldPlan, Plan newPlan, Date subscriptionEnds) {
+    if (comparePlans(newPlan, oldPlan) != SubscriptionCompareResult.HIGHER) {
+      return null;
+    }
+    
+    if (oldPlan == null || newPlan == null) {
+      return null;
+    }
+    
+    if (subscriptionEnds == null) {
+      return null;
+    }
+    
+    if (!StringUtils.equals(oldPlan.getCurrency(), newPlan.getCurrency())) {
+      logger.log(Level.SEVERE, () -> String.format("Could not calculate compensation because plans have different currencies (%s, %s)", oldPlan.getCurrency(), newPlan.getCurrency()));
+      return null;
+    }
+
+    double dailyPrice = oldPlan.getPrice() / oldPlan.getDays();
+    OffsetDateTime oldEnd = OffsetDateTime.ofInstant(subscriptionEnds.toInstant(), ZoneId.systemDefault());
+    double daysLeft = ChronoUnit.DAYS.between(OffsetDateTime.now(), oldEnd);
+    
+    return Math.min(Math.max(dailyPrice * daysLeft, 0), newPlan.getPrice());
+  }
+  
+  public static SubscriptionCompareResult comparePlans(Plan plan1, Plan plan2) {
+    SubscriptionLevel subscriptionLevel1 = plan1 != null ? plan1.getSubscriptionLevel() : SubscriptionLevel.BASIC;
+    SubscriptionLevel subscriptionLevel2 = plan2 != null ? plan2.getSubscriptionLevel() : SubscriptionLevel.BASIC;
+    
+    return compareSubscriptionLevels(subscriptionLevel1, subscriptionLevel2);
+  }
+  
+  public static SubscriptionCompareResult compareSubscriptionLevels(SubscriptionLevel subscriptionLevel1, SubscriptionLevel subscriptionLevel2) {
+    if (subscriptionLevel1.ordinal() == subscriptionLevel2.ordinal()) {
+      return SubscriptionCompareResult.EQUAL;
+    }
+    
+    return subscriptionLevel1.ordinal() < subscriptionLevel2.ordinal() ? SubscriptionCompareResult.LOWER : SubscriptionCompareResult.HIGHER;    
+  }
+
   public static boolean isFeatureEnabled(SubscriptionLevel subscriptionLevel, Feature feature) {
     SubscriptionLevelFeatureDAO subscriptionLevelFeatureDAO = new SubscriptionLevelFeatureDAO();
     return subscriptionLevelFeatureDAO.findBySubscriptionLevelAndFeature(subscriptionLevel, feature) != null;

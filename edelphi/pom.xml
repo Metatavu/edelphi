@@ -72,7 +72,15 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
   </properties>
   
   <dependencies>
-  
+    
+    <!-- Transactions -->
+    
+    <dependency>
+      <groupId>org.jboss.spec.javax.transaction</groupId>
+      <artifactId>jboss-transaction-api_1.2_spec</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
     <dependency>
       <groupId>org.jboss.spec.javax.servlet</groupId>
       <artifactId>jboss-servlet-api_3.1_spec</artifactId>
@@ -411,6 +419,13 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
       <groupId>org.liquibase</groupId>
       <artifactId>liquibase-cdi</artifactId>
       <version>${liquibase.version}</version>
+    </dependency>
+    
+    <!-- Paytrail -->
+
+    <dependency>
+      <groupId>fi.metatavu.paytrail</groupId>
+      <artifactId>paytrail-sdk</artifactId>
     </dependency>
     
   </dependencies>

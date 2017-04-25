@@ -10,9 +10,18 @@
     <jsp:param value="admin.dashboard.settingsTitle" name="titleLocale"/>
   </jsp:include>
   
-  <div class="panelAdminUserRow">
-    <div class="panelAdminGenericTitle"><a href="/admin/managesubscriptionlevels.page"><fmt:message key="admin.dashboard.subscriptionLevelsAction" /></a></div>
-    <div class="panelAdminGenericDescription"><fmt:message key="admin.dashboard.subscriptionLevelsDescription" /></div>
-  </div>
+  <c:if test="${actions['MANAGE_SUBSCRIPTION_LEVELS']}">
+    <div class="panelAdminGenericRow">
+      <div class="panelAdminGenericTitle"><a href="/admin/managesubscriptionlevels.page"><fmt:message key="admin.dashboard.subscriptionLevelsAction" /></a></div>
+      <div class="panelAdminGenericDescription"><fmt:message key="admin.dashboard.subscriptionLevelsDescription" /></div>
+    </div>
+  </c:if>
+  
+  <c:if test="${actions['MANAGE_PLANS']}">
+    <div class="panelAdminGenericRow">
+      <div class="panelAdminGenericTitle"><a href="/admin/manageplans.page"><fmt:message key="admin.dashboard.managePlansAction" /></a></div>
+      <div class="panelAdminGenericDescription"><fmt:message key="admin.dashboard.managePlansDescription" /></div>
+    </div>
+  </c:if>
   
 </div>

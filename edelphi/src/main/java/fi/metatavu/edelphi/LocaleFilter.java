@@ -19,6 +19,8 @@ import javax.servlet.jsp.jstl.core.Config;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.LocaleUtils;
 
+import fi.metatavu.edelphi.utils.LocalizationUtils;
+
 /**
  * Filter that is responsible of resolving used locale
  * 
@@ -26,7 +28,7 @@ import org.apache.commons.lang.LocaleUtils;
  */
 public class LocaleFilter implements Filter {
   
-  private static final String[] SUPPORTED_LOCALES = {"en", "fi"};
+  private static final String[] SUPPORTED_LOCALES = LocalizationUtils.getSupportedLocales();
   
   @Override
   public void init(FilterConfig arg0) throws ServletException {

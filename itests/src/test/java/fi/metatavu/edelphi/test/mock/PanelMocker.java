@@ -24,6 +24,8 @@ public class PanelMocker extends AbstractMocker {
     for (Long panelId : panelIds) {
       deletePanel(panelId);
     }
+
+    super.cleanup();
     
     return this;
   }

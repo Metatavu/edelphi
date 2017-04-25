@@ -1,12 +1,16 @@
 INSERT INTO
   SettingKey (id, name)
 VALUES 
-  (1, 'system.environment');
+  (1, 'system.environment'),
+  (2, 'paytrail.merchantId'),
+  (3, 'paytrail.merchantSecret');
 
 INSERT INTO
   Setting (id, key_id, value)
 VALUES 
-  (1, 1, 'test');
+  (1, 1, 'test'),
+  (2, 2, '13466'),
+  (3, 3, '6pKF4jkv97zmqBJ3ZL8gUw5DfT2NMQ');
   
 INSERT INTO
   User (id, firstName, lastName, archived, creator_id, created, lastModifier_id, lastModified, subscriptionLevel)
@@ -18,6 +22,13 @@ INSERT INTO
 VALUES
   (1, 1, 'admin@example.com');
 
+UPDATE
+  User
+SET
+  defaultEmail_id = 1
+WHERE
+  id = 1;
+  
 INSERT INTO
   Resource (id, name, urlName, description, parentFolder_id, type, visible, archived, created, lastModifier_id, lastModified, indexNumber)
 VALUES

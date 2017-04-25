@@ -49,5 +49,6 @@ public class EdelfoiStatusCode extends StatusCode {
   public static final int INTEREST_CONTAINS_USERS = 1042;
   public static final int NO_PARENT_COMMENT = 1043;
   public static final int FEATURE_NOT_AVAILABLE_ON_SUBSCRIPTION_LEVEL = 1044;
+  public static final int PAYTRAIL_COMMUNICATION_ERROR = 1045;
   
 }

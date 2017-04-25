@@ -1,0 +1,49 @@
+@CHARSET "UTF-8";
+
+#changePlanGenericBlockContent {
+  margin-top: 10px;
+}
+
+.blockContent {
+  margin-left: 2px;
+}
+
+.planFieldContainer {
+  padding-bottom: 10px;
+}
+
+.currentPlanRow label {
+  font-size: 0.9em;
+  text-transform: uppercase;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.currentPlanRow span {
+  margin-bottom: 15px;
+  display: block;
+}
+
+.planFieldContainer input,
+.planFieldContainer label {
+  vertical-align: top;
+  line-height: 18px;
+}
+
+.planFieldContainer {
+  clear: both;
+  margin-right: 5px;
+}
+
+.planPrice {
+  color: #ff6600;
+  float: right;
+  font-size: 15px;
+}
+
+.planHint {
+  font-style: italic;
+  margin-bottom: 10px;
+  display: block;
+}
