@@ -26,7 +26,7 @@ import fi.metatavu.edelphi.search.SearchResult;
 
 public class UserDAO extends GenericDAO<User> {
   
-  public User create(String firstName, String lastName, String nickname, User creator, SubscriptionLevel subscriptionLevel, Date subscriptionStarted, Date subscriptionEnds) {
+  public User create(String firstName, String lastName, String nickname, User creator, SubscriptionLevel subscriptionLevel, Date subscriptionStarted, Date subscriptionEnds, String locale) {
     Date now = new Date();
     
     User user = new User();
@@ -41,7 +41,8 @@ public class UserDAO extends GenericDAO<User> {
     user.setSubscriptionLevel(subscriptionLevel);
     user.setSubscriptionStarted(subscriptionStarted);
     user.setSubscriptionEnds(subscriptionEnds);
-
+    user.setLocale(locale);
+    
     return persist(user);
   }
 
@@ -238,4 +239,9 @@ public class UserDAO extends GenericDAO<User> {
     return persist(user);
   }
 
+  public User updateLocale(User user, String locale) {
+    user.setLocale(locale);
+    return persist(user);
+  }
+  
 }

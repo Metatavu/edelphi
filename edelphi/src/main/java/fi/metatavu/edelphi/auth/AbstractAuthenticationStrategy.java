@@ -36,13 +36,13 @@ public abstract class AbstractAuthenticationStrategy implements AuthenticationPr
     this.authSource = authSource;
     AuthSourceSettingDAO authSourceSettingDAO = new AuthSourceSettingDAO();
     List<AuthSourceSetting> authSourceSettings = authSourceSettingDAO.listByAuthSource(authSource);
-    this.settings = new HashMap<String, String>();
+    this.settings = new HashMap<>();
     for (AuthSourceSetting setting : authSourceSettings) {
       settings.put(setting.getKey(), setting.getValue());
     }
   }
   
-  protected User registerExternalUser(String firstName, String lastName, String email, Delfoi delfoi, DelfoiUserRole userRole, String externalId) {
+  protected User registerExternalUser(String firstName, String lastName, String email, Delfoi delfoi, DelfoiUserRole userRole, String externalId, Locale locale) {
     UserDAO userDAO = new UserDAO();
     UserEmailDAO userEmailDAO = new UserEmailDAO();
     UserIdentificationDAO userIdentificationDAO = new UserIdentificationDAO();
@@ -52,7 +52,7 @@ public abstract class AbstractAuthenticationStrategy implements AuthenticationPr
     User creatorModifier = null;
     
     // Create User
-    User user = userDAO.create(firstName, lastName, null, creatorModifier, Defaults.NEW_USER_SUBSCRIPTION_LEVEL, null, null);
+    User user = userDAO.create(firstName, lastName, null, creatorModifier, Defaults.NEW_USER_SUBSCRIPTION_LEVEL, null, null, locale.getLanguage());
 
     if (email != null) {
       // Create UserEmail
@@ -73,6 +73,7 @@ public abstract class AbstractAuthenticationStrategy implements AuthenticationPr
   protected AuthenticationResult processExternalLogin(RequestContext requestContext, String externalId, List<String> emails, String firstName, String lastName) {
     UserEmailDAO userEmailDAO = new UserEmailDAO();
     UserIdentificationDAO userIdentificationDAO = new UserIdentificationDAO();
+    Locale locale = requestContext.getRequest().getLocale();
     UserIdentification userIdentification = userIdentificationDAO.findByExternalId(externalId, authSource);
     // Resolve to a common user account based on a variety of possible sources
     User currentUser = RequestUtils.getUser(requestContext);
@@ -84,7 +85,7 @@ public abstract class AbstractAuthenticationStrategy implements AuthenticationPr
       Delfoi delfoi = RequestUtils.getDelfoi(requestContext);
       DelfoiUserRole userRole = RequestUtils.getDefaults(requestContext).getDefaultDelfoiUserRole();
       String email = emails.size() > 0 ? emails.get(0) : null;
-      resolvedUser = registerExternalUser(firstName, lastName, email, delfoi, userRole, externalId);
+      resolvedUser = registerExternalUser(firstName, lastName, email, delfoi, userRole, externalId, locale);
       for (int i = 1; i < emails.size(); i++) {
         userEmailDAO.create(resolvedUser, emails.get(i));
       }
