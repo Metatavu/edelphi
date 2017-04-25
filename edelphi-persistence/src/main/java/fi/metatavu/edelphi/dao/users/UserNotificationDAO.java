@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.dao.users;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -15,11 +16,12 @@ import fi.metatavu.edelphi.domainmodel.users.UserNotification_;
 
 public class UserNotificationDAO extends GenericDAO<UserNotification> {
   
-  public UserNotification create(Notification notification, User user) {
+  public UserNotification create(Notification notification, User user, Date notificationSent) {
     UserNotification userNotification = new UserNotification();
     
     userNotification.setNotification(notification);
     userNotification.setUser(user);
+    userNotification.setNotificationSent(notificationSent);
     
     return persist(userNotification);
   }

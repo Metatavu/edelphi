@@ -48,4 +48,12 @@ public class UserNotification {
     this.notification = notification;
   }
   
+  public void setNotificationSent(Date notificationSent) {
+    this.notificationSent = notificationSent;
+  }
+  
+  public Date getNotificationSent() {
+    return notificationSent;
+  }
+  
 }
