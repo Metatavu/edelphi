@@ -99,10 +99,8 @@ public class PaytrailPageController extends PageController {
     User user = orderHistory.getUser();
 
     if (!user.getSubscriptionLevel().equals(orderHistory.getSubscriptionLevel())) {
-      OffsetDateTime started = OffsetDateTime.now();
       OffsetDateTime ends = OffsetDateTime.now().plusDays(orderHistory.getDays());
       userDAO.updateSubscriptionLevel(user, orderHistory.getSubscriptionLevel());
-      userDAO.updateSubscriptionStarted(user, Date.from(started.toInstant()));
       userDAO.updateSubscriptionEnds(user, Date.from(ends.toInstant()));
     } else {      
       OffsetDateTime currentEnd = OffsetDateTime.ofInstant(user.getSubscriptionEnds().toInstant(), ZoneId.systemDefault());
@@ -112,6 +110,7 @@ public class PaytrailPageController extends PageController {
     }
 
     userDAO.updatePlan(user, orderHistory.getPlan());
+    userDAO.updateSubscriptionStarted(user, new Date());
     orderHistoryDAO.updateStatus(orderHistory, OrderStatus.PAID);
   }
 

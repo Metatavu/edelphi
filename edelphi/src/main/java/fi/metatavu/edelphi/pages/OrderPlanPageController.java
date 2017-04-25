@@ -102,7 +102,7 @@ public class OrderPlanPageController extends PageController {
     Double compensation = SubscriptionLevelUtils.calculateCompensation(loggedUser.getPlan(), plan, loggedUser.getSubscriptionEnds());        
     String name = LocalizationUtils.getLocalizedText(plan.getName(), locale);
     User user = userDAO.findById(loggedUserId);
-    OrderHistory orderHistory = orderHistoryDAO.create(user, plan, plan.getSubscriptionLevel(), OrderStatus.WAITING_PAYMENT, "EUR", plan.getPrice(), name, plan.getDays());
+    OrderHistory orderHistory = orderHistoryDAO.create(new Date(), user, plan, plan.getSubscriptionLevel(), OrderStatus.WAITING_PAYMENT, "EUR", plan.getPrice(), name, plan.getDays());
     String orderNumber = orderHistory.getId().toString();
     String baseUrl = RequestUtils.getBaseUrl(pageRequestContext.getRequest());
 
