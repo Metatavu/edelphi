@@ -3124,4 +3124,12 @@
     </sql>
   </changeSet>
   
+  <changeSet author="antti.leppa" id="order-history-created">
+    <addColumn tableName="OrderHistory">
+      <column name="created" type="datetime(6)">
+        <constraints nullable="false" />
+      </column>
+    </addColumn>
+  </changeSet>
+  
 </databaseChangeLog>

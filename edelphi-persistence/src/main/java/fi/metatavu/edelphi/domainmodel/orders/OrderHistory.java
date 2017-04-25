@@ -1,5 +1,7 @@
 package fi.metatavu.edelphi.domainmodel.orders;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -10,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.TableGenerator;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
@@ -53,7 +57,11 @@ public class OrderHistory {
   @ManyToOne 
   private Plan plan;
   
-
+  @NotNull
+  @Column (nullable = false)
+  @Temporal (TemporalType.TIMESTAMP)
+  private Date created;
+  
   /**
    * Returns internal unique id
    * 
@@ -125,6 +133,14 @@ public class OrderHistory {
   
   public void setPlan(Plan plan) {
     this.plan = plan;
+  }
+ 
+  public void setCreated(Date created) {
+    this.created = created;
+  }
+  
+  public Date getCreated() {
+    return created;
   }
   
 }
