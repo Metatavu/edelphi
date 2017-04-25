@@ -53,7 +53,6 @@ public class OrderHistory {
   @ManyToOne 
   private Plan plan;
   
-
   /**
    * Returns internal unique id
    * 

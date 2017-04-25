@@ -1,11 +1,19 @@
 package fi.metatavu.edelphi.dao.users;
 
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.hibernate.search.jpa.FullTextEntityManager;
+import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
@@ -13,10 +21,8 @@ import fi.metatavu.edelphi.domainmodel.orders.Plan;
 import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
+import fi.metatavu.edelphi.domainmodel.users.User_;
 import fi.metatavu.edelphi.search.SearchResult;
-
-import org.hibernate.search.jpa.FullTextEntityManager;
-import org.hibernate.search.jpa.FullTextQuery;
 
 public class UserDAO extends GenericDAO<User> {
   
@@ -37,6 +43,23 @@ public class UserDAO extends GenericDAO<User> {
     user.setSubscriptionEnds(subscriptionEnds);
 
     return persist(user);
+  }
+
+  public List<User> listByNeSubscriptionLevelAndSubscriptionEndsBefore(SubscriptionLevel subscriptionLevelNot, Date subscriptionEndsBefore) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<User> criteria = criteriaBuilder.createQuery(User.class);
+    Root<User> root = criteria.from(User.class);
+    criteria.select(root);
+    criteria.where(
+        criteriaBuilder.and(
+          criteriaBuilder.notEqual(root.get(User_.subscriptionLevel), subscriptionLevelNot),
+          criteriaBuilder.lessThanOrEqualTo(root.get(User_.subscriptionEnds), subscriptionEndsBefore)
+        )
+      );
+
+    return entityManager.createQuery(criteria).getResultList(); 
   }
 
   @SuppressWarnings("unchecked")
