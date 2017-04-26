@@ -106,10 +106,14 @@ public class PaytrailPageController extends PageController {
       OffsetDateTime ends = OffsetDateTime.now().plusDays(orderHistory.getDays());
       userDAO.updateSubscriptionLevel(user, orderHistory.getSubscriptionLevel());
       userDAO.updateSubscriptionEnds(user, Date.from(ends.toInstant()));
-    } else {      
-      OffsetDateTime currentEnd = OffsetDateTime.ofInstant(user.getSubscriptionEnds().toInstant(), ZoneId.systemDefault());
+    } else {
+      OffsetDateTime currentEnd = null;
+      if (user.getSubscriptionEnds() != null) {
+        currentEnd = OffsetDateTime.ofInstant(user.getSubscriptionEnds().toInstant(), ZoneId.systemDefault());
+      }
+      
       OffsetDateTime now = OffsetDateTime.now();
-      OffsetDateTime ends = currentEnd.isAfter(now) ? currentEnd.plusDays(orderHistory.getDays()) : now.plusDays(orderHistory.getDays());
+      OffsetDateTime ends = currentEnd != null && currentEnd.isAfter(now) ? currentEnd.plusDays(orderHistory.getDays()) : now.plusDays(orderHistory.getDays());
       userDAO.updateSubscriptionEnds(user, Date.from(ends.toInstant()));
     }
 
