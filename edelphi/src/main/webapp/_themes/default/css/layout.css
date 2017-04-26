@@ -929,6 +929,8 @@ li.loginWithTupas {
 .createPanel_prevPageLink {
   position:absolute;
   left:20px;
+  background-color: #ccc;
+  cursor: default;
 }
  
 

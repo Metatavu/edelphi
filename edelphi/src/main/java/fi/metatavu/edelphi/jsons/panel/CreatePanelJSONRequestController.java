@@ -56,9 +56,15 @@ public class CreatePanelJSONRequestController extends JSONController {
     String name = jsonRequestContext.getString("panelName");
     String urlName = ResourceUtils.getUrlName(name);
     String description = jsonRequestContext.getString("panelDescription");
+    PanelSettingsTemplate panelSettingsTemplate;
+    
     Long settingsTemplateId = jsonRequestContext.getLong("panelSettingsTemplateId");
-    PanelSettingsTemplate panelSettingsTemplate = panelSettingsTemplateDAO.findById(settingsTemplateId);
-
+    if (settingsTemplateId != null) {
+      panelSettingsTemplate = panelSettingsTemplateDAO.findById(settingsTemplateId);
+    } else {
+      panelSettingsTemplate = panelSettingsTemplateDAO.findFirst();
+    }
+    
     Messages messages = Messages.getInstance();
     Locale locale = jsonRequestContext.getRequest().getLocale();
     

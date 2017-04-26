@@ -3,8 +3,7 @@ CreatePanelBlockController = Class.create(BlockController, {
     this._createPanelButtonClickListener = this._onCreatePanelButtonClick.bindAsEventListener(this);
     this._closeModalButtonClickListener = this._onCloseModalButtonClick.bindAsEventListener(this);
     
-    this._pages = new Array();
-    this._pages.push(new ChoosePanelTypePage(this));
+    this._pages = [];
     this._pages.push(new PanelBasicInfoPage(this));
     this._currentPage = undefined;
     this._currentPageNumber = undefined;
@@ -46,13 +45,15 @@ CreatePanelBlockController = Class.create(BlockController, {
     this._currentPageNumber = undefined;
   },
   _showPage: function (pageNumber) {
-    if (this._currentPage) {
-      this._currentPage.deinitPage();
+    if (pageNumber >= 0) {
+      if (this._currentPage) {
+        this._currentPage.deinitPage();
+      }
+      
+      this._currentPageNumber = pageNumber;
+      this._currentPage = this._pages[pageNumber];
+      this._currentPage.initPage();
     }
-    
-    this._currentPageNumber = pageNumber;
-    this._currentPage = this._pages[pageNumber];
-    this._currentPage.initPage();
   },
   _onCreatePanelButtonClick: function (event) {
     this._showPage(0);
