@@ -101,7 +101,6 @@ public class AbstractUITest {
   protected void createPanel(String name, String description) {
     navigate("/");
     waitAndClick(".createPanelBlockCreatePanelLink");
-    waitAndClick(".createPanel_panelTypesContainer .createPanel_panelType:nth-child(1) .createPanel_panelTypeName");
     waitAndType("input[name='createPanel_panelName']", name);
     
     if (StringUtils.isNotBlank(description)) {
