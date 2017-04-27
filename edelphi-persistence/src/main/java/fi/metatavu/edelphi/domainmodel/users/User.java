@@ -33,6 +33,7 @@ import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Store;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import fi.metatavu.edelphi.domainmodel.base.ArchivableEntity;
 import fi.metatavu.edelphi.domainmodel.base.ModificationTrackedEntity;
@@ -103,6 +104,11 @@ public class User implements ArchivableEntity, ModificationTrackedEntity {
   
   @ManyToOne 
   private Plan plan;
+  
+  @NotEmpty
+  @NotNull
+  @Column (nullable = false)
+  private String locale;
   
   /**
    * Returns internal unique id
@@ -313,6 +319,14 @@ public class User implements ArchivableEntity, ModificationTrackedEntity {
   
   public void setPlan(Plan plan) {
     this.plan = plan;
+  }
+  
+  public void setLocale(String locale) {
+    this.locale = locale;
+  }
+  
+  public String getLocale() {
+    return locale;
   }
   
 }

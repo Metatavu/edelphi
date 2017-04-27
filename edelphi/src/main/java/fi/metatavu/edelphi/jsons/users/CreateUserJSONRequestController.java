@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.jsons.users;
 
+import java.util.Locale;
 import java.util.StringTokenizer;
 
 import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
@@ -37,13 +38,14 @@ public class CreateUserJSONRequestController extends JSONController {
     PanelUserDAO panelUserDAO = new PanelUserDAO();
     PanelUserRoleDAO paneluserRoleDAO = new PanelUserRoleDAO();
     
+    Locale locale = jsonRequestContext.getRequest().getLocale();
     String firstName = jsonRequestContext.getString("firstName");
     String lastName = jsonRequestContext.getString("lastName");
     String nickname = jsonRequestContext.getString("nickname");
     User creator = userDAO.findById(jsonRequestContext.getLoggedUserId());
     
     Panel panel = panelDAO.findById(jsonRequestContext.getLong("panelId"));
-    User user = userDAO.create(firstName, lastName, nickname, creator, Defaults.NEW_USER_SUBSCRIPTION_LEVEL, null, null);
+    User user = userDAO.create(firstName, lastName, nickname, creator, Defaults.NEW_USER_SUBSCRIPTION_LEVEL, null, null, locale.getLanguage());
     
     Delfoi delfoi = RequestUtils.getDelfoi(jsonRequestContext);
     DelfoiUserDAO delfoiUserDAO = new DelfoiUserDAO();

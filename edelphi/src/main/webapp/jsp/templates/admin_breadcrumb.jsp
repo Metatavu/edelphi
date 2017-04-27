@@ -10,9 +10,12 @@
 
 <a href="${pageContext.request.contextPath}/admin/dashboard.page?lang=${dashboardLang}" class="breadcrumbLink"><fmt:message key="breadcrumb.panelAdmin.dashboard"/></a>
 
-<c:if test="${not empty(param.breadcrumbPageTitle)}">
-
+<c:if test="${not empty(param.middleBreadcrumbPageTitle)}">
   <span class="breadCrumbSpacer">&gt;</span>
+  <a href="${param.middleBreadcrumbPageUrl}" class="breadcrumbLink">${param.middleBreadcrumbPageTitle}</a>
+</c:if>
 
+<c:if test="${not empty(param.breadcrumbPageTitle)}">
+  <span class="breadCrumbSpacer">&gt;</span>
   <a href="${param.breadcrumbPageUrl}" class="breadcrumbLink">${param.breadcrumbPageTitle}</a>
 </c:if>

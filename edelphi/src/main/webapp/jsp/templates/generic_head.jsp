@@ -40,7 +40,15 @@
     date.setTime(date.getTime() + (3650*24*60*60*1000));
     var expires = "; expires=" + date.toGMTString();
     document.cookie = "eDelphiLocale=" + locale + expires + "; path=/";
-    window.location.reload();
+    
+    JSONUtils.request(CONTEXTPATH + "/locale/setlocale.json", {
+      parameters: {
+        locale: locale
+      },
+      onSuccess: function (jsonResponse) {
+        window.location.reload();
+      }
+    });
   }
 </script>
 <jsp:include page="/jsp/supports/jsonutils_support.jsp"></jsp:include>

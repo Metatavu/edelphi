@@ -13,7 +13,7 @@
 	  <jsp:include page="/jsp/templates/index_head.jsp"></jsp:include>
 	</head>
 	<body class="environment_admin planmanagement">
-    <c:set var="pageBreadcrumbTitle"><fmt:message key="breadcrumb.panelAdmin.managePlan"/></c:set>
+    <c:set var="pageBreadcrumbTitle"><fmt:message key="breadcrumb.panelAdmin.managePlans"/></c:set>
     <jsp:include page="/jsp/templates/index_header.jsp">
       <jsp:param value="management" name="activeTrail"/>
       <jsp:param value="${pageBreadcrumbTitle}" name="breadcrumbPageTitle"/>

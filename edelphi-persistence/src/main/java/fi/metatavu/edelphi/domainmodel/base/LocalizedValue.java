@@ -7,8 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.TableGenerator;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -16,6 +16,23 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Entity
 public class LocalizedValue {
 
+  @Id 
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  
+  @ManyToOne
+  private LocalizedEntry entry;
+  
+  @Column (nullable = false)
+  @NotNull
+  @NotEmpty
+  @Lob
+  private String text;
+  
+  @Column (nullable = false)
+  @NotNull
+  private Locale locale;
+  
   public Long getId() {
     return id;
   }
@@ -44,20 +61,4 @@ public class LocalizedValue {
     this.text = text;
   }
   
-  @Id 
-  @GeneratedValue(strategy=GenerationType.TABLE, generator="LocalizedEntryText")  
-  @TableGenerator(name="LocalizedEntryText", initialValue=1, allocationSize=100, table = "hibernate_sequences", pkColumnName = "sequence_name", valueColumnName = "sequence_next_hi_value")
-  private Long id;
-  
-  @ManyToOne
-  private LocalizedEntry entry;
-  
-  @Column (nullable = false, length = 1073741824)
-  @NotNull
-  @NotEmpty
-  private String text;
-  
-  @Column (nullable = false)
-  @NotNull
-  private Locale locale;
 }

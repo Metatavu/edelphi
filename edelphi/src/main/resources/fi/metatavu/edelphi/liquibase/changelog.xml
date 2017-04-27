@@ -3132,4 +3132,102 @@
     </addColumn>
   </changeSet>
   
+  <changeSet author="antti.leppa" id="notifications">
+    <createTable tableName="Notification">
+      <column name="id" type="BIGINT(20)">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column name="millisBefore" type="BIGINT(20)"/>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="type" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="subjectTemplate_id" type="BIGINT(20)"/>
+      <column name="contentTemplate_id" type="bigint(20)"/>
+    </createTable>
+    
+    <addForeignKeyConstraint constraintName="FK_NOTIFICATION_SUBJECT_ID" 
+      baseTableName="Notification" baseColumnNames="subjectTemplate_id" 
+      referencedTableName="LocalizedEntry" referencedColumnNames="id"/>
+    
+    <addForeignKeyConstraint constraintName="FK_NOTIFICATION_CONTENT_ID" 
+      baseTableName="Notification" baseColumnNames="contentTemplate_id" 
+      referencedTableName="LocalizedEntry" referencedColumnNames="id"/>
+      
+    <createTable tableName="UserNotification">
+      <column name="id" type="BIGINT(20)">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column name="notificationSent" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="user_id" type="BIGINT(20)"/>
+      <column name="notification_id" type="BIGINT(20)"/>
+    </createTable>
+    
+    <addForeignKeyConstraint constraintName="FK_USERNOTIFICATION_USER_ID" 
+      baseTableName="UserNotification" baseColumnNames="user_id" 
+      referencedTableName="User" referencedColumnNames="id"/>
+    
+    <addForeignKeyConstraint constraintName="FK_USERNOTIFICATION_NOTIFICATION_ID" 
+      baseTableName="UserNotification" baseColumnNames="notification_id" 
+      referencedTableName="Notification" referencedColumnNames="id"/>          
+  </changeSet>
+      
+  <changeSet author="antti.leppa" id="default-notifications">
+    <sql>UPDATE hibernate_sequences SET sequence_next_hi_value = (SELECT max(id) FROM LocalizedValue) + 5 where sequence_name = 'LocalizedValue'</sql>
+    <sql dbms="mysql">INSERT INTO hibernate_sequences (sequence_name, sequence_next_hi_value) VALUES ('LocalizedEntry', (SELECT max(id) FROM LocalizedEntry) + 3) ON DUPLICATE KEY UPDATE sequence_next_hi_value = VALUES(sequence_next_hi_value)</sql>
+    <sql dbms="h2">UPDATE hibernate_sequences set sequence_next_hi_value = (SELECT max(id) + 3 FROM LocalizedEntry) where sequence_name = 'LocalizedEntry'</sql>
+    <sql>INSERT INTO LocalizedEntry (id) VALUES ((SELECT sequence_next_hi_value - 2 FROM hibernate_sequences WHERE sequence_name = 'LocalizedEntry'))</sql>
+    <sql>INSERT INTO LocalizedEntry (id) VALUES ((SELECT sequence_next_hi_value - 1 FROM hibernate_sequences WHERE sequence_name = 'LocalizedEntry'))</sql>
+    <sql>INSERT INTO LocalizedValue (id, entry_id, locale, text) VALUES ((SELECT sequence_next_hi_value - 4 FROM hibernate_sequences WHERE sequence_name = 'LocalizedValue'), (SELECT sequence_next_hi_value - 2 FROM hibernate_sequences WHERE sequence_name = 'LocalizedEntry'), 'fi', 'eDelphi tilauksesi on päättymässä')</sql>
+    <sql>INSERT INTO LocalizedValue (id, entry_id, locale, text) VALUES ((SELECT sequence_next_hi_value - 3 FROM hibernate_sequences WHERE sequence_name = 'LocalizedValue'), (SELECT sequence_next_hi_value - 2 FROM hibernate_sequences WHERE sequence_name = 'LocalizedEntry'), 'en', 'eDelphi subscription is ending')</sql>
+    <sql>INSERT INTO LocalizedValue (id, entry_id, locale, text) VALUES ((SELECT sequence_next_hi_value - 2 FROM hibernate_sequences WHERE sequence_name = 'LocalizedValue'), (SELECT sequence_next_hi_value - 1 FROM hibernate_sequences WHERE sequence_name = 'LocalizedEntry'), 'fi', '&lt;p&gt;eDelphi {0} tilauksesi on päättymässä {1} päivän kuluessa.&lt;/p&gt;&lt;p&gt;Mikäli haluat jatkaa tilausta ole hyvä ja käy jatkamassa tai muuttamassa tilaustasi osoitteessa: &lt;a href="https://www.edelphi.org/changeplan.page"&gt;https://www.edelphi.org/changeplan.page&lt;/a&gt;&lt;/p&gt;&lt;hr/&gt;&lt;p&gt;Tämä on automaattinen viesti, älä vastaa viestiin.&lt;/p&gt;')</sql>
+    <sql>INSERT INTO LocalizedValue (id, entry_id, locale, text) VALUES ((SELECT sequence_next_hi_value - 1 FROM hibernate_sequences WHERE sequence_name = 'LocalizedValue'), (SELECT sequence_next_hi_value - 1 FROM hibernate_sequences WHERE sequence_name = 'LocalizedEntry'), 'en', '&lt;p&gt;Your eDelphi {0} subscription is ending in {1} days.&lt;/p&gt;&lt;p&gt;If you wish to continue using subscription level features navigate to following address to change or continue your subscription: &lt;a href="https://www.edelphi.org/changeplan.page"&gt;https://www.edelphi.org/changeplan.page&lt;/a&gt;&lt;/p&gt;&lt;hr/&gt;&lt;p&gt;This is an automated message, please do not reply.&lt;/p&gt;')</sql>
+    <sql>INSERT INTO Notification (id, millisBefore, name, type, subjectTemplate_id, contentTemplate_id) VALUES (1, 604800000, 'Week before', 'SUBSCRIPTION_END', (SELECT sequence_next_hi_value - 2 FROM hibernate_sequences WHERE sequence_name = 'LocalizedEntry'), (SELECT sequence_next_hi_value - 1 FROM hibernate_sequences WHERE sequence_name = 'LocalizedEntry'))</sql>
+    <sql>INSERT INTO hibernate_sequences (sequence_name, sequence_next_hi_value) VALUES ('Notification', (SELECT max(id) FROM Notification) + 1)</sql>
+  </changeSet>
+  
+  <changeSet author="antti.leppa" id="user-locale">
+    <addColumn tableName="User">
+      <column name="locale" type="VARCHAR(255)" defaultValue="en">
+        <constraints nullable="false" />
+      </column>
+    </addColumn>    
+    <sql>UPDATE User SET locale = 'fi' WHERE id IN (SELECT user_id FROM UserEmail WHERE address LIKE '%.fi')</sql>    
+  </changeSet>
+  
+  <changeSet author="antti.leppa" id="localized-auto-increments">
+    <dropForeignKeyConstraint baseTableName="QueryPageTemplateLocalizedSetting" constraintName="FK9A62A96676CBC19B"/>
+    <dropForeignKeyConstraint baseTableName="QueryPageTemplate" constraintName="FKB17954F1317C0A41"/>
+    <dropForeignKeyConstraint baseTableName="QueryPageTemplate" constraintName="FKB17954F1E584BF30"/>
+    <dropForeignKeyConstraint baseTableName="LocalizedValue" constraintName="FKCBC29ED64E0E5EFA"/>
+    <dropForeignKeyConstraint baseTableName="UserRole" constraintName="FKF3F76701317C0A41"/>
+    <dropForeignKeyConstraint baseTableName="Notification" constraintName="FK_NOTIFICATION_CONTENT_ID"/>
+    <dropForeignKeyConstraint baseTableName="Notification" constraintName="FK_NOTIFICATION_SUBJECT_ID"/>
+    <dropForeignKeyConstraint baseTableName="Plan" constraintName="FK_PLAN_NAME_LOCALIZED_ENTRY"/>
+    <dropForeignKeyConstraint baseTableName="Plan" constraintName="FK_PLAN_DESCRIPTION_LOCALIZED_ENTRY"/>
+    <dropForeignKeyConstraint baseTableName="User" constraintName="FK_USER_PLAN"/>
+    <dropForeignKeyConstraint baseTableName="OrderHistory" constraintName="FK_ORDER_HISTORY_PLAN"/>
+    
+    <addAutoIncrement tableName="LocalizedEntry" columnName="id" columnDataType="BIGINT(20)"/>
+    <addAutoIncrement tableName="LocalizedValue" columnName="id" columnDataType="BIGINT(20)"/>
+    <addAutoIncrement tableName="Plan" columnName="id" columnDataType="BIGINT(20)"/>
+    
+    <addForeignKeyConstraint constraintName="FK_QUERYPAGE_TEMPLATE_SETTING_LOCALIZED_ENTRY" referencedTableName="LocalizedEntry" referencedColumnNames="id" baseTableName="QueryPageTemplateLocalizedSetting" baseColumnNames="value_id" />
+    <addForeignKeyConstraint constraintName="FK_QUERYPAGE_TEMPLATE_NAME" referencedTableName="LocalizedEntry" referencedColumnNames="id" baseTableName="QueryPageTemplate" baseColumnNames="name_id" />
+    <addForeignKeyConstraint constraintName="FK_QUERYPAGE_TEMPLATE_DESCRIPTION" referencedTableName="LocalizedEntry" referencedColumnNames="id" baseTableName="QueryPageTemplate" baseColumnNames="description_id" />
+    <addForeignKeyConstraint constraintName="FK_LOCALIZED_VALUE_ENTRY" referencedTableName="LocalizedEntry" referencedColumnNames="id" baseTableName="LocalizedValue" baseColumnNames="entry_id" />
+    <addForeignKeyConstraint constraintName="FK_USERROLE_NAME_ID" referencedTableName="LocalizedEntry" referencedColumnNames="id" baseTableName="UserRole" baseColumnNames="name_id" />
+    <addForeignKeyConstraint constraintName="FK_NOTIFICATION_SUBJECT_ID" referencedTableName="LocalizedEntry" referencedColumnNames="id" baseTableName="Notification" baseColumnNames="subjectTemplate_id" />
+    <addForeignKeyConstraint constraintName="FK_NOTIFICATION_CONTENT_ID" referencedTableName="LocalizedEntry" referencedColumnNames="id" baseTableName="Notification" baseColumnNames="contentTemplate_id" />
+    <addForeignKeyConstraint constraintName="FK_PLAN_NAME_LOCALIZED_ENTRY" referencedTableName="LocalizedEntry" referencedColumnNames="id" baseTableName="Plan" baseColumnNames="name_id"/>
+    <addForeignKeyConstraint constraintName="FK_PLAN_DESCRIPTION_LOCALIZED_ENTRY" referencedTableName="LocalizedEntry" referencedColumnNames="id" baseTableName="Plan" baseColumnNames="description_id"/>
+    <addForeignKeyConstraint constraintName="FK_USER_PLAN" referencedTableName="Plan" referencedColumnNames="id" baseTableName="User" baseColumnNames="plan_id"/>
+    <addForeignKeyConstraint constraintName="FK_ORDER_HISTORY_PLAN" referencedTableName="Plan" referencedColumnNames="id" baseTableName="OrderHistory" baseColumnNames="plan_id"/>
+    
+  </changeSet>
+
 </databaseChangeLog>

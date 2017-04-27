@@ -14,9 +14,13 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/panel_admin/manageplanblockcontroller.js"></script>
 	</head>
 	<body class="environment_admin planmanagement">
+    <c:set var="middlePageBreadcrumbTitle"><fmt:message key="breadcrumb.panelAdmin.managePlans"/></c:set>
     <c:set var="pageBreadcrumbTitle"><fmt:message key="breadcrumb.panelAdmin.managePlan"/></c:set>
+    
     <jsp:include page="/jsp/templates/index_header.jsp">
       <jsp:param value="management" name="activeTrail"/>
+      <jsp:param value="${middlePageBreadcrumbTitle}" name="middleBreadcrumbPageTitle"/>
+      <jsp:param value="${pageContext.request.contextPath}/admin/manageplans.page" name="middleBreadcrumbPageUrl"/>
       <jsp:param value="${pageBreadcrumbTitle}" name="breadcrumbPageTitle"/>
       <jsp:param value="${pageContext.request.contextPath}/admin/manageplan.page?planId=${plan.id}" name="breadcrumbPageUrl"/>
     </jsp:include>
