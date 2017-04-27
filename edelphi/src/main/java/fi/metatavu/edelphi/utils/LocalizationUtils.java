@@ -2,6 +2,9 @@ package fi.metatavu.edelphi.utils;
 
 import java.util.Locale;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.LocaleUtils;
+
 import fi.metatavu.edelphi.dao.base.LocalizedValueDAO;
 import fi.metatavu.edelphi.domainmodel.base.LocalizedEntry;
 import fi.metatavu.edelphi.domainmodel.base.LocalizedValue;
@@ -35,6 +38,18 @@ public class LocalizationUtils {
     } else {
       localizedValueDAO.updateText(localizedValue, text);
     }
+  }
+    
+  public static Locale resolveSupportedLocale(String locale) {
+    return resolveSupportedLocale(LocaleUtils.toLocale(locale));
+  }
+
+  public static Locale resolveSupportedLocale(Locale locale) {
+    if (locale != null && ArrayUtils.contains(SUPPORTED_LOCALES, locale.getLanguage())) {
+      return new Locale(locale.getLanguage());
+    }
+    
+    return new Locale(SUPPORTED_LOCALES[0]);
   }
   
 }

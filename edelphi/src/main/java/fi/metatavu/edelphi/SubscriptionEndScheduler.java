@@ -15,8 +15,6 @@ import javax.ejb.TimerService;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.apache.commons.lang3.LocaleUtils;
-
 import com.bertoncelj.wildflysingletonservice.Start;
 import com.bertoncelj.wildflysingletonservice.Stop;
 
@@ -25,6 +23,7 @@ import fi.metatavu.edelphi.dao.users.UserDAO;
 import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.i18n.Messages;
+import fi.metatavu.edelphi.utils.LocalizationUtils;
 import fi.metatavu.edelphi.utils.MailUtils;
 import fi.metatavu.edelphi.utils.SystemUtils;
 
@@ -88,7 +87,7 @@ public class SubscriptionEndScheduler {
   private void sendNotification(SubscriptionLevel subscriptionLevel, User user) {
     Messages messages = Messages.getInstance();
     
-    Locale locale = LocaleUtils.toLocale(user.getLocale());
+    Locale locale = LocalizationUtils.resolveSupportedLocale(user.getLocale());
     
     if (subscriptionLevel != null) {  
       String subjectTemplate = messages.getText(locale, "generic.subscriptionEndedMailSubject");

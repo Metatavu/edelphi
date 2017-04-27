@@ -16,8 +16,6 @@ import javax.ejb.TimerService;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.apache.commons.lang3.LocaleUtils;
-
 import com.bertoncelj.wildflysingletonservice.Start;
 import com.bertoncelj.wildflysingletonservice.Stop;
 
@@ -94,7 +92,7 @@ public class NotificationMailScheduler {
   }
   
   private void sendNotification(User user, Notification notification) {
-    Locale locale = LocaleUtils.toLocale(user.getLocale());
+    Locale locale = LocalizationUtils.resolveSupportedLocale(user.getLocale());
     
     SubscriptionLevel subscriptionLevel = user.getSubscriptionLevel();
     if (subscriptionLevel != null) {

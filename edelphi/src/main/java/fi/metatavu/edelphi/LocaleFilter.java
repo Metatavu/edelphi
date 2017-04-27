@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.jsp.jstl.core.Config;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.LocaleUtils;
 
 import fi.metatavu.edelphi.utils.LocalizationUtils;
@@ -28,8 +27,6 @@ import fi.metatavu.edelphi.utils.LocalizationUtils;
  */
 public class LocaleFilter implements Filter {
   
-  private static final String[] SUPPORTED_LOCALES = LocalizationUtils.getSupportedLocales();
-  
   @Override
   public void init(FilterConfig arg0) throws ServletException {
     // Nothing to initialize
@@ -40,7 +37,7 @@ public class LocaleFilter implements Filter {
     ServletRequest servletRequest = request;
     try {
       if (request instanceof HttpServletRequest) {
-        Locale locale = resolveSupportedLocale(resolveLocale((HttpServletRequest) request));
+        Locale locale = LocalizationUtils.resolveSupportedLocale(resolveLocale((HttpServletRequest) request));
         Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new fi.metatavu.edelphi.i18n.LocalizationContext(locale));
         servletRequest = new LocaleRequestWrapper((HttpServletRequest) request, locale);
       }
@@ -87,11 +84,4 @@ public class LocaleFilter implements Filter {
     return request.getLocale();
   }
   
-  private Locale resolveSupportedLocale(Locale locale) {
-    if (ArrayUtils.contains(SUPPORTED_LOCALES, locale.getLanguage())) {
-      return new Locale(locale.getLanguage());
-    }
-    
-    return new Locale(SUPPORTED_LOCALES[0]);
-  }
 }
