@@ -35,6 +35,7 @@ public class RegisterJSONRequestController extends JSONController {
 
   @Override
   public void process(JSONRequestContext jsonRequestContext) {
+    Locale locale = jsonRequestContext.getRequest().getLocale();
     // Data Access Objects
     UserDAO userDAO = new UserDAO();
     UserEmailDAO userEmailDAO = new UserEmailDAO();
@@ -55,13 +56,12 @@ public class RegisterJSONRequestController extends JSONController {
       if (userPassword != null || !userIdentifications.isEmpty()) {
         // Refuse registration as user with at least some sort of login capability already exists 
         Messages messages = Messages.getInstance();
-        Locale locale = jsonRequestContext.getRequest().getLocale();
         throw new SmvcRuntimeException(EdelfoiStatusCode.REGISTRATION_EMAIL_EXISTS, messages.getText(locale, "exception.1009.registerEmailInUse"));
       }
     }
     User user;
     if (userEmail == null) {
-      user = userDAO.create(firstName, lastName, null,  null, Defaults.NEW_USER_SUBSCRIPTION_LEVEL, null, null);
+      user = userDAO.create(firstName, lastName, null,  null, Defaults.NEW_USER_SUBSCRIPTION_LEVEL, null, null, locale.getLanguage());
     }
     else {
       user = userDAO.update(userEmail.getUser(), firstName, lastName, null, userEmail.getUser());
@@ -94,7 +94,6 @@ public class RegisterJSONRequestController extends JSONController {
       UserActivationDAO userActivationDAO = new UserActivationDAO();
       UserActivation userActivation = userActivationDAO.create(user, email, UUID.randomUUID().toString());
       Messages messages = Messages.getInstance();
-      Locale locale = jsonRequestContext.getRequest().getLocale();
       String mailSubject = messages.getText(locale, "userRegistration.mailSubject");
       String verificationLink = RequestUtils.getBaseUrl(jsonRequestContext.getRequest()) + "/activateaccount.page?email=" + userActivation.getEmail() + "&hash=" + userActivation.getHash();
       String mailContent = messages.getText(locale, "userRegistration.mailTemplate", new String [] { email, verificationLink });

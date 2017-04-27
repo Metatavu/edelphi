@@ -14,7 +14,9 @@ import fi.metatavu.edelphi.dao.users.UserDAO;
 import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.orders.OrderHistory;
 import fi.metatavu.edelphi.domainmodel.orders.OrderStatus;
+import fi.metatavu.edelphi.domainmodel.users.NotificationType;
 import fi.metatavu.edelphi.domainmodel.users.User;
+import fi.metatavu.edelphi.jsons.users.NotificationUtils;
 import fi.metatavu.edelphi.paytrail.PaytrailServiceFactory;
 import fi.metatavu.edelphi.smvcj.PageNotFoundException;
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
@@ -80,8 +82,10 @@ public class PaytrailPageController extends PageController {
           throw new PageNotFoundException(pageRequestContext.getRequest().getLocale());
         }
         
-        pageRequestContext.setRedirectURL("/profile.page");
         updateOrder(orderHistory);
+        NotificationUtils.clearUserNotifications(NotificationType.SUBSCRIPTION_END, orderHistory.getUser());
+        
+        pageRequestContext.setRedirectURL("/profile.page");
       } else {
         logger.log(Level.WARNING, () -> String.format("Could not find order history by id %s", orderHistoryId));
         throw new PageNotFoundException(pageRequestContext.getRequest().getLocale());
@@ -102,10 +106,14 @@ public class PaytrailPageController extends PageController {
       OffsetDateTime ends = OffsetDateTime.now().plusDays(orderHistory.getDays());
       userDAO.updateSubscriptionLevel(user, orderHistory.getSubscriptionLevel());
       userDAO.updateSubscriptionEnds(user, Date.from(ends.toInstant()));
-    } else {      
-      OffsetDateTime currentEnd = OffsetDateTime.ofInstant(user.getSubscriptionEnds().toInstant(), ZoneId.systemDefault());
+    } else {
+      OffsetDateTime currentEnd = null;
+      if (user.getSubscriptionEnds() != null) {
+        currentEnd = OffsetDateTime.ofInstant(user.getSubscriptionEnds().toInstant(), ZoneId.systemDefault());
+      }
+      
       OffsetDateTime now = OffsetDateTime.now();
-      OffsetDateTime ends = currentEnd.isAfter(now) ? currentEnd.plusDays(orderHistory.getDays()) : now.plusDays(orderHistory.getDays());
+      OffsetDateTime ends = currentEnd != null && currentEnd.isAfter(now) ? currentEnd.plusDays(orderHistory.getDays()) : now.plusDays(orderHistory.getDays());
       userDAO.updateSubscriptionEnds(user, Date.from(ends.toInstant()));
     }
 
