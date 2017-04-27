@@ -3198,5 +3198,36 @@
     </addColumn>    
     <sql>UPDATE User SET locale = 'fi' WHERE id IN (SELECT user_id FROM UserEmail WHERE address LIKE '%.fi')</sql>    
   </changeSet>
+  
+  <changeSet author="antti.leppa" id="localized-auto-increments">
+    <dropForeignKeyConstraint baseTableName="QueryPageTemplateLocalizedSetting" constraintName="FK9A62A96676CBC19B"/>
+    <dropForeignKeyConstraint baseTableName="QueryPageTemplate" constraintName="FKB17954F1317C0A41"/>
+    <dropForeignKeyConstraint baseTableName="QueryPageTemplate" constraintName="FKB17954F1E584BF30"/>
+    <dropForeignKeyConstraint baseTableName="LocalizedValue" constraintName="FKCBC29ED64E0E5EFA"/>
+    <dropForeignKeyConstraint baseTableName="UserRole" constraintName="FKF3F76701317C0A41"/>
+    <dropForeignKeyConstraint baseTableName="Notification" constraintName="FK_NOTIFICATION_CONTENT_ID"/>
+    <dropForeignKeyConstraint baseTableName="Notification" constraintName="FK_NOTIFICATION_SUBJECT_ID"/>
+    <dropForeignKeyConstraint baseTableName="Plan" constraintName="FK_PLAN_NAME_LOCALIZED_ENTRY"/>
+    <dropForeignKeyConstraint baseTableName="Plan" constraintName="FK_PLAN_DESCRIPTION_LOCALIZED_ENTRY"/>
+    <dropForeignKeyConstraint baseTableName="User" constraintName="FK_USER_PLAN"/>
+    <dropForeignKeyConstraint baseTableName="OrderHistory" constraintName="FK_ORDER_HISTORY_PLAN"/>
+    
+    <addAutoIncrement tableName="LocalizedEntry" columnName="id" columnDataType="BIGINT(20)"/>
+    <addAutoIncrement tableName="LocalizedValue" columnName="id" columnDataType="BIGINT(20)"/>
+    <addAutoIncrement tableName="Plan" columnName="id" columnDataType="BIGINT(20)"/>
+    
+    <addForeignKeyConstraint constraintName="FK_QUERYPAGE_TEMPLATE_SETTING_LOCALIZED_ENTRY" referencedTableName="LocalizedEntry" referencedColumnNames="id" baseTableName="QueryPageTemplateLocalizedSetting" baseColumnNames="value_id" />
+    <addForeignKeyConstraint constraintName="FK_QUERYPAGE_TEMPLATE_NAME" referencedTableName="LocalizedEntry" referencedColumnNames="id" baseTableName="QueryPageTemplate" baseColumnNames="name_id" />
+    <addForeignKeyConstraint constraintName="FK_QUERYPAGE_TEMPLATE_DESCRIPTION" referencedTableName="LocalizedEntry" referencedColumnNames="id" baseTableName="QueryPageTemplate" baseColumnNames="description_id" />
+    <addForeignKeyConstraint constraintName="FK_LOCALIZED_VALUE_ENTRY" referencedTableName="LocalizedEntry" referencedColumnNames="id" baseTableName="LocalizedValue" baseColumnNames="entry_id" />
+    <addForeignKeyConstraint constraintName="FK_USERROLE_NAME_ID" referencedTableName="LocalizedEntry" referencedColumnNames="id" baseTableName="UserRole" baseColumnNames="name_id" />
+    <addForeignKeyConstraint constraintName="FK_NOTIFICATION_SUBJECT_ID" referencedTableName="LocalizedEntry" referencedColumnNames="id" baseTableName="Notification" baseColumnNames="subjectTemplate_id" />
+    <addForeignKeyConstraint constraintName="FK_NOTIFICATION_CONTENT_ID" referencedTableName="LocalizedEntry" referencedColumnNames="id" baseTableName="Notification" baseColumnNames="contentTemplate_id" />
+    <addForeignKeyConstraint constraintName="FK_PLAN_NAME_LOCALIZED_ENTRY" referencedTableName="LocalizedEntry" referencedColumnNames="id" baseTableName="Plan" baseColumnNames="name_id"/>
+    <addForeignKeyConstraint constraintName="FK_PLAN_DESCRIPTION_LOCALIZED_ENTRY" referencedTableName="LocalizedEntry" referencedColumnNames="id" baseTableName="Plan" baseColumnNames="description_id"/>
+    <addForeignKeyConstraint constraintName="FK_USER_PLAN" referencedTableName="Plan" referencedColumnNames="id" baseTableName="User" baseColumnNames="plan_id"/>
+    <addForeignKeyConstraint constraintName="FK_ORDER_HISTORY_PLAN" referencedTableName="Plan" referencedColumnNames="id" baseTableName="OrderHistory" baseColumnNames="plan_id"/>
+    
+  </changeSet>
 
 </databaseChangeLog>
