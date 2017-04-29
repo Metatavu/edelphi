@@ -15,7 +15,7 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 
 public class DelfoiBulletinDAO extends GenericDAO<DelfoiBulletin> {
   
-  public DelfoiBulletin create(Delfoi delfoi, String title, String message, User creator) {
+  public DelfoiBulletin create(Delfoi delfoi, String title, String message, User creator, Boolean important, Date importantEnds) {
     
     Date now = new Date();
     
@@ -28,10 +28,10 @@ public class DelfoiBulletinDAO extends GenericDAO<DelfoiBulletin> {
     bulletin.setTitle(title);
     bulletin.setMessage(message);
     bulletin.setDelfoi(delfoi);
+    bulletin.setImportant(important);
+    bulletin.setImportantEnds(importantEnds);
     
-    getEntityManager().persist(bulletin);
-    
-    return bulletin;
+    return persist(bulletin);
   }
   
   public List<DelfoiBulletin> listByDelfoiAndArchived(Delfoi delfoi, Boolean archived) {
@@ -74,4 +74,15 @@ public class DelfoiBulletinDAO extends GenericDAO<DelfoiBulletin> {
     
     return bulletin;
   }
+
+  public DelfoiBulletin updateImportant(DelfoiBulletin bulletin, Boolean important) {
+    bulletin.setImportant(important);
+    return persist(bulletin);
+  }
+
+  public DelfoiBulletin updateImportantEnds(DelfoiBulletin bulletin, Date importantEnds) {
+    bulletin.setImportantEnds(importantEnds);
+    return persist(bulletin);
+  }
+  
 }

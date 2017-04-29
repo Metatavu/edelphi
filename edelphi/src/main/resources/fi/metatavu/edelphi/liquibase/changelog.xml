@@ -3238,4 +3238,13 @@
     <addForeignKeyConstraint constraintName="FK_PANELBUlLETIN_BULLETIN" referencedTableName="Bulletin" referencedColumnNames="id" baseTableName="PanelBulletin" baseColumnNames="id" />
   </changeSet>
   
+  <changeSet author="antti.leppa" id="bulletin-important">
+    <addColumn tableName="Bulletin">
+      <column name="important" type="BIT(1)" defaultValue="false">
+        <constraints nullable="false" />
+      </column>
+      <column name="importantEnds" type="datetime(6)"/>
+    </addColumn>    
+  </changeSet>
+  
 </databaseChangeLog>

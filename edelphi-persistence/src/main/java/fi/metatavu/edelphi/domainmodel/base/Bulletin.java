@@ -59,7 +59,14 @@ public class Bulletin implements ArchivableEntity, ModificationTrackedEntity {
   @Column (nullable=false)
   @Temporal (value=TemporalType.TIMESTAMP)
   private Date lastModified;
+  
+  @NotNull
+  @Column (nullable=false)
+  private Boolean important;
 
+  @Temporal (value=TemporalType.TIMESTAMP)
+  private Date importantEnds;
+  
   public Long getId() {
     return id;
   }
@@ -118,6 +125,22 @@ public class Bulletin implements ArchivableEntity, ModificationTrackedEntity {
 
   public Boolean getArchived() {
     return archived;
+  }
+  
+  public Boolean getImportant() {
+    return important;
+  }
+  
+  public void setImportant(Boolean important) {
+    this.important = important;
+  }
+  
+  public Date getImportantEnds() {
+    return importantEnds;
+  }
+  
+  public void setImportantEnds(Date importantEnds) {
+    this.importantEnds = importantEnds;
   }
   
   @Transient
