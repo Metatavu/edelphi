@@ -3230,4 +3230,12 @@
     
   </changeSet>
 
+  <changeSet author="antti.leppa" id="bulletin-auto-increments">
+    <dropForeignKeyConstraint baseTableName="DelfoiBulletin" constraintName="FK1A494DBCB3B3B7FD"/>
+    <dropForeignKeyConstraint baseTableName="PanelBulletin" constraintName="FKF1293ABB3B3B7FD"/>
+    <addAutoIncrement tableName="Bulletin" columnName="id" columnDataType="BIGINT(20)"/>
+    <addForeignKeyConstraint constraintName="FK_DELFOIBUlLETIN_BULLETIN" referencedTableName="Bulletin" referencedColumnNames="id" baseTableName="DelfoiBulletin" baseColumnNames="id" />
+    <addForeignKeyConstraint constraintName="FK_PANELBUlLETIN_BULLETIN" referencedTableName="Bulletin" referencedColumnNames="id" baseTableName="PanelBulletin" baseColumnNames="id" />
+  </changeSet>
+  
 </databaseChangeLog>

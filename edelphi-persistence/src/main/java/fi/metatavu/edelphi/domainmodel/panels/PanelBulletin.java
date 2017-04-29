@@ -10,6 +10,9 @@ import fi.metatavu.edelphi.domainmodel.base.Bulletin;
 @PrimaryKeyJoinColumn(name="id")
 public class PanelBulletin extends Bulletin {
   
+  @ManyToOne
+  private Panel panel;
+  
   public Panel getPanel() {
     return panel;
   }
@@ -17,7 +20,4 @@ public class PanelBulletin extends Bulletin {
   public void setPanel(Panel panel) {
     this.panel = panel;
   }
-  
-  @ManyToOne
-  private Panel panel;
 }

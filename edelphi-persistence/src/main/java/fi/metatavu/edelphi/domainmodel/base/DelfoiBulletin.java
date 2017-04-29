@@ -8,6 +8,9 @@ import javax.persistence.PrimaryKeyJoinColumn;
 @PrimaryKeyJoinColumn(name="id")
 public class DelfoiBulletin extends Bulletin {
   
+  @ManyToOne
+  private Delfoi delfoi;
+  
   public Delfoi getDelfoi() {
     return delfoi;
   }
@@ -15,7 +18,4 @@ public class DelfoiBulletin extends Bulletin {
   public void setDelfoi(Delfoi delfoi) {
     this.delfoi = delfoi;
   }
-  
-  @ManyToOne
-  private Delfoi delfoi;
 }
