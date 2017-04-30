@@ -26,9 +26,9 @@ import fi.metatavu.edelphi.domainmodel.users.NotificationType;
 import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.i18n.Messages;
-import fi.metatavu.edelphi.jsons.users.NotificationUtils;
 import fi.metatavu.edelphi.utils.LocalizationUtils;
 import fi.metatavu.edelphi.utils.MailUtils;
+import fi.metatavu.edelphi.utils.NotificationUtils;
 import fi.metatavu.edelphi.utils.SubscriptionLevelUtils;
 import fi.metatavu.edelphi.utils.SystemUtils;
 

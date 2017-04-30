@@ -16,10 +16,10 @@ import fi.metatavu.edelphi.domainmodel.orders.OrderHistory;
 import fi.metatavu.edelphi.domainmodel.orders.OrderStatus;
 import fi.metatavu.edelphi.domainmodel.users.NotificationType;
 import fi.metatavu.edelphi.domainmodel.users.User;
-import fi.metatavu.edelphi.jsons.users.NotificationUtils;
 import fi.metatavu.edelphi.paytrail.PaytrailServiceFactory;
 import fi.metatavu.edelphi.smvcj.PageNotFoundException;
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
+import fi.metatavu.edelphi.utils.NotificationUtils;
 import fi.metatavu.paytrail.PaytrailService;
 
 public class PaytrailPageController extends PageController {
