@@ -3247,4 +3247,25 @@
     </addColumn>    
   </changeSet>
   
+  <changeSet author="antti.leppa" id="bulletin-read">
+    <createTable tableName="BulletinRead">
+      <column name="id" type="BIGINT(20)" autoIncrement="true">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column name="readTime" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="user_id" type="BIGINT(20)"/>
+      <column name="bulletin_id" type="BIGINT(20)"/>
+    </createTable>
+    
+    <addForeignKeyConstraint constraintName="FK_BULLETINREAD_USER_ID" 
+      baseTableName="BulletinRead" baseColumnNames="user_id" 
+      referencedTableName="User" referencedColumnNames="id"/>
+    
+    <addForeignKeyConstraint constraintName="FK_BULLETINREAD_BULLETIN_ID" 
+      baseTableName="BulletinRead" baseColumnNames="bulletin_id" 
+      referencedTableName="Bulletin" referencedColumnNames="id"/>          
+  </changeSet>
+  
 </databaseChangeLog>
