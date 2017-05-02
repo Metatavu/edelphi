@@ -31,11 +31,8 @@ BulletinEditorBlockController = Class.create(BlockController, {
       "minDate": "today",
       "parseDate": function (value) {
         if (value) {
-          console.log(value);
           var intValue = parseInt(value);
           if (intValue) {
-            console.log(intValue);
-            
             return new Date(intValue);
           }
         }
@@ -69,7 +66,7 @@ BulletinEditorBlockController = Class.create(BlockController, {
     var title = this.getBlockElement().down('input[name="title"]').value;
     var message = this._ckEditor.getData();
     if (message) {
-      var important = this.getBlockElement().down('input[name="important"]').value;
+      var important = this.getBlockElement().down('input[name="important"]:checked') ? 'TRUE' : 'FALSE';
       var importantEnds = this.getBlockElement().down('input[name="importantEnds"]').value;
       
       startLoadingOperation("panelAdmin.block.bulletins.savingBulletin");
