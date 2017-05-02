@@ -51,6 +51,27 @@ public class DelfoiBulletinDAO extends GenericDAO<DelfoiBulletin> {
     return entityManager.createQuery(criteria).getResultList();
   }
 
+  public List<DelfoiBulletin> listByImportantAndArchivedImportantEndsNullOrAfter(Boolean archived, Boolean important, Date importantEndsAfter) {
+    EntityManager entityManager = getEntityManager(); 
+    
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<DelfoiBulletin> criteria = criteriaBuilder.createQuery(DelfoiBulletin.class);
+    Root<DelfoiBulletin> root = criteria.from(DelfoiBulletin.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.and(
+        criteriaBuilder.equal(root.get(DelfoiBulletin_.archived), archived),
+        criteriaBuilder.equal(root.get(DelfoiBulletin_.important), important),
+        criteriaBuilder.or(
+          criteriaBuilder.isNull(root.get(DelfoiBulletin_.importantEnds)),
+          criteriaBuilder.greaterThanOrEqualTo(root.get(DelfoiBulletin_.importantEnds), importantEndsAfter)
+        )
+      )
+    );
+    
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
   public DelfoiBulletin updateTitle(DelfoiBulletin bulletin, String title, User modifier) {
     EntityManager entityManager = getEntityManager();
     

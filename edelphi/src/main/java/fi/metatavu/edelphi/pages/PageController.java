@@ -4,11 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fi.metatavu.edelphi.smvcj.AccessDeniedException;
-import fi.metatavu.edelphi.smvcj.LoginRequiredException;
-import fi.metatavu.edelphi.smvcj.SmvcMessage;
-import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
-import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.ActionedController;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.FeatureNotAvailableOnSubscriptionLevelException;
@@ -19,8 +14,14 @@ import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 import fi.metatavu.edelphi.domainmodel.users.User;
+import fi.metatavu.edelphi.smvcj.AccessDeniedException;
+import fi.metatavu.edelphi.smvcj.LoginRequiredException;
+import fi.metatavu.edelphi.smvcj.SmvcMessage;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.ActionUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.SessionUtils;
 import fi.metatavu.edelphi.utils.SubscriptionLevelUtils;
 
 public abstract class PageController implements fi.metatavu.edelphi.smvcj.controllers.PageController, ActionedController {
@@ -34,7 +35,16 @@ public abstract class PageController implements fi.metatavu.edelphi.smvcj.contro
    * @return a feature this page belongs to
    */
   public abstract Feature getFeature();
-  
+
+  @Override
+  public void beforeProcess(RequestContext requestContext) {
+    if (requestContext.isLoggedIn()) {
+      boolean hasImportantBulletins = SessionUtils.hasImportantBulletins(requestContext.getRequest().getSession(false));
+      requestContext.getRequest().setAttribute("hasImportantBulletins", hasImportantBulletins);
+    }
+    
+  }
+
   @Override
   public void authorize(RequestContext requestContext) {
     String actionAccessName = getAccessActionName() == null ? null : getAccessActionName().toString();

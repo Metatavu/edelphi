@@ -1,6 +1,5 @@
 package fi.metatavu.edelphi.pages;
 
-import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.auth.AuthenticationProvider;
 import fi.metatavu.edelphi.auth.AuthenticationProviderFactory;
 import fi.metatavu.edelphi.auth.AuthenticationResult;
@@ -11,8 +10,11 @@ import fi.metatavu.edelphi.domainmodel.base.AuthSource;
 import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserActivation;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.utils.AuthUtils;
+import fi.metatavu.edelphi.utils.BulletinUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.SessionUtils;
 
 public class DoLoginPageController extends PageController {
 
@@ -43,8 +45,9 @@ public class DoLoginPageController extends PageController {
         String baseURL = RequestUtils.getBaseUrl(pageRequestContext.getRequest());
         
         UserDAO userDAO = new UserDAO();
-        User loggedUser = userDAO.findById(pageRequestContext.getLoggedUserId());      
-
+        User loggedUser = userDAO.findById(pageRequestContext.getLoggedUserId());   
+        
+        SessionUtils.setHasImportantBulletins(pageRequestContext.getRequest().getSession(false),BulletinUtils.hasUnreadImportantBulletins(loggedUser));
         if (result == AuthenticationResult.NEW_ACCOUNT || (loggedUser != null && (loggedUser.getFirstName() == null || loggedUser.getLastName() == null || loggedUser.getDefaultEmail() == null))) {
           redirectUrl = baseURL + "/profile.page";
         }

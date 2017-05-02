@@ -169,6 +169,7 @@ public class Servlet extends HttpServlet {
       // LoginRequiredException and AccessDeniedException 
       
       requestController.authorize(requestContext);
+      requestController.beforeProcess(requestContext);
       
       // Request has been authorized, so the controller is asked to process it
       
