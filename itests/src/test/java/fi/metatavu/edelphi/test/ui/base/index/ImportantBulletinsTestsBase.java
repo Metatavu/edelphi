@@ -10,6 +10,8 @@ import fi.metatavu.edelphi.test.ui.base.AbstractUITest;
 
 public class ImportantBulletinsTestsBase extends AbstractUITest {
   
+  private static final String BULLETIN_DIALOG_SELECTOR = ".important-bulletin-dialog";
+  
   private DelfoiBulletinMocker delfoiBulletinMocker = new DelfoiBulletinMocker();
   
   @Test
@@ -22,7 +24,7 @@ public class ImportantBulletinsTestsBase extends AbstractUITest {
     
     login(ADMIN_EMAIL);
     navigate("/");
-    assertNotPresent(".important-bulletin-dialog");
+    assertNotPresent(BULLETIN_DIALOG_SELECTOR);
     logout();
     
     delfoiBulletinMocker.createBulletin("Important bulletin", "<p>Important bulletin content</p>", 1l, created, Boolean.TRUE, null);
@@ -32,7 +34,7 @@ public class ImportantBulletinsTestsBase extends AbstractUITest {
     login(ADMIN_EMAIL);
     navigate("/");
         
-    waitPresent(".important-bulletin-dialog");
+    waitPresent(BULLETIN_DIALOG_SELECTOR);
     assertCount(".important-bulletin-dialog .bulletin", 1);
     assertText(".important-bulletin-dialog .bulletin-title", "Important bulletin");
     assertText(".important-bulletin-dialog .bulletin-date", "Published 5/3/17 12:00 a.m.");
@@ -43,7 +45,7 @@ public class ImportantBulletinsTestsBase extends AbstractUITest {
     logout();
     login(ADMIN_EMAIL);
     navigate("/");
-    assertNotPresent(".important-bulletin-dialog");
+    assertNotPresent(BULLETIN_DIALOG_SELECTOR);
   }
   
   @Test
@@ -61,7 +63,7 @@ public class ImportantBulletinsTestsBase extends AbstractUITest {
     login(ADMIN_EMAIL);
     navigate("/");
 
-    waitPresent(".important-bulletin-dialog");
+    waitPresent(BULLETIN_DIALOG_SELECTOR);
     assertCount(".important-bulletin-dialog .bulletin", 1);
     assertText(".important-bulletin-dialog .bulletin-title", "Expiring bulletin");
     assertText(".important-bulletin-dialog .bulletin-date", "Published 5/3/17 12:00 a.m.");

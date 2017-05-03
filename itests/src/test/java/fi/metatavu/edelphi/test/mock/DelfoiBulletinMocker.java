@@ -33,7 +33,8 @@ public class DelfoiBulletinMocker extends AbstractMocker {
   public long createBulletin(String title, String message, Long creatorId, Date created, Boolean important, Date importantEnds) {
     return createBulletin(title, message, creatorId, created, creatorId, created, important, importantEnds, Boolean.FALSE);
   }
-  
+ 
+  @SuppressWarnings ("squid:S00107")
   public long createBulletin(String title, String message, Long creatorId, Date created, Long lastModifierId, Date lastModified, Boolean important, Date importantEnds, Boolean archived) {
     Long id = getNextId("Bulletin");
     
