@@ -89,6 +89,10 @@ public class AbstractUITest {
   protected void login(String email) {
     navigate(String.format("/dologin.json?authSource=%d&username=%s", TEST_AUTH_SOURCE_ID, email));
   }
+  
+  protected void logout() {
+    navigate("/logout.page");
+  }
 
   protected void assertLoginScreen() {
     waitAndAssertText(".errorPageDescriptionContainer", "You need to be logged in to access the requested page.");
