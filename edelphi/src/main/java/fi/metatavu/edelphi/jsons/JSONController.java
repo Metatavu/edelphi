@@ -19,6 +19,11 @@ import fi.metatavu.edelphi.utils.RequestUtils;
 
 public abstract class JSONController implements JSONRequestController, ActionedController {
 
+  @Override
+  public void beforeProcess(RequestContext requestContext) {
+      
+  }
+
   public void authorize(RequestContext requestContext) throws LoginRequiredException, AccessDeniedException {
     String actionAccessName = getAccessActionName() == null ? null : getAccessActionName().toString();
     DelfoiActionScope actionAccessScope = getAccessActionScope();

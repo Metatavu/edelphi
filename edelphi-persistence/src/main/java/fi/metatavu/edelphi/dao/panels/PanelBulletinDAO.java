@@ -15,7 +15,7 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 
 public class PanelBulletinDAO extends GenericDAO<PanelBulletin> {
   
-  public PanelBulletin create(Panel panel, String title, String message, User creator) {
+  public PanelBulletin create(Panel panel, String title, String message, User creator, Boolean important, Date importantEnds) {
     
     Date now = new Date();
     
@@ -28,10 +28,10 @@ public class PanelBulletinDAO extends GenericDAO<PanelBulletin> {
     panelBulletin.setTitle(title);
     panelBulletin.setMessage(message);
     panelBulletin.setPanel(panel);
+    panelBulletin.setImportant(important);
+    panelBulletin.setImportantEnds(importantEnds);
     
-    getEntityManager().persist(panelBulletin);
-    
-    return panelBulletin;
+    return persist(panelBulletin);
   }
   
   public List<PanelBulletin> listByPanelAndArchived(Panel panel, Boolean archived) {
@@ -73,5 +73,15 @@ public class PanelBulletinDAO extends GenericDAO<PanelBulletin> {
     entityManager.persist(panelBulletin);
     
     return panelBulletin;
+  }
+
+  public PanelBulletin updateImportant(PanelBulletin bulletin, Boolean important) {
+    bulletin.setImportant(important);
+    return persist(bulletin);
+  }
+
+  public PanelBulletin updateImportantEnds(PanelBulletin bulletin, Date importantEnds) {
+    bulletin.setImportantEnds(importantEnds);
+    return persist(bulletin);
   }
 }

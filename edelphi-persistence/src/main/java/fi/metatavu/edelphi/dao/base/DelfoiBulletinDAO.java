@@ -15,7 +15,7 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 
 public class DelfoiBulletinDAO extends GenericDAO<DelfoiBulletin> {
   
-  public DelfoiBulletin create(Delfoi delfoi, String title, String message, User creator) {
+  public DelfoiBulletin create(Delfoi delfoi, String title, String message, User creator, Boolean important, Date importantEnds) {
     
     Date now = new Date();
     
@@ -28,10 +28,10 @@ public class DelfoiBulletinDAO extends GenericDAO<DelfoiBulletin> {
     bulletin.setTitle(title);
     bulletin.setMessage(message);
     bulletin.setDelfoi(delfoi);
+    bulletin.setImportant(important);
+    bulletin.setImportantEnds(importantEnds);
     
-    getEntityManager().persist(bulletin);
-    
-    return bulletin;
+    return persist(bulletin);
   }
   
   public List<DelfoiBulletin> listByDelfoiAndArchived(Delfoi delfoi, Boolean archived) {
@@ -45,6 +45,27 @@ public class DelfoiBulletinDAO extends GenericDAO<DelfoiBulletin> {
       criteriaBuilder.and(
         criteriaBuilder.equal(root.get(DelfoiBulletin_.archived), archived),
         criteriaBuilder.equal(root.get(DelfoiBulletin_.delfoi), delfoi)
+      )
+    );
+    
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<DelfoiBulletin> listByImportantAndArchivedImportantEndsNullOrAfter(Boolean archived, Boolean important, Date importantEndsAfter) {
+    EntityManager entityManager = getEntityManager(); 
+    
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<DelfoiBulletin> criteria = criteriaBuilder.createQuery(DelfoiBulletin.class);
+    Root<DelfoiBulletin> root = criteria.from(DelfoiBulletin.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.and(
+        criteriaBuilder.equal(root.get(DelfoiBulletin_.archived), archived),
+        criteriaBuilder.equal(root.get(DelfoiBulletin_.important), important),
+        criteriaBuilder.or(
+          criteriaBuilder.isNull(root.get(DelfoiBulletin_.importantEnds)),
+          criteriaBuilder.greaterThanOrEqualTo(root.get(DelfoiBulletin_.importantEnds), importantEndsAfter)
+        )
       )
     );
     
@@ -74,4 +95,15 @@ public class DelfoiBulletinDAO extends GenericDAO<DelfoiBulletin> {
     
     return bulletin;
   }
+
+  public DelfoiBulletin updateImportant(DelfoiBulletin bulletin, Boolean important) {
+    bulletin.setImportant(important);
+    return persist(bulletin);
+  }
+
+  public DelfoiBulletin updateImportantEnds(DelfoiBulletin bulletin, Date importantEnds) {
+    bulletin.setImportantEnds(importantEnds);
+    return persist(bulletin);
+  }
+  
 }

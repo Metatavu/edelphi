@@ -7,6 +7,11 @@ import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 
 public abstract class BinaryController implements BinaryRequestController {
 
+  @Override
+  public void beforeProcess(RequestContext requestContext) {
+    
+  }
+
   @Deprecated
   public void authorize(RequestContext requestContext) throws LoginRequiredException, AccessDeniedException {
   }

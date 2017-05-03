@@ -3230,4 +3230,42 @@
     
   </changeSet>
 
+  <changeSet author="antti.leppa" id="bulletin-auto-increments">
+    <dropForeignKeyConstraint baseTableName="DelfoiBulletin" constraintName="FK1A494DBCB3B3B7FD"/>
+    <dropForeignKeyConstraint baseTableName="PanelBulletin" constraintName="FKF1293ABB3B3B7FD"/>
+    <addAutoIncrement tableName="Bulletin" columnName="id" columnDataType="BIGINT(20)"/>
+    <addForeignKeyConstraint constraintName="FK_DELFOIBUlLETIN_BULLETIN" referencedTableName="Bulletin" referencedColumnNames="id" baseTableName="DelfoiBulletin" baseColumnNames="id" />
+    <addForeignKeyConstraint constraintName="FK_PANELBUlLETIN_BULLETIN" referencedTableName="Bulletin" referencedColumnNames="id" baseTableName="PanelBulletin" baseColumnNames="id" />
+  </changeSet>
+  
+  <changeSet author="antti.leppa" id="bulletin-important">
+    <addColumn tableName="Bulletin">
+      <column name="important" type="BIT(1)" defaultValue="false">
+        <constraints nullable="false" />
+      </column>
+      <column name="importantEnds" type="datetime(6)"/>
+    </addColumn>    
+  </changeSet>
+  
+  <changeSet author="antti.leppa" id="bulletin-read">
+    <createTable tableName="BulletinRead">
+      <column name="id" type="BIGINT(20)" autoIncrement="true">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column name="readTime" type="datetime(6)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="user_id" type="BIGINT(20)"/>
+      <column name="bulletin_id" type="BIGINT(20)"/>
+    </createTable>
+    
+    <addForeignKeyConstraint constraintName="FK_BULLETINREAD_USER_ID" 
+      baseTableName="BulletinRead" baseColumnNames="user_id" 
+      referencedTableName="User" referencedColumnNames="id"/>
+    
+    <addForeignKeyConstraint constraintName="FK_BULLETINREAD_BULLETIN_ID" 
+      baseTableName="BulletinRead" baseColumnNames="bulletin_id" 
+      referencedTableName="Bulletin" referencedColumnNames="id"/>          
+  </changeSet>
+  
 </databaseChangeLog>

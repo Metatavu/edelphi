@@ -10,7 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
-import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
@@ -26,7 +25,48 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 @Entity
 @Inheritance(strategy=InheritanceType.JOINED)
 public class Bulletin implements ArchivableEntity, ModificationTrackedEntity {
+  
+  @Id 
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
+  @NotBlank
+  @NotEmpty
+  @Column (nullable = false)
+  private String title;
+
+  @NotBlank
+  @NotEmpty
+  @Column (nullable = false, length = 1073741824)
+  private String message;
+
+  @NotNull
+  @Column(nullable = false)
+  private Boolean archived = Boolean.FALSE;
+
+  @ManyToOne 
+  private User creator;
+  
+  @NotNull
+  @Column (updatable=false, nullable=false)
+  @Temporal (value=TemporalType.TIMESTAMP)
+  private Date created;
+  
+  @ManyToOne  
+  private User lastModifier;
+  
+  @NotNull
+  @Column (nullable=false)
+  @Temporal (value=TemporalType.TIMESTAMP)
+  private Date lastModified;
+  
+  @NotNull
+  @Column (nullable=false)
+  private Boolean important;
+
+  @Temporal (value=TemporalType.TIMESTAMP)
+  private Date importantEnds;
+  
   public Long getId() {
     return id;
   }
@@ -87,6 +127,22 @@ public class Bulletin implements ArchivableEntity, ModificationTrackedEntity {
     return archived;
   }
   
+  public Boolean getImportant() {
+    return important;
+  }
+  
+  public void setImportant(Boolean important) {
+    this.important = important;
+  }
+  
+  public Date getImportantEnds() {
+    return importantEnds;
+  }
+  
+  public void setImportantEnds(Date importantEnds) {
+    this.importantEnds = importantEnds;
+  }
+  
   @Transient
   public String getSummary() {
     if (StringUtils.isNotBlank(getMessage())) {
@@ -102,39 +158,4 @@ public class Bulletin implements ArchivableEntity, ModificationTrackedEntity {
     
     return null;
   }
-  
-  @Id 
-  @GeneratedValue(strategy=GenerationType.TABLE, generator="Bulletin")  
-  @TableGenerator(name="Bulletin", initialValue=1, allocationSize=100, table = "hibernate_sequences", pkColumnName = "sequence_name", valueColumnName = "sequence_next_hi_value")
-  private Long id;
-
-  @NotBlank
-  @NotEmpty
-  @Column (nullable = false)
-  private String title;
-
-  @NotBlank
-  @NotEmpty
-  @Column (nullable = false, length = 1073741824)
-  private String message;
-
-  @NotNull
-  @Column(nullable = false)
-  private Boolean archived = Boolean.FALSE;
-
-  @ManyToOne 
-  private User creator;
-  
-  @NotNull
-  @Column (updatable=false, nullable=false)
-  @Temporal (value=TemporalType.TIMESTAMP)
-  private Date created;
-  
-  @ManyToOne  
-  private User lastModifier;
-  
-  @NotNull
-  @Column (nullable=false)
-  @Temporal (value=TemporalType.TIMESTAMP)
-  private Date lastModified;
 }

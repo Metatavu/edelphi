@@ -1,3 +1,4 @@
+/*global getLocale,S2,flatpickr,moment*/
 BulletinEditorBlockController = Class.create(BlockController, {
   initialize: function ($super) {
     $super();
@@ -19,6 +20,37 @@ BulletinEditorBlockController = Class.create(BlockController, {
       }
     });
     
+    flatpickr('input[name="importantEnds"]', {
+      "locale": getLocale().getLanguage(),
+      "altInput": true,
+      "altFormat": "LLL",
+      "format": "ISO",
+      "utc": true,
+      "enableTime": true,
+      "time_24hr": true,
+      "allowInput": false,
+      "minDate": "today",
+      "parseDate": function (value) {
+        if (value) {
+          var intValue = parseInt(value);
+          if (intValue) {
+            return new Date(intValue);
+          }
+        }
+        
+        return null;
+      },
+      "formatDate": function (dateObj, format) {
+        if (format == 'LLL') {
+          return moment(dateObj)
+            .locale(getLocale().getLanguage())
+            .format('LLL');
+        } else {
+          return dateObj.getTime();
+        }
+      }
+    });
+    
     this._saveButton = this.getBlockElement().down('input[name="save"]');
     Event.observe(this._saveButton, "click", this._saveButtonClickListener);
     this._bulletinId = this.getBlockElement().down('input[name="bulletinId"]').value;
@@ -35,7 +67,9 @@ BulletinEditorBlockController = Class.create(BlockController, {
     var title = this.getBlockElement().down('input[name="title"]').value;
     var message = this._ckEditor.getData();
     if (message) {
-    
+      var important = this.getBlockElement().down('input[name="important"]:checked') ? 'TRUE' : 'FALSE';
+      var importantEnds = this.getBlockElement().down('input[name="importantEnds"]').value;
+      
       startLoadingOperation("panelAdmin.block.bulletins.savingBulletin");
       
       if (this._bulletinId) {
@@ -43,7 +77,9 @@ BulletinEditorBlockController = Class.create(BlockController, {
           parameters: {
             bulletinId: this._bulletinId,
             title: title,
-            message: message
+            message: message,
+            important: important,
+            importantEnds: importantEnds
           },
           onComplete: function (transport) {
             endLoadingOperation();
@@ -56,7 +92,9 @@ BulletinEditorBlockController = Class.create(BlockController, {
         JSONUtils.request(CONTEXTPATH + '/admin/createbulletin.json', {
           parameters: {
             title: title,
-            message: message
+            message: message,
+            important: important,
+            importantEnds: importantEnds
           },
           onComplete: function (transport) {
             endLoadingOperation();
