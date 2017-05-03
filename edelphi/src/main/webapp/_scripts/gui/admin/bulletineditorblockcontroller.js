@@ -1,3 +1,4 @@
+/*global getLocale,S2,flatpickr,moment*/
 BulletinEditorBlockController = Class.create(BlockController, {
   initialize: function ($super) {
     $super();

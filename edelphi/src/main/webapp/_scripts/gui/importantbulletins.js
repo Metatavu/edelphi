@@ -1,4 +1,4 @@
-/*global getLocale,S2,flatpickr,moment*/
+/*global getLocale,S2*/
 (function() {
   'use strict';
   
