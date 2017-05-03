@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.jsons.admin;
 
+import java.util.Date;
 import java.util.Locale;
 
 import fi.metatavu.edelphi.smvcj.PageNotFoundException;
@@ -37,8 +38,10 @@ public class CreateDelfoiBulletinJSONRequestController extends JSONController {
     
     String title = jsonRequestContext.getString("title");
     String message = jsonRequestContext.getString("message");
+    Boolean important = jsonRequestContext.getBoolean("important");
+    Date importantEnds = jsonRequestContext.getDate("importantEnds");
 
-    DelfoiBulletin bulletin = bulletinDAO.create(delfoi, title, message, loggedUser);
+    DelfoiBulletin bulletin = bulletinDAO.create(delfoi, title, message, loggedUser, important, importantEnds);
     
     Messages messages = Messages.getInstance();
     Locale locale = jsonRequestContext.getRequest().getLocale();

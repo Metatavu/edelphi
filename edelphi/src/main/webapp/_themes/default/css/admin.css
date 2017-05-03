@@ -6,6 +6,14 @@
   display: block;
 }
 
+/* Bulletins */
+
+
+#panelAdminBulletinEditorForm .formCheckBoxContainer {
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
 /* Subscription levels */
 
 .subscriptionlevels table {

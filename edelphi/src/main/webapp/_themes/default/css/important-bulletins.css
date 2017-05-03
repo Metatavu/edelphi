@@ -1,0 +1,39 @@
+@charset "UTF-8";
+
+.important-bulletin-dialog {
+  min-width: 90%;
+}
+
+.important-bulletin-dialog .ui-dialog-titlebar {
+  display: none;
+}
+
+.important-bulletin-dialog .ui-dialog-content {
+  max-height: 75vh;
+}
+
+.important-bulletin-dialog .bulletin-title {
+  color: #df4d1c;
+  font-size: 1.45em;
+  margin: 0;
+  padding: 5px 0 7px;
+}
+
+.important-bulletin-dialog .bulletin-date {
+  color: #4c4c4c;
+  font-size: 1em;
+  font-style: italic;
+  margin: 0 0 10px;
+}
+
+.important-bulletin-dialog .bulletin::after {
+  background: rgba(0, 0, 0, 0) url("../gfx/ui/news_spacer.png") no-repeat scroll center center;
+  height: 5px;
+  margin: 20px 0;
+  content: '';
+  display: block;
+}
+
+.important-bulletin-dialog .bulletin:last-of-type::after {
+  display: none;
+}

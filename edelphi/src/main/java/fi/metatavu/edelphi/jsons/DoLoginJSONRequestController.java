@@ -10,7 +10,9 @@ import fi.metatavu.edelphi.domainmodel.base.AuthSource;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.jsons.JSONController;
 import fi.metatavu.edelphi.utils.AuthUtils;
+import fi.metatavu.edelphi.utils.BulletinUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.SessionUtils;
 
 public class DoLoginJSONRequestController extends JSONController {
 
@@ -37,6 +39,7 @@ public class DoLoginJSONRequestController extends JSONController {
       String baseURL = RequestUtils.getBaseUrl(jsonRequestContext.getRequest());
       String redirectUrl;
       boolean missingDetails = loggedUser != null && (loggedUser.getFirstName() == null || loggedUser.getLastName() == null || loggedUser.getDefaultEmail() == null);
+      SessionUtils.setHasImportantBulletins(jsonRequestContext.getRequest().getSession(false), BulletinUtils.hasUnreadImportantBulletins(loggedUser));
       
       if (result == AuthenticationResult.NEW_ACCOUNT || missingDetails) {
         redirectUrl = baseURL + "/profile.page";

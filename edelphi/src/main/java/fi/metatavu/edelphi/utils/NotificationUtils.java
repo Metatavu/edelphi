@@ -1,4 +1,4 @@
-package fi.metatavu.edelphi.jsons.users;
+package fi.metatavu.edelphi.utils;
 
 import java.util.Date;
 import java.util.List;
