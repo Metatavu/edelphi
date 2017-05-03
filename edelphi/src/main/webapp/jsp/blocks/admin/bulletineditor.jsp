@@ -15,20 +15,7 @@
       <form>
     
         <input type="hidden" name="bulletinId" value="${bulletin.id}"/>
-        
-        <jsp:include page="/jsp/fragments/formfield_checkbox.jsp">
-          <jsp:param name="name" value="important" />
-          <jsp:param name="labelLocale" value="admin.managePanelBulletins.important" />
-          <jsp:param name="checked" value="${bulletin.important}" />
-          <jsp:param name="value" value="TRUE" />
-        </jsp:include>
-
-        <jsp:include page="/jsp/fragments/formfield_text.jsp">
-          <jsp:param name="labelLocale" value="admin.managePanelBulletins.importantEndsLabel" />
-          <jsp:param name="name" value="importantEnds" />
-          <jsp:param name="value" value="${bulletin.importantEnds.time}" />
-        </jsp:include>
-
+    
         <jsp:include page="/jsp/fragments/formfield_text.jsp">
           <jsp:param name="labelLocale" value="admin.managePanelBulletins.titleLabel" />
           <jsp:param name="name" value="title" />
@@ -40,6 +27,19 @@
           <jsp:param name="labelLocale" value="admin.managePanelBulletins.messageLabel" />
           <jsp:param name="name" value="message" />
           <jsp:param name="value" value="${bulletin.message}" />
+        </jsp:include>
+    
+        <jsp:include page="/jsp/fragments/formfield_checkbox.jsp">
+          <jsp:param name="name" value="important" />
+          <jsp:param name="labelLocale" value="admin.managePanelBulletins.important" />
+          <jsp:param name="checked" value="${bulletin.important}" />
+          <jsp:param name="value" value="TRUE" />
+        </jsp:include>
+
+        <jsp:include page="/jsp/fragments/formfield_text.jsp">
+          <jsp:param name="labelLocale" value="admin.managePanelBulletins.importantEndsLabel" />
+          <jsp:param name="name" value="importantEnds" />
+          <jsp:param name="value" value="${bulletin.importantEnds.time}" />
         </jsp:include>
 
         <jsp:include page="/jsp/fragments/formfield_submit.jsp">
