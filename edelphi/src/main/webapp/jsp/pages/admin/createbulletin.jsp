@@ -12,6 +12,10 @@
 	  <jsp:include page="/jsp/templates/panel_head.jsp"></jsp:include>
     <jsp:include page="/jsp/supports/ckeditor_support.jsp"></jsp:include>
     <jsp:include page="/jsp/supports/modalpopup_support.jsp"></jsp:include>
+    <script type="text/javascript" src="//cdn.metatavu.io/libs/moment/2.17.1/moment-with-locales.js"></script>
+    <script type="text/javascript" src="//cdn.metatavu.io/libs/flatpickr/2.6.1/flatpickr.js"></script>
+    <script type="text/javascript" src="//cdn.metatavu.io/libs/flatpickr/2.6.1/l10n/fi.js"></script>
+    <link rel="stylesheet" href="//cdn.metatavu.io/libs/flatpickr/2.6.1/flatpickr.min.css"></link>
     <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/admin/bulletinlistblockcontroller.js"></script>
 	  <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/admin/bulletineditorblockcontroller.js"></script>
 	</head>
