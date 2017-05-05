@@ -16,6 +16,7 @@ var QueryBlockScaleSliderFragmentController;
 var QueryBlockScaleGraphFragmentController;
 var QueryBlockMultiSelectFragmentController;
 var QueryCommentsController;
+var QueryBubbleChartLiveReportController;
 
 var QueryBlockController = Class.create(BlockController, {
   initialize : function($super) {
@@ -3286,138 +3287,129 @@ QueryBarChartLiveReportController = Class.create(QueryLiveReportController, {
   }
 });
 
-QueryBubbleChartLiveReportController = Class
-    .create(QueryLiveReportController,
-        {
-          initialize : function($super, name, element, minX, maxX, minY, maxY) {
-            $super(name, element);
+QueryBubbleChartLiveReportController = Class.create(QueryLiveReportController, {
+  initialize : function($super, name, element, minX, maxX, minY, maxY) {
+    $super(name, element);
 
-            this._flotrContainer = element
-                .down('.queryBubbleChartLiveReportFlotrContainer');
+    this._flotrContainer = element.down('.queryBubbleChartLiveReportFlotrContainer');
 
-            this._minX = minX;
-            this._minY = minY;
-            this._maxX = maxX;
-            this._maxY = maxY;
-            this._userData = [ [ 0, 0, 0 ] ];
+    this._minX = minX;
+    this._minY = minY;
+    this._maxX = maxX;
+    this._maxY = maxY;
+    this._userData = [ [ 0, 0, 0 ] ];
 
-            this._data = new Array();
-            this._xTickLabels = new Array();
-            this._yTickLabels = new Array();
+    this._data = [];
+    this._xTickLabels = [];
+    this._yTickLabels = [];
+    this._xAxisLabel = this.getElement().down('input[name="xAxisLabel"]').value;
+    this._yAxisLabel = this.getElement().down('input[name="yAxisLabel"]').value;
 
-            this._xAxisLabel = this.getElement().down(
-                'input[name="xAxisLabel"]').value;
-            this._yAxisLabel = this.getElement().down(
-                'input[name="yAxisLabel"]').value;
+    var xLabels = this.getElement().select("input.bubbleLabelX");
+    for (var i = 0, l = xLabels.length; i < l; i++) {
+      this._xTickLabels.push([ i, xLabels[i].value ]);
+    }
 
-            var xLabels = this.getElement().select("input.bubbleLabelX");
-            for (var i = 0, l = xLabels.length; i < l; i++) {
-              this._xTickLabels.push([ i, xLabels[i].value ]);
-            }
+    var yLabels = this.getElement().select("input.bubbleLabelY");
+    for (var i = 0, l = yLabels.length; i < l; i++) {
+      this._yTickLabels.push([ i, yLabels[i].value ]);
+    }
 
-            var yLabels = this.getElement().select("input.bubbleLabelY");
-            for (var i = 0, l = yLabels.length; i < l; i++) {
-              this._yTickLabels.push([ i, yLabels[i].value ]);
-            }
+    var bubbleValues = this.getElement().select("input.bubbleValue");
+    for (var i = 0, l = bubbleValues.length; i < l; i++) {
+      var bubbleValue = bubbleValues[i];
+      var name = bubbleValue.name.split('.');
+      var xIndex = parseInt(name[1]);
+      var yIndex = parseInt(name[2]);
+      var bubbleX = this.getElement().down('input[name="bubble.' + xIndex + '.' + yIndex + '.x"]');
+      var bubbleY = this.getElement().down('input[name="bubble.' + xIndex + '.' + yIndex + '.y"]');
+      var x = parseInt(bubbleX.value);
+      var y = parseInt(bubbleY.value);
+      var z = parseFloat(bubbleValue.value);
+      this._data.push([ x, y, z ]);
+    }
+  },
+  deinitialize : function($super) {
+    $super();
+  },
+  setUserValues : function(values) {
+    this._userData = values;
+  },
+  draw : function() {
+    var options = {
+      "xaxis" : {
+        "min" : this._minX,
+        "max" : this._maxX,
+        "title" : this._xAxisLabel
+      },
+      "yaxis" : {
+        "min" : this._minY,
+        "max" : this._maxY,
+        "title" : this._yAxisLabel
+      },
+      "bubbles" : {
+        "show" : true,
+        "baseRadius" : 5
+      },
+      "markers" : {
+        "show" : true,
+        "labelFormatter" : function(val) {
+          var index = val.index;
+          var value = val.data[index][2];
+          return value > 0 ? value : "";
+        }
+      }
+    };
 
-            var bubbleValues = this.getElement().select("input.bubbleValue");
-            for (var i = 0, l = bubbleValues.length; i < l; i++) {
-              var bubbleValue = bubbleValues[i];
-              var name = bubbleValue.name.split('.');
-              var xIndex = parseInt(name[1]);
-              var yIndex = parseInt(name[2]);
+    if (this._xTickLabels && this._xTickLabels.length > 0) {
+      options["xaxis"]["ticks"] = this._xTickLabels;
+    }
+    
+    if (this._yTickLabels && this._yTickLabels.length > 0) {
+      options["yaxis"]["ticks"] = this._yTickLabels;
+    }
+    
+    this._flotr = Flotr.draw(this._flotrContainer, this._getDataSeries(), options);
+  },
+  
+  _getDataSeries : function() {
+    var data = [];
+    var userDataFound = false;
 
-              var bubbleX = this.getElement().down(
-                  'input[name="bubble.' + xIndex + '.' + yIndex + '.x"]');
-              var bubbleY = this.getElement().down(
-                  'input[name="bubble.' + xIndex + '.' + yIndex + '.y"]');
-              var x = parseInt(bubbleX.value);
-              var y = parseInt(bubbleY.value);
+    for (var i = 0, l = this._data.length; i < l; i++) {
+      var dataObject = {};
+      dataObject[0] = this._data[i][0];
+      dataObject[1] = this._data[i][1];
 
-              var z = parseFloat(bubbleValue.value);
+      var userValue = 0;
+      for (var j = 0, jl = this._userData.length; j < jl; j++) {
+        var userDataObject = this._userData[j];
+        if ((dataObject[0] == userDataObject[0]) && (dataObject[1] == userDataObject[1])) {
+          userValue++;
+          userDataFound = true;
+        }
+      }
 
-              this._data.push([ x, y, z ]);
-            }
-          },
-          deinitialize : function($super) {
-            $super();
-          },
-          setUserValues : function(values) {
-            this._userData = values;
-          },
-          draw : function() {
-            var options = {
-              "xaxis" : {
-                "min" : this._minX,
-                "max" : this._maxX,
-                "title" : this._xAxisLabel
-              },
-              "yaxis" : {
-                "min" : this._minY,
-                "max" : this._maxY,
-                "title" : this._yAxisLabel
-              },
-              "bubbles" : {
-                "show" : true,
-                "baseRadius" : 5
-              },
-              "markers" : {
-                "show" : true,
-                "labelFormatter" : function(val) {
-                  var index = val.index;
-                  var value = val.data[index][2];
-                  return value > 0 ? value : "";
-                }
-              }
-            };
+      dataObject[2] = this._data[i][2] + userValue;
+      data.push(dataObject);
+    }
 
-            if (this._xTickLabels && this._xTickLabels.length > 0)
-              options["xaxis"]["ticks"] = this._xTickLabels;
+    if (!userDataFound && (this._userData.length > 0)) {
+      data.push({
+        0: this._userData[0][0],
+        1: this._userData[0][1],
+        2: this._userData[0][2]
+      });
+    }
 
-            if (this._yTickLabels && this._yTickLabels.length > 0)
-              options["yaxis"]["ticks"] = this._yTickLabels;
-
-            this._flotr = Flotr.draw(this._flotrContainer, this
-                ._getDataSeries(), options);
-          },
-          _getDataSeries : function() {
-            var data = new Array();
-            var userDataFound = false;
-
-            for (var i = 0, l = this._data.length; i < l; i++) {
-              var dataObject = new Object();
-              dataObject[0] = this._data[i][0];
-              dataObject[1] = this._data[i][1];
-
-              var userValue = 0;
-              for (var j = 0, jl = this._userData.length; j < jl; j++) {
-                var userDataObject = this._userData[j];
-                if ((dataObject[0] == userDataObject[0])
-                    && (dataObject[1] == userDataObject[1])) {
-                  userValue++;
-                  userDataFound = true;
-                }
-              }
-
-              dataObject[2] = this._data[i][2] + userValue;
-              data.push(dataObject);
-            }
-
-            if (!userDataFound && (this._userData.length > 0)) {
-              var dataObject = new Object();
-              dataObject[0] = this._userData[0][0];
-              dataObject[1] = this._userData[0][1];
-              dataObject[2] = this._userData[0][2];
-              data.push(dataObject);
-            }
-
-            return [ {
-              data : data
-            }, {
-              data : this._userData
-            } ];
-          }
-        });
+    return [{
+        data: data
+      }, {
+        data: this._userData
+      }
+    ];
+  }
+});
 
 QueryPieChartLiveReportController = Class.create(QueryLiveReportController, {
   initialize : function($super, name, element, caption, ids, values, captions) {
