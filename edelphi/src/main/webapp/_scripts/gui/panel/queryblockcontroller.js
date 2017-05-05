@@ -512,21 +512,17 @@ Scale1DQueryPageController = Class.create(QueryPageController, {
     this._min = NaN;
     this._selected = null;
 
-    var questionContainer = this.getBlockElement().down(
-        ".queryQuestionContainer");
+    var questionContainer = this.getBlockElement().down(".queryQuestionContainer");
+    
     if (questionContainer.hasClassName("queryScaleSliderQuestionContainer")) {
       this._initializeSlider(questionContainer);
-    } else if (questionContainer
-        .hasClassName("queryScaleRadioListQuestionContainer")) {
+    } else if (questionContainer.hasClassName("queryScaleRadioListQuestionContainer")) {
       this._initializeRadioList(questionContainer);
     }
 
-    var liveReportContainer = this.getBlockElement().down(
-        '.queryLiveReportContainer');
+    var liveReportContainer = this.getBlockElement().down('.queryLiveReportContainer');
     if (liveReportContainer) {
-      this._liveReportController = new QueryBarChartLiveReportController(
-          "report_barchart", liveReportContainer, this._min, this._max,
-          this._tickLabels);
+      this._liveReportController = new QueryBarChartLiveReportController("report_barchart", liveReportContainer, this._min, this._max, this._tickLabels);
       this._updateReport();
     }
   },
@@ -559,10 +555,8 @@ Scale1DQueryPageController = Class.create(QueryPageController, {
   },
 
   _initializeRadioList : function(questionContainer) {
-    this._radioListController = new QueryBlockScaleRadioListFragmentController(
-        questionContainer);
-    this._radioListController.addListener("valueChange", this,
-        this._onRadioListValueChange);
+    this._radioListController = new QueryBlockScaleRadioListFragmentController(questionContainer);
+    this._radioListController.addListener("valueChange", this, this._onRadioListValueChange);
 
     this._max = this._radioListController.getMax();
     this._min = this._radioListController.getMin();
@@ -699,170 +693,148 @@ Multiple2DScaleQueryPageController = Class
           }
         });
 
-Scale2DQueryPageController = Class
-    .create(
-        QueryPageController,
-        {
-          initialize : function($super, blockController) {
-            $super(blockController);
+Scale2DQueryPageController = Class.create(QueryPageController, {
+  initialize : function($super, blockController) {
+    $super(blockController);
 
-            var questionContainers = this.getBlockElement().select(
-                ".queryQuestionContainer");
+    var questionContainers = this.getBlockElement().select(".queryQuestionContainer");
+    if (questionContainers.length == 1) {
+      var questionContainer = questionContainers[0];
+      if (questionContainer.hasClassName("queryScaleGraphQuestionContainer")) {
+        this._initializeGraph(questionContainer);
+      }
+    } else {
+      if (questionContainers[0].hasClassName("queryScaleSliderQuestionContainer") && questionContainers[1].hasClassName("queryScaleSliderQuestionContainer")) {
+        this._initializeSlider(questionContainers[0], questionContainers[1]);
+      } else if (questionContainers[0].hasClassName("queryScaleRadioListQuestionContainer") && questionContainers[1].hasClassName("queryScaleRadioListQuestionContainer")) {
+        this._initializeRadioList(questionContainers[0], questionContainers[1]);
+      }
+    }
 
-            if (questionContainers.length == 1) {
-              var questionContainer = questionContainers[0];
-              if (questionContainer
-                  .hasClassName("queryScaleGraphQuestionContainer")) {
-                this._initializeGraph(questionContainer);
-              }
-              ;
-            } else {
-              if (questionContainers[0]
-                  .hasClassName("queryScaleSliderQuestionContainer")
-                  && questionContainers[1]
-                      .hasClassName("queryScaleSliderQuestionContainer")) {
-                this._initializeSlider(questionContainers[0],
-                    questionContainers[1]);
-              } else if (questionContainers[0]
-                  .hasClassName("queryScaleRadioListQuestionContainer")
-                  && questionContainers[1]
-                      .hasClassName("queryScaleRadioListQuestionContainer")) {
-                this._initializeRadioList(questionContainers[0],
-                    questionContainers[1]);
-              }
-            }
+    var liveReportContainer = this.getBlockElement().down('.queryLiveReportContainer');
+    if (liveReportContainer) {
+      this._liveReportController = new QueryBubbleChartLiveReportController("report_bubblechart", liveReportContainer, this._min1, this._max1, this._min2, this._max2);
+      this._updateReport();
+    }
+  },
 
-            var liveReportContainer = this.getBlockElement().down(
-                '.queryLiveReportContainer');
-            if (liveReportContainer) {
-              this._liveReportController = new QueryBubbleChartLiveReportController(
-                  "report_bubblechart", liveReportContainer, this._min1,
-                  this._max1, this._min2, this._max2);
-              this._updateReport();
-            }
-          },
+  deinitialize : function($super) {
+    $super();
+    if (this._sliderController1) {
+      this._sliderController1.deinitialize();
+    }
+    
+    if (this._sliderController2) {
+      this._sliderController2.deinitialize();
+    }
+    
+    if (this._radioListController1) {
+      this._radioListController1.deinitialize();
+    }
+    
+    if (this._radioListController2) {
+      this._radioListController2.deinitialize();
+    }
+    
+    if (this._graphController) {
+      this._graphController.deinitialize();
+    }
+    
+    if (this._liveReportController) {
+      this._liveReportController.deinitialize();
+    }
+  },
 
-          deinitialize : function($super) {
-            $super();
-            if (this._sliderController1)
-              this._sliderController1.deinitialize();
-            if (this._sliderController2)
-              this._sliderController2.deinitialize();
-            if (this._radioListController1)
-              this._radioListController1.deinitialize();
-            if (this._radioListController2)
-              this._radioListController2.deinitialize();
-            if (this._graphController)
-              this._graphController.deinitialize();
-            if (this._liveReportController)
-              this._liveReportController.deinitialize();
-          },
+  _initializeSlider : function(questionContainer1, questionContainer2) {
+    this._sliderController1 = new QueryBlockScaleSliderFragmentController(questionContainer1);
+    this._sliderController1.addListener("valueChange", this, this._onSlider1ValueChange);
+    this._min1 = this._sliderController1.getMin();
+    this._max1 = this._sliderController1.getMax();
+    this._value1 = this._sliderController1.getSelected();
+    this._sliderController2 = new QueryBlockScaleSliderFragmentController(questionContainer2);
+    this._sliderController2.addListener("valueChange", this, this._onSlider2ValueChange);
+    this._min2 = this._sliderController2.getMin();
+    this._max2 = this._sliderController2.getMax();
+    this._value2 = this._sliderController2.getSelected();
+    this._updateNextButton();
+  },
 
-          _initializeSlider : function(questionContainer1, questionContainer2) {
-            this._sliderController1 = new QueryBlockScaleSliderFragmentController(
-                questionContainer1);
-            this._sliderController1.addListener("valueChange", this,
-                this._onSlider1ValueChange);
+  _initializeRadioList : function(questionContainer1, questionContainer2) {
+    this._radioListController1 = new QueryBlockScaleRadioListFragmentController(questionContainer1);
+    this._radioListController1.addListener("valueChange", this, this._onRadioList1ValueChange);
 
-            this._min1 = this._sliderController1.getMin();
-            this._max1 = this._sliderController1.getMax();
-            this._value1 = this._sliderController1.getSelected();
+    this._min1 = this._radioListController1.getMin();
+    this._max1 = this._radioListController1.getMax();
+    this._value1 = this._radioListController1.getSelected();
 
-            this._sliderController2 = new QueryBlockScaleSliderFragmentController(
-                questionContainer2);
-            this._sliderController2.addListener("valueChange", this,
-                this._onSlider2ValueChange);
+    this._radioListController2 = new QueryBlockScaleRadioListFragmentController(questionContainer2);
+    this._radioListController2.addListener("valueChange", this, this._onRadioList2ValueChange);
 
-            this._min2 = this._sliderController2.getMin();
-            this._max2 = this._sliderController2.getMax();
-            this._value2 = this._sliderController2.getSelected();
-            this._updateNextButton();
-          },
+    this._min2 = this._radioListController2.getMin();
+    this._max2 = this._radioListController2.getMax();
+    this._value2 = this._radioListController2.getSelected();
+    this._updateNextButton();
+  },
 
-          _initializeRadioList : function(questionContainer1,
-              questionContainer2) {
-            this._radioListController1 = new QueryBlockScaleRadioListFragmentController(
-                questionContainer1);
-            this._radioListController1.addListener("valueChange", this,
-                this._onRadioList1ValueChange);
+  _initializeGraph : function(questionContainer) {
+    this._graphController = new QueryBlockScaleGraphFragmentController(questionContainer);
+    this._graphController.addListener("valueChange", this, this._onGraphValueChange);
 
-            this._min1 = this._radioListController1.getMin();
-            this._max1 = this._radioListController1.getMax();
-            this._value1 = this._radioListController1.getSelected();
+    this._min1 = this._graphController.getMinX();
+    this._max1 = this._graphController.getMaxX();
+    this._value1 = this._graphController.getSelectedX();
+    this._min2 = this._graphController.getMinY();
+    this._max2 = this._graphController.getMaxY();
+    this._value2 = this._graphController.getSelectedY();
+    this._updateNextButton();
+  },
 
-            this._radioListController2 = new QueryBlockScaleRadioListFragmentController(
-                questionContainer2);
-            this._radioListController2.addListener("valueChange", this,
-                this._onRadioList2ValueChange);
+  _updateNextButton : function() {
+    if (this._value1 === null || this._value2 === null) {
+      this.getBlockController().disableNext();
+    } else {
+      this.getBlockController().enableNext();
+    }
+  },
 
-            this._min2 = this._radioListController2.getMin();
-            this._max2 = this._radioListController2.getMax();
-            this._value2 = this._radioListController2.getSelected();
-            this._updateNextButton();
-          },
+  _updateReport : function() {
+    if (this._liveReportController) {
+      this._liveReportController.setUserValues([ [ this._value1, this._value2, 1 ] ]);
+      this._liveReportController.draw();
+    }
+  },
 
-          _initializeGraph : function(questionContainer) {
-            this._graphController = new QueryBlockScaleGraphFragmentController(
-                questionContainer);
-            this._graphController.addListener("valueChange", this,
-                this._onGraphValueChange);
+  _onSlider1ValueChange : function(event) {
+    this._value1 = event.value;
+    this._updateNextButton();
+    this._updateReport();
+  },
 
-            this._min1 = this._graphController.getMinX();
-            this._max1 = this._graphController.getMaxX();
-            this._value1 = this._graphController.getSelectedX();
-            this._min2 = this._graphController.getMinY();
-            this._max2 = this._graphController.getMaxY();
-            this._value2 = this._graphController.getSelectedY();
-            this._updateNextButton();
-          },
+  _onSlider2ValueChange : function(event) {
+    this._value2 = event.value;
+    this._updateNextButton();
+    this._updateReport();
+  },
 
-          _updateNextButton : function() {
-            if (this._value1 === null || this._value2 === null) {
-              this.getBlockController().disableNext();
-            } else {
-              this.getBlockController().enableNext();
-            }
-          },
+  _onRadioList1ValueChange : function(event) {
+    this._value1 = event.value;
+    this._updateNextButton();
+    this._updateReport();
+  },
 
-          _updateReport : function() {
-            if (this._liveReportController) {
-              this._liveReportController.setUserValues([ [ this._value1,
-                  this._value2, 1 ] ]);
-              this._liveReportController.draw();
-            }
-          },
+  _onRadioList2ValueChange : function(event) {
+    this._value2 = event.value;
+    this._updateNextButton();
+    this._updateReport();
+  },
 
-          _onSlider1ValueChange : function(event) {
-            this._value1 = event.value;
-            this._updateNextButton();
-            this._updateReport();
-          },
-
-          _onSlider2ValueChange : function(event) {
-            this._value2 = event.value;
-            this._updateNextButton();
-            this._updateReport();
-          },
-
-          _onRadioList1ValueChange : function(event) {
-            this._value1 = event.value;
-            this._updateNextButton();
-            this._updateReport();
-          },
-
-          _onRadioList2ValueChange : function(event) {
-            this._value2 = event.value;
-            this._updateNextButton();
-            this._updateReport();
-          },
-
-          _onGraphValueChange : function(event) {
-            this._value1 = event.valueX;
-            this._value2 = event.valueY;
-            this._updateNextButton();
-            this._updateReport();
-          }
-        });
+  _onGraphValueChange : function(event) {
+    this._value1 = event.valueX;
+    this._value2 = event.valueY;
+    this._updateNextButton();
+    this._updateReport();
+  }
+});
 
 ExpertiseQueryPageController = Class.create(QueryPageController, {
   initialize : function($super, blockController) {
