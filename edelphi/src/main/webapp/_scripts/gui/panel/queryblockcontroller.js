@@ -3368,22 +3368,20 @@ QueryBubbleChartLiveReportController = Class.create(QueryLiveReportController, {
       data.push(dataObject);
     }
     
-    console.log(userDataFound, this._userData);
-
-    if (!userDataFound && (this._userData.length > 0)) {
-      data.push({
-        0: this._userData[0][0],
-        1: this._userData[0][1],
-        2: this._userData[0][2]
-      });
+    if (this._userData[0][0] && this._userData[0][1]) {
+      if (!userDataFound && (this._userData.length > 0)) {
+        data.push({
+          0: this._userData[0][0],
+          1: this._userData[0][1],
+          2: this._userData[0][2]
+        });
+      }
+      
+      return [{ data: data }, { data: this._userData }];      
+    } else {
+      return [{ data: data }];      
     }
 
-    return [{
-        data: data
-      }, {
-        data: this._userData
-      }
-    ];
   }
 });
 
