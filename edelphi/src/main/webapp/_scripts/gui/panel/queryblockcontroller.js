@@ -1,4 +1,4 @@
-/*global BlockController,QueryBlockFragmentController,getLocale,JSONUtils,startLoadingOperation,endLoadingOperation,JSDATA,ModalPopup*/
+/*global BlockController,QueryBlockFragmentController,getLocale,JSONUtils,startLoadingOperation,endLoadingOperation,JSDATA,ModalPopup,Flotr*/
 
 var TextQueryPageController;
 var TimeSerieQueryPageController;
@@ -16,6 +16,11 @@ var QueryBlockScaleSliderFragmentController;
 var QueryBlockScaleGraphFragmentController;
 var QueryBlockMultiSelectFragmentController;
 var QueryCommentsController;
+var QueryBubbleChartLiveReportController;
+var QueryBlockScaleRadioListFragmentController;
+var QueryBarChartLiveReportController;
+var QueryPageController;
+var QueryLiveReportController;
 
 var QueryBlockController = Class.create(BlockController, {
   initialize : function($super) {
@@ -510,21 +515,17 @@ Scale1DQueryPageController = Class.create(QueryPageController, {
     this._min = NaN;
     this._selected = null;
 
-    var questionContainer = this.getBlockElement().down(
-        ".queryQuestionContainer");
+    var questionContainer = this.getBlockElement().down(".queryQuestionContainer");
+    
     if (questionContainer.hasClassName("queryScaleSliderQuestionContainer")) {
       this._initializeSlider(questionContainer);
-    } else if (questionContainer
-        .hasClassName("queryScaleRadioListQuestionContainer")) {
+    } else if (questionContainer.hasClassName("queryScaleRadioListQuestionContainer")) {
       this._initializeRadioList(questionContainer);
     }
 
-    var liveReportContainer = this.getBlockElement().down(
-        '.queryLiveReportContainer');
+    var liveReportContainer = this.getBlockElement().down('.queryLiveReportContainer');
     if (liveReportContainer) {
-      this._liveReportController = new QueryBarChartLiveReportController(
-          "report_barchart", liveReportContainer, this._min, this._max,
-          this._tickLabels);
+      this._liveReportController = new QueryBarChartLiveReportController("report_barchart", liveReportContainer, this._min, this._max, this._tickLabels);
       this._updateReport();
     }
   },
@@ -557,10 +558,8 @@ Scale1DQueryPageController = Class.create(QueryPageController, {
   },
 
   _initializeRadioList : function(questionContainer) {
-    this._radioListController = new QueryBlockScaleRadioListFragmentController(
-        questionContainer);
-    this._radioListController.addListener("valueChange", this,
-        this._onRadioListValueChange);
+    this._radioListController = new QueryBlockScaleRadioListFragmentController(questionContainer);
+    this._radioListController.addListener("valueChange", this, this._onRadioListValueChange);
 
     this._max = this._radioListController.getMax();
     this._min = this._radioListController.getMin();
@@ -697,170 +696,148 @@ Multiple2DScaleQueryPageController = Class
           }
         });
 
-Scale2DQueryPageController = Class
-    .create(
-        QueryPageController,
-        {
-          initialize : function($super, blockController) {
-            $super(blockController);
+Scale2DQueryPageController = Class.create(QueryPageController, {
+  initialize : function($super, blockController) {
+    $super(blockController);
 
-            var questionContainers = this.getBlockElement().select(
-                ".queryQuestionContainer");
+    var questionContainers = this.getBlockElement().select(".queryQuestionContainer");
+    if (questionContainers.length == 1) {
+      var questionContainer = questionContainers[0];
+      if (questionContainer.hasClassName("queryScaleGraphQuestionContainer")) {
+        this._initializeGraph(questionContainer);
+      }
+    } else {
+      if (questionContainers[0].hasClassName("queryScaleSliderQuestionContainer") && questionContainers[1].hasClassName("queryScaleSliderQuestionContainer")) {
+        this._initializeSlider(questionContainers[0], questionContainers[1]);
+      } else if (questionContainers[0].hasClassName("queryScaleRadioListQuestionContainer") && questionContainers[1].hasClassName("queryScaleRadioListQuestionContainer")) {
+        this._initializeRadioList(questionContainers[0], questionContainers[1]);
+      }
+    }
 
-            if (questionContainers.length == 1) {
-              var questionContainer = questionContainers[0];
-              if (questionContainer
-                  .hasClassName("queryScaleGraphQuestionContainer")) {
-                this._initializeGraph(questionContainer);
-              }
-              ;
-            } else {
-              if (questionContainers[0]
-                  .hasClassName("queryScaleSliderQuestionContainer")
-                  && questionContainers[1]
-                      .hasClassName("queryScaleSliderQuestionContainer")) {
-                this._initializeSlider(questionContainers[0],
-                    questionContainers[1]);
-              } else if (questionContainers[0]
-                  .hasClassName("queryScaleRadioListQuestionContainer")
-                  && questionContainers[1]
-                      .hasClassName("queryScaleRadioListQuestionContainer")) {
-                this._initializeRadioList(questionContainers[0],
-                    questionContainers[1]);
-              }
-            }
+    var liveReportContainer = this.getBlockElement().down('.queryLiveReportContainer');
+    if (liveReportContainer) {
+      this._liveReportController = new QueryBubbleChartLiveReportController("report_bubblechart", liveReportContainer, this._min1, this._max1, this._min2, this._max2);
+      this._updateReport();
+    }
+  },
 
-            var liveReportContainer = this.getBlockElement().down(
-                '.queryLiveReportContainer');
-            if (liveReportContainer) {
-              this._liveReportController = new QueryBubbleChartLiveReportController(
-                  "report_bubblechart", liveReportContainer, this._min1,
-                  this._max1, this._min2, this._max2);
-              this._updateReport();
-            }
-          },
+  deinitialize : function($super) {
+    $super();
+    if (this._sliderController1) {
+      this._sliderController1.deinitialize();
+    }
 
-          deinitialize : function($super) {
-            $super();
-            if (this._sliderController1)
-              this._sliderController1.deinitialize();
-            if (this._sliderController2)
-              this._sliderController2.deinitialize();
-            if (this._radioListController1)
-              this._radioListController1.deinitialize();
-            if (this._radioListController2)
-              this._radioListController2.deinitialize();
-            if (this._graphController)
-              this._graphController.deinitialize();
-            if (this._liveReportController)
-              this._liveReportController.deinitialize();
-          },
+    if (this._sliderController2) {
+      this._sliderController2.deinitialize();
+    }
+    
+    if (this._radioListController1) {
+      this._radioListController1.deinitialize();
+    }
+    
+    if (this._radioListController2) {
+      this._radioListController2.deinitialize();
+    }
+    
+    if (this._graphController) {
+      this._graphController.deinitialize();
+    }
+    
+    if (this._liveReportController) {
+      this._liveReportController.deinitialize();
+    }
+  },
 
-          _initializeSlider : function(questionContainer1, questionContainer2) {
-            this._sliderController1 = new QueryBlockScaleSliderFragmentController(
-                questionContainer1);
-            this._sliderController1.addListener("valueChange", this,
-                this._onSlider1ValueChange);
+  _initializeSlider : function(questionContainer1, questionContainer2) {
+    this._sliderController1 = new QueryBlockScaleSliderFragmentController(questionContainer1);
+    this._sliderController1.addListener("valueChange", this, this._onSlider1ValueChange);
+    this._min1 = this._sliderController1.getMin();
+    this._max1 = this._sliderController1.getMax();
+    this._value1 = this._sliderController1.getSelected();
+    this._sliderController2 = new QueryBlockScaleSliderFragmentController(questionContainer2);
+    this._sliderController2.addListener("valueChange", this, this._onSlider2ValueChange);
+    this._min2 = this._sliderController2.getMin();
+    this._max2 = this._sliderController2.getMax();
+    this._value2 = this._sliderController2.getSelected();
+    this._updateNextButton();
+  },
 
-            this._min1 = this._sliderController1.getMin();
-            this._max1 = this._sliderController1.getMax();
-            this._value1 = this._sliderController1.getSelected();
+  _initializeRadioList : function(questionContainer1, questionContainer2) {
+    this._radioListController1 = new QueryBlockScaleRadioListFragmentController(questionContainer1);
+    this._radioListController1.addListener("valueChange", this, this._onRadioList1ValueChange);
 
-            this._sliderController2 = new QueryBlockScaleSliderFragmentController(
-                questionContainer2);
-            this._sliderController2.addListener("valueChange", this,
-                this._onSlider2ValueChange);
+    this._min1 = this._radioListController1.getMin();
+    this._max1 = this._radioListController1.getMax();
+    this._value1 = this._radioListController1.getSelected();
 
-            this._min2 = this._sliderController2.getMin();
-            this._max2 = this._sliderController2.getMax();
-            this._value2 = this._sliderController2.getSelected();
-            this._updateNextButton();
-          },
+    this._radioListController2 = new QueryBlockScaleRadioListFragmentController(questionContainer2);
+    this._radioListController2.addListener("valueChange", this, this._onRadioList2ValueChange);
 
-          _initializeRadioList : function(questionContainer1,
-              questionContainer2) {
-            this._radioListController1 = new QueryBlockScaleRadioListFragmentController(
-                questionContainer1);
-            this._radioListController1.addListener("valueChange", this,
-                this._onRadioList1ValueChange);
+    this._min2 = this._radioListController2.getMin();
+    this._max2 = this._radioListController2.getMax();
+    this._value2 = this._radioListController2.getSelected();
+    this._updateNextButton();
+  },
 
-            this._min1 = this._radioListController1.getMin();
-            this._max1 = this._radioListController1.getMax();
-            this._value1 = this._radioListController1.getSelected();
+  _initializeGraph : function(questionContainer) {
+    this._graphController = new QueryBlockScaleGraphFragmentController(questionContainer);
+    this._graphController.addListener("valueChange", this, this._onGraphValueChange);
 
-            this._radioListController2 = new QueryBlockScaleRadioListFragmentController(
-                questionContainer2);
-            this._radioListController2.addListener("valueChange", this,
-                this._onRadioList2ValueChange);
+    this._min1 = this._graphController.getMinX();
+    this._max1 = this._graphController.getMaxX();
+    this._value1 = this._graphController.getSelectedX();
+    this._min2 = this._graphController.getMinY();
+    this._max2 = this._graphController.getMaxY();
+    this._value2 = this._graphController.getSelectedY();
+    this._updateNextButton();
+  },
 
-            this._min2 = this._radioListController2.getMin();
-            this._max2 = this._radioListController2.getMax();
-            this._value2 = this._radioListController2.getSelected();
-            this._updateNextButton();
-          },
+  _updateNextButton : function() {
+    if (this._value1 === null || this._value2 === null) {
+      this.getBlockController().disableNext();
+    } else {
+      this.getBlockController().enableNext();
+    }
+  },
 
-          _initializeGraph : function(questionContainer) {
-            this._graphController = new QueryBlockScaleGraphFragmentController(
-                questionContainer);
-            this._graphController.addListener("valueChange", this,
-                this._onGraphValueChange);
+  _updateReport : function() {
+    if (this._liveReportController) {
+      this._liveReportController.setUserValues([ [ this._value1, this._value2, 1 ] ]);
+      this._liveReportController.draw();
+    }
+  },
 
-            this._min1 = this._graphController.getMinX();
-            this._max1 = this._graphController.getMaxX();
-            this._value1 = this._graphController.getSelectedX();
-            this._min2 = this._graphController.getMinY();
-            this._max2 = this._graphController.getMaxY();
-            this._value2 = this._graphController.getSelectedY();
-            this._updateNextButton();
-          },
+  _onSlider1ValueChange : function(event) {
+    this._value1 = event.value;
+    this._updateNextButton();
+    this._updateReport();
+  },
 
-          _updateNextButton : function() {
-            if (this._value1 === null || this._value2 === null) {
-              this.getBlockController().disableNext();
-            } else {
-              this.getBlockController().enableNext();
-            }
-          },
+  _onSlider2ValueChange : function(event) {
+    this._value2 = event.value;
+    this._updateNextButton();
+    this._updateReport();
+  },
 
-          _updateReport : function() {
-            if (this._liveReportController) {
-              this._liveReportController.setUserValues([ [ this._value1,
-                  this._value2, 1 ] ]);
-              this._liveReportController.draw();
-            }
-          },
+  _onRadioList1ValueChange : function(event) {
+    this._value1 = event.value;
+    this._updateNextButton();
+    this._updateReport();
+  },
 
-          _onSlider1ValueChange : function(event) {
-            this._value1 = event.value;
-            this._updateNextButton();
-            this._updateReport();
-          },
+  _onRadioList2ValueChange : function(event) {
+    this._value2 = event.value;
+    this._updateNextButton();
+    this._updateReport();
+  },
 
-          _onSlider2ValueChange : function(event) {
-            this._value2 = event.value;
-            this._updateNextButton();
-            this._updateReport();
-          },
-
-          _onRadioList1ValueChange : function(event) {
-            this._value1 = event.value;
-            this._updateNextButton();
-            this._updateReport();
-          },
-
-          _onRadioList2ValueChange : function(event) {
-            this._value2 = event.value;
-            this._updateNextButton();
-            this._updateReport();
-          },
-
-          _onGraphValueChange : function(event) {
-            this._value1 = event.valueX;
-            this._value2 = event.valueY;
-            this._updateNextButton();
-            this._updateReport();
-          }
-        });
+  _onGraphValueChange : function(event) {
+    this._value1 = event.valueX;
+    this._value2 = event.valueY;
+    this._updateNextButton();
+    this._updateReport();
+  }
+});
 
 ExpertiseQueryPageController = Class.create(QueryPageController, {
   initialize : function($super, blockController) {
@@ -1626,72 +1603,73 @@ QueryBlockScaleSliderFragmentController = Class.create(
       }
     });
 
-QueryBlockScaleRadioListFragmentController = Class.create(
-    QueryBlockFragmentController, {
-      initialize : function($super, element) {
-        $super('scale_radiolist', element);
+QueryBlockScaleRadioListFragmentController = Class.create(QueryBlockFragmentController, {
+  initialize : function($super, element) {
+    $super('scale_radiolist', element);
 
-        this._itemValueChangeListener = this._onItemValueChange
-            .bindAsEventListener(this);
+    this._itemValueChangeListener = this._onItemValueChange.bindAsEventListener(this);
 
-        this._minValue = Infinity;
-        this._maxValue = -Infinity;
-        this._selectedValue = null;
-        this._valueLabels = new Array();
+    this._minValue = Infinity;
+    this._maxValue = -Infinity;
+    this._selectedValue = null;
+    this._valueLabels = new Array();
 
-        var listItems = element.select('.queryScaleRadioListItemInput');
-        for (var i = 0, l = listItems.length; i < l; i++) {
-          var listItem = listItems[i];
+    var listItems = element.select('.queryScaleRadioListItemInput');
+    for (var i = 0, l = listItems.length; i < l; i++) {
+      var listItem = listItems[i];
 
-          this._minValue = Math.min(parseInt(listItem.value), this._minValue);
-          this._maxValue = Math.max(parseInt(listItem.value), this._maxValue);
-          var itemValue = listItem.value;
-          var itemContainer = listItems[i]
-              .up('.queryScaleRadioListItemContainer');
-          if (itemContainer != undefined) {
-            var labelContainer = itemContainer
-                .down('.queryScaleRadioListItemLabel');
-            if (labelContainer != undefined) {
-              itemValue = labelContainer.innerHTML;
-            }
-          }
-          this._valueLabels.push(itemValue);
-          if (listItem.checked)
-            this._selectedValue = listItem.value;
-
-          Event.observe(listItem, "change", this._itemValueChangeListener);
+      this._minValue = Math.min(parseInt(listItem.value), this._minValue);
+      this._maxValue = Math.max(parseInt(listItem.value), this._maxValue);
+      var itemValue = listItem.value;
+      var itemContainer = listItems[i].up('.queryScaleRadioListItemContainer');
+      if (itemContainer != undefined) {
+        var labelContainer = itemContainer.down('.queryScaleRadioListItemLabel');
+        if (labelContainer != undefined) {
+          itemValue = labelContainer.innerHTML;
         }
-      },
-      deinitialize : function($super) {
-        this.getElement().select('.queryScaleRadioListItemInput').each(
-            function(e) {
-              e.purge();
-            });
-
-        $super();
-      },
-      getMin : function() {
-        return this._minValue;
-      },
-      getMax : function() {
-        return this._maxValue;
-      },
-      getValueLabels : function() {
-        return this._valueLabels;
-      },
-      getSelected : function() {
-        return this._selectedValue;
-      },
-      _onItemValueChange : function(event) {
-        var element = Event.element(event);
-
-        this._selectedValue = element.value;
-
-        this.fire("valueChange", {
-          value : element.value
-        });
       }
+      
+      this._valueLabels.push(itemValue);
+      if (listItem.checked) {
+        this._selectedValue = listItem.value;
+      }
+          
+      Event.observe(listItem, "change", this._itemValueChangeListener);
+    }
+  },
+  
+  deinitialize : function($super) {
+    this.getElement().select('.queryScaleRadioListItemInput').each(function(e) {
+      e.purge();
     });
+
+    $super();
+  },
+  
+  getMin : function() {
+    return this._minValue;
+  },
+  
+  getMax : function() {
+    return this._maxValue;
+  },
+  
+  getValueLabels : function() {
+    return this._valueLabels;
+  },
+  
+  getSelected : function() {
+    return this._selectedValue;
+  },
+  
+  _onItemValueChange : function(event) {
+    var element = Event.element(event);
+    this._selectedValue = element.value;
+    this.fire("valueChange", {
+      value : element.value
+    });
+  }
+});
 
 QueryBlockTimelineFragmentController = Class
     .create(
@@ -3286,138 +3264,130 @@ QueryBarChartLiveReportController = Class.create(QueryLiveReportController, {
   }
 });
 
-QueryBubbleChartLiveReportController = Class
-    .create(QueryLiveReportController,
-        {
-          initialize : function($super, name, element, minX, maxX, minY, maxY) {
-            $super(name, element);
+QueryBubbleChartLiveReportController = Class.create(QueryLiveReportController, {
+  initialize : function($super, name, element, minX, maxX, minY, maxY) {
+    $super(name, element);
 
-            this._flotrContainer = element
-                .down('.queryBubbleChartLiveReportFlotrContainer');
+    this._flotrContainer = element.down('.queryBubbleChartLiveReportFlotrContainer');
 
-            this._minX = minX;
-            this._minY = minY;
-            this._maxX = maxX;
-            this._maxY = maxY;
-            this._userData = [ [ 0, 0, 0 ] ];
+    this._minX = minX;
+    this._minY = minY;
+    this._maxX = maxX;
+    this._maxY = maxY;
+    this._userData = [ [ 0, 0, 0 ] ];
 
-            this._data = new Array();
-            this._xTickLabels = new Array();
-            this._yTickLabels = new Array();
+    this._data = [];
+    this._xTickLabels = [];
+    this._yTickLabels = [];
+    this._xAxisLabel = this.getElement().down('input[name="xAxisLabel"]').value;
+    this._yAxisLabel = this.getElement().down('input[name="yAxisLabel"]').value;
+    var i, l;
 
-            this._xAxisLabel = this.getElement().down(
-                'input[name="xAxisLabel"]').value;
-            this._yAxisLabel = this.getElement().down(
-                'input[name="yAxisLabel"]').value;
+    var xLabels = this.getElement().select("input.bubbleLabelX");
+    for (i = 0, l = xLabels.length; i < l; i++) {
+      this._xTickLabels.push([ i, xLabels[i].value ]);
+    }
 
-            var xLabels = this.getElement().select("input.bubbleLabelX");
-            for (var i = 0, l = xLabels.length; i < l; i++) {
-              this._xTickLabels.push([ i, xLabels[i].value ]);
-            }
+    var yLabels = this.getElement().select("input.bubbleLabelY");
+    for (i = 0, l = yLabels.length; i < l; i++) {
+      this._yTickLabels.push([ i, yLabels[i].value ]);
+    }
 
-            var yLabels = this.getElement().select("input.bubbleLabelY");
-            for (var i = 0, l = yLabels.length; i < l; i++) {
-              this._yTickLabels.push([ i, yLabels[i].value ]);
-            }
+    var bubbleValues = this.getElement().select("input.bubbleValue");
+    for (i = 0, l = bubbleValues.length; i < l; i++) {
+      var bubbleValue = bubbleValues[i];
+      var axisNames = bubbleValue.name.split('.');
+      var xIndex = parseInt(axisNames[1]);
+      var yIndex = parseInt(axisNames[2]);
+      var bubbleX = this.getElement().down('input[name="bubble.' + xIndex + '.' + yIndex + '.x"]');
+      var bubbleY = this.getElement().down('input[name="bubble.' + xIndex + '.' + yIndex + '.y"]');
+      var x = parseInt(bubbleX.value);
+      var y = parseInt(bubbleY.value);
+      var z = parseFloat(bubbleValue.value);
+      this._data.push([ x, y, z ]);
+    }
+  },
+  deinitialize : function($super) {
+    $super();
+  },
+  setUserValues : function(values) {
+    this._userData = values;
+  },
+  draw : function() {
+    var options = {
+      "xaxis" : {
+        "min" : this._minX,
+        "max" : this._maxX,
+        "title" : this._xAxisLabel
+      },
+      "yaxis" : {
+        "min" : this._minY,
+        "max" : this._maxY,
+        "title" : this._yAxisLabel
+      },
+      "bubbles" : {
+        "show" : true,
+        "baseRadius" : 5
+      },
+      "markers" : {
+        "show" : true,
+        "labelFormatter" : function(val) {
+          var index = val.index;
+          var value = val.data[index][2];
+          return value > 0 ? value : "";
+        }
+      }
+    };
 
-            var bubbleValues = this.getElement().select("input.bubbleValue");
-            for (var i = 0, l = bubbleValues.length; i < l; i++) {
-              var bubbleValue = bubbleValues[i];
-              var name = bubbleValue.name.split('.');
-              var xIndex = parseInt(name[1]);
-              var yIndex = parseInt(name[2]);
+    if (this._xTickLabels && this._xTickLabels.length > 0) {
+      options["xaxis"]["ticks"] = this._xTickLabels;
+    }
+    
+    if (this._yTickLabels && this._yTickLabels.length > 0) {
+      options["yaxis"]["ticks"] = this._yTickLabels;
+    }
+    
+    this._flotr = Flotr.draw(this._flotrContainer, this._getDataSeries(), options);
+  },
+  
+  _getDataSeries : function() {
+    var data = [];
+    var userDataFound = false;
 
-              var bubbleX = this.getElement().down(
-                  'input[name="bubble.' + xIndex + '.' + yIndex + '.x"]');
-              var bubbleY = this.getElement().down(
-                  'input[name="bubble.' + xIndex + '.' + yIndex + '.y"]');
-              var x = parseInt(bubbleX.value);
-              var y = parseInt(bubbleY.value);
+    for (var i = 0, l = this._data.length; i < l; i++) {
+      var dataObject = {};
+      dataObject[0] = this._data[i][0];
+      dataObject[1] = this._data[i][1];
 
-              var z = parseFloat(bubbleValue.value);
+      var userValue = 0;
+      for (var j = 0, jl = this._userData.length; j < jl; j++) {
+        var userDataObject = this._userData[j];
+        if ((dataObject[0] == userDataObject[0]) && (dataObject[1] == userDataObject[1])) {
+          userValue++;
+          userDataFound = true;
+        }
+      }
 
-              this._data.push([ x, y, z ]);
-            }
-          },
-          deinitialize : function($super) {
-            $super();
-          },
-          setUserValues : function(values) {
-            this._userData = values;
-          },
-          draw : function() {
-            var options = {
-              "xaxis" : {
-                "min" : this._minX,
-                "max" : this._maxX,
-                "title" : this._xAxisLabel
-              },
-              "yaxis" : {
-                "min" : this._minY,
-                "max" : this._maxY,
-                "title" : this._yAxisLabel
-              },
-              "bubbles" : {
-                "show" : true,
-                "baseRadius" : 5
-              },
-              "markers" : {
-                "show" : true,
-                "labelFormatter" : function(val) {
-                  var index = val.index;
-                  var value = val.data[index][2];
-                  return value > 0 ? value : "";
-                }
-              }
-            };
-
-            if (this._xTickLabels && this._xTickLabels.length > 0)
-              options["xaxis"]["ticks"] = this._xTickLabels;
-
-            if (this._yTickLabels && this._yTickLabels.length > 0)
-              options["yaxis"]["ticks"] = this._yTickLabels;
-
-            this._flotr = Flotr.draw(this._flotrContainer, this
-                ._getDataSeries(), options);
-          },
-          _getDataSeries : function() {
-            var data = new Array();
-            var userDataFound = false;
-
-            for (var i = 0, l = this._data.length; i < l; i++) {
-              var dataObject = new Object();
-              dataObject[0] = this._data[i][0];
-              dataObject[1] = this._data[i][1];
-
-              var userValue = 0;
-              for (var j = 0, jl = this._userData.length; j < jl; j++) {
-                var userDataObject = this._userData[j];
-                if ((dataObject[0] == userDataObject[0])
-                    && (dataObject[1] == userDataObject[1])) {
-                  userValue++;
-                  userDataFound = true;
-                }
-              }
-
-              dataObject[2] = this._data[i][2] + userValue;
-              data.push(dataObject);
-            }
-
-            if (!userDataFound && (this._userData.length > 0)) {
-              var dataObject = new Object();
-              dataObject[0] = this._userData[0][0];
-              dataObject[1] = this._userData[0][1];
-              dataObject[2] = this._userData[0][2];
-              data.push(dataObject);
-            }
-
-            return [ {
-              data : data
-            }, {
-              data : this._userData
-            } ];
-          }
+      dataObject[2] = this._data[i][2] + userValue;
+      data.push(dataObject);
+    }
+    
+    if (this._userData[0][0] && this._userData[0][1]) {
+      if (!userDataFound && (this._userData.length > 0)) {
+        data.push({
+          0: this._userData[0][0],
+          1: this._userData[0][1],
+          2: this._userData[0][2]
         });
+      }
+      
+      return [{ data: data }, { data: this._userData }];      
+    } else {
+      return [{ data: data }, { data: [[ 0, 0, 0 ]] }];
+    }
+
+  }
+});
 
 QueryPieChartLiveReportController = Class.create(QueryLiveReportController, {
   initialize : function($super, name, element, caption, ids, values, captions) {
