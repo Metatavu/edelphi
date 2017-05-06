@@ -3383,7 +3383,7 @@ QueryBubbleChartLiveReportController = Class.create(QueryLiveReportController, {
       
       return [{ data: data }, { data: this._userData }];      
     } else {
-      return [{ data: data }];      
+      return [{ data: data }, { data: [[ 0, 0, 0 ]] }];
     }
 
   }
