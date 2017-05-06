@@ -1,4 +1,4 @@
-/*global BlockController,QueryBlockFragmentController,getLocale,JSONUtils,startLoadingOperation,endLoadingOperation,JSDATA,ModalPopup*/
+/*global BlockController,QueryBlockFragmentController,getLocale,JSONUtils,startLoadingOperation,endLoadingOperation,JSDATA,ModalPopup,Flotr*/
 
 var TextQueryPageController;
 var TimeSerieQueryPageController;
@@ -18,6 +18,9 @@ var QueryBlockMultiSelectFragmentController;
 var QueryCommentsController;
 var QueryBubbleChartLiveReportController;
 var QueryBlockScaleRadioListFragmentController;
+var QueryBarChartLiveReportController;
+var QueryPageController;
+var QueryLiveReportController;
 
 var QueryBlockController = Class.create(BlockController, {
   initialize : function($super) {
@@ -723,7 +726,7 @@ Scale2DQueryPageController = Class.create(QueryPageController, {
     if (this._sliderController1) {
       this._sliderController1.deinitialize();
     }
-    
+
     if (this._sliderController2) {
       this._sliderController2.deinitialize();
     }
@@ -3278,23 +3281,24 @@ QueryBubbleChartLiveReportController = Class.create(QueryLiveReportController, {
     this._yTickLabels = [];
     this._xAxisLabel = this.getElement().down('input[name="xAxisLabel"]').value;
     this._yAxisLabel = this.getElement().down('input[name="yAxisLabel"]').value;
+    var i, l;
 
     var xLabels = this.getElement().select("input.bubbleLabelX");
-    for (var i = 0, l = xLabels.length; i < l; i++) {
+    for (i = 0, l = xLabels.length; i < l; i++) {
       this._xTickLabels.push([ i, xLabels[i].value ]);
     }
 
     var yLabels = this.getElement().select("input.bubbleLabelY");
-    for (var i = 0, l = yLabels.length; i < l; i++) {
+    for (i = 0, l = yLabels.length; i < l; i++) {
       this._yTickLabels.push([ i, yLabels[i].value ]);
     }
 
     var bubbleValues = this.getElement().select("input.bubbleValue");
-    for (var i = 0, l = bubbleValues.length; i < l; i++) {
+    for (i = 0, l = bubbleValues.length; i < l; i++) {
       var bubbleValue = bubbleValues[i];
-      var name = bubbleValue.name.split('.');
-      var xIndex = parseInt(name[1]);
-      var yIndex = parseInt(name[2]);
+      var axisNames = bubbleValue.name.split('.');
+      var xIndex = parseInt(axisNames[1]);
+      var yIndex = parseInt(axisNames[2]);
       var bubbleX = this.getElement().down('input[name="bubble.' + xIndex + '.' + yIndex + '.x"]');
       var bubbleY = this.getElement().down('input[name="bubble.' + xIndex + '.' + yIndex + '.y"]');
       var x = parseInt(bubbleX.value);
