@@ -3372,7 +3372,7 @@ QueryBubbleChartLiveReportController = Class.create(QueryLiveReportController, {
       data.push(dataObject);
     }
     
-    if (this._userData[0][0] && this._userData[0][1]) {
+    if (this._userData && this._userData[0] && this._userData[0][0] && this._userData[0][1]) {
       if (!userDataFound && (this._userData.length > 0)) {
         data.push({
           0: this._userData[0][0],
