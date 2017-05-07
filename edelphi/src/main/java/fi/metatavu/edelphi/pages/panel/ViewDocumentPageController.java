@@ -78,9 +78,9 @@ public class ViewDocumentPageController extends PanelPageController {
 				Drive drive = GoogleDriveUtils.getAdminService();
 				File file = GoogleDriveUtils.getFile(drive, googleDocument.getResourceId());
 				if ("application/vnd.google-apps.document".equals(file.getMimeType())) {
-			    handleDocument(pageRequestContext, drive, file);
+			    handleGoogleDocument(pageRequestContext, drive, file);
 				} else if ("application/vnd.google-apps.spreadsheet".equals(file.getMimeType())) {
-			    handleSpreadsheet(pageRequestContext, drive, file);
+			    handleGoogleSpreadsheet(pageRequestContext, drive, file);
 				} else {
 					pageRequestContext.setRedirectURL(pageRequestContext.getRequest().getContextPath() + "/resources/viewdocument.binary?documentId=" + documentId);
 				}
@@ -99,7 +99,7 @@ public class ViewDocumentPageController extends PanelPageController {
 		pageRequestContext.setIncludeJSP("/jsp/pages/panel/viewdocument.jsp");
 	}
 
-  private void handleSpreadsheet(PageRequestContext pageRequestContext, Drive drive, File file) throws IOException {
+  private void handleGoogleSpreadsheet(PageRequestContext pageRequestContext, Drive drive, File file) throws IOException {
     DownloadResponse response = GoogleDriveUtils.exportSpreadsheet(drive, file);
     if (response != null) {
       pageRequestContext.getRequest().setAttribute("content", IOUtils.toString(response.getData(), "UTF-8"));
@@ -108,7 +108,7 @@ public class ViewDocumentPageController extends PanelPageController {
     }
   }
 
-  private void handleDocument(PageRequestContext pageRequestContext, Drive drive, File file) throws IOException {
+  private void handleGoogleDocument(PageRequestContext pageRequestContext, Drive drive, File file) throws IOException {
     DownloadResponse response = GoogleDriveUtils.exportFile(drive, file, "text/html");
     String content = GoogleDriveUtils.extractGoogleDocumentContent(response.getData());
     String styleSheet = GoogleDriveUtils.extractGoogleDocumentStyleSheet(response.getData());
