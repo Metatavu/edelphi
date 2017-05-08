@@ -1,4 +1,4 @@
-/*global BlockController,addBlockController,startLoadingOperation,endLoadingOperation,JSONUtils,transport */
+/*global BlockController,addBlockController,startLoadingOperation,endLoadingOperation,JSONUtils */
 (function() {
   'use strict';
 
@@ -24,7 +24,7 @@
       
       startLoadingOperation("admin.block.importMaterialsGDocs.importingMaterials");
       JSONUtils.sendForm(this._formElement, {
-        onComplete: function (transport) {
+        onComplete: function () {
           endLoadingOperation();
         },
         onSuccess: function () {
