@@ -36,7 +36,7 @@
     <jsp:include page="/jsp/fragments/material_materialrow.jsp">
       <jsp:param name="resourceId" value="${material.id}" />
       <jsp:param name="resourceName" value="${material.name}" />
-      <jsp:param name="resourcePath" value="${pageContext.request.contextPath}${material.fullPath}" />
+      <jsp:param name="resourcePath" value="${!empty(param.resourcePath) ? param.resourcePath : material.fullPath}" />
       <jsp:param name="resourceCreated" value="${material.created.time}" />
       <jsp:param name="resourceModified" value="${material.lastModified.time}" />
       <jsp:param name="resourceVisible" value="${material.visible}" />
@@ -56,7 +56,7 @@
     <jsp:include page="/jsp/fragments/material_materialrow.jsp">
       <jsp:param name="resourceId" value="${material.id}" />
       <jsp:param name="resourceName" value="${material.name}" />
-      <jsp:param name="resourcePath" value="${pageContext.request.contextPath}${material.fullPath}" />
+      <jsp:param name="resourcePath" value="${!empty(param.resourcePath) ? param.resourcePath : material.fullPath}" />
       <jsp:param name="resourceCreated" value="${material.created.time}" />
       <jsp:param name="resourceModified" value="${material.lastModified.time}" />
       <jsp:param name="resourceVisible" value="${material.visible}" />
@@ -72,7 +72,7 @@
     <jsp:include page="/jsp/fragments/material_materialrow.jsp">
       <jsp:param name="resourceId" value="${material.id}" />
       <jsp:param name="resourceName" value="${material.name}" />
-      <jsp:param name="resourcePath" value="${pageContext.request.contextPath}${material.fullPath}" />
+      <jsp:param name="resourcePath" value="${!empty(param.resourcePath) ? param.resourcePath : material.fullPath}" />
       <jsp:param name="resourceCreated" value="${material.created.time}" />
       <jsp:param name="resourceModified" value="${material.lastModified.time}" />
       <jsp:param name="resourceVisible" value="${material.visible}" />
@@ -91,7 +91,7 @@
     <jsp:include page="/jsp/fragments/material_materialrow.jsp">
       <jsp:param name="resourceId" value="${material.id}" />
       <jsp:param name="resourceName" value="${material.name}" />
-      <jsp:param name="resourcePath" value="${pageContext.request.contextPath}${material.fullPath}" />
+      <jsp:param name="resourcePath" value="${!empty(param.resourcePath) ? param.resourcePath : material.fullPath}" />
       <jsp:param name="resourceCreated" value="${material.created.time}" />
       <jsp:param name="resourceModified" value="${material.lastModified.time}" />
       <jsp:param name="resourceVisible" value="${material.visible}" />
@@ -107,7 +107,7 @@
     <jsp:include page="/jsp/fragments/material_materialrow.jsp">
       <jsp:param name="resourceId" value="${material.id}" />
       <jsp:param name="resourceName" value="${material.name}" />
-      <jsp:param name="resourcePath" value="${pageContext.request.contextPath}${material.fullPath}" />
+      <jsp:param name="resourcePath" value="${!empty(param.resourcePath) ? param.resourcePath : material.fullPath}" />
       <jsp:param name="resourceCreated" value="${material.created.time}" />
       <jsp:param name="resourceModified" value="${material.lastModified.time}" />
       <jsp:param name="resourceVisible" value="${material.visible}" />
