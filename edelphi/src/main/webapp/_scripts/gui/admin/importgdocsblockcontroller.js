@@ -1,4 +1,4 @@
-/*global BlockController,addBlockController,startLoadingOperation,endLoadingOperation.JSONUtils,transport */
+/*global BlockController,addBlockController,startLoadingOperation,endLoadingOperation,JSONUtils,transport */
 (function() {
   'use strict';
 
