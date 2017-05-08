@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -30,11 +32,14 @@ import fi.metatavu.edelphi.i18n.Messages;
 import fi.metatavu.edelphi.pages.DelfoiPageController;
 import fi.metatavu.edelphi.utils.ActionUtils;
 import fi.metatavu.edelphi.utils.MaterialBean;
+import fi.metatavu.edelphi.utils.MaterialBeanNameComparator;
 import fi.metatavu.edelphi.utils.MaterialUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 import fi.metatavu.edelphi.utils.ResourceLockUtils;
 
 public class EditLocalDocumentPageController extends DelfoiPageController {
+  
+  private static final Logger logger = Logger.getLogger(EditLocalDocumentPageController.class.getName());
 
   public EditLocalDocumentPageController() {
     super();
@@ -63,9 +68,10 @@ public class EditLocalDocumentPageController extends DelfoiPageController {
     Folder folder = null;
     String category = pageRequestContext.getString("cat");
     String language = pageRequestContext.getString("lang");
-    if (StringUtils.isEmpty(language))
+    if (StringUtils.isEmpty(language)) {
       language = locale.getLanguage();
-
+    }
+    
     try {
       if ("help".equals(category)) {
         folder = MaterialUtils.getDelfoiHelpFolder(delfoi, language, loggedUser); 
@@ -74,10 +80,12 @@ public class EditLocalDocumentPageController extends DelfoiPageController {
           folder = MaterialUtils.getDelfoiMaterialFolder(delfoi, language, loggedUser); 
       }
     } catch (Exception ex) {
+      logger.log(Level.SEVERE, String.format("Error occurred while resolving category %s folder", category), ex);
     }
     
-    if (folder == null)
+    if (folder == null) {
       throw new PageNotFoundException(pageRequestContext.getRequest().getLocale());
+    }
     
     Long localDocumentId = pageRequestContext.getLong("localDocumentId");
     LocalDocument localDocument = localDocumentDAO.findById(localDocumentId);
@@ -124,12 +132,7 @@ public class EditLocalDocumentPageController extends DelfoiPageController {
     
     try {
       List<MaterialBean> materials = MaterialUtils.listFolderMaterials(folder, true, true);
-      Collections.sort(materials, new Comparator<MaterialBean>() {
-        @Override
-        public int compare(MaterialBean o1, MaterialBean o2) {
-          return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
-        }
-      });
+      Collections.sort(materials, new MaterialBeanNameComparator());
       pageRequestContext.getRequest().setAttribute("materials", materials);
       pageRequestContext.getRequest().setAttribute("materialTrees", MaterialUtils.listMaterialTrees(folder, true, true));
     } catch (IOException e) {
