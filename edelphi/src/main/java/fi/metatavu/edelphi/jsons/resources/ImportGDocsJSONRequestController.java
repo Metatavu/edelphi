@@ -21,7 +21,6 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.i18n.Messages;
 import fi.metatavu.edelphi.jsons.JSONController;
 import fi.metatavu.edelphi.smvcj.AccessDeniedException;
-import fi.metatavu.edelphi.smvcj.LoginRequiredException;
 import fi.metatavu.edelphi.smvcj.PageNotFoundException;
 import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
@@ -32,7 +31,7 @@ import fi.metatavu.edelphi.utils.ResourceUtils;
 public class ImportGDocsJSONRequestController extends JSONController {
 
   @Override
-  public void authorize(RequestContext requestContext) throws LoginRequiredException, AccessDeniedException {
+  public void authorize(RequestContext requestContext) {
     ResourceDAO resourceDAO = new ResourceDAO();
     Long parentFolderId = requestContext.getLong("parentFolderId");
     if (parentFolderId != null) {
