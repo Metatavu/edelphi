@@ -8,8 +8,6 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
-import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.panels.PanelDAO;
@@ -18,6 +16,8 @@ import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.i18n.Messages;
 import fi.metatavu.edelphi.pages.panel.PanelPageController;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.utils.ActionUtils;
 import fi.metatavu.edelphi.utils.GoogleDriveUtils;
 import fi.metatavu.edelphi.utils.MaterialUtils;
@@ -49,7 +49,8 @@ public class ImportMaterialsGDocsPageController extends PanelPageController {
       	// TODO: Support folders 
       	FileList files = GoogleDriveUtils.listFiles(drive, "mimeType != 'application/vnd.google-apps.folder' and trashed != true");
       	for (File file : files.getFiles()) {
-          googleDocuments.add(new GoogleDocumentBean(file));
+          String iconLink = GoogleDriveUtils.getIconLink(file);
+          googleDocuments.add(new GoogleDocumentBean(file, iconLink));
       	}
       	
         pageRequestContext.getRequest().setAttribute("googleDocuments", googleDocuments);
@@ -69,10 +70,10 @@ public class ImportMaterialsGDocsPageController extends PanelPageController {
 
   public class GoogleDocumentBean {
 
-    public GoogleDocumentBean(File file) {
+    public GoogleDocumentBean(File file, String iconLink) {
       this.resourceId = file.getId();
       this.title = file.getName();
-      this.iconUrl = file.getIconLink();
+      this.iconUrl = iconLink;
       this.kind = file.getKind();
     }
 
