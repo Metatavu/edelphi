@@ -69,7 +69,7 @@
     
     <!-- Google Drive -->
     
-    <google-api-services-drive.version>v3-rev41-1.22.0</google-api-services-drive.version>
+    <google-api-services-drive.version>v3-rev72-1.22.0</google-api-services-drive.version>
     <google-http-client-jackson2.version>1.22.0</google-http-client-jackson2.version>
     
     <!-- OpenId -->
