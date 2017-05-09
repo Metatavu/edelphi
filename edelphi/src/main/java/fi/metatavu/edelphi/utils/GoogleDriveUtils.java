@@ -388,6 +388,35 @@ public class GoogleDriveUtils {
     
     return null;
   }
+  
+  public static String getIconLink(File file) {
+    if (StringUtils.isNotBlank(file.getIconLink())) {
+      return file.getIconLink();
+    }
+    
+    if (StringUtils.startsWith(file.getMimeType(), "image/")) {
+      return "https://ssl.gstatic.com/docs/doclist/images/mediatype/icon_1_image_x16.png";
+    }
+    
+    switch (file.getMimeType()) {
+      case "application/vnd.google-apps.document":
+        return "https://ssl.gstatic.com/docs/doclist/images/mediatype/icon_1_document_x16.png";
+      case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+      case "application/vnd.google-apps.spreadsheet":
+        return "https://ssl.gstatic.com/docs/doclist/images/mediatype/icon_1_spreadsheet_x16.png";
+      case "application/vnd.google-apps.folder":
+        return "https://ssl.gstatic.com/docs/doclist/images/mediatype/icon_1_folder_x16.png";
+      case "application/vnd.google-apps.presentation":
+        return "https://ssl.gstatic.com/docs/doclist/images/mediatype/icon_1_presentation_x16.png";
+      case "application/vnd.google-apps.map":
+        return "https://ssl.gstatic.com/docs/doclist/images/mediatype/icon_1_map_x16.png";
+      case "application/pdf":
+        return "https://ssl.gstatic.com/docs/doclist/images/mediatype/icon_3_pdf_x16.png";
+      default:
+    }
+    
+    return "https://ssl.gstatic.com/docs/doclist/images/icon_8_document_list.png";
+  }
 
   private static void prefixDocumentSelector(CSSRule cssRule) {
     CSSStyleRule styleRule = (CSSStyleRule) cssRule;

@@ -11,6 +11,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title><fmt:message key="index.pageTitle" /> </title>
     <jsp:include page="/jsp/templates/index_head.jsp"></jsp:include>
+    <link href="${pageContext.request.contextPath}/_themes/default/css/document.css" rel="stylesheet">
+    <c:if test="${styleSheet != null}">
+      <style type="text/css">${styleSheet}</style>
+    </c:if>
   </head>
   <body class="environment index">
   

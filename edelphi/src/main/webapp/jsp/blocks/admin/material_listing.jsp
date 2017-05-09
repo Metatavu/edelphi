@@ -12,12 +12,15 @@
   
   <jsp:include page="/jsp/fragments/block_contextmenu.jsp">
 
-    <jsp:param name="items" value="CREATE,CREATEFOLDER"/>
+    <jsp:param name="items" value="CREATE,CREATEFOLDER,GDOCSIMPORT"/>
     <jsp:param name="item.CREATEFOLDER.tooltipLocale" value="admin.dashboard.materialCreateFolder"/>
     <jsp:param name="item.CREATEFOLDER.href" value="#parentFolderId:${param.parentFolderId}"/>
 
     <jsp:param name="item.CREATE.tooltipLocale" value="admin.dashboard.materialCreateLocalDocument"/>
     <jsp:param name="item.CREATE.href" value="${pageContext.request.contextPath}/admin/createlocaldocument.page?cat=materials&lang=${dashboardLang}"/>
+
+    <jsp:param name="item.GDOCSIMPORT.tooltipLocale" value="admin.dashboard.materialImportGoogleDocuments"/>
+    <jsp:param name="item.GDOCSIMPORT.href" value="${pageContext.request.contextPath}/admin/importmaterialsgdocs.page?cat=materials&lang=${dashboardLang}"/>
   </jsp:include>
   
   <div class="blockContent materialsBlockList sortableMaterialList">
@@ -31,6 +34,7 @@
         <jsp:param value="materials" name="dashboardCategory"/>
         <jsp:param value="MANAGE_DELFOI_MATERIALS" name="editAction"/>
         <jsp:param value="${param.parentFolderId}" name="parentFolderId"/>
+        <jsp:param value="/material.page?documentId=${material.id}" name="resourcePath"/>
       </jsp:include>
     </c:forEach>
   </div>
