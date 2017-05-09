@@ -40,53 +40,53 @@ public class ImportMaterialsGDocsPageController extends DelfoiPageController {
     super();
     setAccessAction(DelfoiActionName.MANAGE_DELFOI_MATERIALS, DelfoiActionScope.DELFOI);
   }
-  
+
   @Override
   public Feature getFeature() {
     return Feature.BASIC_USAGE;
   }
-  
+
   @Override
   public void processPageRequest(PageRequestContext pageRequestContext) {
     Drive drive = GoogleDriveUtils.getAuthenticatedService(pageRequestContext);
-		if (drive != null) {
-		  Delfoi delfoi = RequestUtils.getDelfoi(pageRequestContext);
-	    if (delfoi == null) {
-	      throw new PageNotFoundException(pageRequestContext.getRequest().getLocale());
-	    }
+    if (drive != null) {
+      Delfoi delfoi = RequestUtils.getDelfoi(pageRequestContext);
+      if (delfoi == null) {
+        throw new PageNotFoundException(pageRequestContext.getRequest().getLocale());
+      }
 
-	    Messages messages = Messages.getInstance();
-	    Locale locale = pageRequestContext.getRequest().getLocale();
-	    User loggedUser = RequestUtils.getUser(pageRequestContext);
+      Messages messages = Messages.getInstance();
+      Locale locale = pageRequestContext.getRequest().getLocale();
+      User loggedUser = RequestUtils.getUser(pageRequestContext);
 
       String language = pageRequestContext.getString("lang");
       if (StringUtils.isEmpty(language)) {
         language = locale.getLanguage();
       }
 
-		  Folder folder = null;
-	    String category = pageRequestContext.getString("cat");
-	    folder = resolveFolder(delfoi, loggedUser, language, category);
-	    
-	    if (folder == null) {
-	      throw new PageNotFoundException(pageRequestContext.getRequest().getLocale());
-	    }
-		  
-			try {
-      	List<GoogleDocumentBean> googleDocuments = new ArrayList<>();
-        
-      	FileList files = GoogleDriveUtils.listFiles(drive, "mimeType != 'application/vnd.google-apps.folder' and trashed != true");
-      	for (File file : files.getFiles()) {
-      	  String iconLink = GoogleDriveUtils.getIconLink(file);
-          googleDocuments.add(new GoogleDocumentBean(file, iconLink));
-      	}
+      Folder folder = null;
+      String category = pageRequestContext.getString("cat");
+      folder = resolveFolder(delfoi, loggedUser, language, category);
 
-      	List<MaterialBean> materials = MaterialUtils.listFolderMaterials(folder, true, true);
+      if (folder == null) {
+        throw new PageNotFoundException(pageRequestContext.getRequest().getLocale());
+      }
+
+      try {
+        List<GoogleDocumentBean> googleDocuments = new ArrayList<>();
+
+        FileList files = GoogleDriveUtils.listFiles(drive, "mimeType != 'application/vnd.google-apps.folder' and trashed != true");
+        for (File file : files.getFiles()) {
+          String iconLink = GoogleDriveUtils.getIconLink(file);
+          googleDocuments.add(new GoogleDocumentBean(file, iconLink));
+        }
+
+        List<MaterialBean> materials = MaterialUtils.listFolderMaterials(folder, true, true);
         Collections.sort(materials, new MaterialBeanNameComparator());
-      	
+
         pageRequestContext.getRequest().setAttribute("googleDocuments", googleDocuments);
         pageRequestContext.getRequest().setAttribute("parentFolderId", folder.getId());
-      	pageRequestContext.getRequest().setAttribute("dashboardCategory", category);
+        pageRequestContext.getRequest().setAttribute("dashboardCategory", category);
         pageRequestContext.getRequest().setAttribute("dashboardLang", pageRequestContext.getString("lang"));
         pageRequestContext.getRequest().setAttribute("materials", materials);
         pageRequestContext.getRequest().setAttribute("materialTrees", MaterialUtils.listMaterialTrees(folder, true, true));
@@ -96,14 +96,14 @@ public class ImportMaterialsGDocsPageController extends DelfoiPageController {
       } catch (Exception e) {
         throw new SmvcRuntimeException(EdelfoiStatusCode.GOOGLE_DOCS_FAILURE, messages.getText(locale, "exception.1012.googleDocsFailure"), e);
       }
-      
-		}
+
+    }
   }
 
   private Folder resolveFolder(Delfoi delfoi, User loggedUser, String language, String category) {
     try {
       if ("help".equals(category)) {
-        return MaterialUtils.getDelfoiHelpFolder(delfoi, language, loggedUser); 
+        return MaterialUtils.getDelfoiHelpFolder(delfoi, language, loggedUser);
       } else {
         if ("materials".equals(category)) {
           return MaterialUtils.getDelfoiMaterialFolder(delfoi, language, loggedUser);
@@ -112,7 +112,7 @@ public class ImportMaterialsGDocsPageController extends DelfoiPageController {
     } catch (Exception ex) {
       logger.log(Level.SEVERE, String.format("Error occurred while resolving category %s folder", category), ex);
     }
-    
+
     return null;
   }
 
@@ -137,10 +137,10 @@ public class ImportMaterialsGDocsPageController extends DelfoiPageController {
     public String getTitle() {
       return title;
     }
-    
+
     public String getIconUrl() {
-			return iconUrl;
-		}
+      return iconUrl;
+    }
 
     public String getKind() {
       return kind;
