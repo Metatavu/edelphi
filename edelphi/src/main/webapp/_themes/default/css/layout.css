@@ -2187,32 +2187,37 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 
 /* 
  * Generic GDocs import
- * 
  */
-
+ 
+.adminMaterialImportGDocsEntry,
 .panelAdminMaterialImportGDocsEntry {
   position: relative;
   height: 20px;
 }
 
+.adminMaterialImportGDocsEntryCheckContainer,
 .panelAdminMaterialImportGDocsEntryCheckContainer {
   position: absolute;
   left: 0px;
 }
 
+.adminMaterialImportGDocsEntryCheck,
 .panelAdminMaterialImportGDocsEntryCheck {
   margin-top: 5px;
 }
 
+.adminMaterialImportGDocsEntryIconContainer,
 .panelAdminMaterialImportGDocsEntryIconContainer {
   position: absolute;
   left: 22px;
 }
 
+.adminMaterialImportGDocsEntryIcon,
 .panelAdminMaterialImportGDocsEntryIcon {
   margin-top: 4px;
 }
 
+.adminMaterialImportGDocsEntryTitleContainer,
 .panelAdminMaterialImportGDocsEntryTitleContainer {
   position: absolute;
   left: 46px;
@@ -2220,8 +2225,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 }
 
 /* 
- * Panel Admin Bulletins Management  
- * 
+ * Panel Admin Bulletins Management 
  */
 
 .GUI_adminManageBulletinsNarrowColumn {

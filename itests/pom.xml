@@ -220,6 +220,9 @@
               <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
               <classDumpDir>${project.reporting.outputDirectory}/jacoco/classes</classDumpDir>
               <propertyName>jacoco.agent.itArgLine</propertyName>
+              <excludes>
+                <exclude>**/*_.class</exclude>
+              </excludes>
             </configuration>
             <executions>
               <execution>

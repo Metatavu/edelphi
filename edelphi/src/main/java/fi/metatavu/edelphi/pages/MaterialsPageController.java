@@ -2,32 +2,28 @@ package fi.metatavu.edelphi.pages;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvcj.StatusCode;
-import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
-import fi.metatavu.edelphi.dao.resources.LocalDocumentDAO;
-import fi.metatavu.edelphi.dao.resources.LocalDocumentPageDAO;
-import fi.metatavu.edelphi.dao.resources.ResourceDAO;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.resources.Document;
 import fi.metatavu.edelphi.domainmodel.resources.Folder;
-import fi.metatavu.edelphi.domainmodel.resources.LocalDocument;
-import fi.metatavu.edelphi.domainmodel.resources.LocalDocumentPage;
-import fi.metatavu.edelphi.domainmodel.resources.Resource;
 import fi.metatavu.edelphi.i18n.Messages;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.utils.ActionUtils;
 import fi.metatavu.edelphi.utils.MaterialBean;
+import fi.metatavu.edelphi.utils.MaterialBeanNameComparator;
 import fi.metatavu.edelphi.utils.MaterialUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 
-public class MaterialsPageController extends DelfoiPageController {
+public class MaterialsPageController extends AbstractDelphiMaterialPageController {
+
+  private static final String DOCUMENT_ID_PARAMETER = "documentId";
+  private static final String PAGE_PARAMETER = "page";
 
   @Override
   public Feature getFeature() {
@@ -42,8 +38,8 @@ public class MaterialsPageController extends DelfoiPageController {
     Locale locale = pageRequestContext.getRequest().getLocale();
     String lang = locale.getLanguage();
     
-    Long resourceId = pageRequestContext.getLong("documentId");
-    Integer pageId = pageRequestContext.getInteger("page");
+    Long resourceId = pageRequestContext.getLong(DOCUMENT_ID_PARAMETER);
+    Integer pageId = pageRequestContext.getInteger(PAGE_PARAMETER);
     
     pageRequestContext.getRequest().setAttribute("delfoi", delfoi);
 
@@ -51,12 +47,8 @@ public class MaterialsPageController extends DelfoiPageController {
       Folder materialFolder = MaterialUtils.getDelfoiMaterialFolder(delfoi, lang, RequestUtils.getUser(pageRequestContext));
 
       List<MaterialBean> folderMaterials = MaterialUtils.listFolderMaterials(materialFolder, true, true);
-      Collections.sort(folderMaterials, new Comparator<MaterialBean>() {
-        @Override
-        public int compare(MaterialBean o1, MaterialBean o2) {
-          return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
-        }
-      });
+      Collections.sort(folderMaterials, new MaterialBeanNameComparator());
+      
       Map<Long, List<MaterialBean>> materialTrees = MaterialUtils.listMaterialTrees(materialFolder, true, true);
 
       Document document = resolveDocument(resourceId, folderMaterials, materialTrees);
@@ -76,62 +68,4 @@ public class MaterialsPageController extends DelfoiPageController {
     pageRequestContext.setIncludeJSP("/jsp/pages/materials.jsp");
   }
 
-  private Document resolveDocument(Long resourceId, List<MaterialBean> folderMaterials, Map<Long, List<MaterialBean>> materialTrees) {
-    ResourceDAO resourceDAO = new ResourceDAO();
-
-    if ((resourceId == null) && (folderMaterials.size() > 0))
-      resourceId = folderMaterials.get(0).getId();
-
-    Document document = null;
-    
-    while ((resourceId != null) && (document == null)) {
-      Resource resource = resourceDAO.findById(resourceId);
-      
-      if (resource instanceof Document) {
-        // when resource is document we found the document and can break
-        document = (Document) resource;
-        break;
-      } else {
-        if (resource instanceof Folder) {
-          // for folders we need to find the first document under it
-          List<MaterialBean> list = materialTrees.get(resourceId);
-          if ((list != null) && (list.size() > 0))
-            resourceId = list.get(0).getId();
-          else
-            break;
-        } else {
-          // ??
-          break;
-        }
-      }
-    }
-
-    return document;
-  }
-
-  private void appendDocument(PageRequestContext pageRequestContext, Document document, Long documentId, Integer page) {
-    if (document == null)
-      return;
-    
-    if (page == null)
-      page = 0;
-    
-    LocalDocumentDAO localDocumentDAO = new LocalDocumentDAO();
-    LocalDocumentPageDAO localDocumentPageDAO = new LocalDocumentPageDAO(); 
-
-    if (document instanceof LocalDocument) {
-      LocalDocument localDocument = (LocalDocument) document;
-      LocalDocumentPage localDocumentPage = localDocumentPageDAO.findByDocumentAndPageNumber(localDocument, page);
-      Long pageCount = localDocumentDAO.countByDocument(localDocument);
-      pageRequestContext.getRequest().setAttribute("title", localDocumentPage.getTitle());
-      pageRequestContext.getRequest().setAttribute("content", localDocumentPage.getContent());
-      pageRequestContext.getRequest().setAttribute("page", page);
-      pageRequestContext.getRequest().setAttribute("pageCount", pageCount);
-    } else {
-      throw new SmvcRuntimeException(StatusCode.UNDEFINED, "Info pages support only LocalDocuments");
-    }
-    
-    pageRequestContext.getRequest().setAttribute("type", document.getType());
-    pageRequestContext.getRequest().setAttribute("name", document.getName());
-  }
 }

@@ -117,7 +117,7 @@ public class MaterialUtils {
     
     // TODO: Reports
 
-    List<MaterialBean> materialBeans = new ArrayList<MaterialBean>();
+    List<MaterialBean> materialBeans = new ArrayList<>();
     for (Resource resource : resources) {
       String name = resource.getName();
       Date created = resource.getCreated();
