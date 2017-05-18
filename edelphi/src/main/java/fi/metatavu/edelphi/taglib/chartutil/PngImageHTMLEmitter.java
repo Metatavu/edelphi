@@ -39,9 +39,9 @@ public class PngImageHTMLEmitter implements ImageHTMLEmitter {
 
     StringBuilder html = new StringBuilder();
     if (dynamicSize) {
-      html.append(String.format("<img src=\"%s\" width=\"100%%\">", dataUrlBuilder.toString()));
+      html.append(String.format("<img src=\"%s\" width=\"100%%\"/>", dataUrlBuilder.toString()));
     } else {
-      html.append(String.format("<img src=\"%s\" width=\"%s\" height=\"%s\">", dataUrlBuilder.toString(), width, height));
+      html.append(String.format("<img src=\"%s\" width=\"%s\" height=\"%s\"/>", dataUrlBuilder.toString(), width, height));
 
     }
     html.append("<br/>");

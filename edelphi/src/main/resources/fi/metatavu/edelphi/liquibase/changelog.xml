@@ -3268,4 +3268,12 @@
       referencedTableName="Bulletin" referencedColumnNames="id"/>          
   </changeSet>
   
+  <changeSet author="antti.leppa" id="query-reply-stamp-index">
+   <createIndex tableName="QueryReply" indexName="IND_QUERY_REPLY_QUERY_STAMP_ARCHIVED">
+     <column name="query_id"/>
+     <column name="stamp_id"/>
+     <column name="archived"/>
+   </createIndex>
+  </changeSet>
+  
 </databaseChangeLog>

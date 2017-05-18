@@ -9,6 +9,8 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
+import org.hibernate.jpa.criteria.compile.CriteriaQueryTypeQueryAdapter;
+
 import fi.metatavu.edelphi.domainmodel.base.ArchivableEntity;
 import fi.metatavu.edelphi.domainmodel.base.ModificationTrackedEntity;
 import fi.metatavu.edelphi.domainmodel.users.User;
@@ -120,6 +122,16 @@ public class GenericDAO<T> {
   private Class<?> getGenericTypeClass() {
     ParameterizedType parameterizedType = (ParameterizedType) getClass().getGenericSuperclass();
     return (Class<?>) parameterizedType.getActualTypeArguments()[0];
+  }
+
+  /**
+   * Prints query as HQL. Used for debugging purposes only
+   * 
+   * @param query query
+   * @return query as HQL
+   */
+  protected String getQueryHQL(Query query) {
+    return ((CriteriaQueryTypeQueryAdapter<?>) query).getHibernateQuery().getQueryString();
   }
   
 }
