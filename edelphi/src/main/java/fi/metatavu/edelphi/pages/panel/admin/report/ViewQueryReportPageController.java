@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.codec.binary.Base64;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,6 +28,8 @@ import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReportPageProvider
 import fi.metatavu.edelphi.pages.panel.admin.report.util.ReportContext;
 
 public class ViewQueryReportPageController extends PanelPageController {
+  
+  private static Logger logger = Logger.getLogger(ViewQueryReportPageController.class.getName());
 
   public ViewQueryReportPageController() {
     setAccessAction(DelfoiActionName.MANAGE_PANEL, DelfoiActionScope.PANEL);
@@ -38,7 +42,6 @@ public class ViewQueryReportPageController extends PanelPageController {
   
   @Override
   public void processPageRequest(PageRequestContext pageRequestContext) {
-    
     // Data access objects
     
     QueryDAO queryDAO = new QueryDAO();
@@ -53,10 +56,8 @@ public class ViewQueryReportPageController extends PanelPageController {
       byte[] serializedData = Base64.decodeBase64(serializedContext);
       String stringifiedData = new String(serializedData, "UTF-8");
       reportContext = om.readValue(stringifiedData, ReportContext.class); 
-    }
-    catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    } catch (Exception e) {
+      logger.log(Level.SEVERE, "Failed to unserialize reportContenxt", e);
     }
     
     // Query and panel
@@ -66,12 +67,11 @@ public class ViewQueryReportPageController extends PanelPageController {
     
     // Generate the report page(s) 
 
-    List<QueryReportPage> queryReportPages = new ArrayList<QueryReportPage>();
+    List<QueryReportPage> queryReportPages = new ArrayList<>();
     Long queryPageId = pageRequestContext.getLong("queryPageId");
     if (queryPageId == null || queryPageId == 0) {
       queryReportPages.addAll(getReportPages(pageRequestContext, reportContext, query));
-    }
-    else {
+    } else {
       QueryPage queryPage = queryPageDAO.findById(queryPageId);
       QueryReportPage queryReportPage = getReportPage(pageRequestContext, reportContext, queryPage);
       if (queryReportPage != null) {
@@ -89,24 +89,16 @@ public class ViewQueryReportPageController extends PanelPageController {
   private List<QueryReportPage> getReportPages(PageRequestContext pageRequestContext, ReportContext reportContext, Query query) {
     QueryPageDAO queryPageDAO = new QueryPageDAO();
     QuerySectionDAO querySectionDAO = new QuerySectionDAO();
-    List<QueryReportPage> reportPages = new ArrayList<QueryReportPage>();
+    List<QueryReportPage> reportPages = new ArrayList<>();
     
     List<QuerySection> querySections = querySectionDAO.listByQuery(query);
-    Collections.sort(querySections, new Comparator<QuerySection>() {
-      @Override
-      public int compare(QuerySection o1, QuerySection o2) {
-        return o1.getSectionNumber() - o2.getSectionNumber();
-      }
-    });
+    Collections.sort(querySections, new QuerySectionComparator());
+    
     for (QuerySection section : querySections) {
       if (section.getVisible()) {
         List<QueryPage> queryPages = queryPageDAO.listByQuerySection(section);
-        Collections.sort(queryPages, new Comparator<QueryPage>() {
-          @Override
-          public int compare(QueryPage o1, QueryPage o2) {
-            return o1.getPageNumber() - o2.getPageNumber();
-          }
-        });
+        Collections.sort(queryPages, new QueryPageComparator());
+        
         for (QueryPage queryPage : queryPages) {
           if (queryPage.getVisible()) {
             QueryReportPage reportPage = getReportPage(pageRequestContext, reportContext, queryPage);
@@ -117,16 +109,33 @@ public class ViewQueryReportPageController extends PanelPageController {
         }
       }
     }
+    
     return reportPages;
   }
   
   public QueryReportPage getReportPage(PageRequestContext pageRequestContext, ReportContext reportContext, QueryPage queryPage) {
     QueryPageType queryPageType = queryPage.getPageType();
     QueryReportPageController queryReportPageController = QueryReportPageProvider.getController(queryPageType);
+    
     if (queryReportPageController != null) {
       return queryReportPageController.generateReportPage(pageRequestContext, reportContext, queryPage);
     }
+    
     return null;
+  }
+
+  private final class QuerySectionComparator implements Comparator<QuerySection> {
+    @Override
+    public int compare(QuerySection o1, QuerySection o2) {
+      return o1.getSectionNumber() - o2.getSectionNumber();
+    }
+  }
+
+  private final class QueryPageComparator implements Comparator<QueryPage> {
+    @Override
+    public int compare(QueryPage o1, QueryPage o2) {
+      return o1.getPageNumber() - o2.getPageNumber();
+    }
   }
 
 }

@@ -77,6 +77,29 @@ public class QueryReplyDAO extends GenericDAO<QueryReply> {
         criteriaBuilder.equal(root.get(QueryReply_.archived), archived)
       )
     );
+    
+    return entityManager.createQuery(criteria).getResultList();
+  }
+  
+  public List<Long> listIdsByQueryAndStamp(Query query, PanelStamp panelStamp) {
+    return listIdsByQueryAndStampAndArchived(query, panelStamp, Boolean.FALSE);
+  }
+  
+  public List<Long> listIdsByQueryAndStampAndArchived(Query query, PanelStamp panelStamp, Boolean archived) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
+    Root<QueryReply> root = criteria.from(QueryReply.class);
+    criteria.select(root.get(QueryReply_.id));
+    criteria.where(
+      criteriaBuilder.and(
+        criteriaBuilder.equal(root.get(QueryReply_.query), query), 
+        criteriaBuilder.equal(root.get(QueryReply_.stamp), panelStamp), 
+        criteriaBuilder.equal(root.get(QueryReply_.archived), archived)
+      )
+    );
+    
     return entityManager.createQuery(criteria).getResultList();
   }
 

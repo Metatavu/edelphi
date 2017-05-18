@@ -70,23 +70,26 @@ import fi.metatavu.edelphi.smvcj.logging.Logging;
 
 public class ReportUtils {
   
+  private ReportUtils() {
+  }
+  
   public static void appendComments(QueryReportPage reportPage, QueryPage queryPage, ReportContext reportContext) {
     PanelStampDAO panelStampDAO = new PanelStampDAO();
     QueryQuestionCommentDAO queryQuestionCommentDAO = new QueryQuestionCommentDAO();
     PanelStamp panelStamp = panelStampDAO.findById(reportContext.getPanelStampId());
     
-    List<QueryReply> queryReplies = ReportUtils.getQueryReplies(queryPage, reportContext);
+    List<Long> queryReplies = ReportUtils.getQueryReplyIds(queryPage, reportContext);
     List<QueryQuestionComment> comments = queryQuestionCommentDAO.listByQueryPageAndStamp(queryPage, panelStamp);
     for (QueryQuestionComment comment : comments) {
       // Root comments
       QueryReportPageComment reportComment = new QueryReportPageComment(comment.getQueryReply().getId(), comment.getComment(), comment.getLastModified());
-      reportComment.setFiltered(!queryReplies.contains(comment.getQueryReply()));
+      reportComment.setFiltered(!queryReplies.contains(comment.getQueryReply().getId()));
       reportPage.addComment(reportComment);
       // Replies
       List<QueryQuestionComment> replies = queryQuestionCommentDAO.listByParentCommentAndArchived(comment, Boolean.FALSE);
       for (QueryQuestionComment reply : replies) {
         QueryReportPageComment commentReply = new QueryReportPageComment(reply.getQueryReply().getId(), reply.getComment(), reply.getLastModified());
-        commentReply.setFiltered(!queryReplies.contains(reply.getQueryReply()));
+        commentReply.setFiltered(!queryReplies.contains(reply.getQueryReply().getId()));
         reportComment.addReply(commentReply);
       }
     }
@@ -102,6 +105,28 @@ public class ReportUtils {
       queryReplies = filter.filterList(queryReplies);
     }
     return queryReplies;
+  }
+  
+  public static List<Long> getQueryReplyIds(QueryPage queryPage, ReportContext reportContext) {
+    List<QueryReplyFilter> filters = QueryReplyFilter.parseFilters(reportContext.getFilters());
+    QueryReplyDAO queryReplyDAO = new QueryReplyDAO();
+    PanelStampDAO panelStampDAO = new PanelStampDAO();
+    PanelStamp panelStamp = panelStampDAO.findById(reportContext.getPanelStampId());
+    if (filters == null || filters.isEmpty()) {
+      return queryReplyDAO.listIdsByQueryAndStamp(queryPage.getQuerySection().getQuery(), panelStamp); 
+    }
+    
+    List<QueryReply> queryReplies = queryReplyDAO.listByQueryAndStamp(queryPage.getQuerySection().getQuery(), panelStamp);
+    for (QueryReplyFilter filter : filters) {
+      queryReplies = filter.filterList(queryReplies);
+    }
+    
+    List<Long> result = new ArrayList<>(queryReplies.size()); 
+    for (QueryReply queryReply : queryReplies) {
+      result.add(queryReply.getId());
+    }
+    
+    return result;
   }
   
   public static Map<Long, Long> getOptionListData(QueryField queryOptionField, List<QueryOptionFieldOption> queryFieldOptions, List<QueryReply> queryReplies) {
