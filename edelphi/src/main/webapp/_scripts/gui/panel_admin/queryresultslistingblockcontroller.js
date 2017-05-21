@@ -178,18 +178,18 @@
       
       linksContainer.appendChild(
         new Element("a", { 
-    	    className: "modalPopupLinkContainer exportPDF",
-  	      href: contextPath + "/queries/exportreport.binary?format=PDF&queryId=" + queryId + "&stampId=" + stampId
-  	    }).update(getLocale().getText('panelAdmin.block.queryResults.downloadOrExportDialogExportContentsPDF'))
+          className: "modalPopupLinkContainer exportPDF",
+          href: contextPath + "/queries/exportreport.binary?format=PDF&queryId=" + queryId + "&stampId=" + stampId
+        }).update(getLocale().getText('panelAdmin.block.queryResults.downloadOrExportDialogExportContentsPDF'))
       );
       
       linksContainer.appendChild(
-  	  new Element("a", { 
-    		target: '_blank',
-  	      className: "modalPopupLinkContainer exportGoogleDrive",
-  	      href: contextPath + "/queries/exportreport.binary?format=GOOGLE_DOCUMENT&queryId=" + queryId + "&stampId=" + stampId
-  	    }).update(getLocale().getText('panelAdmin.block.queryResults.downloadOrExportDialogExportContentsGoogleDocument'))
-    	);
+      new Element("a", { 
+        target: '_blank',
+          className: "modalPopupLinkContainer exportGoogleDrive",
+          href: contextPath + "/queries/exportreport.binary?format=GOOGLE_DOCUMENT&queryId=" + queryId + "&stampId=" + stampId
+        }).update(getLocale().getText('panelAdmin.block.queryResults.downloadOrExportDialogExportContentsGoogleDocument'))
+      );
   
       linksContainer.appendChild(new Element("h4").update(getLocale().getText('panelAdmin.block.queryResults.downloadOrExportDialogExportChartsTitle')));
       linksContainer.appendChild(
@@ -221,16 +221,16 @@
       
       linksContainer.appendChild(
         new Element("a", { 
-        	target: '_blank',
-      	className: "modalPopupLinkContainer exportGoogle",
-      	href: contextPath + "/queries/exportdata.binary?panelId=" + panelId + "&queryId=" + queryId + "&stampId=" + stampId + "&format=GOOGLE_SPREADSHEET"
+          target: '_blank',
+          className: "modalPopupLinkContainer exportGoogle",
+          href: contextPath + "/queries/exportdata.binary?panelId=" + panelId + "&queryId=" + queryId + "&stampId=" + stampId + "&format=GOOGLE_SPREADSHEET"
         }).update(getLocale().getText('panelAdmin.block.queryResults.downloadOrExportDialogExportDataGoogleSpreadsheet'))
       );
   
       var contentContainer = new Element("div", { className: "modalPopupTextContent" });
       contentContainer.appendChild(titleContainer);
       contentContainer.appendChild(linksContainer);
-      	
+        
       var popup = new ModalPopup({
         content: contentContainer,
         width: 590,
@@ -247,7 +247,7 @@
   
       popup.open(linkElement);
     },
-  	  
+      
     _onDownloadOrExportPageLinkClick: function (event) {
       Event.stop(event);
   
@@ -266,17 +266,17 @@
       
       linksContainer.appendChild(
         new Element("a", { 
-    	    className: "modalPopupLinkContainer exportPDF",
-  	      href: contextPath + "/queries/exportreportpage.binary?format=PDF&queryPageId=" + queryPageId + "&stampId=" + stampId
-  	    }).update(getLocale().getText('panelAdmin.block.queryResults.downloadOrExportDialogExportContentsPDF'))
+          className: "modalPopupLinkContainer exportPDF",
+          href: contextPath + "/queries/exportreportpage.binary?format=PDF&queryPageId=" + queryPageId + "&stampId=" + stampId
+        }).update(getLocale().getText('panelAdmin.block.queryResults.downloadOrExportDialogExportContentsPDF'))
       );
       linksContainer.appendChild(
-    	  new Element("a", { 
-  	  	target: '_blank',  
-  	      className: "modalPopupLinkContainer exportGoogleDrive",
-    	    href: contextPath + "/queries/exportreportpage.binary?format=GOOGLE_DOCUMENT&queryPageId=" + queryPageId + "&stampId=" + stampId
-  	    }).update(getLocale().getText('panelAdmin.block.queryResults.downloadOrExportDialogExportContentsGoogleDocument'))
-  	  );
+        new Element("a", { 
+          target: '_blank',  
+          className: "modalPopupLinkContainer exportGoogleDrive",
+          href: contextPath + "/queries/exportreportpage.binary?format=GOOGLE_DOCUMENT&queryPageId=" + queryPageId + "&stampId=" + stampId
+        }).update(getLocale().getText('panelAdmin.block.queryResults.downloadOrExportDialogExportContentsGoogleDocument'))
+      );
   
       linksContainer.appendChild(new Element("h4").update(getLocale().getText('panelAdmin.block.queryResults.downloadOrExportDialogExportChartsTitle')));
       linksContainer.appendChild(
@@ -293,7 +293,7 @@
       );
       linksContainer.appendChild(
         new Element("a", { 
-        target: '_blank',  
+          target: '_blank',  
           className: "modalPopupLinkContainer exportGoogleDrive",
           href: contextPath + "/queries/exportreportpage.binary?format=GOOGLE_IMAGES&queryPageId=" + queryPageId + "&stampId=" + stampId
         }).update(getLocale().getText('panelAdmin.block.queryResults.downloadOrExportDialogExportChartsGoogle'))
@@ -308,16 +308,16 @@
       
       linksContainer.appendChild(
         new Element("a", { 
-    		target: '_blank',  
-      	className: "modalPopupLinkContainer exportGoogle",
-      	href: contextPath + "/queries/exportpagedata.binary?queryPageId=" + queryPageId + "&stampId=" + stampId + "&format=GOOGLE_SPREADSHEET",
+          target: '_blank',  
+          className: "modalPopupLinkContainer exportGoogle",
+          href: contextPath + "/queries/exportpagedata.binary?queryPageId=" + queryPageId + "&stampId=" + stampId + "&format=GOOGLE_SPREADSHEET",
         }).update(getLocale().getText('panelAdmin.block.queryResults.downloadOrExportDialogExportDataGoogleSpreadsheet'))
       );
       
       var contentContainer = new Element("div", { className: "modalPopupTextContent" });
       contentContainer.appendChild(titleContainer);
       contentContainer.appendChild(linksContainer);
-      	
+        
       var popup = new ModalPopup({
         content: contentContainer,
         width: 590,
@@ -333,7 +333,7 @@
       });
       
       popup.open(linkElement);
-    } 	  
+    }
     
   });
   
