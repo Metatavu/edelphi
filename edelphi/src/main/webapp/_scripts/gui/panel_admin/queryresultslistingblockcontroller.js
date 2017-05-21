@@ -49,7 +49,7 @@
         this._lazyLoadObject(object);
       }.bind(this));
     },
-    
+
     _lazyLoadObject: function (object) {
       setTimeout(function () {
         var data = $(object).readAttribute('data-data');
