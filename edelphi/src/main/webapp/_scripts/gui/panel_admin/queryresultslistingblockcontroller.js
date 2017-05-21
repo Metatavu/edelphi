@@ -1,5 +1,4 @@
-/*global BlockController, addBlockController*/
-
+/*global BlockController,addBlockController,getLocale,ModalPopup*/
 (function() {
   'use strict';
 
