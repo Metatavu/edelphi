@@ -1,4 +1,4 @@
-/*global BlockController,addBlockController,getLocale,ModalPopup*/
+/*global BlockController,addBlockController,getLocale,ModalPopup,startLoadingOperation,endLoadingOperation,JSDATA,JSONUtils*/
 (function() {
   'use strict';
 
@@ -95,10 +95,10 @@
                   queryId: queryId,
                   panelId: panelId
                 },
-                onComplete : function(transport) {
+                onComplete : function() {
                   endLoadingOperation();
                 },
-                onSuccess: function (jsonResponse) {
+                onSuccess: function () {
                   window.location.reload();
                 }
               });
@@ -144,10 +144,10 @@
                   queryPageId: queryPageId,
                   panelId: panelId
                 },
-                onComplete : function(transport) {
+                onComplete : function() {
                   endLoadingOperation();
                 },
-                onSuccess: function (jsonResponse) {
+                onSuccess: function () {
                   window.location.reload();
                 }
               });
