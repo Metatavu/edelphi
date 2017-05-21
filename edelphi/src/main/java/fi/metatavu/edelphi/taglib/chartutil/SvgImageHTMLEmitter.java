@@ -50,7 +50,7 @@ public class SvgImageHTMLEmitter implements ImageHTMLEmitter {
       String id = UUID.randomUUID().toString();
       ReportChartCache.put(id, chartData);
       html.append(String.format(" data-data=\"/queries/chartimage.binary?id=%s\"", id));
-      html.append(" data=\"/_themes/default/gfx/ui/report-image-loader.svg\"");
+      html.append(" data=\"//cdn.metatavu.io/assets/edelphi/report-image-loader.svg\"");
     } else {
       StringBuilder dataUrlBuilder = new StringBuilder();
       dataUrlBuilder.append("data:image/svg+xml;charset=UTF-8;base64,");
