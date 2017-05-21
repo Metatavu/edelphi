@@ -12,6 +12,7 @@
 package fi.metatavu.edelphi.taglib.chartutil;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import org.apache.commons.codec.binary.Base64;
 import org.eclipse.birt.chart.model.Chart;
@@ -42,14 +43,23 @@ public class SvgImageHTMLEmitter implements ImageHTMLEmitter {
   public String generateHTML() throws IOException, BirtException {
     byte[] chartData = ChartModelProvider.getChartData(chartModel, "SVG");
     
-    StringBuilder dataUrlBuilder = new StringBuilder();
-    dataUrlBuilder.append("data:image/svg+xml;charset=UTF-8;base64,");
-    dataUrlBuilder.append(Base64.encodeBase64String(chartData));
-    String dataAttribute = lazy ? "data-data" : "data";
-    
     StringBuilder html = new StringBuilder();
-    html.append("<object type=\"image/svg+xml\"")
-      .append(String.format(" %s=\"%s\"", dataAttribute, dataUrlBuilder.toString()))
+    html.append("<object type=\"image/svg+xml\"");
+    
+    if (lazy) {
+      String id = UUID.randomUUID().toString();
+      ReportChartCache.put(id, chartData);
+      html.append(String.format(" data-data=\"/queries/chartimage.binary?id=%s\"", id));
+      html.append(" data=\"//cdn.metatavu.io/assets/edelphi/report-image-loader.svg\"");
+    } else {
+      StringBuilder dataUrlBuilder = new StringBuilder();
+      dataUrlBuilder.append("data:image/svg+xml;charset=UTF-8;base64,");
+      dataUrlBuilder.append(Base64.encodeBase64String(chartData));
+      
+      html.append(String.format(" data=\"%s\"", dataUrlBuilder.toString()));
+    }
+    
+    html
       .append(" width=\"").append(width).append('"')
       .append(" height=\"").append(height).append('"')
       .append(" style=\"display: block\"")
