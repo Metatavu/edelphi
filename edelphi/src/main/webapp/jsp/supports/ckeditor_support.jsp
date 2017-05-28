@@ -3,7 +3,7 @@
 
 <c:choose>
   <c:when test="${ckeditorSupportIncluded != true}">
-    <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/ckeditor/ckeditor.js"></script>
+    <script type="text/javascript" src="//cdn.metatavu.io/libs/ckeditor/3.6.2/ckeditor.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/config/ckeditor.js"></script>
     <script type="text/javascript">
       CKEDITOR.config.contentsCss = THEMEPATH + '/css/ckcontents.css';
