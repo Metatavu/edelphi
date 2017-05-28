@@ -183,11 +183,12 @@ public class OrderPlanPageController extends PageController {
     Date subscriptionEnds = SubscriptionLevelUtils.getNewSubscriptionEnd(loggedUser.getSubscriptionEnds(), oldPlan, newPlan); 
     
     ActionUtils.includeRoleAccessList(pageRequestContext);
+
+    String termsOfDelivery = SystemUtils.getSettingValue(String.format("system.termsOfDelivery_%s", locale.getLanguage()));
     
     pageRequestContext.getRequest().setAttribute("compensation", compensation);
     pageRequestContext.getRequest().setAttribute("subscriptionEnds", subscriptionEnds);
     pageRequestContext.getRequest().setAttribute("totalPrice", totalPrice);
-    
     pageRequestContext.getRequest().setAttribute("planName", LocalizationUtils.getLocalizedText(newPlan.getName(), locale));
     pageRequestContext.getRequest().setAttribute("planDescription", LocalizationUtils.getLocalizedText(newPlan.getDescription(), locale));
     pageRequestContext.getRequest().setAttribute("loggedUser", loggedUser);
@@ -195,6 +196,7 @@ public class OrderPlanPageController extends PageController {
     pageRequestContext.getRequest().setAttribute("newPlan", newPlan);
     pageRequestContext.getRequest().setAttribute("countryCodes", getCountryCodes(Country.values()));
     pageRequestContext.getRequest().setAttribute("countries", Country.values());
+    pageRequestContext.getRequest().setAttribute("termsOfDelivery", termsOfDelivery);
     
     pageRequestContext.setIncludeJSP("/jsp/pages/orderplan.jsp");
   }
