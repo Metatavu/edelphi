@@ -205,13 +205,18 @@ QueryEditorBlockController = Class.create(BlockController, {
     forceRevalidateAll(true);
     this._validate();
   },
+  
   getPageDatasByType: function (type) {
-    var result = new Array();
+    var result = [];
     
     this._pageDatas.each(function (pageData) {
       if (pageData.type == type) {
         result.push(pageData);
       }
+    });
+    
+    result.sort(function (pageData1, pageData2) {
+      return pageData1.number - pageData2.number;
     });
     
     return result;
@@ -4571,6 +4576,7 @@ QueryEditorCollage2DPageEditor = Class.create(QueryEditorQuestionEditor, {
 
     this._colors = ['#FF0000', '#FF8000', '#FFFF00', '#00FF00', '#0000FF', '#FF00FF', '#8000FF', '#800000', '#808000', '#008000', '#008080', '#000080', '#000000', '#303030', '#808080', '#C0C0C0'];
   },
+  
   deinitialize: function($super) {
     $super();
     
@@ -4579,6 +4585,7 @@ QueryEditorCollage2DPageEditor = Class.create(QueryEditorQuestionEditor, {
 
     this._pagesContainer.remove();
   },
+  
   setup: function ($super) {
     $super();
 
@@ -4636,6 +4643,7 @@ QueryEditorCollage2DPageEditor = Class.create(QueryEditorQuestionEditor, {
     
     this._checkSelectables(includedPages);
   },
+  
   _replaceSelectOptionEditor: function (name, options) {
     var editor = this.getOptionEditor(name);
     var value = editor.getValue();
@@ -4671,6 +4679,7 @@ QueryEditorCollage2DPageEditor = Class.create(QueryEditorQuestionEditor, {
       });
     }.bind(editor));
   },
+  
   _createColorSelectDialog: function () {
     var dialog = new Element("div", {
       className: "queryEditorCollage2DColorSelectDialog"
@@ -4817,6 +4826,7 @@ QueryEditorCollage2DPageEditor = Class.create(QueryEditorQuestionEditor, {
     
     return includedPages;
   },
+  
   _getPageElementById: function (pageId) {
     var pageIdInputs = this._pagesContainer.select('input[name="pageId"]');
     for (var i = 0, l = pageIdInputs.length; i < l; i++) {
@@ -4827,6 +4837,7 @@ QueryEditorCollage2DPageEditor = Class.create(QueryEditorQuestionEditor, {
     
     return null;
   },
+  
   _getAxesByPageId: function (pageId) {
     return this._getPageElementById(pageId).down('input[name="axes"]').value;
   },
@@ -4913,4 +4924,5 @@ QueryEditorCollage2DPageEditor = Class.create(QueryEditorQuestionEditor, {
     this._updatePageColor(pageId, color);
     dialog.close();
   }
+  
 });
