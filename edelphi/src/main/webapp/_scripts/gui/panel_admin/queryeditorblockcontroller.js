@@ -1,3 +1,51 @@
+var QueryEditorUtils;
+var QueryEditorDraftTask;
+var QueryEditorBlockController;
+var QueryOptionEditor;
+var QueryOptionTextEditor;
+var QueryOptionMemoEditor;
+var QueryOptionFloatEdito;
+var QueryOptionIntegerEditor;
+var QueryOptionBooleanEditor;
+var QueryOptionTimeSerieDataEditor;
+var QueryOptionOptionSetEditor;
+var QueryOptionScale1DEditor;
+var QueryOptionTimelineTypeEditor;
+var QueryOptionScale2DEditor;
+var QueryOptionHiddenEditor;
+var QueryEditorQuestionPreview;
+var QueryEditorTimeSerieQuestionPreview;
+var QueryEditorTimelineQuestionPreview;
+var QueryEditorAbstractScaleQuestionPreview;
+var QueryEditorScale1DQuestionPreview;
+var QueryEditorScale2DQuestionPreview;
+var QueryEditorMultiselectQuestionPreview;
+var QueryEditorOrderingQuestionPreview;
+var QueryEditorGroupingQuestionPreview;
+var QueryEditorExpertsQuestionPreview;
+var QueryEditorElementEditor;
+var QueryEditorSectionEditor;
+var QueryEditorPageEditor;
+var QueryEditorEmptyPageEditor;
+var QueryEditorTextPageEditor;
+var QueryEditorFormPageFieldEditor;
+var QueryEditorFormPageTextFieldEditor;
+var QueryEditorFormPageMemoFieldEditor;
+var QueryEditorFormPageListFieldEditor;
+var QueryEditorFormPageEditor;
+var QueryEditorQuestionEditor;
+var QueryEditorThesisPageEditor;
+var QueryEditorScale1DThesisPageEditor;
+var QueryEditorScale2DThesisPageEditor;
+var QueryEditorMultipleScale2DThesisPageEditor;
+var QueryEditorTimeSerieThesisPageEditor;
+var QueryEditorTimelineThesisPageEditor;
+var QueryEditorExpertisePageEditor;
+var QueryEditorMultiselectPageEditor;
+var QueryEditorOrderingPageEditor;
+var QueryEditorGroupingPageEditor;
+var QueryEditorCollage2DPageEditor;
+
 QueryEditorUtils = {
   parseSerializedList: function (serializedValue) {
     var list = new Array();
@@ -2709,7 +2757,6 @@ QueryEditorExpertsQuestionPreview = Class.create(QueryEditorQuestionPreview, {
     this._container.appendChild(tableElem);
   }
 });
-
 
 QueryEditorElementEditor = Class.create({
   initialize: function (blockController) {
