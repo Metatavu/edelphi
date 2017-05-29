@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.NavigableMap;
 
 import org.apache.commons.lang3.StringUtils;
@@ -100,7 +101,10 @@ public class SystemUtilsPageController extends PageController {
       Folder targetFolder = folderDAO.findById(targetFolderId);
       PanelDAO panelDAO = new PanelDAO();
       Panel targetPanel = panelDAO.findByRootFolder(targetFolder);
-      QueryUtils.copyQuery(pageRequestContext, query, name, targetPanel, copyAnswers, copyComments);
+      User loggedUser = RequestUtils.getUser(pageRequestContext);
+      Locale locale = pageRequestContext.getRequest().getLocale();
+      
+      QueryUtils.copyQuery(loggedUser, locale, query, name, targetPanel, copyAnswers, copyComments);
     }
     else if ("reindexEntities".equals(action)) {
       DelfoiDAO delfoiDAO = new DelfoiDAO();
