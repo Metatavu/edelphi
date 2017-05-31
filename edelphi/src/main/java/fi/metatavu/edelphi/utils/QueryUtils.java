@@ -3,6 +3,7 @@ package fi.metatavu.edelphi.utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -153,10 +154,20 @@ public class QueryUtils {
     requestContext.getRequest().setAttribute("queryPageCommentCount", commentCount);
   }
   
+  /**
+   * Copies query.
+   * 
+   * @param copier user that is marked as creator of query, sections and pages
+   * @param locale locale for displaying error messages
+   * @param originalQuery query to be copied
+   * @param newName query's new name
+   * @param targetPanel query's target panel
+   * @param copyAnswers wheter to copy answers
+   * @param copyComments wheter to copy comments
+   * @return new query
+   */
   @SuppressWarnings ("squid:S2629")
-  public static Query copyQuery(RequestContext requestContext, Query query, String newName, Panel targetPanel, boolean copyAnswers, boolean copyComments) {
-    User user = RequestUtils.getUser(requestContext);
-    
+  public static Query copyQuery(User copier, Locale locale, Query originalQuery, String newName, Panel targetPanel, boolean copyAnswers, boolean copyComments) {
     // Data access objects
 
     QueryDAO queryDAO = new QueryDAO();
@@ -178,6 +189,8 @@ public class QueryUtils {
     QueryQuestionMultiOptionAnswerDAO queryQuestionMultiOptionAnswerDAO = new QueryQuestionMultiOptionAnswerDAO();
     QueryQuestionOptionGroupOptionAnswerDAO queryQuestionOptionGroupOptionAnswerDAO = new QueryQuestionOptionGroupOptionAnswerDAO();
     
+    Date now = new Date();
+    
     // Comments are tied to answers
     
     if (!copyAnswers && copyComments) {
@@ -186,11 +199,10 @@ public class QueryUtils {
     
     // Queries containing expertise pages cannot be copied to other panels (due to differing expertises)
     
-    Panel sourcePanel = ResourceUtils.getResourcePanel(query); 
-    List<QueryPage> expertisePages = queryPageDAO.listByQueryAndType(query, QueryPageType.EXPERTISE); 
+    Panel sourcePanel = ResourceUtils.getResourcePanel(originalQuery); 
+    List<QueryPage> expertisePages = queryPageDAO.listByQueryAndType(originalQuery, QueryPageType.EXPERTISE); 
     if (!expertisePages.isEmpty() && !sourcePanel.getId().equals(targetPanel.getId())) {
       Messages messages = Messages.getInstance();
-      Locale locale = requestContext.getRequest().getLocale();
       throw new SmvcRuntimeException(EdelfoiStatusCode.CANNOT_COPY_EXPERTISE_QUERY, messages.getText(locale, "exception.1030.cannotCopyExpertiseQuery"));
     }
     
@@ -199,36 +211,33 @@ public class QueryUtils {
     String urlName = ResourceUtils.getUrlName(newName);
     if (!ResourceUtils.isUrlNameAvailable(urlName, targetPanel.getRootFolder())) {
       Messages messages = Messages.getInstance();
-      Locale locale = requestContext.getRequest().getLocale();
       throw new SmvcRuntimeException(EdelfoiStatusCode.DUPLICATE_RESOURCE_NAME, messages.getText(locale, "exception.1005.resourceNameInUse"));
     }
     
     Integer indexNumber = ResourceUtils.getNextIndexNumber(targetPanel.getRootFolder());
     Query newQuery = queryDAO.create(
-        targetPanel.getRootFolder(),
-        newName,
-        urlName,
-        query.getAllowEditReply(),
-        query.getDescription(),
-        query.getState(),
-        query.getCloses(),
-        indexNumber,
-        query.getCreator(),
-        query.getCreated(),
-        query.getLastModifier(),
-        query.getLastModified());
+      targetPanel.getRootFolder(),
+      newName,
+      urlName,
+      originalQuery.getAllowEditReply(),
+      originalQuery.getDescription(),
+      originalQuery.getState(),
+      originalQuery.getCloses(),
+      indexNumber,
+      copier,
+      now,
+      copier,
+      now);
     
     // Replies
     
     HashMap<Long, QueryReply> replyMap = null;
     List<QueryReply> queryReplies = null;
     if (copyAnswers) {
-      replyMap = new HashMap<Long, QueryReply>();
-      if (sourcePanel.getId().equals(targetPanel.getId())) {
-        
+      replyMap = new HashMap<>();
+      if (sourcePanel.getId().equals(targetPanel.getId())) {        
         // When copying within the same panel, copy all replies of all stamps
-        
-        queryReplies = queryReplyDAO.listByQueryAndArchived(query, Boolean.FALSE);
+        queryReplies = queryReplyDAO.listByQueryAndArchived(originalQuery, Boolean.FALSE);
         for (QueryReply queryReply : queryReplies) {
           QueryReply newReply = queryReplyDAO.create(
               queryReply.getUser(),
@@ -241,12 +250,9 @@ public class QueryUtils {
               queryReply.getLastModified());
           replyMap.put(queryReply.getId(), newReply);
         }
-      }
-      else {
-        
-        // When copying between panels, only copy the replies of the latest source panel stamp to the latest target panel stamp 
-        
-        queryReplies = queryReplyDAO.listByQueryAndStampAndArchived(query, sourcePanel.getCurrentStamp(), Boolean.FALSE);
+      } else {
+        // When copying between panels, only copy the replies of the latest source panel stamp to the latest target panel stamp         
+        queryReplies = queryReplyDAO.listByQueryAndStampAndArchived(originalQuery, sourcePanel.getCurrentStamp(), Boolean.FALSE);
         for (QueryReply queryReply : queryReplies) {
           QueryReply newReply = queryReplyDAO.create(
               queryReply.getUser(),
@@ -264,20 +270,20 @@ public class QueryUtils {
 
     // Special handling for collage pages, Part I :/
     
-    List<QueryPage> collagePages = new ArrayList<QueryPage>();
-    HashMap<String, Long> pageIds = new HashMap<String, Long>();
+    List<QueryPage> collagePages = new ArrayList<>();
+    HashMap<String, Long> pageIds = new HashMap<>();
 
     // Sections
     
-    List<QuerySection> querySections = querySectionDAO.listByQuery(query);
+    List<QuerySection> querySections = querySectionDAO.listByQuery(originalQuery);
     for (QuerySection querySection : querySections) {
-      QuerySection newQuerySection = querySectionDAO.create(user, newQuery, querySection.getTitle(), querySection.getSectionNumber(), querySection.getVisible(), querySection.getCommentable(), querySection.getViewDiscussions());
+      QuerySection newQuerySection = querySectionDAO.create(copier, newQuery, querySection.getTitle(), querySection.getSectionNumber(), querySection.getVisible(), querySection.getCommentable(), querySection.getViewDiscussions());
     
       // Pages and page settings
       
       List<QueryPage> queryPages = queryPageDAO.listByQuerySection(querySection);
       for (QueryPage queryPage : queryPages) {
-        QueryPage newQueryPage = queryPageDAO.create(user, newQuerySection, queryPage.getPageType(), queryPage.getPageNumber(), queryPage.getTitle(), queryPage.getVisible());
+        QueryPage newQueryPage = queryPageDAO.create(copier, newQuerySection, queryPage.getPageType(), queryPage.getPageNumber(), queryPage.getTitle(), queryPage.getVisible());
         List<QueryPageSetting> queryPageSettings = queryPageSettingDAO.listByQueryPage(queryPage);
         for (QueryPageSetting queryPageSetting : queryPageSettings) {
           queryPageSettingDAO.create(queryPageSetting.getKey(), newQueryPage, queryPageSetting.getValue());
@@ -364,12 +370,12 @@ public class QueryUtils {
               QueryOptionField optionField = (QueryOptionField) queryField;
               newQueryField = queryOptionFieldDAO.create(newQueryPage, optionField.getName(), optionField.getMandatory(), optionField.getCaption());
               List<QueryOptionFieldOption> options = queryOptionFieldOptionDAO.listByQueryField(optionField);
-              Map<Long, Long> optionMap = new HashMap<Long, Long>();
+              Map<Long, Long> optionMap = new HashMap<>();
               for (QueryOptionFieldOption option : options) {
                 QueryOptionFieldOption newOption = queryOptionFieldOptionDAO.create((QueryOptionField) newQueryField, option.getText(), option.getValue());
                 optionMap.put(option.getId(), newOption.getId());
               }
-              Map<Long, QueryOptionFieldOptionGroup> optionGroupMap = new HashMap<Long, QueryOptionFieldOptionGroup>();
+              Map<Long, QueryOptionFieldOptionGroup> optionGroupMap = new HashMap<>();
               List<QueryOptionFieldOptionGroup> groups = queryOptionFieldOptionGroupDAO.listByQueryField(optionField);
               for (QueryOptionFieldOptionGroup group : groups) {
                 QueryOptionFieldOptionGroup newGroup = queryOptionFieldOptionGroupDAO.create((QueryOptionField) newQueryField, group.getName());
@@ -381,7 +387,7 @@ public class QueryUtils {
                   if (multiAnswer != null) {
                     // QueryQuestionMultiOptionAnswer
                     QueryReply newQueryReply = replyMap.get(queryReply.getId());
-                    Set<QueryOptionFieldOption> newOptions = new HashSet<QueryOptionFieldOption>();
+                    Set<QueryOptionFieldOption> newOptions = new HashSet<>();
                     for (QueryOptionFieldOption option : multiAnswer.getOptions()) {
                       QueryOptionFieldOption newOption = queryOptionFieldOptionDAO.findById(optionMap.get(option.getId()));
                       newOptions.add(newOption);

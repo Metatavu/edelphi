@@ -40,6 +40,12 @@
       <label><fmt:message key="orderplan.block.totalPrice"/></label>
       <span class="total"><fmt:formatNumber value="${totalPrice}" currencyCode="${newPlan.currency}" type="currency" /></span>   
     </div>
+  
+    <div class="summaryRow">
+      <label><fmt:message key="changeplan.block.termsOfDelivery"/></label>
+      <span><a href="${termsOfDelivery}" target="_blank"><fmt:message key="changeplan.block.termsOfDeliveryLink"/></a></span>
+    </div>
+    
   </div>
 
   <jsp:include page="/jsp/fragments/block_title.jsp">

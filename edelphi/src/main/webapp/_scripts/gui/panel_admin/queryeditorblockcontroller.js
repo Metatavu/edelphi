@@ -1,3 +1,51 @@
+var QueryEditorUtils;
+var QueryEditorDraftTask;
+var QueryEditorBlockController;
+var QueryOptionEditor;
+var QueryOptionTextEditor;
+var QueryOptionMemoEditor;
+var QueryOptionFloatEdito;
+var QueryOptionIntegerEditor;
+var QueryOptionBooleanEditor;
+var QueryOptionTimeSerieDataEditor;
+var QueryOptionOptionSetEditor;
+var QueryOptionScale1DEditor;
+var QueryOptionTimelineTypeEditor;
+var QueryOptionScale2DEditor;
+var QueryOptionHiddenEditor;
+var QueryEditorQuestionPreview;
+var QueryEditorTimeSerieQuestionPreview;
+var QueryEditorTimelineQuestionPreview;
+var QueryEditorAbstractScaleQuestionPreview;
+var QueryEditorScale1DQuestionPreview;
+var QueryEditorScale2DQuestionPreview;
+var QueryEditorMultiselectQuestionPreview;
+var QueryEditorOrderingQuestionPreview;
+var QueryEditorGroupingQuestionPreview;
+var QueryEditorExpertsQuestionPreview;
+var QueryEditorElementEditor;
+var QueryEditorSectionEditor;
+var QueryEditorPageEditor;
+var QueryEditorEmptyPageEditor;
+var QueryEditorTextPageEditor;
+var QueryEditorFormPageFieldEditor;
+var QueryEditorFormPageTextFieldEditor;
+var QueryEditorFormPageMemoFieldEditor;
+var QueryEditorFormPageListFieldEditor;
+var QueryEditorFormPageEditor;
+var QueryEditorQuestionEditor;
+var QueryEditorThesisPageEditor;
+var QueryEditorScale1DThesisPageEditor;
+var QueryEditorScale2DThesisPageEditor;
+var QueryEditorMultipleScale2DThesisPageEditor;
+var QueryEditorTimeSerieThesisPageEditor;
+var QueryEditorTimelineThesisPageEditor;
+var QueryEditorExpertisePageEditor;
+var QueryEditorMultiselectPageEditor;
+var QueryEditorOrderingPageEditor;
+var QueryEditorGroupingPageEditor;
+var QueryEditorCollage2DPageEditor;
+
 QueryEditorUtils = {
   parseSerializedList: function (serializedValue) {
     var list = new Array();
@@ -157,13 +205,18 @@ QueryEditorBlockController = Class.create(BlockController, {
     forceRevalidateAll(true);
     this._validate();
   },
+  
   getPageDatasByType: function (type) {
-    var result = new Array();
+    var result = [];
     
     this._pageDatas.each(function (pageData) {
       if (pageData.type == type) {
         result.push(pageData);
       }
+    });
+    
+    result.sort(function (pageData1, pageData2) {
+      return pageData1.number - pageData2.number;
     });
     
     return result;
@@ -2710,7 +2763,6 @@ QueryEditorExpertsQuestionPreview = Class.create(QueryEditorQuestionPreview, {
   }
 });
 
-
 QueryEditorElementEditor = Class.create({
   initialize: function (blockController) {
     this._blockController = blockController;
@@ -4524,6 +4576,7 @@ QueryEditorCollage2DPageEditor = Class.create(QueryEditorQuestionEditor, {
 
     this._colors = ['#FF0000', '#FF8000', '#FFFF00', '#00FF00', '#0000FF', '#FF00FF', '#8000FF', '#800000', '#808000', '#008000', '#008080', '#000080', '#000000', '#303030', '#808080', '#C0C0C0'];
   },
+  
   deinitialize: function($super) {
     $super();
     
@@ -4532,6 +4585,7 @@ QueryEditorCollage2DPageEditor = Class.create(QueryEditorQuestionEditor, {
 
     this._pagesContainer.remove();
   },
+  
   setup: function ($super) {
     $super();
 
@@ -4589,6 +4643,7 @@ QueryEditorCollage2DPageEditor = Class.create(QueryEditorQuestionEditor, {
     
     this._checkSelectables(includedPages);
   },
+  
   _replaceSelectOptionEditor: function (name, options) {
     var editor = this.getOptionEditor(name);
     var value = editor.getValue();
@@ -4624,6 +4679,7 @@ QueryEditorCollage2DPageEditor = Class.create(QueryEditorQuestionEditor, {
       });
     }.bind(editor));
   },
+  
   _createColorSelectDialog: function () {
     var dialog = new Element("div", {
       className: "queryEditorCollage2DColorSelectDialog"
@@ -4770,6 +4826,7 @@ QueryEditorCollage2DPageEditor = Class.create(QueryEditorQuestionEditor, {
     
     return includedPages;
   },
+  
   _getPageElementById: function (pageId) {
     var pageIdInputs = this._pagesContainer.select('input[name="pageId"]');
     for (var i = 0, l = pageIdInputs.length; i < l; i++) {
@@ -4780,6 +4837,7 @@ QueryEditorCollage2DPageEditor = Class.create(QueryEditorQuestionEditor, {
     
     return null;
   },
+  
   _getAxesByPageId: function (pageId) {
     return this._getPageElementById(pageId).down('input[name="axes"]').value;
   },
@@ -4866,4 +4924,5 @@ QueryEditorCollage2DPageEditor = Class.create(QueryEditorQuestionEditor, {
     this._updatePageColor(pageId, color);
     dialog.close();
   }
+  
 });
