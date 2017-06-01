@@ -7,7 +7,7 @@ public class Defaults {
   private Defaults() {
   }
 
-  public static final SubscriptionLevel NEW_USER_SUBSCRIPTION_LEVEL = SubscriptionLevel.PREMIUM;
+  public static final SubscriptionLevel NEW_USER_SUBSCRIPTION_LEVEL = SubscriptionLevel.BASIC;
   public static final String LOCALE = "en";
   
 }
