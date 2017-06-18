@@ -1,3 +1,5 @@
+/* global getGlobalEventQueue, EventQueueItem, getLocale */
+
 var QueryEditorUtils;
 var QueryEditorDraftTask;
 var QueryEditorBlockController;
