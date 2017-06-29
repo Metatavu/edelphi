@@ -137,8 +137,8 @@ public class QueryUtils {
   public static void appendQueryPageComments(RequestContext requestContext, QueryPage queryPage) {
     QueryQuestionCommentDAO queryQuestionCommentDAO = new QueryQuestionCommentDAO();
     PanelStamp activeStamp = RequestUtils.getActiveStamp(requestContext);
-    List<QueryQuestionComment> rootComments = queryQuestionCommentDAO.listRootCommentsByQueryPageAndStamp(queryPage, activeStamp);
-    Map<Long, List<QueryQuestionComment>> childComments = queryQuestionCommentDAO.listTreesByQueryPageAndStamp(queryPage, activeStamp);
+    List<QueryQuestionComment> rootComments = queryQuestionCommentDAO.listRootCommentsByQueryPageAndStampOrderByCreated(queryPage, activeStamp);
+    Map<Long, List<QueryQuestionComment>> childComments = queryQuestionCommentDAO.listTreesByQueryPageAndStampOrderByCreated(queryPage, activeStamp);
 
     QueryUtils.appendQueryPageRootComments(requestContext, queryPage.getId(), rootComments);
     QueryUtils.appendQueryPageChildComments(requestContext, childComments);
