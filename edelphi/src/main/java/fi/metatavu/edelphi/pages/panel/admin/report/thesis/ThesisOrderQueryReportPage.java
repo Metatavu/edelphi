@@ -113,7 +113,7 @@ public class ThesisOrderQueryReportPage extends QueryReportPageController {
     QueryQuestionNumericAnswerDAO queryQuestionNumericAnswerDAO = new QueryQuestionNumericAnswerDAO();
     
     QueryQuestionCommentDAO queryQuestionCommentDAO = new QueryQuestionCommentDAO();
-    List<QueryQuestionComment> rootComments = queryQuestionCommentDAO.listRootCommentsByQueryPageAndStamp(queryPage, panelStamp);
+    List<QueryQuestionComment> rootComments = queryQuestionCommentDAO.listRootCommentsByQueryPageAndStampOrderByCreated(queryPage, panelStamp);
     @SuppressWarnings("unchecked")
     Map<Long,Map<Integer,String>> answers = (Map<Long,Map<Integer,String>>) requestContext.getRequest().getAttribute("commentAnswers");
     

@@ -153,7 +153,7 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
     return entityManager.createQuery(criteria).getResultList(); 
   }
 
-  public List<QueryQuestionComment> listRootCommentsByQueryPageAndStamp(QueryPage queryPage, PanelStamp panelStamp) {
+  public List<QueryQuestionComment> listRootCommentsByQueryPageAndStampOrderByCreated(QueryPage queryPage, PanelStamp panelStamp) {
     EntityManager entityManager = getEntityManager();
     
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -169,6 +169,8 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
             criteriaBuilder.isNull(root.get(QueryQuestionComment_.parentComment))
         )
     );
+    
+    criteria.orderBy(criteriaBuilder.asc(root.get(QueryQuestionComment_.created)));
 
     return entityManager.createQuery(criteria).getResultList(); 
   }
@@ -276,7 +278,7 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
     return comment;
   }
 
-  public Map<Long, List<QueryQuestionComment>> listTreesByQueryPageAndStamp(QueryPage queryPage, PanelStamp panelStamp) {
+  public Map<Long, List<QueryQuestionComment>> listTreesByQueryPageAndStampOrderByCreated(QueryPage queryPage, PanelStamp panelStamp) {
     Map<Long, List<QueryQuestionComment>> result = new HashMap<>();
 
     EntityManager entityManager = getEntityManager();
@@ -294,6 +296,7 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
             criteriaBuilder.isNotNull(root.get(QueryQuestionComment_.parentComment))
         )
     );
+    criteria.orderBy(criteriaBuilder.asc(root.get(QueryQuestionComment_.created)));
 
     List<QueryQuestionComment> allChildren = entityManager.createQuery(criteria).getResultList();
 

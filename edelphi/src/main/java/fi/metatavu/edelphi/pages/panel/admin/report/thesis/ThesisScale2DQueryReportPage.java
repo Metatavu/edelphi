@@ -92,7 +92,7 @@ public class ThesisScale2DQueryReportPage extends AbstractThesisScale2DQueryRepo
     PanelStamp panelStamp = RequestUtils.getActiveStamp(requestContext);
     
     QueryQuestionCommentDAO queryQuestionCommentDAO = new QueryQuestionCommentDAO();
-    List<QueryQuestionComment> rootComments = queryQuestionCommentDAO.listRootCommentsByQueryPageAndStamp(queryPage, panelStamp);
+    List<QueryQuestionComment> rootComments = queryQuestionCommentDAO.listRootCommentsByQueryPageAndStampOrderByCreated(queryPage, panelStamp);
 
     @SuppressWarnings("unchecked")
     Map<Long,Map<String,String>> answers = (Map<Long,Map<String,String>>) requestContext.getRequest().getAttribute("commentAnswers");

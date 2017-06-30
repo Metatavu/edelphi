@@ -1,3 +1,5 @@
+/* global getGlobalEventQueue, EventQueueItem, getLocale */
+
 var QueryEditorUtils;
 var QueryEditorDraftTask;
 var QueryEditorBlockController;
@@ -1903,8 +1905,8 @@ QueryEditorTimeSerieQuestionPreview = Class.create(QueryEditorQuestionPreview, {
     this._predefinedSetLabel = this.getBlockController().getPageOptionValue("time_serie.predefinedSetLabel");
     this._userSetLabel = this.getBlockController().getPageOptionValue("time_serie.userSetLabel");
     
-    yTicks = Math.round((this._maxY - this._minY) / this._stepY);
-    xTicks = Math.round((this._maxX - this._minX) / Math.getGCD(this._stepX, this._userStepX));
+    var yTicks = Math.round((this._maxY - this._minY) / this._stepY);
+    var xTicks = Math.round((this._maxX - this._minX) / Math.getGCD(this._stepX, this._userStepX));
     
     this._flotrOptions = {
       "xaxis": { 
@@ -2033,46 +2035,70 @@ QueryEditorTimeSerieQuestionPreview = Class.create(QueryEditorQuestionPreview, {
       }
     }], this._flotrOptions);
   },
+  
+  _calculateNoTicks: function(maxX, minX, stepX, userStepX) {
+    return Math.round((maxX - minX) / Math.getGCD(stepX, userStepX||stepX));
+  },
+  
+  _checkTickRange: function(maxX, minX, stepX, userStepX) {
+    var noTicks = this._calculateNoTicks(maxX, minX, stepX, userStepX);
+    
+    if (noTicks > 0) {
+      if (noTicks <= this._maxTicks) {
+        return true;
+      } else {
+        getGlobalEventQueue().addItem(new EventQueueItem(getLocale().getText('panelAdmin.block.query.timelineTypeEditor.tooManyTicksError', noTicks, this._maxTicks), {
+          className: "eventQueueWarningItem",
+          timeout: 1000 * 3
+        }));
+      }
+    } else {
+      getGlobalEventQueue().addItem(new EventQueueItem(getLocale().getText('panelAdmin.block.query.timelineTypeEditor.noTicksError'), {
+        className: "eventQueueWarningItem",
+        timeout: 1000 * 3
+      }));
+    }
+    
+    return false;
+  },
+  
   _onPageEditorOptionValueChange: function (event) {
     var render = false;
     
     switch (event.name) {
       case 'time_serie.minX':
-        this._flotrOptions.xaxis.min = this._minX = parseInt(event.value);
-        render = true;
+        var minX = parseInt(event.value);        
+        if (this._checkTickRange(this._maxX, minX, this._stepX, this._userStepX)) {
+          this._flotrOptions.xaxis.min = this._minX = minX;
+          render = true;
+        } else {
+          event.stop();
+        }
       break;
       case 'time_serie.maxX':
-        this._flotrOptions.xaxis.max = this._maxX = parseInt(event.value);
-        render = true;
+        var maxX = parseInt(event.value);        
+        if (this._checkTickRange(maxX, this._minX, this._stepX, this._userStepX)) {
+          this._flotrOptions.xaxis.max = this._maxX = maxX;
+          render = true;
+        } else {
+          event.stop();
+        }
       break;
       case 'time_serie.stepX':
         var stepX = parseFloat(event.value.replace(",","."));
 
         if (stepX) {
-          var noTicks = Math.round((this._maxX - this._minX) / Math.getGCD(stepX, this._userStepX||stepX));
-          if (noTicks > 0) {
-            if (noTicks <= this._maxTicks) {
-              this._stepX = stepX;
-              if (!this._userStepX)
-                this._userStepX = stepX;
-
-              this._flotrOptions.xaxis.noTicks = noTicks;
-              render = true;
-            } else {
-              event.stop();
-              getGlobalEventQueue().addItem(new EventQueueItem(getLocale().getText('panelAdmin.block.query.timelineTypeEditor.tooManyTicksError', noTicks, this._maxTicks), {
-                className: "eventQueueWarningItem",
-                timeout: 1000 * 3
-              }));
+          if (this._checkTickRange(this._maxX, this._minX, stepX, this._userStepX)) {
+            this._stepX = stepX;
+            if (!this._userStepX) {
+              this._userStepX = stepX;
             }
+            
+            this._flotrOptions.xaxis.noTicks = this._calculateNoTicks(this._maxX, this._minX, this._stepX, this._userStepX);
+            render = true;
           } else {
             event.stop();
-            getGlobalEventQueue().addItem(new EventQueueItem(getLocale().getText('panelAdmin.block.query.timelineTypeEditor.noTicksError'), {
-              className: "eventQueueWarningItem",
-              timeout: 1000 * 3
-            }));
           }
-        
         } else {
           event.stop();
           getGlobalEventQueue().addItem(new EventQueueItem(getLocale().getText('panelAdmin.block.query.timelineTypeEditor.zeroStepError'), {
@@ -2089,27 +2115,13 @@ QueryEditorTimeSerieQuestionPreview = Class.create(QueryEditorQuestionPreview, {
         var userStepX = parseFloat(event.value.replace(",","."));
 
         if (userStepX) {
-          var noTicks = Math.round((this._maxX - this._minX) / Math.getGCD(this._stepX, userStepX));
-          if (noTicks > 0) {
-            if (noTicks <= this._maxTicks) {
-              this._userStepX = userStepX;
-              this._flotrOptions.xaxis.noTicks = noTicks;
-              render = true;
-            } else {
-              event.stop();
-              getGlobalEventQueue().addItem(new EventQueueItem(getLocale().getText('panelAdmin.block.query.timelineTypeEditor.tooManyTicksError', noTicks, this._maxTicks), {
-                className: "eventQueueWarningItem",
-                timeout: 1000 * 3
-              }));
-            }
+          if (this._checkTickRange(this._maxX, this._minX, this._stepX, userStepX)) {
+            this._userStepX = userStepX;
+            this._flotrOptions.xaxis.noTicks = this._calculateNoTicks(this._maxX, this._minX, this._stepX, this._userStepX);
+            render = true;
           } else {
             event.stop();
-            getGlobalEventQueue().addItem(new EventQueueItem(getLocale().getText('panelAdmin.block.query.timelineTypeEditor.noTicksError'), {
-              className: "eventQueueWarningItem",
-              timeout: 1000 * 3
-            }));
           }
-        
         } else {
           event.stop();
           getGlobalEventQueue().addItem(new EventQueueItem(getLocale().getText('panelAdmin.block.query.timelineTypeEditor.zeroStepError'), {
