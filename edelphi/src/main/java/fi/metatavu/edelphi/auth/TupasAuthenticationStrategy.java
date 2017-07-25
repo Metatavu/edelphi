@@ -50,6 +50,11 @@ public class TupasAuthenticationStrategy extends AbstractAuthenticationStrategy 
   }
 
   @Override
+  public void logout(RequestContext requestContext, String redirectUrl) {
+    // Does not support logout
+  }
+
+  @Override
   public AuthenticationResult processLogin(RequestContext requestContext) {
     String action = requestContext.getString("action");
 

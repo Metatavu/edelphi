@@ -37,6 +37,11 @@ public class InternalAuthenticationStrategy extends AbstractAuthenticationStrate
   }
 
   @Override
+  public void logout(RequestContext requestContext, String redirectUrl) {
+    // Does not support logout
+  }
+
+  @Override
   public AuthenticationResult processLogin(RequestContext requestContext) {
     Messages messages = Messages.getInstance();
     Locale locale = requestContext.getRequest().getLocale();
@@ -65,7 +70,7 @@ public class InternalAuthenticationStrategy extends AbstractAuthenticationStrate
       }
 
       if (userPassword != null && password.equals(userPassword.getPasswordHash())) {
-        RequestUtils.loginUser(requestContext, user);
+        RequestUtils.loginUser(requestContext, user, authSource.getId());
         return AuthenticationResult.LOGIN;
       } else {
         throw new SmvcRuntimeException(EdelfoiStatusCode.INVALID_LOGIN,

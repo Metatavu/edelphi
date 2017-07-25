@@ -83,7 +83,7 @@ public class RegisterJSONRequestController extends JSONController {
       delfoiUserDAO.create(delfoi, user, delfoiDefaults.getDefaultDelfoiUserRole(), user);
     }
     if (skipEmailVerification) {
-      RequestUtils.loginUser(jsonRequestContext, user);
+      RequestUtils.loginUser(jsonRequestContext, user, null);
       String baseURL = RequestUtils.getBaseUrl(jsonRequestContext.getRequest());
       String loginRedirectUrl = AuthUtils.retrieveRedirectUrl(jsonRequestContext);
       String redirectUrl = loginRedirectUrl != null ? loginRedirectUrl : baseURL + "/index.page";

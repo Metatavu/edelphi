@@ -17,7 +17,9 @@ import org.w3c.dom.css.CSSRule;
 import org.w3c.dom.css.CSSStyleRule;
 import org.w3c.dom.css.CSSStyleSheet;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets.Details;
 import com.google.api.client.http.ByteArrayContent;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -31,15 +33,13 @@ import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.Permission;
 import com.google.api.services.drive.model.PermissionList;
 
-import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.auth.AuthenticationProviderFactory;
-import fi.metatavu.edelphi.auth.GoogleAuthenticationStrategy;
+import fi.metatavu.edelphi.auth.KeycloakAuthenticationStrategy;
 import fi.metatavu.edelphi.auth.OAuthAccessToken;
 import fi.metatavu.edelphi.dao.base.DelfoiAuthDAO;
 import fi.metatavu.edelphi.domainmodel.base.AuthSource;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiAuth;
-import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 
 public class GoogleDriveUtils {
@@ -52,30 +52,41 @@ public class GoogleDriveUtils {
 	private static final JsonFactory JSON_FACTORY = new JacksonFactory();
 	private static final HttpTransport TRANSPORT = new NetHttpTransport();
   private static final String FILE_FIELDS = "id,kind,mimeType,name,parents,createdTime,modifiedTime,imageMediaMetadata,videoMediaMetadata,trashed,webViewLink";
-
+  private static final String FAKE_ID = "FAKE";
+  
 	// Service
 
 	public static Drive getAuthenticatedService(RequestContext requestContext) {
-		switch (resolveRequiredAuthLevel(requestContext)) {
-			case FULL:
-				handleAuthLevelFull(requestContext);
-			break;
-			case GRANT:
-				handleAuthLevelGrant(requestContext);
-			break;
-			case REFRESH:
-			  // TODO: Refresh token
-			break;
-			case NONE:
-				AuthSource googleAuthSource = GoogleDriveUtils.getGoogleAuthSource(RequestUtils.getDelfoi(requestContext));
-				GoogleAuthenticationStrategy googleAuthenticationProvider = (GoogleAuthenticationStrategy) AuthenticationProviderFactory.getInstance().createAuthenticationProvider(googleAuthSource);
-				GoogleCredential credential = googleAuthenticationProvider.getCredential(requestContext, REQUIRED_SCOPES);
-				return new Drive.Builder(TRANSPORT, JSON_FACTORY, credential).build();
-			default:
-		}
-
-		return null;
+	  AuthSource keycloakAuthSource = getKeycloakAuthSource(RequestUtils.getDelfoi(requestContext));
+	  if (keycloakAuthSource == null) {
+	    logger.log(Level.SEVERE, "Could not obtain authenticated Drive because keycloak auth source is not configured");
+	    return null;
+	  }
+	  
+    KeycloakAuthenticationStrategy keycloakAuthenticationProvider = (KeycloakAuthenticationStrategy) AuthenticationProviderFactory.getInstance().createAuthenticationProvider(keycloakAuthSource);
+    OAuthAccessToken brokenToken = keycloakAuthenticationProvider.getBrokerToken(requestContext, "google");
+    if (brokenToken == null) {
+      requestGoogleLogin(requestContext, keycloakAuthSource);
+      return null;
+    } else {
+      GoogleCredential credential = getCredential(brokenToken);
+      return new Drive.Builder(TRANSPORT, JSON_FACTORY, credential).build();
+    }
 	}
+
+  private static void requestGoogleLogin(RequestContext requestContext, AuthSource keycloakAuthSource) {
+    String currentUrl = RequestUtils.getCurrentUrl(requestContext.getRequest(), true);
+    try {
+      StringBuilder loginUrlBuilder = new StringBuilder(RequestUtils.getBaseUrl(requestContext.getRequest()))
+        .append("/dologin.page?authSource=")
+        .append(keycloakAuthSource.getId())
+        .append("&provider=google")
+        .append(String.format("&redirectUrl=%s", URLEncoder.encode(currentUrl, "UTF-8")));
+      requestContext.setRedirectURL(String.format("/logout.page?redirectUrl=%s", URLEncoder.encode(loginUrlBuilder.toString(), "UTF-8")));
+    } catch (UnsupportedEncodingException e) {
+      logger.log(Level.SEVERE, "Failed to encode logout redirect url", e);
+    }
+  }
 
 	public static Drive getAdminService() {
 		return new Drive.Builder(TRANSPORT, JSON_FACTORY, getAdminCredential()).build();
@@ -85,7 +96,28 @@ public class GoogleDriveUtils {
 	  return getAdminCredential().getServiceAccountId();
 	}
 	
-	private static synchronized GoogleCredential getAdminCredential() {
+  private static GoogleCredential getCredential(OAuthAccessToken brokenToken) {
+    Details webDetails = new Details();
+    webDetails.setClientId(FAKE_ID);
+    webDetails.setClientSecret(FAKE_ID);
+    
+    GoogleClientSecrets secrets = new GoogleClientSecrets();
+    secrets.setWeb(webDetails);
+
+    GoogleCredential credential = new GoogleCredential.Builder()
+      .setClientSecrets(secrets)
+      .setTransport(TRANSPORT)
+      .setJsonFactory(JSON_FACTORY)
+      .build();
+    
+    if (brokenToken != null) {
+      credential.setAccessToken(brokenToken.getToken()); 
+    }
+    
+    return credential;
+  }
+
+  private static GoogleCredential getAdminCredential() {
 	  String keyFile = System.getProperty("edelphi.googleServiceAccount.key");
 	  if (keyFile == null) {
 	    logger.severe("Google service account keyfile is not configured");
@@ -125,41 +157,7 @@ public class GoogleDriveUtils {
     
     return null;
   }
-	
-	public static AuthSource getGoogleAuthSource(Delfoi delfoi) {
-    // TODO needs more finesse; at this point we simply return the first Google auth in Delfoi and assume one exists in the first place
-		// TODO Support for panel Google auth
-		
-    DelfoiAuthDAO delfoiAuthDAO = new DelfoiAuthDAO();
-    List<DelfoiAuth> delfoiAuths = delfoiAuthDAO.listByDelfoi(delfoi);
-    for (DelfoiAuth delfoiAuth : delfoiAuths) {
-      if ("Google".equals(delfoiAuth.getAuthSource().getStrategy())) {
-        return delfoiAuth.getAuthSource();
-      }
-    }
-    return null;
-  }
 
-	public static RequiredAuthLevel resolveRequiredAuthLevel(RequestContext requestContext) {
-    RequiredAuthLevel requiredAuthLevel = RequiredAuthLevel.NONE;
-    
-    if (!AuthUtils.isAuthenticatedBy(requestContext, "Google")) {
-      // User is not authenticated by Google OAuth so we need to do full authentication 
-      requiredAuthLevel = RequiredAuthLevel.FULL;
-    } else {
-      OAuthAccessToken accessToken = AuthUtils.getOAuthAccessToken(requestContext, "Google", REQUIRED_SCOPES);
-      if (accessToken == null) {
-        // User is authenticated with Google and has a valid token but has not granted usage of documentlist api so we need him/her to do that before proceeding
-        requiredAuthLevel = RequiredAuthLevel.GRANT;
-      } else if (AuthUtils.isOAuthTokenExpired(accessToken)) {
-        // User's access token has expired so we need to request new one
-        requiredAuthLevel = RequiredAuthLevel.REFRESH;
-      }
-    }
-    
-    return requiredAuthLevel;
-  }
-	
 	// Files
 	
 	public static File getFile(Drive drive, String fileId) throws IOException {
@@ -459,46 +457,20 @@ public class GoogleDriveUtils {
       return drive.files().create(body).execute();
     }
 	}
-	
-  private static void handleAuthLevelFull(RequestContext requestContext) {
-    try {
-      AuthSource authSource = GoogleDriveUtils.getGoogleAuthSource(RequestUtils.getDelfoi(requestContext));
-      StringBuilder redirectUrlBuilder = new StringBuilder(RequestUtils.getBaseUrl(requestContext.getRequest()))
-      	.append("/dologin.page?authSource=")
-    	  .append(authSource.getId());
-    	  
-    	for (String extraScope : REQUIRED_SCOPES) {
-    		redirectUrlBuilder.append("&extraScope=");
-    	  redirectUrlBuilder.append(URLEncoder.encode(extraScope, CHARSET));
-    	}
-    	  
-      AuthUtils.storeRedirectUrl(requestContext, RequestUtils.getCurrentUrl(requestContext.getRequest(), true));
-      requestContext.setRedirectURL(redirectUrlBuilder.toString());
-    } catch (UnsupportedEncodingException e) {
-      throw new SmvcRuntimeException(EdelfoiStatusCode.UNDEFINED, e.getLocalizedMessage(), e);
+
+  private static AuthSource getKeycloakAuthSource(Delfoi delfoi) {
+    // TODO needs more finesse; at this point we simply return the first Keycloak auth in Delfoi and assume one exists in the first place
+    
+    DelfoiAuthDAO delfoiAuthDAO = new DelfoiAuthDAO();
+    List<DelfoiAuth> delfoiAuths = delfoiAuthDAO.listByDelfoi(delfoi);
+    for (DelfoiAuth delfoiAuth : delfoiAuths) {
+      if ("Keycloak".equals(delfoiAuth.getAuthSource().getStrategy())) {
+        return delfoiAuth.getAuthSource();
+      }
     }
+    return null;
   }
   
-  private static void handleAuthLevelGrant(RequestContext requestContext) {
-    try {
-      AuthSource authSource = GoogleDriveUtils.getGoogleAuthSource(RequestUtils.getDelfoi(requestContext));
-      
-      StringBuilder redirectUrlBuilder = new StringBuilder(RequestUtils.getBaseUrl(requestContext.getRequest()))
-    	  .append("/dologin.page?authSource=")
-  	    .append(authSource.getId());
-  	  
-    	for (String extraScope : REQUIRED_SCOPES) {
-    		redirectUrlBuilder.append("&scope=");
-    	  redirectUrlBuilder.append(URLEncoder.encode(extraScope, CHARSET));
-    	}
-      
-      AuthUtils.storeRedirectUrl(requestContext, RequestUtils.getCurrentUrl(requestContext.getRequest(), true));
-      requestContext.setRedirectURL(redirectUrlBuilder.toString());
-    } catch (UnsupportedEncodingException e) {
-      throw new SmvcRuntimeException(EdelfoiStatusCode.UNDEFINED, e.getLocalizedMessage(), e);
-    }
-  }
-	
   public static class DownloadResponse {
     
     private String mimeType;
@@ -516,13 +488,6 @@ public class GoogleDriveUtils {
   	public String getMimeType() {
 			return mimeType;
 		}
-  }
-  
-  private enum RequiredAuthLevel {
-    NONE,
-    REFRESH,
-    GRANT,
-    FULL
   }
 
 }

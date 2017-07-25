@@ -16,8 +16,9 @@ public class LoginPageController extends PageController {
   public void process(PageRequestContext pageRequestContext) {
     Boolean logout = pageRequestContext.getBoolean("logoff");
     if (logout) {
-      RequestUtils.logoutUser(pageRequestContext);
+      RequestUtils.logoutUser(pageRequestContext, null);
     }
+    
     AuthUtils.includeAuthSources(pageRequestContext);
     pageRequestContext.setIncludeJSP("/jsp/pages/login.jsp");
   }

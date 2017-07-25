@@ -32,6 +32,11 @@ import net.sf.json.JSONObject;
 
 public class NingAuthenticationStrategy extends AbstractAuthenticationStrategy implements AuthenticationProvider {
 
+  @Override
+  public void logout(RequestContext requestContext, String redirectUrl) {
+    // Does not support logout
+  }
+  
   private JSONObject doTokenRequest(URL url, String username, String password, BasicNameValuePair... data) throws IOException, DecoderException, URISyntaxException {
     try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
       HttpPost httpPost = new HttpPost(url.toURI());

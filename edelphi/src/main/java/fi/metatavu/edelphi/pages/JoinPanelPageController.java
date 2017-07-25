@@ -119,7 +119,7 @@ public class JoinPanelPageController extends PageController {
         
         // Ensure user is logged in
         
-        RequestUtils.loginUser(pageRequestContext, user);
+        RequestUtils.loginUser(pageRequestContext, user, null);
         
         // TODO if user has no password or external authentication, add a welcome message 
         

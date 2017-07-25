@@ -86,7 +86,7 @@ public class SystemUtilsPageController extends PageController {
       Long userId = pageRequestContext.getLong("userId");
       UserDAO userDAO = new UserDAO();
       User user = userDAO.findById(userId);
-      RequestUtils.loginUser(pageRequestContext, user);
+      RequestUtils.loginUser(pageRequestContext, user, null);
       pageRequestContext.setRedirectURL(pageRequestContext.getRequest().getContextPath() + "/index.page");
     }
     else if ("copyQuery".equals(action)) {

@@ -89,7 +89,7 @@ public abstract class AbstractAuthenticationStrategy implements AuthenticationPr
       for (int i = 1; i < emails.size(); i++) {
         userEmailDAO.create(resolvedUser, emails.get(i));
       }
-      RequestUtils.loginUser(requestContext, resolvedUser);
+      RequestUtils.loginUser(requestContext, resolvedUser, authSource.getId());
       return AuthenticationResult.NEW_ACCOUNT;
     }
     else {
@@ -103,7 +103,7 @@ public abstract class AbstractAuthenticationStrategy implements AuthenticationPr
           userEmailDAO.create(resolvedUser, email);
         }
       }
-      RequestUtils.loginUser(requestContext, resolvedUser);
+      RequestUtils.loginUser(requestContext, resolvedUser, authSource.getId());
       if (idUser == null) {
         // If the user had no previous ways of logging in, consider this a new account (i.e. go to profile page)
         UserPasswordDAO userPasswordDAO = new UserPasswordDAO();
