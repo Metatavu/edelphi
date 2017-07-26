@@ -3291,4 +3291,8 @@
     <addForeignKeyConstraint constraintName="FK_DELFOIAUTH_AUTHSOURCE" referencedTableName="AuthSource" referencedColumnNames="id" baseTableName="DelfoiAuth" baseColumnNames="authSource_id"/>
   </changeSet>
   
+  <changeSet author="antti.leppa" id="password-reset-drop">
+    <dropTable tableName="PasswordReset"/>
+  </changeSet>
+  
 </databaseChangeLog>
