@@ -5,13 +5,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.dao.panels.PanelDAO;
 import fi.metatavu.edelphi.dao.panels.PanelInvitationDAO;
 import fi.metatavu.edelphi.dao.users.UserEmailDAO;
 import fi.metatavu.edelphi.dao.users.UserIdentificationDAO;
-import fi.metatavu.edelphi.dao.users.UserPasswordDAO;
 import fi.metatavu.edelphi.dao.users.UserSettingDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
@@ -24,9 +22,9 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelState;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.domainmodel.users.UserIdentification;
-import fi.metatavu.edelphi.domainmodel.users.UserPassword;
 import fi.metatavu.edelphi.domainmodel.users.UserSetting;
 import fi.metatavu.edelphi.domainmodel.users.UserSettingKey;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.utils.ActionUtils;
 import fi.metatavu.edelphi.utils.AuthUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
@@ -52,12 +50,7 @@ public class ProfilePageController extends PanelPageController {
     User loggedUser = RequestUtils.getUser(pageRequestContext);
     
     if (loggedUser != null) {
-      UserPasswordDAO userPasswordDAO = new UserPasswordDAO();
       pageRequestContext.getRequest().setAttribute("user", loggedUser);
-
-      UserPassword userPassword = userPasswordDAO.findByUser(loggedUser);
-      boolean hasPassword = userPassword != null;
-      
       // Logon types
       
       AuthUtils.includeAuthSources(pageRequestContext);
@@ -83,8 +76,6 @@ public class ProfilePageController extends PanelPageController {
       // Ensures returning to the profile page if an external authentication source is added to the profile
       AuthUtils.storeRedirectUrl(pageRequestContext, RequestUtils.getCurrentUrl(pageRequestContext.getRequest(), true));
 
-      pageRequestContext.getRequest().setAttribute("userHasPassword", hasPassword);
-      
       SubscriptionLevelSettings subscriptionLevelSettings = SubscriptionLevelUtils.getSubscriptionLevelSettings(loggedUser.getSubscriptionLevel());
       pageRequestContext.getRequest().setAttribute("subscriptionLevelSettings", subscriptionLevelSettings);
       pageRequestContext.getRequest().setAttribute("subscriptionStarted", loggedUser.getSubscriptionStarted());

@@ -10,7 +10,6 @@ import fi.metatavu.edelphi.dao.panels.PanelDAO;
 import fi.metatavu.edelphi.dao.panels.PanelInvitationDAO;
 import fi.metatavu.edelphi.dao.users.UserEmailDAO;
 import fi.metatavu.edelphi.dao.users.UserIdentificationDAO;
-import fi.metatavu.edelphi.dao.users.UserPasswordDAO;
 import fi.metatavu.edelphi.dao.users.UserSettingDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
@@ -23,7 +22,6 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelState;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.domainmodel.users.UserIdentification;
-import fi.metatavu.edelphi.domainmodel.users.UserPassword;
 import fi.metatavu.edelphi.domainmodel.users.UserSetting;
 import fi.metatavu.edelphi.domainmodel.users.UserSettingKey;
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
@@ -78,11 +76,7 @@ public class ProfilePageController extends PageController {
         pageRequestContext.getRequest().setAttribute("myInvitations", allInvitations); // profile view
       }
 
-      UserPasswordDAO userPasswordDAO = new UserPasswordDAO();
       pageRequestContext.getRequest().setAttribute("user", loggedUser);
-
-      UserPassword userPassword = userPasswordDAO.findByUser(loggedUser);
-      boolean hasPassword = userPassword != null;
       
       // Logon types
       
@@ -99,8 +93,6 @@ public class ProfilePageController extends PageController {
 
       // Ensures returning to the profile page if an external authentication source is added to the profile
       AuthUtils.storeRedirectUrl(pageRequestContext, RequestUtils.getCurrentUrl(pageRequestContext.getRequest(), true));
-      
-      pageRequestContext.getRequest().setAttribute("userHasPassword", hasPassword);
       
       SubscriptionLevelSettings subscriptionLevelSettings = SubscriptionLevelUtils.getSubscriptionLevelSettings(loggedUser.getSubscriptionLevel());
       pageRequestContext.getRequest().setAttribute("subscriptionLevelSettings", subscriptionLevelSettings);

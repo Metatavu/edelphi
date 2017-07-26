@@ -124,66 +124,6 @@
     </p>
   </div>
 
-  <!-- Internal password -->
-
-  <jsp:include page="/jsp/fragments/block_title.jsp">
-    <jsp:param value="profile.block.profilePasswordBlockTitle" name="titleLocale" />
-  </jsp:include>
-
-  <div id="profilePasswordBlockContent" class="blockContent">
-    <div id="profilePasswordForm">
-      <form name="profilePassword">
-        <input type="hidden" name="passwordUserId" value="${user.id}" />
-
-        <c:choose>
-          <c:when test="${not userHasPassword}">
-            <div id="noPasswordMessageContainer">
-              <fmt:message key="profile.block.profileHasNoPasswordInformativeText" />
-            </div>
-            <div id="oldPasswordContainer" style="display: none;">
-              <jsp:include page="/jsp/fragments/formfield_password.jsp">
-                <jsp:param name="name" value="oldPassword" />
-                <jsp:param name="classes" value="required" />
-                <jsp:param name="labelLocale" value="profile.block.profileOldPasswordLabel" />
-              </jsp:include>
-            </div>
-          </c:when>
-
-          <c:otherwise>
-            <div id="noPasswordMessageContainer" style="display: none;">
-              <fmt:message key="profile.block.profileHasNoPasswordInformativeText" />
-            </div>
-            <div id="oldPasswordContainer">
-              <jsp:include page="/jsp/fragments/formfield_password.jsp">
-                <jsp:param name="name" value="oldPassword" />
-                <jsp:param name="classes" value="required" />
-                <jsp:param name="labelLocale" value="profile.block.profileOldPasswordLabel" />
-              </jsp:include>
-            </div>
-          </c:otherwise>
-        </c:choose>
-
-        <jsp:include page="/jsp/fragments/formfield_password.jsp">
-          <jsp:param name="name" value="newPassword1" />
-          <jsp:param name="classes" value="required equals equals-newPassword2" />
-          <jsp:param name="labelLocale" value="profile.block.profilePasswordLabel" />
-        </jsp:include>
-
-        <jsp:include page="/jsp/fragments/formfield_password.jsp">
-          <jsp:param name="name" value="newPassword2" />
-          <jsp:param name="classes" value="required equals equals-newPassword1" />
-          <jsp:param name="labelLocale" value="profile.block.profileRetypePasswordLabel" />
-        </jsp:include>
-
-        <jsp:include page="/jsp/fragments/formfield_submit.jsp">
-          <jsp:param name="name" value="updatePasswordButton" />
-          <jsp:param name="classes" value="formvalid" />
-          <jsp:param name="labelLocale" value="profile.block.updatePasswordButtonLabel" />
-        </jsp:include>
-      </form>
-    </div>
-  </div>
-
   <!-- External authentication providers -->
 
   <c:if test="${authCount gt credentialAuthCount}">
