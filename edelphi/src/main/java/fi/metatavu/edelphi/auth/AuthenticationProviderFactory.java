@@ -65,7 +65,6 @@ public class AuthenticationProviderFactory {
   private static AuthenticationProviderFactory instance = new AuthenticationProviderFactory();
   
   static {
-    AuthenticationProviderFactory.getInstance().registerAuthenticationProvider(NingAuthenticationStrategy.class);
     AuthenticationProviderFactory.getInstance().registerAuthenticationProvider(KeycloakAuthenticationStrategy.class);
     
     if (SystemUtils.isTestEnvironment()) {
