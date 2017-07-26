@@ -55,10 +55,6 @@
           <jsp:param name="classes" value="formvalid"/>
           <jsp:param name="labelLocale" value="index.block.loginButtonLabel"/>
         </jsp:include>
-        
-        <c:if test="${hasInternalAuth}">
-          <a id="passwordResetLink" href="#"><fmt:message key="index.block.forgotPassword"/></a>
-        </c:if>
       </form>
     </c:if>     
     

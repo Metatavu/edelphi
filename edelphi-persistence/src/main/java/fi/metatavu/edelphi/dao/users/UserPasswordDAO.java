@@ -21,14 +21,7 @@ public class UserPasswordDAO extends GenericDAO<UserPassword> {
     getEntityManager().persist(userPassword);
     return userPassword;
   }
-  
-  public UserPassword updatePasswordHash(UserPassword userPassword, String passwordHash) {
-    userPassword.setPasswordHash(passwordHash);
 
-    getEntityManager().persist(userPassword);
-    return userPassword;
-  }
-  
   public UserPassword findByUser(User user) {
     EntityManager entityManager = getEntityManager(); 
     

@@ -16,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.auth.AuthenticationProviderFactory;
-import fi.metatavu.edelphi.auth.InternalAuthenticationStrategy;
 import fi.metatavu.edelphi.auth.OAuthAccessToken;
 import fi.metatavu.edelphi.dao.base.DelfoiAuthDAO;
 import fi.metatavu.edelphi.dao.panels.PanelAuthDAO;
@@ -77,13 +76,9 @@ public class AuthUtils {
       }
     }
     
-    boolean hasInternalAuth = false;
     int credentialAuthCount = 0;
     AuthenticationProviderFactory authFactory = AuthenticationProviderFactory.getInstance();
     for (AuthSource authSource : authSources) {
-      if (authSource.getStrategy().equals(InternalAuthenticationStrategy.STRATEGY_NAME)) {
-        hasInternalAuth = true;
-      }
       if (authFactory.requiresCredentials(authSource.getStrategy())) {
         credentialAuthCount++;
       }
@@ -91,7 +86,6 @@ public class AuthUtils {
     
     Collections.sort(authSources, new AuthSourceComparator());
     requestContext.getRequest().setAttribute("authSources", authSources);
-    requestContext.getRequest().setAttribute("hasInternalAuth", hasInternalAuth);
     requestContext.getRequest().setAttribute("authCount", authSources.size());
     requestContext.getRequest().setAttribute("credentialAuthCount", credentialAuthCount);
   }
