@@ -18,8 +18,13 @@ public class LoginPageController extends PageController {
     if (logout) {
       RequestUtils.logoutUser(pageRequestContext, null);
     }
+ 
+    Long authSourceId = AuthUtils.getAuthSource("Keycloak").getId();
+    String registerUrl = AuthUtils.getKeycloakStrategy().getRegisterUrl();
     
-    AuthUtils.includeAuthSources(pageRequestContext);
+    pageRequestContext.getRequest().setAttribute("registerUrl", registerUrl);
+    pageRequestContext.getRequest().setAttribute("authSourceId", authSourceId);
+    
     pageRequestContext.setIncludeJSP("/jsp/pages/login.jsp");
   }
 

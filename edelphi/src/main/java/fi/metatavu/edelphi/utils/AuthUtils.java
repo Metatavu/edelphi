@@ -7,6 +7,8 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -16,8 +18,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.auth.AuthenticationProviderFactory;
+import fi.metatavu.edelphi.auth.KeycloakAuthenticationStrategy;
 import fi.metatavu.edelphi.auth.OAuthAccessToken;
 import fi.metatavu.edelphi.dao.base.DelfoiAuthDAO;
+import fi.metatavu.edelphi.dao.base.DelfoiDAO;
 import fi.metatavu.edelphi.dao.panels.PanelAuthDAO;
 import fi.metatavu.edelphi.dao.panels.PanelDAO;
 import fi.metatavu.edelphi.domainmodel.base.AuthSource;
@@ -27,7 +31,7 @@ import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelAuth;
 
 public class AuthUtils {
-
+  
   private static final String PROVIDER_ACCESS_TOKENS = "%s.accessTokens";
   private static final String AUTHENTICATION_STRATEGIES = "authenticationStrategies";
   private static final String LOGIN_CONTEXT_ID = "loginContextId";
@@ -35,8 +39,34 @@ public class AuthUtils {
   private static final String AUTH_SOURCE_ID = "authSourceId";
   private static final String LOGIN_REDIRECT_URL = "loginRedirectUrl";
   private static final String INTERNAL_AUTHORIZATION_HEADER = "InternalAuthorization ";
-  
+  private static final Logger logger = Logger.getLogger(AuthUtils.class.getName());
+
   private AuthUtils() {
+  }
+  
+  public static AuthSource getAuthSource(String strategy) {
+    DelfoiDAO delfoiDAO = new DelfoiDAO();
+    DelfoiAuthDAO delfoiAuthDAO = new DelfoiAuthDAO();
+    
+    Delfoi delfoi = delfoiDAO.findById(1l);
+    List<DelfoiAuth> delfoiAuths = delfoiAuthDAO.listByDelfoi(delfoi);
+    for (DelfoiAuth delfoiAuth : delfoiAuths) {
+      if (strategy.equals(delfoiAuth.getAuthSource().getStrategy())) {
+        return delfoiAuth.getAuthSource();
+      }
+    }
+    
+    return null;
+  }
+  
+  public static KeycloakAuthenticationStrategy getKeycloakStrategy() {
+    AuthSource keycloakAuthSource = getAuthSource("Keycloak");
+    if (keycloakAuthSource == null) {
+      logger.log(Level.SEVERE, "Could not create Keycloak strategy because auth source is not configured");
+      return null;
+    }
+    
+    return (KeycloakAuthenticationStrategy) AuthenticationProviderFactory.getInstance().createAuthenticationProvider(keycloakAuthSource);    
   }
   
   /**

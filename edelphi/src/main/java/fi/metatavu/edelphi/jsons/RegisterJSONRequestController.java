@@ -6,9 +6,6 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 
-import fi.metatavu.edelphi.smvcj.Severity;
-import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 import fi.metatavu.edelphi.Defaults;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.users.DelfoiUserDAO;
@@ -16,7 +13,6 @@ import fi.metatavu.edelphi.dao.users.UserActivationDAO;
 import fi.metatavu.edelphi.dao.users.UserDAO;
 import fi.metatavu.edelphi.dao.users.UserEmailDAO;
 import fi.metatavu.edelphi.dao.users.UserIdentificationDAO;
-import fi.metatavu.edelphi.dao.users.UserPasswordDAO;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiDefaults;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiUser;
@@ -24,12 +20,14 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserActivation;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.domainmodel.users.UserIdentification;
-import fi.metatavu.edelphi.domainmodel.users.UserPassword;
 import fi.metatavu.edelphi.i18n.Messages;
-import fi.metatavu.edelphi.jsons.JSONController;
+import fi.metatavu.edelphi.smvcj.Severity;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 import fi.metatavu.edelphi.utils.AuthUtils;
 import fi.metatavu.edelphi.utils.MailUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.UserUtils;
 
 public class RegisterJSONRequestController extends JSONController {
 
@@ -39,7 +37,6 @@ public class RegisterJSONRequestController extends JSONController {
     // Data Access Objects
     UserDAO userDAO = new UserDAO();
     UserEmailDAO userEmailDAO = new UserEmailDAO();
-    UserPasswordDAO userPasswordDAO = new UserPasswordDAO();
     DelfoiUserDAO delfoiUserDAO = new DelfoiUserDAO();
     // Registration fields
     String firstName = jsonRequestContext.getString("firstName");
@@ -49,11 +46,11 @@ public class RegisterJSONRequestController extends JSONController {
     Boolean skipEmailVerification = jsonRequestContext.getBoolean("skipEmailVerification");
     // Check for e-mail in use
     UserEmail userEmail = userEmailDAO.findByAddress(email);
-    UserPassword userPassword = userEmail == null ? null : userPasswordDAO.findByUser(userEmail.getUser()); 
+    
     if (userEmail != null) {
       UserIdentificationDAO userIdentificationDAO = new UserIdentificationDAO();
       List<UserIdentification> userIdentifications = userIdentificationDAO.listByUser(userEmail.getUser());
-      if (userPassword != null || !userIdentifications.isEmpty()) {
+      if (!userIdentifications.isEmpty()) {
         // Refuse registration as user with at least some sort of login capability already exists 
         Messages messages = Messages.getInstance();
         throw new SmvcRuntimeException(EdelfoiStatusCode.REGISTRATION_EMAIL_EXISTS, messages.getText(locale, "exception.1009.registerEmailInUse"));
@@ -71,10 +68,9 @@ public class RegisterJSONRequestController extends JSONController {
       userEmail = userEmailDAO.create(user, email);
       userDAO.addUserEmail(user, userEmail, true, user);
     }
-    // Password
-    if (userPassword == null) {
-      userPassword = userPasswordDAO.create(user, password);
-    }
+    
+    UserUtils.updateUserPassword(user, password);
+
     // Delfoi role
     Delfoi delfoi = RequestUtils.getDelfoi(jsonRequestContext);
     DelfoiDefaults delfoiDefaults = RequestUtils.getDefaults(jsonRequestContext);

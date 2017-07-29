@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,8 +17,8 @@ import org.w3c.dom.css.CSSStyleRule;
 import org.w3c.dom.css.CSSStyleSheet;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets.Details;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.ByteArrayContent;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -36,10 +35,7 @@ import com.google.api.services.drive.model.PermissionList;
 import fi.metatavu.edelphi.auth.AuthenticationProviderFactory;
 import fi.metatavu.edelphi.auth.KeycloakAuthenticationStrategy;
 import fi.metatavu.edelphi.auth.OAuthAccessToken;
-import fi.metatavu.edelphi.dao.base.DelfoiAuthDAO;
 import fi.metatavu.edelphi.domainmodel.base.AuthSource;
-import fi.metatavu.edelphi.domainmodel.base.Delfoi;
-import fi.metatavu.edelphi.domainmodel.base.DelfoiAuth;
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 
 public class GoogleDriveUtils {
@@ -57,14 +53,14 @@ public class GoogleDriveUtils {
 	// Service
 
 	public static Drive getAuthenticatedService(RequestContext requestContext) {
-	  AuthSource keycloakAuthSource = getKeycloakAuthSource(RequestUtils.getDelfoi(requestContext));
+	  AuthSource keycloakAuthSource = AuthUtils.getAuthSource("Keycloak");
 	  if (keycloakAuthSource == null) {
 	    logger.log(Level.SEVERE, "Could not obtain authenticated Drive because keycloak auth source is not configured");
 	    return null;
 	  }
 	  
     KeycloakAuthenticationStrategy keycloakAuthenticationProvider = (KeycloakAuthenticationStrategy) AuthenticationProviderFactory.getInstance().createAuthenticationProvider(keycloakAuthSource);
-    OAuthAccessToken brokenToken = keycloakAuthenticationProvider.getBrokerToken(requestContext, "google");
+	  OAuthAccessToken brokenToken = keycloakAuthenticationProvider.getBrokerToken(requestContext, "google");
     if (brokenToken == null) {
       requestGoogleLogin(requestContext, keycloakAuthSource);
       return null;
@@ -458,18 +454,6 @@ public class GoogleDriveUtils {
     }
 	}
 
-  private static AuthSource getKeycloakAuthSource(Delfoi delfoi) {
-    // TODO needs more finesse; at this point we simply return the first Keycloak auth in Delfoi and assume one exists in the first place
-    
-    DelfoiAuthDAO delfoiAuthDAO = new DelfoiAuthDAO();
-    List<DelfoiAuth> delfoiAuths = delfoiAuthDAO.listByDelfoi(delfoi);
-    for (DelfoiAuth delfoiAuth : delfoiAuths) {
-      if ("Keycloak".equals(delfoiAuth.getAuthSource().getStrategy())) {
-        return delfoiAuth.getAuthSource();
-      }
-    }
-    return null;
-  }
   
   public static class DownloadResponse {
     

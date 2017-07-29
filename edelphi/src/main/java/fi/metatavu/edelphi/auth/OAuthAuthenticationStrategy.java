@@ -164,6 +164,8 @@ public abstract class OAuthAuthenticationStrategy extends AbstractAuthentication
       apiParams.put("provider", provider);
     }
     
+    apiParams.put("locale", requestContext.getRequest().getLocale().getLanguage());
+    
     return apiParams;
   }
 }

@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.Defaults;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.base.AuthSourceSettingDAO;
@@ -13,7 +11,6 @@ import fi.metatavu.edelphi.dao.users.DelfoiUserDAO;
 import fi.metatavu.edelphi.dao.users.UserDAO;
 import fi.metatavu.edelphi.dao.users.UserEmailDAO;
 import fi.metatavu.edelphi.dao.users.UserIdentificationDAO;
-import fi.metatavu.edelphi.dao.users.UserPasswordDAO;
 import fi.metatavu.edelphi.domainmodel.base.AuthSource;
 import fi.metatavu.edelphi.domainmodel.base.AuthSourceSetting;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
@@ -21,8 +18,9 @@ import fi.metatavu.edelphi.domainmodel.users.DelfoiUserRole;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.domainmodel.users.UserIdentification;
-import fi.metatavu.edelphi.domainmodel.users.UserPassword;
 import fi.metatavu.edelphi.i18n.Messages;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.RequestUtils;
 
 public abstract class AbstractAuthenticationStrategy implements AuthenticationProvider {
@@ -97,19 +95,20 @@ public abstract class AbstractAuthenticationStrategy implements AuthenticationPr
         // Existing user account but new external identification source 
         userIdentificationDAO.create(resolvedUser, externalId, authSource);
       }
+      
       for (String email : emails) {
         UserEmail userEmail = userEmailDAO.findByAddress(email);
         if (userEmail == null) {
           userEmailDAO.create(resolvedUser, email);
         }
       }
+      
       RequestUtils.loginUser(requestContext, resolvedUser, authSource.getId());
+      
       if (idUser == null) {
-        // If the user had no previous ways of logging in, consider this a new account (i.e. go to profile page)
-        UserPasswordDAO userPasswordDAO = new UserPasswordDAO();
-        UserPassword userPassword = userPasswordDAO.findByUser(resolvedUser);
-        return userPassword == null ? AuthenticationResult.NEW_ACCOUNT : AuthenticationResult.LOGIN;
+        return AuthenticationResult.NEW_ACCOUNT;
       }
+      
       return AuthenticationResult.LOGIN;
     }
   }

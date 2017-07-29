@@ -96,6 +96,10 @@
     <!-- Paytrail -->
 
     <paytrail-sdk.version>1.2.1</paytrail-sdk.version>
+    
+    <!-- Keycloak admin client -->
+    
+    <keycloak-admin-client.version>3.2.0.Final</keycloak-admin-client.version>
 
   </properties>
 
@@ -200,6 +204,14 @@
         <groupId>fi.metatavu.paytrail</groupId>
         <artifactId>paytrail-sdk</artifactId>
         <version>${paytrail-sdk.version}</version>
+      </dependency>
+      
+      <!-- Keycloak -->
+    
+      <dependency>
+        <groupId>org.keycloak</groupId>
+        <artifactId>keycloak-admin-client</artifactId>
+        <version>${keycloak-admin-client.version}</version>
       </dependency>
       
     </dependencies>

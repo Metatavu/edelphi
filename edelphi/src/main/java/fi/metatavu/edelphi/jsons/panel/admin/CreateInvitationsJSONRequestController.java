@@ -14,7 +14,6 @@ import fi.metatavu.edelphi.dao.resources.QueryDAO;
 import fi.metatavu.edelphi.dao.users.DelfoiUserDAO;
 import fi.metatavu.edelphi.dao.users.UserDAO;
 import fi.metatavu.edelphi.dao.users.UserEmailDAO;
-import fi.metatavu.edelphi.dao.users.UserPasswordDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiUser;
@@ -35,6 +34,7 @@ import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 import fi.metatavu.edelphi.utils.MailUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.UserUtils;
 
 public class CreateInvitationsJSONRequestController extends JSONController {
 
@@ -184,8 +184,9 @@ public class CreateInvitationsJSONRequestController extends JSONController {
             if (passwordGenerationCount == 0) {
               generatedPassword = RandomStringUtils.randomAlphanumeric(8);
             }
-            UserPasswordDAO userPasswordDAO = new UserPasswordDAO();
-            userPasswordDAO.create(user, RequestUtils.md5EncodeString(generatedPassword));
+            
+            UserUtils.updateUserPassword(user, generatedPassword);
+            
             passwordGenerationCount++;
           }
           DelfoiUserDAO delfoiUserDAO = new DelfoiUserDAO();

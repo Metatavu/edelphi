@@ -32,6 +32,7 @@
 	          <fmt:message key="generic.errorPage.notLoggedIn.description"/>
           </div>
 	        <div class="clearBoth"></div>
+          
 	        <div class="errorPageGoToFrontPageLinkContainer"><a href="${pageContext.request.contextPath}/index.page"><fmt:message key="generic.errorPage.goToFrontPageLabel" /></a></div>
 	        <div class="errorPageLoginRegisterContainer">
 	          <jsp:include page="/jsp/blocks/index/login.jsp"></jsp:include>

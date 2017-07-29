@@ -14,6 +14,11 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.StringUtils;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.scribe.builder.api.Api;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
@@ -25,8 +30,12 @@ import org.scribe.oauth.OAuthService;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fi.metatavu.edelphi.Defaults;
+import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.auth.api.KeycloakApi;
 import fi.metatavu.edelphi.auth.api.KeycloakBrokerToken;
+import fi.metatavu.edelphi.domainmodel.users.User;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.AuthUtils;
 import net.sf.json.JSONObject;
@@ -52,16 +61,12 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
 
   @Override
   protected String getOAuthCallbackURL(RequestContext requestContext) {
-    return settings.get("oauth.keycloak.callbackUrl");
-  }
-  
-  private String getUserinfoUrl() {
-    return settings.get("oauth.keycloak.userinfoUrl");
+    return getCallbackUrl();
   }
   
   private String getLogoutUrl(String redirectUrl) {
     try {
-      return String.format(settings.get("oauth.keycloak.logoutTemplate"), URLEncoder.encode(redirectUrl, "UTF-8"));
+      return String.format("%s/realms/%s/protocol/openid-connect/logout?redirect_uri=%s", getServerUrl(), getRealm(), URLEncoder.encode(redirectUrl, "UTF-8"));
     } catch (UnsupportedEncodingException e) {
       logger.log(Level.SEVERE, "Failed to encode Keycloak logout URL", e);
       return null;
@@ -69,7 +74,16 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
   }
 
   private String getTokenUrl(String broker) {
-    return String.format(settings.get("oauth.keycloak.tokenTemplate"), broker);
+    return String.format("%s/realms/%s/broker/%s/token", getServerUrl(), getRealm(), broker   );
+  }
+  
+  public String getRegisterUrl() {
+    try {
+      return String.format("%s/realms/%s/protocol/openid-connect/registrations?client_id=%s&redirect_uri=%s&response_mode=fragment&response_type=code&scope=openid", getServerUrl(), getRealm(), getApiKey(), URLEncoder.encode(getCallbackUrl(), "UTF-8"));
+    } catch (UnsupportedEncodingException e) {
+      logger.log(Level.SEVERE, "Failed to encode redirect url", e);
+      return null;
+    }
   }
   
   @Override
@@ -80,7 +94,12 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
   @Override
   protected Api getApi(Map<String, String> apiParams) {
     String provider = apiParams != null ? apiParams.get("provider") : null;
-    return new KeycloakApi(provider);
+    String locale = apiParams != null ? apiParams.get("locale") : null;
+    if (StringUtils.isBlank(locale)) {
+      locale = Defaults.LOCALE;
+    }
+    
+    return new KeycloakApi(getServerUrl(), getRealm(), provider, locale);
   }
 
   @Override
@@ -139,6 +158,18 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     return resolvedBrokerToken;
   }
   
+  public void updateUserPassword(User user, String password) {
+    Keycloak keycloakClient = getKeycloakClient();
+    String email = user.getDefaultEmailAsString();
+    
+    UserRepresentation userRepresentation = findUser(keycloakClient, email);
+    if (userRepresentation == null) {
+      createUser(keycloakClient, user, email, password);
+    } else {
+      updatePassword(keycloakClient, userRepresentation, password);
+    }
+  }
+  
   @Override
   public String[] getKeys() {
     return new String[] { "oauth.keycloak.apiKey", "oauth.keycloak.apiSecret", "oauth.keycloak.callbackUrl" };
@@ -147,6 +178,56 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
   @Override
   public String localizeKey(Locale locale, String key) {
     return key;
+  }
+
+  private void createUser(Keycloak keycloakClient, User user, String email, String password) {
+    CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
+    credentialRepresentation.setType(CredentialRepresentation.PASSWORD);
+    credentialRepresentation.setValue(password);
+    credentialRepresentation.setTemporary(false);
+    
+    UserRepresentation userRepresentation = new UserRepresentation();
+    userRepresentation.setUsername(email);
+    userRepresentation.setFirstName(user.getFirstName());
+    userRepresentation.setLastName(user.getLastName());
+    userRepresentation.setCredentials(Arrays.asList(credentialRepresentation));
+    userRepresentation.setEnabled(true);
+    userRepresentation.setEmail(email);
+    
+     
+    javax.ws.rs.core.Response response = keycloakClient.realm(getRealm()).users().create(userRepresentation);
+    if (response.getStatus() < 200 && response.getStatus() >= 300) {
+      throw new SmvcRuntimeException(EdelfoiStatusCode.UNDEFINED, "Failed to create user on authentication server");
+    }
+  }
+
+  private void updatePassword(Keycloak keycloakClient, UserRepresentation userRepresentation, String password) {
+    CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
+    credentialRepresentation.setType(CredentialRepresentation.PASSWORD);
+    credentialRepresentation.setValue(password);
+    credentialRepresentation.setTemporary(false);
+    userRepresentation.setCredentials(Arrays.asList(credentialRepresentation));
+    keycloakClient.realm(getRealm()).users().get(userRepresentation.getId()).update(userRepresentation);
+  }
+
+  private UserRepresentation findUser(Keycloak keycloakClient, String email) {
+    List<UserRepresentation> users = keycloakClient.realm(getRealm()).users().search(null, null, null, email, 0, 1);
+    if (users.isEmpty()) {
+      return null;
+    }
+    
+    return users.get(0);
+  }
+  
+  private Keycloak getKeycloakClient() {
+    return KeycloakBuilder.builder()
+      .serverUrl(getServerUrl())
+      .realm(getRealm())
+      .username(getAdminUser())
+      .password(getAdminPassword())
+      .clientId(getApiKey())
+      .clientSecret(getApiSecret())
+      .build();
   }
 
   private Response doSignedGet(OAuthAccessToken accessToken, String url) {
@@ -174,6 +255,30 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     calendar.setTime(new Date());
     calendar.add(Calendar.SECOND, expiresIn);
     return calendar.getTime();
+  }
+  
+  private String getCallbackUrl() {
+    return settings.get("oauth.keycloak.callbackUrl");
+  }
+  
+  private String getServerUrl() {
+    return settings.get("oauth.keycloak.serverUrl");
+  }
+  
+  private String getRealm() {
+    return settings.get("oauth.keycloak.realm");
+  }
+  
+  private String getUserinfoUrl() {
+    return String.format("%s/realms/%s/protocol/openid-connect/userinfo", getServerUrl(), getRealm());
+  }
+
+  private String getAdminPassword() {
+    return settings.get("oauth.keycloak.adminPassword");
+  }
+
+  private String getAdminUser() {
+    return settings.get("oauth.keycloak.adminUser");
   }
   
   public static class UserInfo {
