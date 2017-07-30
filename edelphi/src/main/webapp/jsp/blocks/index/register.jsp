@@ -12,7 +12,7 @@
   
   <p>
     <fmt:message key="index.block.registerText"/>
-    <a href="${registerUrl}" class="register-link">
+    <a href="/dologin.page?authSource=${authSourceId}&hint=register" class="register-link">
       <fmt:message key="index.block.registerHere"/>
     </a>
   </p>

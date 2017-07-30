@@ -77,14 +77,7 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     return String.format("%s/realms/%s/broker/%s/token", getServerUrl(), getRealm(), broker   );
   }
   
-  public String getRegisterUrl() {
-    try {
-      return String.format("%s/realms/%s/protocol/openid-connect/registrations?client_id=%s&redirect_uri=%s&response_mode=fragment&response_type=code&scope=openid", getServerUrl(), getRealm(), getApiKey(), URLEncoder.encode(getCallbackUrl(), "UTF-8"));
-    } catch (UnsupportedEncodingException e) {
-      logger.log(Level.SEVERE, "Failed to encode redirect url", e);
-      return null;
-    }
-  }
+  
   
   @Override
   public void logout(RequestContext requestContext, String redirectUrl) {
@@ -93,13 +86,13 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
   
   @Override
   protected Api getApi(Map<String, String> apiParams) {
-    String provider = apiParams != null ? apiParams.get("provider") : null;
+    String hint = apiParams != null ? apiParams.get("hint") : null;
     String locale = apiParams != null ? apiParams.get("locale") : null;
     if (StringUtils.isBlank(locale)) {
       locale = Defaults.LOCALE;
     }
     
-    return new KeycloakApi(getServerUrl(), getRealm(), provider, locale);
+    return new KeycloakApi(getServerUrl(), getRealm(), hint, locale);
   }
 
   @Override

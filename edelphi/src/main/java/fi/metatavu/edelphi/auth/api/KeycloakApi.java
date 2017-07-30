@@ -19,13 +19,13 @@ public class KeycloakApi extends DefaultApi20 {
   
   private String serverUrl;
   private String realm;
-  private String provider;
+  private String hint;
   private String locale;
   
-  public KeycloakApi(String serverUrl, String realm, String provider, String locale) {
+  public KeycloakApi(String serverUrl, String realm, String hint, String locale) {
     this.serverUrl = serverUrl;
     this.realm = realm;
-    this.provider = provider;
+    this.hint = hint;
     this.locale = locale;
   }
       
@@ -36,15 +36,23 @@ public class KeycloakApi extends DefaultApi20 {
 
   @Override
   public String getAuthorizationUrl(OAuthConfig config) {
+    if ("register".equals(hint)) {
+      return getRegisterUrl(config);
+    }
+    
     String url = String.format("%s/realms/%s/protocol/openid-connect/auth?client_id=%s&redirect_uri=%s&response_type=code&ui_locales=%s", getServerUrl(), getRealm(), config.getApiKey(), encodeUrl(config.getCallback()), getLocale());
     
-    if (StringUtils.isNotBlank(provider)) {
-      return String.format("%s&kc_idp_hint=%s", url, provider);  
+    if (StringUtils.isNotBlank(hint)) {
+      return String.format("%s&kc_idp_hint=%s", url, hint);  
     } else {
       return url;
     }
   }
-
+  
+  private String getRegisterUrl(OAuthConfig config) {
+    return String.format("%s/realms/%s/protocol/openid-connect/registrations?client_id=%s&redirect_uri=%s&response_type=code&scope=openid", getServerUrl(), getRealm(), config.getApiKey(), encodeUrl(config.getCallback()));
+  }
+  
   @Override
   public AccessTokenExtractor getAccessTokenExtractor() {
     return new JsonTokenExtractor();

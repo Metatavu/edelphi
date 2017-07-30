@@ -20,9 +20,9 @@ public class LoginPageController extends PageController {
     }
  
     Long authSourceId = AuthUtils.getAuthSource("Keycloak").getId();
-    String registerUrl = AuthUtils.getKeycloakStrategy().getRegisterUrl();
+    // String registerUrl = AuthUtils.getKeycloakStrategy().getRegisterUrl();
     
-    pageRequestContext.getRequest().setAttribute("registerUrl", registerUrl);
+    // pageRequestContext.getRequest().setAttribute("registerUrl", registerUrl);
     pageRequestContext.getRequest().setAttribute("authSourceId", authSourceId);
     
     pageRequestContext.setIncludeJSP("/jsp/pages/login.jsp");

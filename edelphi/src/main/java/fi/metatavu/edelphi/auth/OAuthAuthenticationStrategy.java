@@ -159,9 +159,9 @@ public abstract class OAuthAuthenticationStrategy extends AbstractAuthentication
   
   private Map<String, String> getDiscoveryApiParams(RequestContext requestContext) {
     Map<String, String> apiParams = new HashMap<>();
-    String provider = requestContext.getString("provider");
-    if (provider != null) {
-      apiParams.put("provider", provider);
+    String hint = requestContext.getString("hint");
+    if (hint != null) {
+      apiParams.put("hint", hint);
     }
     
     apiParams.put("locale", requestContext.getRequest().getLocale().getLanguage());

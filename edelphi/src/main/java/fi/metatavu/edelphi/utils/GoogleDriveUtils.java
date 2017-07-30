@@ -76,7 +76,7 @@ public class GoogleDriveUtils {
       StringBuilder loginUrlBuilder = new StringBuilder(RequestUtils.getBaseUrl(requestContext.getRequest()))
         .append("/dologin.page?authSource=")
         .append(keycloakAuthSource.getId())
-        .append("&provider=google")
+        .append("&hint=google")
         .append(String.format("&redirectUrl=%s", URLEncoder.encode(currentUrl, "UTF-8")));
       requestContext.setRedirectURL(String.format("/logout.page?redirectUrl=%s", URLEncoder.encode(loginUrlBuilder.toString(), "UTF-8")));
     } catch (UnsupportedEncodingException e) {
