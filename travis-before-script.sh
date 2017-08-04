@@ -13,4 +13,4 @@ if [ ! -f sonar-scanner/bin/sonar-scanner ]; then
   mv sonar-scanner-2.8 sonar-scanner
 fi;
 
-scripts/start-keycloak.sh
+rmdir keycloak-3.2.1.Final;scripts/start-keycloak.sh
