@@ -761,11 +761,12 @@ public class AbstractUITest {
   }
   
   protected void savePageSource() throws IOException {
-    savePageSource("itests/target", String.format("%s_%s.html", testName.getMethodName(), System.currentTimeMillis()));
+    
+    savePageSource("target", String.format("%s_%s.html", testName.getMethodName(), System.currentTimeMillis()));
   }
   
   protected void takeScreenshot() throws IOException {
-    takeScreenshot("itests/target", String.format("%s_%s.png", testName.getMethodName(), System.currentTimeMillis()));
+    takeScreenshot("target", String.format("%s_%s.png", testName.getMethodName(), System.currentTimeMillis()));
   }
   
   @SuppressWarnings ("squid:S1166")
