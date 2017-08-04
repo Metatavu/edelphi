@@ -761,7 +761,6 @@ public class AbstractUITest {
   }
   
   protected void savePageSource() throws IOException {
-    
     savePageSource("target", String.format("%s_%s.html", testName.getMethodName(), System.currentTimeMillis()));
   }
   
@@ -811,6 +810,8 @@ public class AbstractUITest {
     try (FileWriter fileWriter = new FileWriter(file)) {
       fileWriter.write(webDriver.getPageSource());
     };
+    
+    System.out.println(String.format("Saved html as %s", file.getAbsolutePath()));
   }
 
   protected void acceptPaytrailPayment(Double expectedAmount) {
