@@ -11,7 +11,7 @@ cache:
   - keycloak-3.2.1.Final
 addons:
   hosts:
-  - test.edelphi.fi
+  - test.edelphi.org
 before_install:
 - openssl aes-256-cbc -K $encrypted_8fa85fc2c779_key -iv $encrypted_8fa85fc2c779_iv
   -in travis-encrypted.tar.enc -out travis-encrypted.tar -d
