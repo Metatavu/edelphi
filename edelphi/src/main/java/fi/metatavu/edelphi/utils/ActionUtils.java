@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
-import fi.metatavu.edelphi.smvcj.logging.Logging;
 import fi.metatavu.edelphi.dao.actions.DelfoiActionDAO;
 import fi.metatavu.edelphi.dao.actions.DelfoiUserRoleActionDAO;
 import fi.metatavu.edelphi.dao.actions.PanelUserRoleActionDAO;
@@ -18,6 +16,8 @@ import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.users.SuperUser;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserRole;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
+import fi.metatavu.edelphi.smvcj.logging.Logging;
 
 public class ActionUtils {
  
@@ -38,6 +38,7 @@ public class ActionUtils {
       return false;
     }
     UserRole userRole = RequestUtils.getUserRole(requestContext, action.getScope());
+
     return hasDelfoiAccess(requestContext, action, userRole);
   }
 

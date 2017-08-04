@@ -124,38 +124,6 @@
     </p>
   </div>
 
-  <!-- External authentication providers -->
-
-  <c:if test="${authCount gt credentialAuthCount}">
-    <jsp:include page="/jsp/fragments/block_title.jsp">
-      <jsp:param value="profile.block.profileExternalAuthenticationProvidersBlockTitle" name="titleLocale" />
-    </jsp:include>
-
-    <div id="profileExternalAuthBlockContent" class="blockContent">
-      <c:forEach var="authSource" items="${authSources}" begin="${credentialAuthCount}">
-        <c:set var="activeAuthSource" value="false" />
-        <c:forEach var="userIdentification" items="${userIdentifications}">
-          <c:if test="${userIdentification.authSource.id eq authSource.id}">
-            <c:set var="activeAuthSource" value="true" />
-          </c:if>
-        </c:forEach>
-        <c:choose>
-          <c:when test="${activeAuthSource}">
-            <div class="profileExternalAuthLoginTypeIcon loginType${authSource.strategy}">
-              ${authSource.name} <span class="loginTypeInUseTextContainer"><fmt:message key="profile.block.loginType.activated" /></span>
-            </div>
-          </c:when>
-          <c:otherwise>
-            <div class="profileExternalAuthLoginTypeIcon loginType${authSource.strategy}">
-              ${authSource.name} <a href="${pageContext.request.contextPath}/dologin.page?authSource=${authSource.id}"><fmt:message
-                  key="profile.block.loginType.activate" /></a>
-            </div>
-          </c:otherwise>
-        </c:choose>
-      </c:forEach>
-    </div>
-  </c:if>
-
   <!-- Invitations -->
 
   <c:if test="${!empty(myInvitations)}">

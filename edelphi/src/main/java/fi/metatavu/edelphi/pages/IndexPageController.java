@@ -38,8 +38,6 @@ public class IndexPageController extends PageController {
     PanelDAO panelDAO = new PanelDAO();
     DelfoiBulletinDAO bulletinDAO = new DelfoiBulletinDAO();
     Delfoi delfoi = RequestUtils.getDelfoi(pageRequestContext);
-
-    AuthUtils.includeAuthSources(pageRequestContext, "DELFOI", delfoi.getId());
     
     List<Panel> openPanels = panelDAO.listByDelfoiAndAccessLevelAndState(delfoi, PanelAccessLevel.OPEN, PanelState.IN_PROGRESS); 
     Collections.sort(openPanels, new Comparator<Panel>() {

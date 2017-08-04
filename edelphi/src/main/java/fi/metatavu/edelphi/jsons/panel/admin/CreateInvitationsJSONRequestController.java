@@ -230,17 +230,16 @@ public class CreateInvitationsJSONRequestController extends JSONController {
     else {
       if (invitationsHandled == 0) {
         jsonRequestContext.addMessage(Severity.WARNING, messages.getText(locale, "panel.admin.inviteUsers.noUsersAdded"));
-      }
-      else if (invitationsHandled == 1) {
+      } else if (invitationsHandled == 1) {
         jsonRequestContext.addMessage(Severity.OK, messages.getText(locale, "panel.admin.inviteUsers.userAdded"));
-      }
-      else {
+      } else {
         jsonRequestContext.addMessage(Severity.OK, messages.getText(locale, "panel.admin.inviteUsers.usersAdded", new String[] { invitationsHandled + "" }));
       }
+      
       if (passwordGenerationCount > 0) {
-        jsonRequestContext.addMessage(Severity.WARNING,
-            messages.getText(locale, "panel.admin.inviteUsers.passwordGenerated", new String[] { passwordGenerationCount + "", generatedPassword }));
+        jsonRequestContext.addMessage(Severity.WARNING, messages.getText(locale, "panel.admin.inviteUsers.passwordGenerated", new String[] { String.valueOf(passwordGenerationCount), generatedPassword }));
       }
+      
     }
   }
 

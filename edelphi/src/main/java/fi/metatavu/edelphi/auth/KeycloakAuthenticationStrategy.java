@@ -131,6 +131,10 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     }
     
     OAuthAccessToken keycloakToken = AuthUtils.getOAuthAccessToken(requestContext, getName());
+    if (keycloakToken == null) {
+      return null;
+    }
+    
     Response response = doSignedGet(keycloakToken, url);
     ObjectMapper objectMapper = new ObjectMapper();
     OAuthAccessToken resolvedBrokerToken = null;
@@ -186,7 +190,6 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     userRepresentation.setCredentials(Arrays.asList(credentialRepresentation));
     userRepresentation.setEnabled(true);
     userRepresentation.setEmail(email);
-    
      
     javax.ws.rs.core.Response response = keycloakClient.realm(getRealm()).users().create(userRepresentation);
     if (response.getStatus() < 200 && response.getStatus() >= 300) {

@@ -53,7 +53,6 @@ public class ProfilePageController extends PanelPageController {
       pageRequestContext.getRequest().setAttribute("user", loggedUser);
       // Logon types
       
-      AuthUtils.includeAuthSources(pageRequestContext);
       UserIdentificationDAO userIdentificationDAO = new UserIdentificationDAO();
       List<UserIdentification> userIdentifications = userIdentificationDAO.listByUser(loggedUser);
       pageRequestContext.getRequest().setAttribute("userIdentifications", userIdentifications);

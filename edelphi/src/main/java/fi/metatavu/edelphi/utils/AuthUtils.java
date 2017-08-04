@@ -1,9 +1,6 @@
 package fi.metatavu.edelphi.utils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,22 +10,18 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
-import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.auth.AuthenticationProviderFactory;
 import fi.metatavu.edelphi.auth.KeycloakAuthenticationStrategy;
 import fi.metatavu.edelphi.auth.OAuthAccessToken;
 import fi.metatavu.edelphi.dao.base.DelfoiAuthDAO;
 import fi.metatavu.edelphi.dao.base.DelfoiDAO;
-import fi.metatavu.edelphi.dao.panels.PanelAuthDAO;
-import fi.metatavu.edelphi.dao.panels.PanelDAO;
 import fi.metatavu.edelphi.domainmodel.base.AuthSource;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiAuth;
-import fi.metatavu.edelphi.domainmodel.panels.Panel;
-import fi.metatavu.edelphi.domainmodel.panels.PanelAuth;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 
 public class AuthUtils {
   
@@ -69,57 +62,6 @@ public class AuthUtils {
     return (KeycloakAuthenticationStrategy) AuthenticationProviderFactory.getInstance().createAuthenticationProvider(keycloakAuthSource);    
   }
   
-  /**
-   * Includes authentication source information to the given request context. The available authentication sources
-   * are set as a list to attribute <code>authSources</code>. If internal authentication is available, it is not
-   * included in the list but its identifier is present as attribute <code>internalAuthSource</code>.
-   * 
-   * @param requestContext The request context to which the authentication source information is stored.
-   */
-  public static void includeAuthSources(RequestContext requestContext) {
-    includeAuthSources(requestContext, getLoginContextType(requestContext), getLoginContextId(requestContext));
-  }
-  
-  public static void includeAuthSources(RequestContext requestContext, String contextType, Long contextId) {
-    List<AuthSource> authSources = new ArrayList<>();
-    boolean delfoiLevelAuth = true;
-    
-    if ("PANEL".equals(contextType)) {
-      // Panel specific authentication sources
-      PanelDAO panelDAO = new PanelDAO();
-      PanelAuthDAO panelAuthDAO = new PanelAuthDAO();
-      Panel panel = panelDAO.findById(contextId);
-      List<PanelAuth> panelAuths = panelAuthDAO.listByPanel(panel);
-      for (PanelAuth panelAuth : panelAuths) {
-        authSources.add(panelAuth.getAuthSource());
-      }
-      delfoiLevelAuth = panelAuths.isEmpty();
-    }
-    
-    if (delfoiLevelAuth) {
-      // Delfoi specific authentication sources; used outside panels or when panel doesn't specify its own
-      Delfoi delfoi = RequestUtils.getDelfoi(requestContext);
-      DelfoiAuthDAO delfoiAuthDAO = new DelfoiAuthDAO();
-      List<DelfoiAuth> delfoiAuths = delfoiAuthDAO.listByDelfoi(delfoi);
-      for (DelfoiAuth delfoiAuth : delfoiAuths) {
-        authSources.add(delfoiAuth.getAuthSource());
-      }
-    }
-    
-    int credentialAuthCount = 0;
-    AuthenticationProviderFactory authFactory = AuthenticationProviderFactory.getInstance();
-    for (AuthSource authSource : authSources) {
-      if (authFactory.requiresCredentials(authSource.getStrategy())) {
-        credentialAuthCount++;
-      }
-    }
-    
-    Collections.sort(authSources, new AuthSourceComparator());
-    requestContext.getRequest().setAttribute("authSources", authSources);
-    requestContext.getRequest().setAttribute("authCount", authSources.size());
-    requestContext.getRequest().setAttribute("credentialAuthCount", credentialAuthCount);
-  }
-
   public static void storeRedirectUrl(RequestContext requestContext, String redirectUrl) {
     HttpSession session = requestContext.getRequest().getSession();
     session.setAttribute(LOGIN_REDIRECT_URL, redirectUrl);
@@ -224,16 +166,4 @@ public class AuthUtils {
     return authorizationHeader.substring(INTERNAL_AUTHORIZATION_HEADER.length());
   }
 
-  private static final class AuthSourceComparator implements Comparator<AuthSource> {
-    @Override
-    public int compare(AuthSource o1, AuthSource o2) {
-      AuthenticationProviderFactory authFactory = AuthenticationProviderFactory.getInstance();
-      boolean o1Credential = authFactory.requiresCredentials(o1.getStrategy());
-      boolean o2Credential = authFactory.requiresCredentials(o2.getStrategy());
-      if (o1Credential != o2Credential) {
-        return o1Credential ? -1 : 1;
-      }
-      return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
-    }
-  }
 }
