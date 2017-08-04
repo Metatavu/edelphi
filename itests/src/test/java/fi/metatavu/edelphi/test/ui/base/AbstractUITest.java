@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -19,14 +20,12 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,6 +38,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
+import org.junit.rules.TestName;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 import org.keycloak.admin.client.Keycloak;
@@ -89,6 +89,15 @@ public class AbstractUITest {
 
   @Rule
   public TestWatcher testWatcher = new TestBaseWatcher();
+  
+  @Rule
+  public TestName testName = new TestName();
+
+  @Before
+  @SuppressWarnings ("squid:S106")
+  public void printName() {
+    System.out.println(String.format("> %s", testName.getMethodName()));
+  }
   
   @Before
   public void startGreenMail() {
@@ -751,12 +760,12 @@ public class AbstractUITest {
       .build();
   }
   
+  protected void savePageSource() throws IOException {
+    savePageSource("itests/target", String.format("%s_%s.html", testName.getMethodName(), System.currentTimeMillis()));
+  }
+  
   protected void takeScreenshot() throws IOException {
-    if (getCI()) {
-      dumpScreenShot();
-    } else {
-      takeScreenshot("itests/target", UUID.randomUUID().toString() + ".png"); 
-    }
+    takeScreenshot("itests/target", String.format("%s_%s.png", testName.getMethodName(), System.currentTimeMillis()));
   }
   
   @SuppressWarnings ("squid:S1166")
@@ -768,10 +777,21 @@ public class AbstractUITest {
         return;
       }
     } catch (IOException e) {
-      // Failed to write screenshot
+      e.printStackTrace();
     }
-
-    dumpScreenShot();
+  }
+  
+  @SuppressWarnings ("squid:S1166")
+  protected void savePageSource(String parentDirectory, String filename) {
+    try {
+      File file = new File(parentDirectory, filename);
+      if (file.createNewFile()) {
+        savePageSource(file);
+        return;
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   protected void takeScreenshot(File file) throws IOException {
@@ -784,6 +804,12 @@ public class AbstractUITest {
       fileOuputStream.flush();
       fileOuputStream.close();
     }
+  }
+  
+  protected void savePageSource(File file) throws IOException {
+    try (FileWriter fileWriter = new FileWriter(file)) {
+      fileWriter.write(webDriver.getPageSource());
+    };
   }
 
   protected void acceptPaytrailPayment(Double expectedAmount) {
@@ -817,19 +843,6 @@ public class AbstractUITest {
     waitAndClick("*[name='avainl']");
     waitAndClick("*[name='Lopeta']");
     waitAndClick(".PalveluSisalto a");
-  }
-  
-  private void dumpScreenShot() {
-    dumpScreenShot((TakesScreenshot) webDriver);
-  }
-  
-  private void dumpScreenShot(TakesScreenshot takesScreenshot) {
-    String imageData = toDataUrl("image/png", takesScreenshot.getScreenshotAs(OutputType.BYTES));
-    logger.warning(String.format("Screenshot: %s", imageData));
-  }
-  
-  private String toDataUrl(String contentType, byte[] data) {
-    return String.format("data:%s;base64,%s", contentType, Base64.getEncoder().encodeToString(data));
   }
   
   protected void updateUserSubscription(Long userId, String subscriptionLevel, Date subscriptionStarted, Date subscriptionEnds) {
@@ -927,6 +940,7 @@ public class AbstractUITest {
     @Override
     protected void failed(Throwable e, Description description) {
       try {
+        savePageSource();
         takeScreenshot();
       } catch (WebDriverException | IOException e1) {
         logger.log(Level.SEVERE, "Screenshot failed", e1);
