@@ -226,6 +226,7 @@
             <version>2.19.1</version>
             <configuration>
               <failIfNoTests>true</failIfNoTests>
+              <skipAfterFailureCount>1</skipAfterFailureCount>
               <includes>
                 <include>${it.tests}</include>
               </includes>
