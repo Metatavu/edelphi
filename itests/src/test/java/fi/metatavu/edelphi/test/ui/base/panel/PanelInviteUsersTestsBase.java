@@ -39,7 +39,8 @@ public class PanelInviteUsersTestsBase extends AbstractUITest {
       login(ADMIN_EMAIL);
       createTestPanel();
       
-      waitAndClick(".panel .GUI_navigation .menu .menuItem:nth-child(2) a");
+      navigate(String.format("/panel/admin/dashboard.page?panelId=%s", panelMocker.findPanelByName("test")));
+      
       waitVisible(INVITE_LINK_SELECTOR);
       assertText(INVITE_LINK_SELECTOR, "Invite / Add Users");
       click(INVITE_LINK_SELECTOR);
@@ -74,7 +75,8 @@ public class PanelInviteUsersTestsBase extends AbstractUITest {
       
       // Directly add user
       
-      waitAndClick(".panel .GUI_navigation .menu .menuItem:nth-child(2) a");
+      navigate(String.format("/panel/admin/dashboard.page?panelId=%s", panelMocker.findPanelByName("test")));
+      
       waitVisible(INVITE_LINK_SELECTOR);
       assertText(INVITE_LINK_SELECTOR, "Invite / Add Users");
       click(INVITE_LINK_SELECTOR);
