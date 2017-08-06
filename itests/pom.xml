@@ -227,6 +227,7 @@
             <configuration>
               <failIfNoTests>true</failIfNoTests>
               <skipAfterFailureCount>1</skipAfterFailureCount>
+              <argLine>-Xms1024m -Xmx2048m</argLine>
               <includes>
                 <include>${it.tests}</include>
               </includes>
