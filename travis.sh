@@ -25,7 +25,7 @@ if [ "$TRAVIS_PULL_REQUEST" != "false" ] && [ -n "${GITHUB_TOKEN}" ] && [ -n "${
     export PATH=$PATH:$HOME/.local/bin
     export S3_PATH=s3://$AWS_BUCKET/$TRAVIS_REPO_SLUG/$TRAVIS_BUILD_NUMBER
     aws s3 cp itests/target/cargo/configurations/wildfly10x/log $S3_PATH --recursive
-    aws s3 cp itests/target $S3_PATH --exclude "*" --include "*.png" --include "*.html" 
+    aws s3 cp itests/target $S3_PATH --recursive --exclude "*" --include "*.png" --include "*.html" 
   fi
   
   exit $TEST_STATUS
