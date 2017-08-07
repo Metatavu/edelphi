@@ -365,11 +365,15 @@ public class AbstractUITest {
     ChromeOptions options = new ChromeOptions();
     
     if (headless) {
-      options.addArguments("--headless", "--disable-gpu");
-    }
+      options.addArguments("--headless", "--disable-gpu", "window-size=1280,1024");
+    } 
     
     ChromeDriver driver = new ChromeDriver(options);
-    driver.manage().window().setSize(new Dimension(1280, 1024));
+    
+    if (!headless) {
+      driver.manage().window().setSize(new Dimension(1280, 1024));
+    }
+    
     return driver;
   }
 
