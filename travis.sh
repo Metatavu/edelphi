@@ -17,7 +17,7 @@ if [ "$TRAVIS_PULL_REQUEST" != "false" ] && [ -n "${GITHUB_TOKEN}" ] && [ -n "${
     -Dsonar.github.repository=$TRAVIS_REPO_SLUG \
     -Dsonar.github.pullRequest=$TRAVIS_PULL_REQUEST
 
-  mvn clean verify -Pui -Dit.browser=chrome-headless -DrepoToken=$COVERALLS_TOKEN -DskipCoverage=false -Dwebdriver.chrome.driver=./chromedriver
+  mvn clean verify -Pui -Dit.browser=chrome-headless -DrepoToken=$COVERALLS_TOKEN -DskipCoverage=false -Dwebdriver.chrome.driver=chromedriver
   TEST_STATUS=$?
   
   if [ "$TEST_STATUS" != "0" ]; then
