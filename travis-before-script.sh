@@ -13,4 +13,7 @@ if [ ! -f sonar-scanner/bin/sonar-scanner ]; then
   mv sonar-scanner-2.8 sonar-scanner
 fi;
 
+wget "https://chromedriver.storage.googleapis.com/2.31/chromedriver_linux64.zip"
+unzip chromedriver_linux64.zip
+
 rmdir keycloak-3.2.1.Final;scripts/start-keycloak.sh
