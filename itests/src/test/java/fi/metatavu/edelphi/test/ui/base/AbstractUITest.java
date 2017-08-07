@@ -63,6 +63,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.internal.FindsByCssSelector;
@@ -72,7 +73,6 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.google.common.base.Predicate;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
 
@@ -244,67 +244,86 @@ public class AbstractUITest {
   }
   
   protected void waitPresent(final String... selectors) {
-    Predicate<WebDriver> untilPredicate = driver -> !findElements(selectors).isEmpty();
-    new WebDriverWait(getWebDriver(), 60).until(untilPredicate);
+    new WebDriverWait(getWebDriver(), 60).until(new ExpectedCondition<Boolean>() {
+      
+      @Override
+      public Boolean apply(WebDriver arg0) {
+        return !findElements(selectors).isEmpty();
+      }
+      
+    });
+    
   }
   
   protected void waitNotPresent(final String... selectors) {
-    Predicate<WebDriver> untilPredicate = driver -> findElements(selectors).isEmpty();
-    new WebDriverWait(webDriver, 60).until(untilPredicate);
+    new WebDriverWait(webDriver, 60).until(new ExpectedCondition<Boolean>() {
+      @Override
+      public Boolean apply(WebDriver arg0) {
+        return findElements(selectors).isEmpty();
+      }
+    });
   }
   
   @SuppressWarnings ("squid:S1166")
   protected void waitVisible(final String... selector) {
-    Predicate<WebDriver> untilPredicate = driver -> {
-      try {
-        List<WebElement> elements = findElements(selector);
-        if (elements.isEmpty()) {
-          return false;
-        }
-        
-        for (WebElement element : elements) {
-          if (!element.isDisplayed()){
+    new WebDriverWait(getWebDriver(), 60).until(new ExpectedCondition<Boolean>() {
+      
+      @Override
+      public Boolean apply(WebDriver arg0) {
+        try {
+          List<WebElement> elements = findElements(selector);
+          if (elements.isEmpty()) {
             return false;
           }
+          
+          for (WebElement element : elements) {
+            if (!element.isDisplayed()){
+              return false;
+            }
+          }
+          
+          return true;
+        } catch (Exception e) {
+          return false;
         }
-        
-        return true;
-      } catch (Exception e) {
-        return false;
       }
-    };
       
-    new WebDriverWait(getWebDriver(), 60).until(untilPredicate);
+    });
   }
   
   @SuppressWarnings ("squid:S1166")
   protected void waitNotVisible(final String selector) {
-    Predicate<WebDriver> untilPredicate = driver -> {
-      try {
-        List<WebElement> elements = findElementsBySelector(selector);
-        if (elements.isEmpty()) {
-          return true;
-        }
+    new WebDriverWait(getWebDriver(), 60).until(new ExpectedCondition<Boolean>() {
       
-        for (WebElement element : elements) {
-          if (element.isDisplayed()){
-            return false;
+      @Override
+      public Boolean apply(WebDriver arg0) {
+        try {
+          List<WebElement> elements = findElementsBySelector(selector);
+          if (elements.isEmpty()) {
+            return true;
           }
+        
+          for (WebElement element : elements) {
+            if (element.isDisplayed()){
+              return false;
+            }
+          }
+        
+          return true;
+        } catch (Exception e) {
+          return false;
         }
-      
-        return true;
-      } catch (Exception e) {
-        return false;
       }
-    };
       
-    new WebDriverWait(getWebDriver(), 60).until(untilPredicate);
+    });
   }
   
   protected WebDriver createLocalDriver() {
     switch (getBrowser()) {
       case "chrome":
-        return createChromeDriver();
+        return createChromeDriver(false);
+      case "chrome-headless":
+        return createChromeDriver(true);
       case "phantomjs":
         return createPhantomJsDriver();
       case "firefox":
@@ -342,8 +361,14 @@ public class AbstractUITest {
     return toDate(localDate, ZoneId.systemDefault());
   }
   
-  protected WebDriver createChromeDriver() {
-    ChromeDriver driver = new ChromeDriver();
+  protected WebDriver createChromeDriver(boolean headless) {
+    ChromeOptions options = new ChromeOptions();
+    
+    if (headless) {
+      options.addArguments("--headless", "--disable-gpu");
+    }
+    
+    ChromeDriver driver = new ChromeDriver(options);
     driver.manage().window().setSize(new Dimension(1280, 1024));
     return driver;
   }
@@ -551,12 +576,15 @@ public class AbstractUITest {
   }
 
   protected void waitReceivedEmailCount(final int expect) {
-    Predicate<WebDriver> untilPredicate = driver -> {
-      int messageCount = getGreenMail().getReceivedMessages().length;
-      return messageCount == expect;
-    };
+    new WebDriverWait(getWebDriver(), 60).until(new ExpectedCondition<Boolean>() {
       
-    new WebDriverWait(getWebDriver(), 60).until(untilPredicate);
+      @Override
+      public Boolean apply(WebDriver arg0) {
+        int messageCount = getGreenMail().getReceivedMessages().length;
+        return messageCount == expect;
+      }
+      
+    });
   }
 
   protected void assertReceivedEmailCount(int expected) {

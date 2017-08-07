@@ -10,6 +10,7 @@ cache:
   - sonar-scanner
   - keycloak-3.2.1.Final
 addons:
+  chrome: stable  
   hosts:
   - test.edelphi.org
 before_install:
