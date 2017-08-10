@@ -82,9 +82,7 @@ public class IndexPageController extends PageController {
     });
     
     Long authSourceId = AuthUtils.getAuthSource("Keycloak").getId();
-//    String registerUrl = AuthUtils.getKeycloakStrategy().getRegisterUrl();
-    
-//    pageRequestContext.getRequest().setAttribute("registerUrl", registerUrl);
+
     pageRequestContext.getRequest().setAttribute("authSourceId", authSourceId);
     pageRequestContext.getRequest().setAttribute("bulletins", bulletins);
     

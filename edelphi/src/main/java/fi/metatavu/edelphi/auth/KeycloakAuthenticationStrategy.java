@@ -77,8 +77,6 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     return String.format("%s/realms/%s/broker/%s/token", getServerUrl(), getRealm(), broker   );
   }
   
-  
-  
   @Override
   public void logout(RequestContext requestContext, String redirectUrl) {
     requestContext.setRedirectURL(getLogoutUrl(redirectUrl));
@@ -123,8 +121,6 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
   }
   
   public OAuthAccessToken getBrokerToken(RequestContext requestContext, String broker) {
-    String url = getTokenUrl(broker);
-    
     OAuthAccessToken storedBrokerToken = AuthUtils.getOAuthAccessToken(requestContext, broker);
     if (storedBrokerToken != null) {
       return storedBrokerToken;
@@ -135,6 +131,7 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
       return null;
     }
     
+    String url = getTokenUrl(broker);
     Response response = doSignedGet(keycloakToken, url);
     ObjectMapper objectMapper = new ObjectMapper();
     OAuthAccessToken resolvedBrokerToken = null;
@@ -147,7 +144,7 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
       KeycloakBrokerToken brokerToken = objectMapper.readValue(stream, KeycloakBrokerToken.class);
       Date expiresAt = getExpiresAt(brokerToken.getExpiresIn());
       resolvedBrokerToken = new OAuthAccessToken(brokerToken.getAccessToken(), expiresAt, null);
-      AuthUtils.storeOAuthAccessToken(requestContext, getName(), resolvedBrokerToken);
+      AuthUtils.storeOAuthAccessToken(requestContext, broker, resolvedBrokerToken);
     } catch (IOException e) {
       logger.log(Level.SEVERE, "Failed to process broker token response", e);
     }
@@ -155,15 +152,13 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     return resolvedBrokerToken;
   }
   
-  public void updateUserPassword(User user, String password) {
+  public void createUserPassword(User user, String password) {
     Keycloak keycloakClient = getKeycloakClient();
     String email = user.getDefaultEmailAsString();
     
     UserRepresentation userRepresentation = findUser(keycloakClient, email);
     if (userRepresentation == null) {
       createUser(keycloakClient, user, email, password);
-    } else {
-      updatePassword(keycloakClient, userRepresentation, password);
     }
   }
   
@@ -195,15 +190,6 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     if (response.getStatus() < 200 && response.getStatus() >= 300) {
       throw new SmvcRuntimeException(EdelfoiStatusCode.UNDEFINED, "Failed to create user on authentication server");
     }
-  }
-
-  private void updatePassword(Keycloak keycloakClient, UserRepresentation userRepresentation, String password) {
-    CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
-    credentialRepresentation.setType(CredentialRepresentation.PASSWORD);
-    credentialRepresentation.setValue(password);
-    credentialRepresentation.setTemporary(false);
-    userRepresentation.setCredentials(Arrays.asList(credentialRepresentation));
-    keycloakClient.realm(getRealm()).users().get(userRepresentation.getId()).update(userRepresentation);
   }
 
   private UserRepresentation findUser(Keycloak keycloakClient, String email) {

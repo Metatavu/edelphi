@@ -185,7 +185,7 @@ public class CreateInvitationsJSONRequestController extends JSONController {
               generatedPassword = RandomStringUtils.randomAlphanumeric(8);
             }
             
-            UserUtils.updateUserPassword(user, generatedPassword);
+            UserUtils.createUserPassword(user, generatedPassword);
             
             passwordGenerationCount++;
           }
