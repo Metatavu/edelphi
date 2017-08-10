@@ -10,11 +10,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title><fmt:message key="generic.errorPage.notLoggedIn.title" /></title>
     <jsp:include page="/jsp/templates/index_head.jsp"></jsp:include>
-    <!-- 
-    <jsp:include page="/jsp/supports/jshash_support.jsp"></jsp:include>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/loginblockcontroller.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/registerblockcontroller.js"></script>
-     -->
   </head>
   <body class="environment login">
   

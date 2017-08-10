@@ -81,15 +81,7 @@ public class SystemUtilsPageController extends PageController {
       User sourceUser = userDAO.findById(sourceUserId);
       User targetUser = userDAO.findById(targetUserId);
       UserUtils.merge(sourceUser, targetUser);
-    }
-    else if ("representUser".equals(action)) {
-      Long userId = pageRequestContext.getLong("userId");
-      UserDAO userDAO = new UserDAO();
-      User user = userDAO.findById(userId);
-      RequestUtils.loginUser(pageRequestContext, user, null);
-      pageRequestContext.setRedirectURL(pageRequestContext.getRequest().getContextPath() + "/index.page");
-    }
-    else if ("copyQuery".equals(action)) {
+    } else if ("copyQuery".equals(action)) {
       Long queryId = pageRequestContext.getLong("queryId");
       String name = pageRequestContext.getString("name");
       Long targetFolderId = pageRequestContext.getLong("targetFolderId");

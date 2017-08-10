@@ -14,13 +14,6 @@
       <c:when test="${loggedUserId gt 0}">
         <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/createpanel.js"></script>
       </c:when>
-      <c:otherwise>
-      <!-- 
-        <jsp:include page="/jsp/supports/jshash_support.jsp"></jsp:include>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/loginblockcontroller.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/registerblockcontroller.js"></script>
-      -->
-      </c:otherwise>
     </c:choose>
   </head>
   <body class="environment index">

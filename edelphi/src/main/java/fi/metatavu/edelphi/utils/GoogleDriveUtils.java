@@ -60,12 +60,12 @@ public class GoogleDriveUtils {
 	  }
 	  
     KeycloakAuthenticationStrategy keycloakAuthenticationProvider = (KeycloakAuthenticationStrategy) AuthenticationProviderFactory.getInstance().createAuthenticationProvider(keycloakAuthSource);
-	  OAuthAccessToken brokenToken = keycloakAuthenticationProvider.getBrokerToken(requestContext, "google");
-    if (brokenToken == null) {
+	  OAuthAccessToken brokerToken = keycloakAuthenticationProvider.getBrokerToken(requestContext, "google");
+    if (brokerToken == null) {
       requestGoogleLogin(requestContext, keycloakAuthSource);
       return null;
     } else {
-      GoogleCredential credential = getCredential(brokenToken);
+      GoogleCredential credential = getCredential(brokerToken);
       return new Drive.Builder(TRANSPORT, JSON_FACTORY, credential).build();
     }
 	}
@@ -92,7 +92,7 @@ public class GoogleDriveUtils {
 	  return getAdminCredential().getServiceAccountId();
 	}
 	
-  private static GoogleCredential getCredential(OAuthAccessToken brokenToken) {
+  private static GoogleCredential getCredential(OAuthAccessToken brokerToken) {
     Details webDetails = new Details();
     webDetails.setClientId(FAKE_ID);
     webDetails.setClientSecret(FAKE_ID);
@@ -106,8 +106,8 @@ public class GoogleDriveUtils {
       .setJsonFactory(JSON_FACTORY)
       .build();
     
-    if (brokenToken != null) {
-      credential.setAccessToken(brokenToken.getToken()); 
+    if (brokerToken != null) {
+      credential.setAccessToken(brokerToken.getToken()); 
     }
     
     return credential;
