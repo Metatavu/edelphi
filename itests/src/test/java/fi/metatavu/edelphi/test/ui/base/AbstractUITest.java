@@ -210,7 +210,12 @@ public class AbstractUITest {
   }
   
   protected void click(String... selector) {
-    findElements(selector).get(0).click();
+    try {
+      findElements(selector).get(0).click();
+    } catch (StaleElementReferenceException e) {
+      waitMs(200);
+      click(selector);
+    }
   }
 
   protected void waitAndType(String selector, String text) {
