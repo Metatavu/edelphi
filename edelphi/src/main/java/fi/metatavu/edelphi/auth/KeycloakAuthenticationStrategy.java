@@ -152,13 +152,13 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     return resolvedBrokerToken;
   }
   
-  public void createUserPassword(User user, String password) {
+  public void createUserPassword(User user, String password, boolean passwordTemporary, boolean emailVerified) {
     Keycloak keycloakClient = getKeycloakClient();
     String email = user.getDefaultEmailAsString();
     
     UserRepresentation userRepresentation = findUser(keycloakClient, email);
     if (userRepresentation == null) {
-      createUser(keycloakClient, user, email, password);
+      createUser(keycloakClient, user, email, password, passwordTemporary, emailVerified);
     }
   }
   
@@ -172,11 +172,11 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     return key;
   }
 
-  private void createUser(Keycloak keycloakClient, User user, String email, String password) {
+  private void createUser(Keycloak keycloakClient, User user, String email, String password, boolean passwordTemporary, boolean emailVerified) {
     CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
     credentialRepresentation.setType(CredentialRepresentation.PASSWORD);
     credentialRepresentation.setValue(password);
-    credentialRepresentation.setTemporary(false);
+    credentialRepresentation.setTemporary(passwordTemporary);
     
     UserRepresentation userRepresentation = new UserRepresentation();
     userRepresentation.setUsername(email);
@@ -185,7 +185,8 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     userRepresentation.setCredentials(Arrays.asList(credentialRepresentation));
     userRepresentation.setEnabled(true);
     userRepresentation.setEmail(email);
-     
+    userRepresentation.setEmailVerified(emailVerified); 
+    
     javax.ws.rs.core.Response response = keycloakClient.realm(getRealm()).users().create(userRepresentation);
     if (response.getStatus() < 200 && response.getStatus() >= 300) {
       throw new SmvcRuntimeException(EdelfoiStatusCode.UNDEFINED, "Failed to create user on authentication server");

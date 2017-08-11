@@ -80,6 +80,37 @@ var InviteActionsBlockController = Class.create(BlockController, {
     
     return null;
   },
+
+  _createUserAddRequest: function (userId, queryId, email, firstName, lastName, password, progressCallback) {
+    return function (callback) {
+      JSONUtils.request(CONTEXTPATH + '/panel/admin/adduser.json', {
+        parameters: {
+          email: email,
+          userId: userId,
+          queryId: queryId,
+          firstName: firstName,
+          lastName: lastName,
+          password: password
+        },
+        onSuccess : function(response) {
+          var error = this._getResponseError(response);
+          progressCallback(error);
+          callback(null, {
+            error: error,
+            email: email
+          });
+        }.bind(this),
+        onFailure: function (response) {
+          var error = this._getResponseError(response);
+          progressCallback(error);
+          callback(null, {
+            error: error,
+            email: email
+          });
+        }.bind(this)
+      });  
+    }.bind(this)
+  },
   
   _createInvitationRequest: function (invitationMessage, userId, queryId, email, progressCallback) {
     return function (callback) {
@@ -110,55 +141,55 @@ var InviteActionsBlockController = Class.create(BlockController, {
     }.bind(this)
   },
   
-  _showMessage: function (severity, message) {
+  _showMessage: function (severity, message, timeout) {
     var eventQueue = getGlobalEventQueue();
     
     switch (severity) {
       case 'OK':
         eventQueue.addItem(new EventQueueItem(message, {
           className: "eventQueueSuccessItem",
-          timeout: 1000 * 2
+          timeout: timeout || 1000 * 2
         }));
       break;
       case 'INFORMATION':
         eventQueue.addItem(new EventQueueItem(message, {
           className: "eventQueueInfoItem",
-          timeout: 1000 * 30
+          timeout: timeout || 1000 * 30
         }));
       break;
       case 'WARNING':
         eventQueue.addItem(new EventQueueItem(message, {
           className: "eventQueueWarningItem",
-          timeout: -1
+          timeout: timeout || -1
         }));          
       break;
       case 'ERROR':
         eventQueue.addItem(new EventQueueItem(message, {
           className: "eventQueueErrorItem",
-          timeout: -1
+          timeout: timeout || -1
         }));
       break;
       case 'CRITICAL':
         eventQueue.addItem(new EventQueueItem(message, {
           className: "eventQueueCriticalItem",
-          timeout: -1
+          timeout: timeout || -1
         }));
       break;
       default:
         eventQueue.addItem(new EventQueueItem(message, {
           className: "eventQueueErrorItem",
-          timeout: -1
+          timeout: timeout || -1
         }));
       break;
     }
   },
 
-  _showSuccess: function (message) {
-    this._showMessage('OK', message);
+  _showSuccess: function (message, timeout) {
+    this._showMessage('OK', message, timeout);
   },
   
-  _showError: function (message) {
-    this._showMessage('ERROR', message);
+  _showError: function (message, timeout) {
+    this._showMessage('ERROR', message, timeout);
   },
   
   _onInviteFieldEnter: function (event) {
@@ -204,26 +235,92 @@ var InviteActionsBlockController = Class.create(BlockController, {
     this._inviteField.select();
   },
   
+  _addUsers: function () {
+    var loadItem = startLoadingOperation("panelAdmin.block.invitations.addUsers");
+    
+    var userCount = this._invitationList.getSize();
+    var addFailCount = 0;
+    var addSuccessCount = 0;
+    var queryId = $(this._formElement.queryId).getValue();
+    var password = (Math.random() + 0.1).toString(36).slice(2).substring(0, 8);
+    
+    var addRequests = [];
+    var progressCallback = function(err) {
+      if (err && "USER_EXISTS" !== err) {
+        addFailCount++;
+      } else {
+        addSuccessCount++;
+      }
+      
+      var countText = addSuccessCount;
+      if (addFailCount > 0) {
+        countText += ' ' + getLocale().getText("panelAdmin.block.invitations.addingUsersFailed", addFailCount);
+      }
+      
+      var text = getLocale().getText("panelAdmin.block.invitations.addingUsers", countText, userCount);
+      loadItem.updateText(text);
+    };
+    
+    for (var i = 0; i < userCount; i++) {
+      var userId = $(this._formElement['inviteUser.' + i + '.id']).getValue();
+      var email = $(this._formElement['inviteUser.' + i + '.email']).getValue();
+      var firstName = $(this._formElement['inviteUser.' + i + '.firstName']).getValue();
+      var lastName = $(this._formElement['inviteUser.' + i + '.lastName']).getValue();
+      addRequests.push(this._createUserAddRequest(userId, queryId, email, firstName, lastName, password, progressCallback));
+    }
+    
+    async.parallelLimit(addRequests, 2, function (err, results) {
+      if (err) {
+        this._showError(err);
+      } else {
+        var errorMails = [];
+        var successCount = 0;
+        
+        for (var i = 0; i < results.length; i++) {
+          var result = results[i];
+          if (result && result.error) {
+            if (result.error !== 'USER_EXISTS') {
+              errorMails.push(result.email);
+            }
+          } else {
+            successCount++;
+          }
+        }
+        
+        if (errorMails.length) {
+          this._showError(getLocale().getText('panelAdmin.block.invitations.invitationFailures', errorMails.join(',')));
+        }
+        
+        this._showSuccess(getLocale().getText("panelAdmin.block.invitations.passwordGenerated", successCount, password), -1);
+        
+        document.fire("ed:invitationListRefreshRequired");
+        this._invitationList.clear();
+      }
+      
+      endLoadingOperation();
+    }.bind(this));
+  },
+  
   _sendInvitations: function () {
     var loadItem = startLoadingOperation("panelAdmin.block.invitations.creatingInvitations");
     
     var invitationCount = this._invitationList.getSize();
-    var invitationFailCount = 0;
-    var invitationSuccessCount = 0;
+    var addFailCount = 0;
+    var addSuccessCount = 0;
     var queryId = $(this._formElement.queryId).getValue();
     
-    var invitationRequests = [];
+    var addRequests = [];
     var invitationMessage = $(this._formElement.invitationMessage).getValue();
     var progressCallback = function(err) {
       if (err) {
-        invitationFailCount++;
+        addFailCount++;
       } else {
-        invitationSuccessCount++;
+        addSuccessCount++;
       }
       
-      var countText = invitationSuccessCount;
-      if (invitationFailCount > 0) {
-        countText += ' ' + getLocale().getText("panelAdmin.block.invitations.sendingInvitationFailed", invitationFailCount);
+      var countText = addSuccessCount;
+      if (addFailCount > 0) {
+        countText += ' ' + getLocale().getText("panelAdmin.block.invitations.sendingInvitationFailed", addFailCount);
       }
       
       var text = getLocale().getText("panelAdmin.block.invitations.sendingInvitations", countText, invitationCount);
@@ -233,10 +330,10 @@ var InviteActionsBlockController = Class.create(BlockController, {
     for (var i = 0; i < invitationCount; i++) {
       var userId = $(this._formElement['inviteUser.' + i + '.id']).getValue();
       var email = $(this._formElement['inviteUser.' + i + '.email']).getValue();
-      invitationRequests.push(this._createInvitationRequest(invitationMessage, userId, queryId, email, progressCallback));
+      addRequests.push(this._createInvitationRequest(invitationMessage, userId, queryId, email, progressCallback));
     }
     
-    async.parallelLimit(invitationRequests, 5, function (err, results) {
+    async.parallelLimit(addRequests, 5, function (err, results) {
       if (err) {
         this._showError(err);
       } else {
@@ -272,21 +369,7 @@ var InviteActionsBlockController = Class.create(BlockController, {
     Event.stop(event);
     
     if ($(this._formElement.addUsers).getValue() == '1') {
-      var _this = this;
-      Event.stop(event);
-      this._formElement.invitationCount.value = this._invitationList.getSize();
-      this._formElement.action = CONTEXTPATH + '/panel/admin/createinvitations.json';
-      startLoadingOperation("panelAdmin.block.invitations.creatingInvitations");
-      JSONUtils.sendForm(this._formElement, {
-        onComplete: function () {
-          endLoadingOperation();
-        },
-        onSuccess: function (jsonResponse) {
-          JSONUtils.showMessages(jsonResponse);
-          document.fire("ed:invitationListRefreshRequired");
-          _this._invitationList.clear();
-        }
-      });
+      this._addUsers();
     } else {
       var invitationMessage = $(this._formElement.invitationMessage).getValue();
       

@@ -39,9 +39,9 @@ public class UserUtils {
     return panelUser != null;
   }
   
-  public static void createUserPassword(User user, String password) {
+  public static void createUserPassword(User user, String password, boolean passwordTemporary, boolean emailVerified) {
     KeycloakAuthenticationStrategy keycloakStrategy = AuthUtils.getKeycloakStrategy();
-    keycloakStrategy.createUserPassword(user, password);
+    keycloakStrategy.createUserPassword(user, password, passwordTemporary, emailVerified);
   }
 
   public static void merge(User source, User target) {
