@@ -86,9 +86,10 @@ public class PanelInviteUsersTestsBase extends AbstractUITest {
       waitVisible(".invitationEntryEmailContainer");
       waitAndClick("#addUsers1");
       waitAndClick("input[name=sendInvitations]", 50);
-      waitPresent(".eventQueueWarningItem");
-      String queueItemText = findElement(".eventQueueWarningItem").getText();
+      waitPresent(".eventQueueSuccessItem");
+      String queueItemText = findElement(".eventQueueSuccessItem").getText();
       String password = StringUtils.substringAfter(queueItemText, "The password is ");
+      
       logout();
       
       // Attempt to nagivate into panel

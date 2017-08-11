@@ -1,6 +1,7 @@
 package fi.metatavu.edelphi.utils;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -140,7 +141,8 @@ public class AuthUtils {
     OAuthAccessToken[] accessTokens = (OAuthAccessToken[]) session.getAttribute(String.format(PROVIDER_ACCESS_TOKENS, provider));
     if (accessTokens != null) {
       for (OAuthAccessToken accessToken : accessTokens) {
-      	if (Arrays.asList(accessToken.getScopes()).containsAll(Arrays.asList(scopes))) {
+        List<String> accessTokenScopes = accessToken.getScopes() != null ? Arrays.asList(accessToken.getScopes()) : Collections.emptyList();
+        if (scopes == null || accessTokenScopes.containsAll(Arrays.asList(scopes))) {
       		return accessToken;
       	}
       }
