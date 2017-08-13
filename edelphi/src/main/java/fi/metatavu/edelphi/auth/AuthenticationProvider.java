@@ -16,6 +16,14 @@ public interface AuthenticationProvider {
    * @param authSource The authentication source
    */
   public void initialize(AuthSource authSource);
+  
+  /**
+   * Logs authentication strategy out
+   * 
+   * @param requestContext
+   * @param redirectUrl 
+   */
+  public void logout(RequestContext requestContext, String redirectUrl);
 
   /**
    * Returns the name of this authentication provider.

@@ -9,3 +9,8 @@ travis-encrypted.tar
 /.DS_Store
 /localsettings.sql
 /local.sql
+/keycloak-3.2.0.Final/
+/keycloak.log
+/test-variables.sh
+/google-service-account.json
+/keycloak-3.2.1.Final/

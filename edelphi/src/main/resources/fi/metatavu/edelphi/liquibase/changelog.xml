@@ -3276,4 +3276,23 @@
    </createIndex>
   </changeSet>
   
+  <changeSet author="antti.leppa" id="auth-source-auto-increments">
+    <dropForeignKeyConstraint baseTableName="AuthSourceSetting" constraintName="FKB7F2FCCD21838C35"/>
+    <dropForeignKeyConstraint baseTableName="UserIdentification" constraintName="FK5FC4B73921838C35"/>    
+    <dropForeignKeyConstraint baseTableName="PanelAuth" constraintName="FK1F0CD9AC21838C35"/>        
+    <dropForeignKeyConstraint baseTableName="DelfoiAuth" constraintName="FKC8D443D21838C35"/>
+    
+    <addAutoIncrement tableName="AuthSourceSetting" columnName="id" columnDataType="BIGINT(20)"/>
+    <addAutoIncrement tableName="AuthSource" columnName="id" columnDataType="BIGINT(20)"/>
+
+    <addForeignKeyConstraint constraintName="FK_AUTHSOURCESETTING_AUTHSOURCE" referencedTableName="AuthSource" referencedColumnNames="id" baseTableName="AuthSourceSetting" baseColumnNames="authSource_id"/>
+    <addForeignKeyConstraint constraintName="FK_USERIDENTIFICATION_AUTHSOURCE" referencedTableName="AuthSource" referencedColumnNames="id" baseTableName="UserIdentification" baseColumnNames="authSource_id"/>
+    <addForeignKeyConstraint constraintName="FK_PANELAUTH_AUTHSOURCE" referencedTableName="AuthSource" referencedColumnNames="id" baseTableName="PanelAuth" baseColumnNames="authSource_id"/>
+    <addForeignKeyConstraint constraintName="FK_DELFOIAUTH_AUTHSOURCE" referencedTableName="AuthSource" referencedColumnNames="id" baseTableName="DelfoiAuth" baseColumnNames="authSource_id"/>
+  </changeSet>
+  
+  <changeSet author="antti.leppa" id="password-reset-drop">
+    <dropTable tableName="PasswordReset"/>
+  </changeSet>
+  
 </databaseChangeLog>

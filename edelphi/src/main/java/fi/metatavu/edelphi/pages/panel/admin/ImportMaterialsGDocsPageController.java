@@ -43,7 +43,7 @@ public class ImportMaterialsGDocsPageController extends PanelPageController {
       Panel panel = panelDAO.findById(panelId);
       
       try {
-      	List<GoogleDocumentBean> googleDocuments = new ArrayList<GoogleDocumentBean>();
+      	List<GoogleDocumentBean> googleDocuments = new ArrayList<>();
         
       	// TODO: Navigation (next, prev, etc)
       	// TODO: Support folders 

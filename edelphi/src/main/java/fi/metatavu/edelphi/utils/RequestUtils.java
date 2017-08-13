@@ -15,6 +15,9 @@ import fi.metatavu.edelphi.smvcj.SmvcMessage;
 import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
+import fi.metatavu.edelphi.auth.AuthenticationProvider;
+import fi.metatavu.edelphi.auth.AuthenticationProviderFactory;
+import fi.metatavu.edelphi.dao.base.AuthSourceDAO;
 import fi.metatavu.edelphi.dao.base.DelfoiDAO;
 import fi.metatavu.edelphi.dao.base.DelfoiDefaultsDAO;
 import fi.metatavu.edelphi.dao.base.SystemUserRoleDAO;
@@ -25,6 +28,7 @@ import fi.metatavu.edelphi.dao.users.DelfoiUserDAO;
 import fi.metatavu.edelphi.dao.users.UserDAO;
 import fi.metatavu.edelphi.dao.users.UserPictureDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
+import fi.metatavu.edelphi.domainmodel.base.AuthSource;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiDefaults;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiUser;
@@ -108,7 +112,7 @@ public class RequestUtils {
     return url;
   }
   
-  public static void loginUser(RequestContext requestContext, User user) {
+  public static void loginUser(RequestContext requestContext, User user, Long authSourceId) {
     HttpSession session = requestContext.getRequest().getSession(true);
     
     // Store last login  
@@ -122,10 +126,24 @@ public class RequestUtils {
     session.setAttribute("loggedUserId", user.getId());
     session.setAttribute("loggedUserFullName", user.getFullName(false));
     session.setAttribute("loggedUserHasPicture", hasPicture);
+    session.setAttribute("loggedAuthSourceId", authSourceId);
   }
   
-  public static void logoutUser(RequestContext requestContext) {
+  public static void logoutUser(RequestContext requestContext, String redirectUrl) {
     HttpSession session = requestContext.getRequest().getSession();
+    
+    Long authSourceId = (Long) session.getAttribute("loggedAuthSourceId");
+    if (authSourceId != null) {
+      AuthSourceDAO authSourceDAO = new AuthSourceDAO();
+      AuthSource authSource = authSourceDAO.findById(authSourceId);
+      if (authSource != null) {
+        AuthenticationProvider authenticationProvider = AuthenticationProviderFactory.getInstance().createAuthenticationProvider(authSource);
+        if (authenticationProvider != null) {
+          authenticationProvider.logout(requestContext, redirectUrl);
+        }
+      }
+    }
+    
     session.invalidate();
   }
   

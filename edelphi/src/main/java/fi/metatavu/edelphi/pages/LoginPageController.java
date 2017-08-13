@@ -16,9 +16,12 @@ public class LoginPageController extends PageController {
   public void process(PageRequestContext pageRequestContext) {
     Boolean logout = pageRequestContext.getBoolean("logoff");
     if (logout) {
-      RequestUtils.logoutUser(pageRequestContext);
+      RequestUtils.logoutUser(pageRequestContext, null);
     }
-    AuthUtils.includeAuthSources(pageRequestContext);
+ 
+    Long authSourceId = AuthUtils.getAuthSource("Keycloak").getId();
+    pageRequestContext.getRequest().setAttribute("authSourceId", authSourceId);
+    
     pageRequestContext.setIncludeJSP("/jsp/pages/login.jsp");
   }
 

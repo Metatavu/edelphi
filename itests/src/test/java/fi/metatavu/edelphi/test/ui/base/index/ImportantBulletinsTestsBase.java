@@ -3,6 +3,7 @@ package fi.metatavu.edelphi.test.ui.base.index;
 import java.time.OffsetDateTime;
 import java.util.Date;
 
+import org.junit.After;
 import org.junit.Test;
 
 import fi.metatavu.edelphi.test.mock.DelfoiBulletinMocker;
@@ -13,6 +14,11 @@ public class ImportantBulletinsTestsBase extends AbstractUITest {
   private static final String BULLETIN_DIALOG_SELECTOR = ".important-bulletin-dialog";
   
   private DelfoiBulletinMocker delfoiBulletinMocker = new DelfoiBulletinMocker();
+  
+  @After
+  public void afterTest() {
+    delfoiBulletinMocker.cleanup();
+  }
   
   @Test
   public void testImportantBulletinPopup() {

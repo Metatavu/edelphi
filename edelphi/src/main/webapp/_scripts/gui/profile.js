@@ -145,54 +145,6 @@ var ProfileSettingsBasicInfoEditor = Class.create(BlockController, {
   }
 });
 
-var ProfileSettingsPasswordEditor = Class.create({
-  initialize : function(editorContainer) {
-    this._editorContainer = editorContainer;
-    this._updatePasswordButtonClickListener = this._onUpdatePasswordButtonClick.bindAsEventListener(this);
-    this.setup();
-  },
-  deinitialize: function () {
-    Event.stopObserving(this._saveButton, 'click', this._updatePasswordButtonClickListener);
-  },
-  setup: function () {
-    this._saveButton = this._editorContainer.down('input[name="updatePasswordButton"]');
-    Event.observe(this._saveButton, 'click', this._updatePasswordButtonClickListener);
-  },
-  _onUpdatePasswordButtonClick: function (event) {
-    Event.stop(event);
-
-    var parameters = {
-      oldPassword: hex_md5(this._editorContainer.down('input[name="oldPassword"]').value),
-      newPassword: hex_md5(this._editorContainer.down('input[name="newPassword2"]').value),
-      userId: this._editorContainer.down('input[name="passwordUserId"]').value
-    };
-    var _this = this;
-    startLoadingOperation('profile.block.savingPassword');
-    JSONUtils.request(CONTEXTPATH + '/profile/savepassword.json', {
-      parameters: parameters,
-      onComplete: function () {
-        endLoadingOperation();
-      },
-      onSuccess : function(jsonResponse) {
-        _this._editorContainer.down('input[name="oldPassword"]').value = '';
-        _this._editorContainer.down('input[name="newPassword1"]').value = '';
-        _this._editorContainer.down('input[name="newPassword2"]').value = '';
-        
-        if (!parameters.newPassword) {
-          $('oldPasswordContainer').show();
-          $('noPasswordMessageContainer').hide();
-        } else {
-          $('oldPasswordContainer').hide();
-          $('noPasswordMessageContainer').show();
-        }
-        
-        JSONUtils.showMessages(jsonResponse);
-      }
-    });
-  }
-});
-
 document.observe('dom:loaded', function() {
   new ProfileSettingsBasicInfoEditor($('profileSettingsForm'));
-  new ProfileSettingsPasswordEditor($('profilePasswordForm'));
 });

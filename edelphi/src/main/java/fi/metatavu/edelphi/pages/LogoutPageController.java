@@ -1,5 +1,7 @@
 package fi.metatavu.edelphi.pages;
 
+import org.apache.commons.lang3.StringUtils;
+
 import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.utils.RequestUtils;
@@ -13,8 +15,15 @@ public class LogoutPageController extends PageController {
 
   @Override
   public void process(PageRequestContext pageRequestContext) {
-    RequestUtils.logoutUser(pageRequestContext);
+    String redirectUrl = pageRequestContext.getString("redirectUrl");
+    if (StringUtils.isBlank(redirectUrl)) {
+      redirectUrl = String.format("%s/index.page", RequestUtils.getBaseUrl(pageRequestContext.getRequest()));
+    }
     
-    pageRequestContext.setRedirectURL(pageRequestContext.getRequest().getContextPath() + "/index.page");
+    RequestUtils.logoutUser(pageRequestContext, redirectUrl);
+    
+    if (StringUtils.isBlank(pageRequestContext.getRedirectURL())) {
+      pageRequestContext.setRedirectURL(redirectUrl);
+    }
   }
 }

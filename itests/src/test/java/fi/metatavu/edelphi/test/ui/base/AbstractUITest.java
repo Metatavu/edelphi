@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,24 +19,41 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Base64;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.mail.MessagingException;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
+import org.junit.rules.TestName;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.admin.client.resource.ClientsResource;
+import org.keycloak.admin.client.resource.IdentityProvidersResource;
+import org.keycloak.admin.client.resource.RealmResource;
+import org.keycloak.admin.client.resource.RoleMappingResource;
+import org.keycloak.admin.client.resource.RoleScopeResource;
+import org.keycloak.admin.client.resource.UsersResource;
+import org.keycloak.representations.idm.ClientRepresentation;
+import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.IdentityProviderRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.OutputType;
@@ -45,6 +63,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.internal.FindsByCssSelector;
@@ -54,7 +73,6 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.google.common.base.Predicate;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
 
@@ -71,6 +89,15 @@ public class AbstractUITest {
 
   @Rule
   public TestWatcher testWatcher = new TestBaseWatcher();
+  
+  @Rule
+  public TestName testName = new TestName();
+
+  @Before
+  @SuppressWarnings ("squid:S106")
+  public void printName() {
+    System.out.println(String.format("> %s", testName.getMethodName()));
+  }
   
   @Before
   public void startGreenMail() {
@@ -116,8 +143,19 @@ public class AbstractUITest {
   }
 
   protected void waitAndClick(String selector) {
+    waitAndClick(selector, 0);
+  }
+  
+  protected void waitAndClick(String selector, int ms) {
     waitVisible(selector);
+    waitMs(ms);
     click(selector);
+  }
+  
+  protected void waitAndClick(String[] selectors, int ms) {
+    waitVisible(selectors);
+    waitMs(ms);
+    click(selectors);
   }
 
   @SuppressWarnings ("squid:S1166")
@@ -171,13 +209,38 @@ public class AbstractUITest {
       .perform();
   }
   
-  protected void click(String selector) {
-    findElements(selector).get(0).click();
+  protected void click(String... selector) {
+    try {
+      findElements(selector).get(0).click();
+    } catch (StaleElementReferenceException e) {
+      waitMs(200);
+      click(selector);
+    }
   }
 
   protected void waitAndType(String selector, String text) {
+    waitAndType(selector, text, 0);
+  }
+  
+  protected void waitAndType(String selector, String text, int waitMs) {
     waitPresent(selector);
+    waitMs(waitMs);
     findElements(selector).get(0).sendKeys(text);
+  }
+
+  protected void waitAndType(String[] selectors, String text, int waitMs) {
+    waitPresent(selectors);
+    waitMs(waitMs);
+    findElements(selectors).get(0).sendKeys(text);
+  }
+  
+  private void waitMs(int ms) {
+    if (ms > 0) { 
+      try {
+        Thread.sleep(ms);
+      } catch (InterruptedException e) {
+      }
+    }
   }
   
   protected void waitAndType(String selector, Keys... keys) {
@@ -186,67 +249,86 @@ public class AbstractUITest {
   }
   
   protected void waitPresent(final String... selectors) {
-    Predicate<WebDriver> untilPredicate = driver -> !findElements(selectors).isEmpty();
-    new WebDriverWait(getWebDriver(), 60).until(untilPredicate);
+    new WebDriverWait(getWebDriver(), 60).until(new ExpectedCondition<Boolean>() {
+      
+      @Override
+      public Boolean apply(WebDriver arg0) {
+        return !findElements(selectors).isEmpty();
+      }
+      
+    });
+    
   }
   
   protected void waitNotPresent(final String... selectors) {
-    Predicate<WebDriver> untilPredicate = driver -> findElements(selectors).isEmpty();
-    new WebDriverWait(webDriver, 60).until(untilPredicate);
+    new WebDriverWait(webDriver, 60).until(new ExpectedCondition<Boolean>() {
+      @Override
+      public Boolean apply(WebDriver arg0) {
+        return findElements(selectors).isEmpty();
+      }
+    });
   }
   
   @SuppressWarnings ("squid:S1166")
-  protected void waitVisible(final String selector) {
-    Predicate<WebDriver> untilPredicate = driver -> {
-      try {
-        List<WebElement> elements = findElementsBySelector(selector);
-        if (elements.isEmpty()) {
-          return false;
-        }
-        
-        for (WebElement element : elements) {
-          if (!element.isDisplayed()){
+  protected void waitVisible(final String... selector) {
+    new WebDriverWait(getWebDriver(), 60).until(new ExpectedCondition<Boolean>() {
+      
+      @Override
+      public Boolean apply(WebDriver arg0) {
+        try {
+          List<WebElement> elements = findElements(selector);
+          if (elements.isEmpty()) {
             return false;
           }
+          
+          for (WebElement element : elements) {
+            if (!element.isDisplayed()){
+              return false;
+            }
+          }
+          
+          return true;
+        } catch (Exception e) {
+          return false;
         }
-        
-        return true;
-      } catch (Exception e) {
-        return false;
       }
-    };
       
-    new WebDriverWait(getWebDriver(), 60).until(untilPredicate);
+    });
   }
   
   @SuppressWarnings ("squid:S1166")
   protected void waitNotVisible(final String selector) {
-    Predicate<WebDriver> untilPredicate = driver -> {
-      try {
-        List<WebElement> elements = findElementsBySelector(selector);
-        if (elements.isEmpty()) {
-          return true;
-        }
+    new WebDriverWait(getWebDriver(), 60).until(new ExpectedCondition<Boolean>() {
       
-        for (WebElement element : elements) {
-          if (element.isDisplayed()){
-            return false;
+      @Override
+      public Boolean apply(WebDriver arg0) {
+        try {
+          List<WebElement> elements = findElementsBySelector(selector);
+          if (elements.isEmpty()) {
+            return true;
           }
+        
+          for (WebElement element : elements) {
+            if (element.isDisplayed()){
+              return false;
+            }
+          }
+        
+          return true;
+        } catch (Exception e) {
+          return false;
         }
-      
-        return true;
-      } catch (Exception e) {
-        return false;
       }
-    };
       
-    new WebDriverWait(getWebDriver(), 60).until(untilPredicate);
+    });
   }
   
   protected WebDriver createLocalDriver() {
     switch (getBrowser()) {
       case "chrome":
-        return createChromeDriver();
+        return createChromeDriver(false);
+      case "chrome-headless":
+        return createChromeDriver(true);
       case "phantomjs":
         return createPhantomJsDriver();
       case "firefox":
@@ -284,9 +366,19 @@ public class AbstractUITest {
     return toDate(localDate, ZoneId.systemDefault());
   }
   
-  protected WebDriver createChromeDriver() {
-    ChromeDriver driver = new ChromeDriver();
-    driver.manage().window().setSize(new Dimension(1280, 1024));
+  protected WebDriver createChromeDriver(boolean headless) {
+    ChromeOptions options = new ChromeOptions();
+    
+    if (headless) {
+      options.addArguments("--headless", "--disable-gpu", "window-size=1280,1024");
+    } 
+    
+    ChromeDriver driver = new ChromeDriver(options);
+    
+    if (!headless) {
+      driver.manage().window().setSize(new Dimension(1280, 1024));
+    }
+    
     return driver;
   }
 
@@ -357,6 +449,21 @@ public class AbstractUITest {
     assertText(selector, text, trim, ignoreCase);
   }
   
+  protected void waitAndAssertInputValue(String selector, String value) {
+    waitPresent(selector);
+    assertInputValue(selector, value);
+  }
+  
+  protected void assertInputValue(String selector, String value) {
+    try {
+      WebElement element = findElement(selector);
+      assertNotNull(element);
+      assertEquals(value, element.getAttribute("value"));
+    } catch (StaleElementReferenceException serf) {
+      assertInputValue(selector, value);
+    }
+  }
+
   protected void assertText(String selector, String text, boolean trim, boolean ignoreCase) {
     try {
       WebElement element = findElement(selector);
@@ -478,12 +585,15 @@ public class AbstractUITest {
   }
 
   protected void waitReceivedEmailCount(final int expect) {
-    Predicate<WebDriver> untilPredicate = driver -> {
-      int messageCount = getGreenMail().getReceivedMessages().length;
-      return messageCount == expect;
-    };
+    new WebDriverWait(getWebDriver(), 60).until(new ExpectedCondition<Boolean>() {
       
-    new WebDriverWait(getWebDriver(), 60).until(untilPredicate);
+      @Override
+      public Boolean apply(WebDriver arg0) {
+        int messageCount = getGreenMail().getReceivedMessages().length;
+        return messageCount == expect;
+      }
+      
+    });
   }
 
   protected void assertReceivedEmailCount(int expected) {
@@ -501,19 +611,20 @@ public class AbstractUITest {
   
   @SuppressWarnings ("squid:S1166")
   protected void assertReceivedEmailContent(int index, String expected) {
-    try {
-      assertEquals(expected, getGreenMail().getReceivedMessages()[index].getContent());
-    } catch (MessagingException | IOException e) {
-      fail(e.getMessage());
-    }
+    assertEquals(expected, getReceivedMailContent(index));
   }
   
   @SuppressWarnings ("squid:S1166")
   protected void assertReceivedEmailContentStartsWith(int index, String expected) {
+    assertTrue(StringUtils.startsWith(getReceivedMailContent(index), expected));
+  }
+  
+  protected String getReceivedMailContent(int index) {
     try {
-      assertTrue(StringUtils.startsWith(String.valueOf(getGreenMail().getReceivedMessages()[index].getContent()), expected));
+      return String.valueOf(getGreenMail().getReceivedMessages()[index].getContent());
     } catch (MessagingException | IOException e) {
       fail(e.getMessage());
+      return null;
     }
   }
   
@@ -524,13 +635,174 @@ public class AbstractUITest {
       }
     });
   }
+
+  protected void loginKeycloak(String username, String password) {
+    waitAndType("#username", username);
+    waitAndType("#password", password);
+    click(".btn-primary");
+  }
+
+  protected void loginGoogle(String email, String password) {
+    waitAndType(new String[] { "#identifierId", "input[type='email']" }, email, 300);
+    waitAndClick(new String[] { "#identifierNext", "#next" }, 300);
+    waitAndType(new String[] { "#password input[name='password']", "#Passwd" }, password, 300);
+    waitAndClick(new String[] { "#passwordNext", "#signIn" }, 300);
+    
+    waitVisible(".headerUserName", "#submit_approve_access", "#linkAccount");
+    
+    while (!findElements("#submit_approve_access").isEmpty()) {
+      findElement("#submit_approve_access").click();
+      waitMs(300);
+      waitVisible(".headerUserName", "#submit_approve_access", "#linkAccount");
+    }
+  }
+  
+  protected void linkKeycloakAccount(String username, String password) {
+    waitAndClick("#linkAccount");
+    waitVisible("#kc-login");
+    waitAndType("#password", password);
+    waitAndClick("#kc-login");
+  }
+
+  protected static void ensureKeycloakGoogleProvider() {
+    Keycloak client = getKeycloakClient();
+    
+    RealmResource realmResource = client.realm("edelphi");
+    IdentityProvidersResource identityProvidersResource = realmResource.identityProviders();
+    
+    List<IdentityProviderRepresentation> providerRepresentations = identityProvidersResource.findAll();
+    for (int i = 0; i < providerRepresentations.size(); i++) {
+      if ("google".equals(providerRepresentations.get(i).getProviderId())) {
+        return;
+      }
+    }
+    
+    String apiKey = System.getenv("GOOGLE_API_KEY");
+    String apiSecret = System.getenv("GOOGLE_API_SECRET"); 
+    
+    Map<String, String> config = new HashMap<>();
+    config.put("defaultScope", "openid profile email https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file");
+    config.put("clientId", apiKey);
+    config.put("disableUserInfo", "");
+    config.put("userIp", "");
+    config.put("clientSecret", apiSecret);
+      
+    IdentityProviderRepresentation providerRepresentation = new IdentityProviderRepresentation();
+    providerRepresentation.setAlias("google");
+    providerRepresentation.setProviderId("google");
+    providerRepresentation.setEnabled(true);
+    providerRepresentation.setTrustEmail(true);
+    providerRepresentation.setStoreToken(true);
+    providerRepresentation.setAddReadTokenRoleOnCreate(true);
+    providerRepresentation.setConfig(config);
+    
+    identityProvidersResource.create(providerRepresentation);
+  }
+  
+  protected static void ensureKeycloakRealmAdmin() {
+    Keycloak client = getKeycloakClient();
+    
+    RealmResource realmResource = client.realm("edelphi");
+    UsersResource usersResource = realmResource.users();
+    List<UserRepresentation> users = usersResource.search("admin");
+    if (users.isEmpty()) {
+      createKeycloakUser("Realm", "Admin", "admin", "admin@example.com", "admin");
+      users = usersResource.search("admin");
+      assignClientRole(users.get(0), "realm-management", "manage-users");
+    }
+  }
+  
+  protected static void assignClientRole(UserRepresentation userRepresentation, String clientId, String roleName) {
+    Keycloak keycloakClient = getKeycloakClient();
+    
+    RealmResource realmResource = keycloakClient.realm("edelphi");
+    UsersResource usersResource = realmResource.users();
+    ClientsResource clientsResource = realmResource.clients();
+    
+    List<ClientRepresentation> clientRepresentations = clientsResource.findByClientId(clientId);
+    ClientRepresentation clientRepresentation = clientRepresentations.isEmpty() ? null : clientRepresentations.get(0);
+    RoleMappingResource roleMappingResource = usersResource.get(userRepresentation.getId()).roles();
+    RoleScopeResource clientRoleScopeResource = roleMappingResource.clientLevel(clientRepresentation.getId());
+    List<RoleRepresentation> availableRoleRepresentations = clientRoleScopeResource.listAvailable();
+    RoleRepresentation roleRepresentation = null;
+    
+    for (RoleRepresentation availableRoleRepresentation : availableRoleRepresentations) {
+      if (roleName.equals(availableRoleRepresentation.getName())) {
+        roleRepresentation = availableRoleRepresentation;
+        break;
+      }
+    }
+    
+    clientRoleScopeResource.add(Arrays.asList(roleRepresentation));
+  }
+  
+  protected static void createKeycloakUser(String firstName, String lastName, String username, String email, String password) {
+    Keycloak client = getKeycloakClient();
+    
+    CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
+    credentialRepresentation.setType(CredentialRepresentation.PASSWORD);
+    credentialRepresentation.setValue(password);
+    credentialRepresentation.setTemporary(false);
+    
+    UserRepresentation userRepresentation = new UserRepresentation();
+    userRepresentation.setUsername(username);
+    userRepresentation.setFirstName(firstName);
+    userRepresentation.setLastName(lastName);
+    userRepresentation.setCredentials(Arrays.asList(credentialRepresentation));
+    userRepresentation.setEnabled(true);
+    userRepresentation.setEmail(email);
+    
+    RealmResource realmResource = client.realm("edelphi");
+    UsersResource usersResource = realmResource.users();
+    
+    Response response = usersResource.create(userRepresentation);
+    
+    assertTrue(response.getStatus() >= 200 && response.getStatus() <= 299);
+  }
+  
+  protected void deleteKeycloakUser(String username) {
+    Keycloak client = getKeycloakClient();
+    RealmResource realmResource = client.realm("edelphi");
+    UsersResource usersResource = realmResource.users();
+    List<UserRepresentation> users = usersResource.search(username);
+    if (!users.isEmpty()) {
+      String keycloakUserId = users.get(0).getId();
+      usersResource.delete(keycloakUserId);
+      deleteUsersByUserIdentification(keycloakUserId, 2l);
+    }
+  }
+
+  private void deleteUsersByUserIdentification(String externalId, Long authSourceId) {
+    executeUpdate("UPDATE User SET nickname = 'DELETE', defaultEmail_id = NULL WHERE id in (SELECT user_id FROM UserIdentification WHERE externalId = ? AND authSource_id = ?)", externalId, authSourceId);
+    executeUpdate("UPDATE Panel SET creator_id = 1, lastModifier_id = 1 WHERE creator_id in (SELECT id FROM User WHERE nickname = 'DELETE') OR lastModifier_id in (SELECT id FROM User WHERE nickname = 'DELETE')");
+    executeUpdate("UPDATE PanelStamp SET creator_id = 1, lastModifier_id = 1 WHERE creator_id in (SELECT id FROM User WHERE nickname = 'DELETE') OR lastModifier_id in (SELECT id FROM User WHERE nickname = 'DELETE')");
+    executeUpdate("UPDATE Resource SET creator_id = 1, lastModifier_id = 1 WHERE creator_id in (SELECT id FROM User WHERE nickname = 'DELETE') OR lastModifier_id in (SELECT id FROM User WHERE nickname = 'DELETE')");
+    executeUpdate("DELETE FROM UserEmail WHERE user_id in (SELECT id FROM User WHERE nickname = 'DELETE')");
+    executeUpdate("DELETE FROM UserIdentification WHERE externalId = ? AND authSource_id = ?", externalId, authSourceId);
+    executeUpdate("DELETE FROM BulletinRead WHERE user_id in (SELECT id FROM User WHERE nickname = 'DELETE')");
+    executeUpdate("DELETE FROM UserSetting WHERE user_id in (SELECT id FROM User WHERE nickname = 'DELETE')");
+    executeUpdate("DELETE FROM PanelUser WHERE user_id in (SELECT id FROM User WHERE nickname = 'DELETE')");
+    executeUpdate("DELETE FROM DelfoiUser WHERE user_id in (SELECT id FROM User WHERE nickname = 'DELETE')");
+    executeUpdate("DELETE FROM User WHERE nickname = 'DELETE'");
+  }
+
+  private static Keycloak getKeycloakClient() {
+    return KeycloakBuilder.builder()
+      .serverUrl("http://localhost:8380/auth")
+      .realm("master")
+      .username("admin")
+      .password("admin")
+      .clientId("admin-cli")
+      .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(1).build())
+      .build();
+  }
+  
+  protected void savePageSource() throws IOException {
+    savePageSource("target", String.format("%s_%s.html", testName.getMethodName(), System.currentTimeMillis()));
+  }
   
   protected void takeScreenshot() throws IOException {
-    if (getCI()) {
-      dumpScreenShot();
-    } else {
-      takeScreenshot("itests/target", UUID.randomUUID().toString() + ".png"); 
-    }
+    takeScreenshot("target", String.format("%s_%s.png", testName.getMethodName(), System.currentTimeMillis()));
   }
   
   @SuppressWarnings ("squid:S1166")
@@ -542,10 +814,21 @@ public class AbstractUITest {
         return;
       }
     } catch (IOException e) {
-      // Failed to write screenshot
+      e.printStackTrace();
     }
-
-    dumpScreenShot();
+  }
+  
+  @SuppressWarnings ("squid:S1166")
+  protected void savePageSource(String parentDirectory, String filename) {
+    try {
+      File file = new File(parentDirectory, filename);
+      if (file.createNewFile()) {
+        savePageSource(file);
+        return;
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   protected void takeScreenshot(File file) throws IOException {
@@ -558,6 +841,14 @@ public class AbstractUITest {
       fileOuputStream.flush();
       fileOuputStream.close();
     }
+  }
+  
+  protected void savePageSource(File file) throws IOException {
+    try (FileWriter fileWriter = new FileWriter(file)) {
+      fileWriter.write(webDriver.getPageSource());
+    };
+    
+    System.out.println(String.format("Saved html as %s", file.getAbsolutePath()));
   }
 
   protected void acceptPaytrailPayment(Double expectedAmount) {
@@ -591,19 +882,6 @@ public class AbstractUITest {
     waitAndClick("*[name='avainl']");
     waitAndClick("*[name='Lopeta']");
     waitAndClick(".PalveluSisalto a");
-  }
-  
-  private void dumpScreenShot() {
-    dumpScreenShot((TakesScreenshot) webDriver);
-  }
-  
-  private void dumpScreenShot(TakesScreenshot takesScreenshot) {
-    String imageData = toDataUrl("image/png", takesScreenshot.getScreenshotAs(OutputType.BYTES));
-    logger.warning(String.format("Screenshot: %s", imageData));
-  }
-  
-  private String toDataUrl(String contentType, byte[] data) {
-    return String.format("data:%s;base64,%s", contentType, Base64.getEncoder().encodeToString(data));
   }
   
   protected void updateUserSubscription(Long userId, String subscriptionLevel, Date subscriptionStarted, Date subscriptionEnds) {
@@ -654,7 +932,23 @@ public class AbstractUITest {
       fail(e.getMessage());
     }
   }
-  
+
+  protected String getGoogleUserEmail() {
+    return System.getenv("GOOGLE_USER_EMAIL");
+  }
+
+  protected String getGoogleUserPassword() {
+    return System.getenv("GOOGLE_USER_PASSWORD");
+  }
+
+  protected String getGoogleUserFirstName() {
+    return System.getenv("GOOGLE_USER_FIRST_NAME");
+  }
+
+  protected String getGoogleUserLastName() {
+    return System.getenv("GOOGLE_USER_LAST_NAME");
+  }
+
   protected boolean getCI() {
     return StringUtils.equals(System.getProperty("ci"), "true");
   }
@@ -685,6 +979,7 @@ public class AbstractUITest {
     @Override
     protected void failed(Throwable e, Description description) {
       try {
+        savePageSource();
         takeScreenshot();
       } catch (WebDriverException | IOException e1) {
         logger.log(Level.SEVERE, "Screenshot failed", e1);

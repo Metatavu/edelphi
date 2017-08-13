@@ -50,7 +50,7 @@ public class ProcessNewEmailJSONRequestController extends JSONController {
         Delfoi delfoi = RequestUtils.getDefaults(jsonRequestContext).getDelfoi();
         DelfoiUserRole delfoiUserRole = RequestUtils.getDefaults(jsonRequestContext).getDefaultDelfoiUserRole();
         delfoiUserDAO.create(delfoi, user, delfoiUserRole, user);
-        RequestUtils.loginUser(jsonRequestContext, user);
+        RequestUtils.loginUser(jsonRequestContext, user, null);
       }
     }
     String baseURL = RequestUtils.getBaseUrl(jsonRequestContext.getRequest());

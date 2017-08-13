@@ -73,7 +73,6 @@ public class JoinPanelPageController extends PageController {
         pageRequestContext.getRequest().setAttribute("dualAccount", Boolean.TRUE);
         pageRequestContext.getRequest().setAttribute("currentUserMail", user.getDefaultEmail() == null ? "undefined" : user.getDefaultEmail().getAddress());
         pageRequestContext.getRequest().setAttribute("invitationUserMail", panelInvitation.getEmail());
-        AuthUtils.includeAuthSources(pageRequestContext, "PANEL", panel.getId());
         pageRequestContext.setIncludeJSP("/jsp/pages/panel/joinpanel.jsp");
       }
       else if (user != null && userEmail == null) {
@@ -119,7 +118,7 @@ public class JoinPanelPageController extends PageController {
         
         // Ensure user is logged in
         
-        RequestUtils.loginUser(pageRequestContext, user);
+        RequestUtils.loginUser(pageRequestContext, user, null);
         
         // TODO if user has no password or external authentication, add a welcome message 
         

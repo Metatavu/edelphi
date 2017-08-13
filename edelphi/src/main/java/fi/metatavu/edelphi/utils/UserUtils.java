@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.utils;
 
 import java.util.List;
 
+import fi.metatavu.edelphi.auth.KeycloakAuthenticationStrategy;
 import fi.metatavu.edelphi.dao.panels.PanelExpertiseGroupUserDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
@@ -9,7 +10,6 @@ import fi.metatavu.edelphi.dao.users.DelfoiUserDAO;
 import fi.metatavu.edelphi.dao.users.UserDAO;
 import fi.metatavu.edelphi.dao.users.UserEmailDAO;
 import fi.metatavu.edelphi.dao.users.UserIdentificationDAO;
-import fi.metatavu.edelphi.dao.users.UserPasswordDAO;
 import fi.metatavu.edelphi.dao.users.UserPictureDAO;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiUser;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
@@ -19,7 +19,6 @@ import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.domainmodel.users.UserIdentification;
-import fi.metatavu.edelphi.domainmodel.users.UserPassword;
 import fi.metatavu.edelphi.domainmodel.users.UserPicture;
 
 public class UserUtils {
@@ -34,21 +33,15 @@ public class UserUtils {
     }
   }
 
-  public static boolean hasLoginCapability(User user) {
-    UserPasswordDAO userPasswordDAO = new UserPasswordDAO();
-    UserPassword userPassword = userPasswordDAO.findByUser(user);
-    if (userPassword == null) {
-      UserIdentificationDAO userIdentificationDAO = new UserIdentificationDAO();
-      List<UserIdentification> userIdentifications = userIdentificationDAO.listByUser(user);
-      return !userIdentifications.isEmpty();
-    }
-    return true;
-  }
-  
   public static boolean isPanelUser(Panel panel, User user) {
     PanelUserDAO panelUserDAO = new PanelUserDAO();
     PanelUser panelUser = panelUserDAO.findByPanelAndUserAndStamp(panel, user, panel.getCurrentStamp());
     return panelUser != null;
+  }
+  
+  public static void createUserPassword(User user, String password, boolean passwordTemporary, boolean emailVerified) {
+    KeycloakAuthenticationStrategy keycloakStrategy = AuthUtils.getKeycloakStrategy();
+    keycloakStrategy.createUserPassword(user, password, passwordTemporary, emailVerified);
   }
 
   public static void merge(User source, User target) {
@@ -56,17 +49,10 @@ public class UserUtils {
     UserEmailDAO userEmailDAO = new UserEmailDAO();
     UserIdentificationDAO userIdentificationDAO = new UserIdentificationDAO();
     UserPictureDAO userPictureDAO = new UserPictureDAO();
-    UserPasswordDAO userPasswordDAO = new UserPasswordDAO();
     QueryReplyDAO queryReplyDAO = new QueryReplyDAO();
     PanelUserDAO panelUserDAO = new PanelUserDAO();
     DelfoiUserDAO delfoiUserDAO = new DelfoiUserDAO();
-    // Internal authentication
-    UserPassword sourcePassword = userPasswordDAO.findByUser(source);
-    UserPassword targetPassword = userPasswordDAO.findByUser(target);
-    if (sourcePassword != null && targetPassword == null) {
-      userPasswordDAO.create(target, sourcePassword.getPasswordHash());
-      userPasswordDAO.delete(sourcePassword);
-    }
+    
     // External authentications
     List<UserIdentification> sourceIdentifications = userIdentificationDAO.listByUser(source);
     List<UserIdentification> targetIdentifications = userIdentificationDAO.listByUser(target);

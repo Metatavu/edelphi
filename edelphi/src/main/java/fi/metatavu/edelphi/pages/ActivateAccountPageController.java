@@ -34,7 +34,7 @@ public class ActivateAccountPageController extends PageController {
     }
     userActivationDAO.delete(userActivation);
     User user = userActivation.getUser();
-    RequestUtils.loginUser(pageRequestContext, user);
+    RequestUtils.loginUser(pageRequestContext, user, null);
 
     Messages messages = Messages.getInstance();
     Locale locale = pageRequestContext.getRequest().getLocale();

@@ -64,7 +64,7 @@
     
     <!-- Selenium -->
     
-    <selenium-java.version>3.0.0-beta4</selenium-java.version>
+    <selenium-java.version>3.4.0</selenium-java.version>
     
     <!-- Wildfly -->
     
@@ -79,7 +79,7 @@
     <greenmail.version>1.5.2</greenmail.version>
     
   </properties>
-  
+
   <dependencies>
   
     <dependency>
@@ -122,6 +122,58 @@
       <version>2.7.4</version>
       <scope>test</scope>
     </dependency>
+    
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-admin-client</artifactId>
+      <scope>test</scope>
+      <version>3.2.0.Final</version>
+      <exclusions>      
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-core</artifactId>
+        </exclusion>      
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-databind</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jaxrs</artifactId>
+      <version>3.0.19.Final</version>
+      <scope>test</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-client</artifactId>
+      <version>3.0.19.Final</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-multipart-provider</artifactId>
+      <version>3.0.19.Final</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jackson2-provider</artifactId>
+      <version>3.0.19.Final</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.spec.javax.ws.rs</groupId>
+      <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
+      <version>1.0.0.Final</version>
+      <scope>test</scope>
+    </dependency>
       
   </dependencies>
   
@@ -137,7 +189,7 @@
         <wildfly.home>${project.basedir}/.cargo/extracts/wildfly-10.1.0.Final/wildfly-10.1.0.Final</wildfly.home>
         <it.port.http>8280</it.port.http>
         <it.port.smtp>3025</it.port.smtp>
-        <it.host>test.edelphi.fi</it.host>
+        <it.host>test.edelphi.org</it.host>
         <it.jdbc.driver>org.h2.Driver</it.jdbc.driver>
         <it.jdbc.url>jdbc:h2:file:${project.build.directory}/h2;AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE</it.jdbc.url>
         <it.jdbc.jndi>java:/jboss/datasources/edelphi</it.jdbc.jndi>
@@ -174,6 +226,8 @@
             <version>2.19.1</version>
             <configuration>
               <failIfNoTests>true</failIfNoTests>
+              <skipAfterFailureCount>1</skipAfterFailureCount>
+              <argLine>-Xmx3g</argLine>
               <includes>
                 <include>${it.tests}</include>
               </includes>
@@ -375,6 +429,7 @@
                   <before-deployment>
                     <batch>true</batch>
                     <commands>
+                      <command>/system-property=edelphi.googleServiceAccount.key:add(value="${env.GOOGLE_SERVICE_ACCOUNT_KEY}")</command>
                       <command>/subsystem=undertow/server=default-server/host=edelphi:add(alias=["${it.host}"])</command>
                     </commands>
                   </before-deployment>

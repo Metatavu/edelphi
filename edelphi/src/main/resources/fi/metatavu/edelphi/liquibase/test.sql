@@ -42,7 +42,7 @@ VALUES
 INSERT INTO
   Delfoi (id, domain, rootFolder_id)
 VALUES
-  (1, 'test.edelphi.fi', 1);
+  (1, 'test.edelphi.org', 1);
 
 INSERT INTO
   LocalizedEntry (id)
@@ -98,7 +98,7 @@ VALUES
 INSERT INTO
   DelfoiDefaults (id, delfoi_id, defaultPanelCreatorRole_id, defaultDelfoiUserRole_id)
 VALUES
-  (1, 1, 6, 5);
+  (1, 1, 6, 4);
   
 INSERT INTO
   DelfoiUser (id, delfoi_id, user_id, archived, creator_id, created, lastModifier_id, lastModified, role_id)
@@ -108,6 +108,23 @@ VALUES
 INSERT INTO
   AuthSource (id, name, strategy)
 VALUES 
-  (1, 'test', 'test');
-
+  (1, 'test', 'test'),
+  (2, 'eDelphi', 'Keycloak');
+  
+INSERT INTO
+  DelfoiAuth (id, delfoi_id, authSource_id)
+VALUES 
+  (1, 1, 2);
+  
+INSERT INTO
+  AuthSourceSetting (id, authSource_id, settingKey, value)
+VALUES 
+  (1, 2, 'oauth.keycloak.apiKey', 'edelphi.org'),
+  (2, 2, 'oauth.keycloak.apiSecret', 'secret'),
+  (3, 2, 'oauth.keycloak.serverUrl', 'http://localhost:8380/auth'),
+  (4, 2, 'oauth.keycloak.realm', 'edelphi'),
+  (5, 2, 'oauth.keycloak.callbackUrl', 'http://test.edelphi.org:8280/dologin.page?loginType=Keycloak&_stg=rsp'),
+  (6, 2, 'oauth.keycloak.adminUser', 'admin'),
+  (7, 2, 'oauth.keycloak.adminPassword', 'admin');
+ 
 INSERT INTO hibernate_sequences (sequence_next_hi_value, sequence_name) VALUES ((SELECT max(id) + 1 FROM Resource), 'Resource');

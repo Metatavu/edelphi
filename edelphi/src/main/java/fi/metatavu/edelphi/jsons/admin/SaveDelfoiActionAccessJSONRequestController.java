@@ -38,7 +38,7 @@ public class SaveDelfoiActionAccessJSONRequestController extends JSONController 
     Delfoi delfoi = RequestUtils.getDelfoi(jsonRequestContext);
     
     List<DelfoiUserRole> delfoiRoles = userRoleDAO.listAll();
-    List<UserRole> roleList = new ArrayList<UserRole>();
+    List<UserRole> roleList = new ArrayList<>();
     roleList.addAll(delfoiRoles);
     SystemUserRole systemUserRole = systemUserRoleDAO.findByType(SystemUserRoleType.EVERYONE);
     roleList.add(systemUserRole);

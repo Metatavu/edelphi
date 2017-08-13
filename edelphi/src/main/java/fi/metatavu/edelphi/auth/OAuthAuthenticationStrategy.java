@@ -1,19 +1,19 @@
 package fi.metatavu.edelphi.auth;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.Api;
-import org.scribe.builder.api.DefaultApi10a;
-import org.scribe.model.Token;
 import org.scribe.oauth.OAuthService;
 
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 
 public abstract class OAuthAuthenticationStrategy extends AbstractAuthenticationStrategy {
 
-  private static final String OAUTH_REQUEST_TOKEN_ATTRIBUTE = "OAuthRequestToken";
   private static final String REQUESTED_SCOPES_ATTRIBUTE = ".requestedScopes";
   private String[] defaultScopes;
 
@@ -25,7 +25,7 @@ public abstract class OAuthAuthenticationStrategy extends AbstractAuthentication
     return defaultScopes;
   }
 
-  protected abstract Class<? extends Api> getApiClass();
+  protected abstract Api getApi(Map<String, String> apiParams);
 
   protected abstract String getApiKey();
 
@@ -36,6 +36,10 @@ public abstract class OAuthAuthenticationStrategy extends AbstractAuthentication
   @Override
   public boolean requiresCredentials() {
     return false;
+  }
+  
+  @Override
+  public void logout(RequestContext requestContext, String redirectUrl) {
   }
 
   @Override
@@ -69,23 +73,24 @@ public abstract class OAuthAuthenticationStrategy extends AbstractAuthentication
       
       return AuthenticationResult.PROCESSING;
     } else {
+      Map<String, String> apiParams = getResponseApiParams(requestContext);
       String[] requestedScopes = (String[]) session.getAttribute(String.format("%s%s", getName(), REQUESTED_SCOPES_ATTRIBUTE));
       session.removeAttribute(String.format("%s%s", getName(), REQUESTED_SCOPES_ATTRIBUTE));
-      OAuthService service = getOAuthService(requestContext, requestedScopes);
+      OAuthService service = getOAuthService(requestContext, apiParams, requestedScopes);
       return processResponse(requestContext, service, requestedScopes);
     }
   }
 
   protected abstract String getOAuthCallbackURL(RequestContext requestContext);
   
-  protected OAuthService getOAuthService(RequestContext requestContext, String... scopes) {
+  protected OAuthService getOAuthService(RequestContext requestContext, Map<String, String> apiParams, String... scopes) {
     String apiKey = getApiKey();
     String apiSecret = getApiSecret();
     String callback = getOAuthCallbackURL(requestContext);
-    Class<? extends Api> apiClass = getApiClass();
+    Api api = getApi(apiParams);
 
     ServiceBuilder serviceBuilder = new ServiceBuilder()
-      .provider(apiClass)
+      .provider(api)
       .apiKey(apiKey)
       .apiSecret(apiSecret)
       .callback(callback);
@@ -103,35 +108,10 @@ public abstract class OAuthAuthenticationStrategy extends AbstractAuthentication
     return serviceBuilder.build();
   }
   
-  protected void setRequestToken(RequestContext requestContext, Token requestToken) {
-    HttpSession session = requestContext.getRequest().getSession();
-
-    if (requestToken != null)
-      session.setAttribute(OAUTH_REQUEST_TOKEN_ATTRIBUTE, requestToken);
-    else
-      session.removeAttribute(OAUTH_REQUEST_TOKEN_ATTRIBUTE);
-  }
-
-  protected Token getRequestToken(RequestContext requestContext) {
-    HttpSession session = requestContext.getRequest().getSession();
-    
-    return (Token) session.getAttribute(OAUTH_REQUEST_TOKEN_ATTRIBUTE);
-  }
-  
   public void performDiscovery(RequestContext requestContext, String... scopes) {
-    OAuthService service = getOAuthService(requestContext, scopes);
-    
-    Token requestToken = null;
-    boolean isV1 = DefaultApi10a.class.isAssignableFrom(getApiClass());
-
-    // For OAuth version 1 the request token is fetched, for v2 it's not  
-    if (isV1)
-      requestToken = service.getRequestToken();
-
-    String authUrl = service.getAuthorizationUrl(requestToken);
-
-    setRequestToken(requestContext, requestToken);
-
+    Map<String, String> apiParams = getDiscoveryApiParams(requestContext);
+    OAuthService service = getOAuthService(requestContext, apiParams, scopes);
+    String authUrl = service.getAuthorizationUrl(null);
     requestContext.setRedirectURL(authUrl);
   }
 
@@ -171,5 +151,21 @@ public abstract class OAuthAuthenticationStrategy extends AbstractAuthentication
       return null;
     else
       return name.substring(0, lastIndexOf);
+  }
+
+  private Map<String, String> getResponseApiParams(RequestContext requestContext) {
+    return null;
+  }
+  
+  private Map<String, String> getDiscoveryApiParams(RequestContext requestContext) {
+    Map<String, String> apiParams = new HashMap<>();
+    String hint = requestContext.getString("hint");
+    if (hint != null) {
+      apiParams.put("hint", hint);
+    }
+    
+    apiParams.put("locale", requestContext.getRequest().getLocale().getLanguage());
+    
+    return apiParams;
   }
 }
