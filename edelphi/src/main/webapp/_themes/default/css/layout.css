@@ -224,6 +224,17 @@ h2.newsEntryTitle {
   position:relative;
 }
 
+#indexLoginBlockContent p,
+#indexRegisterBlockContent p {
+  padding-left: 2px;
+  padding-top: 2px;
+}
+
+#indexLoginBlockContent a,
+#indexRegisterBlockContent a {
+  text-transform: uppercase;
+}
+
 .errorPageLoginRegisterContainer #indexLoginBlockContent {
   width:320px;
   float:left;

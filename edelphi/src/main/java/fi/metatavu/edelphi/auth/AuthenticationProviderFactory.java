@@ -65,11 +65,7 @@ public class AuthenticationProviderFactory {
   private static AuthenticationProviderFactory instance = new AuthenticationProviderFactory();
   
   static {
-    AuthenticationProviderFactory.getInstance().registerAuthenticationProvider(GoogleAuthenticationStrategy.class);
-    AuthenticationProviderFactory.getInstance().registerAuthenticationProvider(InternalAuthenticationStrategy.class);
-    AuthenticationProviderFactory.getInstance().registerAuthenticationProvider(FacebookAuthenticationStrategy.class);
-    AuthenticationProviderFactory.getInstance().registerAuthenticationProvider(TwitterAuthenticationStrategy.class);
-    AuthenticationProviderFactory.getInstance().registerAuthenticationProvider(NingAuthenticationStrategy.class);
+    AuthenticationProviderFactory.getInstance().registerAuthenticationProvider(KeycloakAuthenticationStrategy.class);
     
     if (SystemUtils.isTestEnvironment()) {
       AuthenticationProviderFactory.getInstance().registerAuthenticationProvider(TestAuthenticationStrategy.class);

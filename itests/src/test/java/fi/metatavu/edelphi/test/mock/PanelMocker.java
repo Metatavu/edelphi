@@ -109,6 +109,9 @@ public class PanelMocker extends AbstractMocker {
     executeSql("DELETE FROM PanelUser WHERE panel_id = ?", panelId);
     executeSql("UPDATE Panel SET currentStamp_id = null, rootFolder_id = null WHERE id = ?", panelId);
     executeSql("DELETE FROM PanelStamp where panel_id = ?", panelId);
+    executeSql("DELETE FROM Document WHERE id in (SELECT id FROM Resource WHERE parentFolder_id = ?)", folderId);
+    executeSql("DELETE FROM GoogleDocument WHERE id in (SELECT id FROM Resource WHERE parentFolder_id = ?)", folderId);
+    executeSql("DELETE FROM Resource WHERE parentFolder_id = ?", folderId);
     executeSql("DELETE FROM Folder WHERE id = ?", folderId);
     executeSql("DELETE FROM Resource WHERE id = ?", folderId);
     executeSql("DELETE FROM Panel WHERE id = ?", panelId);

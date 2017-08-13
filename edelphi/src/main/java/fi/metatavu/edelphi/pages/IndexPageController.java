@@ -34,11 +34,10 @@ public class IndexPageController extends PageController {
   @Override
   public void process(PageRequestContext pageRequestContext) {
     super.process(pageRequestContext);
+    
     PanelDAO panelDAO = new PanelDAO();
     DelfoiBulletinDAO bulletinDAO = new DelfoiBulletinDAO();
     Delfoi delfoi = RequestUtils.getDelfoi(pageRequestContext);
-
-    AuthUtils.includeAuthSources(pageRequestContext, "DELFOI", delfoi.getId());
     
     List<Panel> openPanels = panelDAO.listByDelfoiAndAccessLevelAndState(delfoi, PanelAccessLevel.OPEN, PanelState.IN_PROGRESS); 
     Collections.sort(openPanels, new Comparator<Panel>() {
@@ -81,6 +80,10 @@ public class IndexPageController extends PageController {
         return o2.getCreated().compareTo(o1.getCreated());
       }
     });
+    
+    Long authSourceId = AuthUtils.getAuthSource("Keycloak").getId();
+
+    pageRequestContext.getRequest().setAttribute("authSourceId", authSourceId);
     pageRequestContext.getRequest().setAttribute("bulletins", bulletins);
     
     // Action access information

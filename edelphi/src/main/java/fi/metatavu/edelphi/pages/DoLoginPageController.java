@@ -29,10 +29,15 @@ public class DoLoginPageController extends PageController {
     Long authSourceId = pageRequestContext.getLong("authSource");
     if (authSourceId == null) {
       authSourceId = AuthUtils.retrieveAuthSourceId(pageRequestContext);
-    }
-    else {
+    } else {
       AuthUtils.storeAuthSourceId(pageRequestContext, authSourceId);
     }
+    
+    String redirectUrlParam = pageRequestContext.getString("redirectUrl");
+    if (redirectUrlParam != null) {
+      AuthUtils.storeRedirectUrl(pageRequestContext, redirectUrlParam);
+    }
+    
     if (authSourceId != null) {
       AuthSourceDAO authSourceDAO = new AuthSourceDAO();
       AuthSource authSource = authSourceDAO.findById(authSourceId);

@@ -28,6 +28,11 @@ public class TestAuthenticationStrategy extends AbstractAuthenticationStrategy i
   }
 
   @Override
+  public void logout(RequestContext requestContext, String redirectUrl) {
+    // Does not support logout
+  }
+
+  @Override
   public boolean requiresCredentials() {
     return true;
   }
@@ -47,7 +52,7 @@ public class TestAuthenticationStrategy extends AbstractAuthenticationStrategy i
     UserEmail userEmail = userEmailDAO.findByAddress(email);
 
     if (userEmail != null) {
-      RequestUtils.loginUser(requestContext, userEmail.getUser());
+      RequestUtils.loginUser(requestContext, userEmail.getUser(), authSource.getId());
       return AuthenticationResult.LOGIN;
     } else {
       throw new SmvcRuntimeException(EdelfoiStatusCode.INVALID_LOGIN, messages.getText(locale, "exception.1007.invalidLogin"));
