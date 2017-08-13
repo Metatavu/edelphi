@@ -1,8 +1,5 @@
 #!/bin/bash
 
-export DISPLAY=:99.0
-/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16
-
 if [ ! -f itests/.phantomjs/bin/phantomjs ]; then
   rm -fR itests/.phantomjs
   curl -sSL "https://dl.dropboxusercontent.com/s/wz7o1jqclt8f4sy/phantomjs-2.1.1-linux-x86_64.tar.bz2"|tar -xvjC itests/
