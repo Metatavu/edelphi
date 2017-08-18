@@ -21,7 +21,7 @@
 	    
 		  <div class="GUI_pageContainer">
       
-        <h2 class="documenttitle">Tietosuojaseloste - eDelfoi</h2>
+        <h2 class="documenttitle">Tietosuojaseloste - eDelphi.org</h2>
         
         <div class="documentContentContainer">
         
