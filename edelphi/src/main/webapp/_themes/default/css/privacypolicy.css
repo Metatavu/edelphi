@@ -1,0 +1,13 @@
+@CHARSET "UTF-8";
+
+ .contact-mail span:nth-child(1):after {
+  content: 'issues';
+}
+
+.contact-mail span:nth-child(2):after  {
+  content: '@';
+}
+
+.contact-mail span:nth-child(3):after  {
+  content: 'edelphi.org';
+}
