@@ -19,8 +19,8 @@
     </jsp:include>
   
     <div class="GUI_pageWrapper">
-	    
-		  <div class="GUI_pageContainer">
+      
+      <div class="GUI_pageContainer">
         <h2 class="documenttitle">Privacy Policy - eDelphi.org</h2>
         <div class="documentContentContainer">
           <p>This privacy policy has been compiled to better serve those who are concerned with how their 'Personally Identifiable Information' (PII) is being used online. PII, as described in US privacy law and information security, is information that can be used on its own or with other information to identify, contact, or locate a single person, or to identify an individual in context. Please read our privacy policy carefully to get a clear understanding of how we collect, use, protect or otherwise handle your Personally Identifiable Information in accordance with our website.</p>
@@ -98,10 +98,17 @@
           <h3>To be in accordance with CANSPAM, we agree to the following:</h3>
           <p>If at any time you would like to unsubscribe from receiving future emails, you can email us at and we will promptly remove you from ALL correspondence.</p>
           <h3>Google OAuth scopes</h3>
-          <p>
-            eDelphi.org uses <b>profile</b> scope for identifying user.
-            Application also uses <b>https://www.googleapis.com/auth/drive</b> and <b>https://www.googleapis.com/auth/drive.file</b> -scopes for allowing users to import Google Drive materials into their panels and to export reports into Google Documents.
-          </p>
+          
+          <p>eDelphi.org uses:
+          <ul>
+            <li><b>profile</b> -scope for identifying user.</li>
+            <li><b>https://www.googleapis.com/auth/drive.file</b> -scope to allow users to export reports into Google Drive.</li>
+            <li><b>https://www.googleapis.com/auth/drive</b> -scope to allow users to import Google Drive documents into panels they manage. 
+            This requires users to share documents with read-only permissions to techinal user that acts behalf of the application to allow other users to view imported documents.   
+            </li>
+            
+          </ul>
+        
           <h3>Contacting Us</h3>
           <p>If there are any questions regarding this privacy policy, you may contact us using the email below</p>
           <p class="contact-mail">
@@ -110,9 +117,9 @@
           <p>Last Edited on 2017-08-16</p>
         </div>
         
-	      <div class="clearBoth"></div>
-	    </div>
-	    
+        <div class="clearBoth"></div>
+      </div>
+      
     </div>
     
     <jsp:include page="/jsp/templates/index_footer.jsp"></jsp:include>
