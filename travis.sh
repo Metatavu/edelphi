@@ -12,7 +12,7 @@ if [ "$TRAVIS_PULL_REQUEST" != "false" ] && [ -n "${GITHUB_TOKEN}" ] && [ -n "${
     -Dsonar.projectName=eDelphi \
     -Dsonar.projectVersion=$PROJECT_VERSION \
     -Dsonar.sources=edelphi/src,edelphi-persistence/src,itests/src,smvcj/src \
-    -Dsonar.java.binaries=edelphi/target/classes,edelphi-persistence/target/classes,itests/target/classes,smvcj/target/classes \
+    -Dsonar.java.binaries=edelphi/target/classes,edelphi-persistence/target/classes,smvcj/target/classes \
     -Dsonar.java.source=1.8 \
     -Dsonar.github.oauth=$GITHUB_TOKEN \
     -Dsonar.github.repository=$TRAVIS_REPO_SLUG \
@@ -44,7 +44,7 @@ elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "develop" ]; t
     -Dsonar.projectName=eDelphi \
     -Dsonar.projectVersion=$PROJECT_VERSION \
     -Dsonar.sources=edelphi/src,edelphi-persistence/src,itests/src,smvcj/src \
-    -Dsonar.java.binaries=edelphi/target/classes,edelphi-persistence/target/classes,itests/target/classes,smvcj/target/classes \
+    -Dsonar.java.binaries=edelphi/target/classes,edelphi-persistence/target/classes,smvcj/target/classes \
     -Dsonar.java.source=1.8
 
 elif [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ $TRAVIS_BRANCH == "master" ]; then
