@@ -280,9 +280,9 @@ public class TimelineThesisQueryPageHandler extends AbstractThesisQueryPageHandl
         Double xValue = xValues.get(i);
         Double yValue = yValues.get(i);
         if (xValue != null && yValue != null) {
-          int x = (int) (xValue - min / step);
-          int y = (int) (yValue - min / step);
-          values[x][y] = new Double(values[x][y] != null ? values[x][y] + 1 : 1);
+          int x = (int) ((xValue - min) / step);
+          int y = (int) ((yValue - min) / step);
+          values[x][y] = values[x][y] != null ? values[x][y] + 1 : 1;
         }
       }
 
@@ -296,9 +296,12 @@ public class TimelineThesisQueryPageHandler extends AbstractThesisQueryPageHandl
       for (int x = 0; x < valuesCount; x++) {
         for (int y = 0; y < valuesCount; y++) {
           if (values[x][y] != null) {
-            requiredFragment.addAttribute("bubble." + x + "." + y + ".x", String.valueOf((x + min) * step));
-            requiredFragment.addAttribute("bubble." + x + "." + y + ".y", String.valueOf((y + min) * step));
-            requiredFragment.addAttribute("bubble." + x + "." + y + ".value", String.valueOf(values[x][y]));
+            Double bubbleX = min + (x * step);
+            Double bubbleY = min + (y * step);
+            
+            requiredFragment.addAttribute(String.format("bubble.%d.%d.x", x, y), String.valueOf(bubbleX));
+            requiredFragment.addAttribute(String.format("bubble.%d.%d.y", x, y), String.valueOf(bubbleY));
+            requiredFragment.addAttribute(String.format("bubble.%d.%d.value", x, y), String.valueOf(values[x][y]));
           }
         }
       }
