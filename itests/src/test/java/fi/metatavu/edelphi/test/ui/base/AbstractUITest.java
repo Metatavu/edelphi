@@ -660,7 +660,13 @@ public class AbstractUITest {
     WebElement element = null;
     while ((element = findElementByText("Enter the city you usually sign in from")) != null) {
       element.click();
-      waitAndType(new String[] { "#answer", "#knowledgeLoginLocationInput" }, getGoogleHomeTown(), 0);
+      waitAndType(new String[] { "#answer", "#knowledgeLoginLocationInput" }, getGoogleHomeTown(), 300);
+      List<WebElement> pacItems = findElements(".pac-item");
+      if (!pacItems.isEmpty()) {
+        pacItems.get(0).click();
+      }
+      
+      waitAndClick("#submit");
       waitNotVisible("#knowledgeLoginLocationInput");
       waitNotVisible("#answer"); 
     }
