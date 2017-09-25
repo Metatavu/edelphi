@@ -98,6 +98,17 @@
     </div>
   </div>
   
+  <jsp:include page="/jsp/fragments/block_title.jsp">
+    <jsp:param value="profile.block.profileLoginSettingsTitle" name="titleLocale" />
+  </jsp:include>
+  
+  <div id="profileLoginSettingsBlockContent" class="blockContent">
+    <p class="profileLoginSettingsText">
+      <span><fmt:message key="profile.block.profileLoginSettingsText"/></span>
+      <a class="profileLoginSettingsLink" href="${accountUrl}"><fmt:message key="profile.block.profileLoginSettingsLink"/></a>
+    </p>
+  </div>
+  
   <!-- Subscription level -->
 
   <jsp:include page="/jsp/fragments/block_title.jsp">
