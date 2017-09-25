@@ -67,6 +67,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.internal.FindsByCssSelector;
+import org.openqa.selenium.internal.FindsByXPath;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -580,6 +581,14 @@ public class AbstractUITest {
     }
   }
   
+  protected WebElement findElementByText(String text) {
+    try {
+      return ((FindsByXPath) getWebDriver()).findElementByXPath(String.format("//*[contains(text(), '%s')]", text));
+    } catch (Exception e) {
+      return null;
+    }
+  }
+  
   protected GreenMail getGreenMail() {
     return greenMail;
   }
@@ -648,7 +657,12 @@ public class AbstractUITest {
     waitAndType(new String[] { "#password input[name='password']", "#Passwd" }, password, 300);
     waitAndClick(new String[] { "#passwordNext", "#signIn" }, 300);
     
-    waitVisible(".headerUserName", "#submit_approve_access", "#linkAccount");
+    WebElement element = null;
+    while ((element = findElementByText("Enter the city you usually sign in from")) != null) {
+      element.click();
+      waitAndType("#knowledgeLoginLocationInput", getGoogleHomeTown());
+      waitNotVisible("#knowledgeLoginLocationInput");
+    }
     
     while (!findElements("#submit_approve_access").isEmpty()) {
       findElement("#submit_approve_access").click();
@@ -656,7 +670,7 @@ public class AbstractUITest {
       waitVisible(".headerUserName", "#submit_approve_access", "#linkAccount");
     }
   }
-  
+
   protected void linkKeycloakAccount(String username, String password) {
     waitAndClick("#linkAccount");
     waitVisible("#kc-login");
@@ -947,6 +961,10 @@ public class AbstractUITest {
 
   protected String getGoogleUserLastName() {
     return System.getenv("GOOGLE_USER_LAST_NAME");
+  }
+
+  protected String getGoogleHomeTown() {
+    return System.getenv("GOOGLE_HOME_TOWN");
   }
 
   protected boolean getCI() {
