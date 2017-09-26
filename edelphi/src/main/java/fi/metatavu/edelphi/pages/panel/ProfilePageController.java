@@ -80,6 +80,7 @@ public class ProfilePageController extends PanelPageController {
       pageRequestContext.getRequest().setAttribute("subscriptionStarted", loggedUser.getSubscriptionStarted());
       pageRequestContext.getRequest().setAttribute("subscriptionEnds", loggedUser.getSubscriptionEnds());
       pageRequestContext.getRequest().setAttribute("activePanelCount", SubscriptionLevelUtils.countManagedActivePanels(loggedUser));
+      pageRequestContext.getRequest().setAttribute("accountUrl", AuthUtils.getKeycloakAccountUrl());
     }
 
     ActionUtils.includeRoleAccessList(pageRequestContext);

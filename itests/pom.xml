@@ -384,7 +384,7 @@
                 <properties>
                   <cargo.servlet.port>${it.port.http}</cargo.servlet.port>
                   <cargo.jboss.configuration>standalone</cargo.jboss.configuration>
-                  <cargo.jvmargs>${jacoco.agent.itArgLine},output=tcpserver,port=6300 -Xms64m -Xmx1152m -Drunmode=TEST</cargo.jvmargs>
+                  <cargo.jvmargs>${jacoco.agent.itArgLine},output=tcpserver,port=6300 -Xms64m -Xmx1152m -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true -Drunmode=TEST</cargo.jvmargs>
                   <cargo.datasource.datasource.edelphi>
                     cargo.datasource.driver=${it.jdbc.driver}|
                     cargo.datasource.url=${it.jdbc.url}|

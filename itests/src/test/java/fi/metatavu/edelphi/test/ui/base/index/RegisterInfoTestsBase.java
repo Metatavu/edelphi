@@ -9,7 +9,7 @@ public class RegisterInfoTestsBase extends AbstractUITest {
   @Test
   public void testTitle() {
     navigate("/registerinfo.page");
-    waitAndAssertText(".documenttitle", "Tietosuojaseloste - eDelfoi");
+    waitAndAssertText(".documenttitle", "Tietosuojaseloste - eDelphi.org");
   }
   
 }

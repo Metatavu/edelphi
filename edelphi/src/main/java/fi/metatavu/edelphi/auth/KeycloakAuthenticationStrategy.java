@@ -64,6 +64,10 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     return getCallbackUrl();
   }
   
+  public String getAccountUrl() {
+    return String.format("%s/realms/%s/account", getServerUrl(), getRealm());
+  }
+  
   private String getLogoutUrl(String redirectUrl) {
     try {
       return String.format("%s/realms/%s/protocol/openid-connect/logout?redirect_uri=%s", getServerUrl(), getRealm(), URLEncoder.encode(redirectUrl, "UTF-8"));

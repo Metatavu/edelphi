@@ -89,7 +89,7 @@ public class ProfilePageController extends PageController {
       UserSettingDAO userSettingDAO = new UserSettingDAO();
       UserSetting userSetting = userSettingDAO.findByUserAndKey(loggedUser, UserSettingKey.MAIL_COMMENT_REPLY);
       pageRequestContext.getRequest().setAttribute("userCommentMail", userSetting != null && "1".equals(userSetting.getValue()));
-
+      
       // Ensures returning to the profile page if an external authentication source is added to the profile
       AuthUtils.storeRedirectUrl(pageRequestContext, RequestUtils.getCurrentUrl(pageRequestContext.getRequest(), true));
       
@@ -98,6 +98,7 @@ public class ProfilePageController extends PageController {
       pageRequestContext.getRequest().setAttribute("subscriptionStarted", loggedUser.getSubscriptionStarted());
       pageRequestContext.getRequest().setAttribute("subscriptionEnds", loggedUser.getSubscriptionEnds());
       pageRequestContext.getRequest().setAttribute("activePanelCount", SubscriptionLevelUtils.countManagedActivePanels(loggedUser));
+      pageRequestContext.getRequest().setAttribute("accountUrl", AuthUtils.getKeycloakAccountUrl());
     }
 
     ActionUtils.includeRoleAccessList(pageRequestContext);
