@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang.StringUtils;
+
 import fi.metatavu.edelphi.Defaults;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.base.AuthSourceSettingDAO;
@@ -69,8 +71,16 @@ public abstract class AbstractAuthenticationStrategy implements AuthenticationPr
   // TODO If the user has an account activation in progress, should logging in via external sources be denied? 
   
   protected AuthenticationResult processExternalLogin(RequestContext requestContext, String externalId, List<String> emails, String firstName, String lastName) {
+    System.out.println("EXTERNAL LOGIN START");
+    System.out.println("  externalId: " + externalId);
+    System.out.println("  firstName: " + firstName);
+    System.out.println("  lastName: " + lastName);
+    System.out.println("  emails: " + StringUtils.join(emails, ","));
+    
     UserEmailDAO userEmailDAO = new UserEmailDAO();
     UserIdentificationDAO userIdentificationDAO = new UserIdentificationDAO();
+    UserDAO userDAO = new UserDAO();
+    
     Locale locale = requestContext.getRequest().getLocale();
     UserIdentification userIdentification = userIdentificationDAO.findByExternalId(externalId, authSource);
     // Resolve to a common user account based on a variety of possible sources
@@ -82,18 +92,25 @@ public abstract class AbstractAuthenticationStrategy implements AuthenticationPr
       // Entirely new user account
       Delfoi delfoi = RequestUtils.getDelfoi(requestContext);
       DelfoiUserRole userRole = RequestUtils.getDefaults(requestContext).getDefaultDelfoiUserRole();
-      String email = emails.size() > 0 ? emails.get(0) : null;
+      String email = emails.isEmpty() ? null : emails.get(0);
       resolvedUser = registerExternalUser(firstName, lastName, email, delfoi, userRole, externalId, locale);
       for (int i = 1; i < emails.size(); i++) {
         userEmailDAO.create(resolvedUser, emails.get(i));
       }
       RequestUtils.loginUser(requestContext, resolvedUser, authSource.getId());
       return AuthenticationResult.NEW_ACCOUNT;
-    }
-    else {
+    } else {
       if (idUser == null) {
         // Existing user account but new external identification source 
         userIdentificationDAO.create(resolvedUser, externalId, authSource);
+      }
+      
+      if (StringUtils.isBlank(resolvedUser.getFirstName()) && StringUtils.isNotBlank(firstName)) {
+        userDAO.updateFirstName(resolvedUser, firstName, resolvedUser);
+      }
+      
+      if (StringUtils.isBlank(resolvedUser.getLastName()) && StringUtils.isNotBlank(lastName)) {
+        userDAO.updateLastName(resolvedUser, lastName, resolvedUser);
       }
       
       for (String email : emails) {
