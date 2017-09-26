@@ -297,13 +297,13 @@ public class QueryTestsBase extends AbstractUITest {
 
   @SuppressWarnings ("squid:S1192")
   private void nextPage(Integer page) {
-    waitAndClick(String.format("input[name='%s']", "next"));
+    scrollWaitAndClick(String.format("input[name='%s']", "next"));
     waitUrlMatches(String.format(".*page=%d", page));
   }
 
   @SuppressWarnings ("squid:S1192")
   private void finishQuery() {
-    waitAndClick(String.format("input[name='%s']", FINISH));
+    scrollWaitAndClick(String.format("input[name='%s']", FINISH));
   }
   
   private void assertFinishDisabled() {

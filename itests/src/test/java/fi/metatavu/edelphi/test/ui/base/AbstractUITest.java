@@ -33,6 +33,7 @@ import javax.mail.MessagingException;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.junit.After;
@@ -55,6 +56,7 @@ import org.keycloak.representations.idm.IdentityProviderRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -67,6 +69,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.internal.FindsByCssSelector;
+import org.openqa.selenium.internal.FindsByXPath;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -141,6 +144,12 @@ public class AbstractUITest {
     waitAndClick(".createPanel_donePageLink");
     waitNotVisible(".createPanelBlock_createPanelDialogOverlay");
   }
+  
+  protected void scrollWaitAndClick(String selector) {
+    waitPresent(selector);
+    scrollIntoView(selector);
+    waitAndClick(selector);
+  }
 
   protected void waitAndClick(String selector) {
     waitAndClick(selector, 0);
@@ -156,6 +165,10 @@ public class AbstractUITest {
     waitVisible(selectors);
     waitMs(ms);
     click(selectors);
+  }
+  
+  protected void scrollIntoView(String selector) {
+    ((JavascriptExecutor) getWebDriver()).executeScript(String.format("document.querySelectorAll('%s').item(0).scrollIntoView(true);", StringEscapeUtils.escapeEcmaScript(selector)));
   }
 
   @SuppressWarnings ("squid:S1166")
@@ -580,6 +593,14 @@ public class AbstractUITest {
     }
   }
   
+  protected WebElement findElementByText(String text) {
+    try {
+      return ((FindsByXPath) getWebDriver()).findElementByXPath(String.format("//*[contains(text(), '%s')]", text));
+    } catch (Exception e) {
+      return null;
+    }
+  }
+  
   protected GreenMail getGreenMail() {
     return greenMail;
   }
@@ -648,7 +669,20 @@ public class AbstractUITest {
     waitAndType(new String[] { "#password input[name='password']", "#Passwd" }, password, 300);
     waitAndClick(new String[] { "#passwordNext", "#signIn" }, 300);
     
-    waitVisible(".headerUserName", "#submit_approve_access", "#linkAccount");
+    WebElement element = null;
+    while ((element = findElementByText("Enter the city you usually sign in from")) != null) {
+      element.click();
+      waitAndType(new String[] { "#answer", "#knowledgeLoginLocationInput" }, getGoogleHomeTown(), 300);
+      List<WebElement> pacItems = findElements(".pac-item");
+      if (!pacItems.isEmpty()) {
+        pacItems.get(0).click();
+      }
+      
+      waitMs(300);
+      waitAndClick("#submit");
+      waitNotVisible("#knowledgeLoginLocationInput");
+      waitNotVisible("#answer"); 
+    }
     
     while (!findElements("#submit_approve_access").isEmpty()) {
       findElement("#submit_approve_access").click();
@@ -656,7 +690,7 @@ public class AbstractUITest {
       waitVisible(".headerUserName", "#submit_approve_access", "#linkAccount");
     }
   }
-  
+
   protected void linkKeycloakAccount(String username, String password) {
     waitAndClick("#linkAccount");
     waitVisible("#kc-login");
@@ -947,6 +981,10 @@ public class AbstractUITest {
 
   protected String getGoogleUserLastName() {
     return System.getenv("GOOGLE_USER_LAST_NAME");
+  }
+
+  protected String getGoogleHomeTown() {
+    return System.getenv("GOOGLE_HOME_TOWN");
   }
 
   protected boolean getCI() {

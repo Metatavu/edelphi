@@ -63,6 +63,15 @@ public class AuthUtils {
     return (KeycloakAuthenticationStrategy) AuthenticationProviderFactory.getInstance().createAuthenticationProvider(keycloakAuthSource);    
   }
   
+  public static String getKeycloakAccountUrl() {
+    KeycloakAuthenticationStrategy keycloakStrategy = getKeycloakStrategy();
+    if (keycloakStrategy != null) {
+      return keycloakStrategy.getAccountUrl();
+    }
+    
+    return null;
+  }
+  
   public static void storeRedirectUrl(RequestContext requestContext, String redirectUrl) {
     HttpSession session = requestContext.getRequest().getSession();
     session.setAttribute(LOGIN_REDIRECT_URL, redirectUrl);

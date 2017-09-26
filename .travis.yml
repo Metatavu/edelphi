@@ -1,6 +1,5 @@
 language: java
-sudo: false
-dist: precise
+sudo: required
 jdk: oraclejdk8
 cache:
   directories:
