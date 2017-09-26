@@ -33,6 +33,7 @@ import javax.mail.MessagingException;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.junit.After;
@@ -55,6 +56,7 @@ import org.keycloak.representations.idm.IdentityProviderRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -142,6 +144,12 @@ public class AbstractUITest {
     waitAndClick(".createPanel_donePageLink");
     waitNotVisible(".createPanelBlock_createPanelDialogOverlay");
   }
+  
+  protected void scrollWaitAndClick(String selector) {
+    waitPresent(selector);
+    scrollIntoView(selector);
+    waitAndClick(selector);
+  }
 
   protected void waitAndClick(String selector) {
     waitAndClick(selector, 0);
@@ -157,6 +165,10 @@ public class AbstractUITest {
     waitVisible(selectors);
     waitMs(ms);
     click(selectors);
+  }
+  
+  protected void scrollIntoView(String selector) {
+    ((JavascriptExecutor) getWebDriver()).executeScript(String.format("document.querySelectorAll('%s').item(0).scrollIntoView(true);", StringEscapeUtils.escapeEcmaScript(selector)));
   }
 
   @SuppressWarnings ("squid:S1166")
