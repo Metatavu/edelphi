@@ -71,12 +71,6 @@ public abstract class AbstractAuthenticationStrategy implements AuthenticationPr
   // TODO If the user has an account activation in progress, should logging in via external sources be denied? 
   
   protected AuthenticationResult processExternalLogin(RequestContext requestContext, String externalId, List<String> emails, String firstName, String lastName) {
-    System.out.println("EXTERNAL LOGIN START");
-    System.out.println("  externalId: " + externalId);
-    System.out.println("  firstName: " + firstName);
-    System.out.println("  lastName: " + lastName);
-    System.out.println("  emails: " + StringUtils.join(emails, ","));
-    
     UserEmailDAO userEmailDAO = new UserEmailDAO();
     UserIdentificationDAO userIdentificationDAO = new UserIdentificationDAO();
     UserDAO userDAO = new UserDAO();
