@@ -666,6 +666,7 @@ public class AbstractUITest {
         pacItems.get(0).click();
       }
       
+      waitMs(300);
       waitAndClick("#submit");
       waitNotVisible("#knowledgeLoginLocationInput");
       waitNotVisible("#answer"); 
