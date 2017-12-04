@@ -1,6 +1,6 @@
 @CHARSET "UTF-8";
 
-@import url("http://yui.yahooapis.com/3.3.0/build/cssreset/reset-min.css");
+@import url("https://cdn.metatavu.io/libs/cssreset/3.3.0/reset-min.css");
 @import url("contents.css");
 
 body {
