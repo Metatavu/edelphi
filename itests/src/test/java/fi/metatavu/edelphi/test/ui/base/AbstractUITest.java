@@ -898,7 +898,7 @@ public class AbstractUITest {
 
     waitAndType("*[name='avainluku']", "1234");
     waitAndClick("*[name='avainl']");
-    waitAndClick("#Toiminto");
+    waitAndClick(".opux-btn-finish");
   }
   
   protected void cancelPaytrailPayment(Double expectedAmount) {
