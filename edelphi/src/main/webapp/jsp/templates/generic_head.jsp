@@ -141,3 +141,5 @@
     }
   }
 </script>
+
+<jsp:include page="/jsp/templates/google_analytics.jsp"></jsp:include>
