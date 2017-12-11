@@ -915,7 +915,7 @@ public class AbstractUITest {
     waitAndType("*[name='avainluku']", "1234");
     waitAndClick("*[name='avainl']");
     waitAndClick(".opux-btn-secondary");
-    waitAndClick(".PalveluSisalto a");
+    waitAndClick(".opux-action-link");
   }
   
   protected void updateUserSubscription(Long userId, String subscriptionLevel, Date subscriptionStarted, Date subscriptionEnds) {
