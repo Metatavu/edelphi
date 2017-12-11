@@ -914,7 +914,7 @@ public class AbstractUITest {
 
     waitAndType("*[name='avainluku']", "1234");
     waitAndClick("*[name='avainl']");
-    waitAndClick("*[name='Lopeta']");
+    waitAndClick(".opux-btn-secondary");
     waitAndClick(".PalveluSisalto a");
   }
   
