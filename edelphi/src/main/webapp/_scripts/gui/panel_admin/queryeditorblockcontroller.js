@@ -1,7 +1,6 @@
 /* global getGlobalEventQueue, EventQueueItem, getLocale */
 
 var QueryEditorUtils;
-var QueryEditorDraftTask;
 var QueryEditorBlockController;
 var QueryOptionEditor;
 var QueryOptionTextEditor;
@@ -97,27 +96,6 @@ QueryEditorUtils = {
   }
 };
 
-QueryEditorDraftTask = Class.create(fi.metatavu.draft.CustomDraftTask, {
-  initialize: function ($super, editor) {
-    $super();
-    
-    this._editor = editor;
-  },
-  createDraftData: function () {
-    this._editor._commitChanges();
-    return new fi.metatavu.draft.ElementDraft(this.getId(), 'data', this._compress(Object.toJSON({
-      sectionDatas: this._editor._sectionDatas,
-      pageDatas: this._editor._pageDatas 
-    })));
-  },
-  restoreDraftData: function (elementDraft) { 
-    this._editor.loadPageData(elementDraft.getData().sectionDatas, elementDraft.getData().pageDatas);
-  },
-  getId: function () {
-    return 'queryEditor';
-  }
-});
-
 QueryEditorBlockController = Class.create(BlockController, {
   initialize: function ($super) {
     $super();
@@ -176,8 +154,6 @@ QueryEditorBlockController = Class.create(BlockController, {
     this._tabControl.element.observe('ui:tabs:change', this._tabChangeListener);
     
     this._initializePages();
-    
-    fi.metatavu.draft.DraftTaskVault.registerCustomTask(new QueryEditorDraftTask(this));
   },
   deinitialize: function ($super) {
     Event.stopObserving(this._saveButton, "click", this._saveButtonClickListener);
@@ -803,7 +779,6 @@ QueryEditorBlockController = Class.create(BlockController, {
           var panelId = JSDATA['securityContextId'];
           window.location.href = CONTEXTPATH + '/panel/admin/editquery.page?panelId=' + panelId + '&queryId=' + jsonResponse.queryId;
           // _this._queryIdInput.value = jsonResponse.queryId;
-          deleteFormDraft(false);
         } else {
           var sectionContainer = _this._pageListPagesContainer;
   
@@ -867,7 +842,6 @@ QueryEditorBlockController = Class.create(BlockController, {
           }
           
           JSONUtils.showMessages(jsonResponse);
-          deleteFormDraftByStrategy(false, "URL");
         }
         
       }

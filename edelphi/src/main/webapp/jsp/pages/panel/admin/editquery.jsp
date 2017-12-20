@@ -18,18 +18,12 @@
     <jsp:include page="/jsp/supports/flotr_support.jsp"></jsp:include>
     <jsp:include page="/jsp/supports/dragdrop_support.jsp"></jsp:include>
     <jsp:include page="/jsp/supports/modalpopup_support.jsp"></jsp:include>
-    <jsp:include page="/jsp/supports/draft_support.jsp"></jsp:include>
     <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/buttoninputcomponent.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/mathutils.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/panel_blocks/querylistingblockcontroller.js"></script>
     <c:if test="${resourceLocked eq false}">
       <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/locktoucher.js"></script>
       <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/panel_admin/queryeditorblockcontroller.js"></script>
-      <script type="text/javascript">
-        document.observe("dom:loaded", function() {
-          initDrafting($('panelAdminQueryEditorBlock'));
-        });
-      </script>
     </c:if>
   </head>
   <body class="panel_admin index">
