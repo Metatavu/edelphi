@@ -307,10 +307,12 @@ public class QueryTestsBase extends AbstractUITest {
   }
   
   private void assertFinishDisabled() {
+    waitPresent(String.format("input[name='%s']", FINISH));
     assertNotNull(DISABLED, findElement(String.format("input[name='%s']", FINISH)).getAttribute(DISABLED));
   }
   
   private void assertFinishNotDisabled() {
+    waitPresent(String.format("input[name='%s']", FINISH));
     assertNull(findElement(String.format("input[name='%s']", FINISH)).getAttribute(DISABLED));
   }
   
