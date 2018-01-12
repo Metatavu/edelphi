@@ -131,7 +131,11 @@ var ProfileSettingsBasicInfoEditor = Class.create(BlockController, {
   _onImageLoaded: function () {
     var jsonDocument = $('_uploadFrame').contentDocument || $('_uploadFrame').contentWindow.document;
     if (jsonDocument.body && jsonDocument.body.firstChild) {
-      var jsonResponse = JSON.parse(jsonDocument.body.firstChild.innerHTML);
+      var responseText = jsonDocument.body.firstChild.innerHTML;
+      if (!responseText) {
+        responseText = jsonDocument.body.firstChild.textContent;
+      }
+      var jsonResponse = JSON.parse(responseText);
       JSONUtils.showMessages(jsonResponse);
       var imageContainer = $('profilePicture');
       if (imageContainer) {
