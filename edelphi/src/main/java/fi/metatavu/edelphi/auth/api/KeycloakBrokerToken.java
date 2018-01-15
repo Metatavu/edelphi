@@ -1,7 +1,9 @@
 package fi.metatavu.edelphi.auth.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties (ignoreUnknown = true)
 public class KeycloakBrokerToken {
 
   @JsonProperty("access_token")
@@ -15,7 +17,10 @@ public class KeycloakBrokerToken {
 
   @JsonProperty("id_token")
   private String idToken;
-
+  
+  @JsonProperty("refresh_expires_in")
+  private Integer refreshExpiresIn;
+  
   public String getAccessToken() {
     return accessToken;
   }
@@ -46,6 +51,14 @@ public class KeycloakBrokerToken {
 
   public void setIdToken(String idToken) {
     this.idToken = idToken;
+  }
+  
+  public void setRefreshExpiresIn(Integer refreshExpiresIn) {
+    this.refreshExpiresIn = refreshExpiresIn;
+  }
+  
+  public Integer getRefreshExpiresIn() {
+    return refreshExpiresIn;
   }
 
 }

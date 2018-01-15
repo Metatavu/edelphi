@@ -99,7 +99,7 @@
     
     <!-- Keycloak admin client -->
     
-    <keycloak-admin-client.version>3.2.0.Final</keycloak-admin-client.version>
+    <keycloak-admin-client.version>3.4.3.Final</keycloak-admin-client.version>
 
   </properties>
 
