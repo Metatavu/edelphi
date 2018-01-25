@@ -2,18 +2,22 @@ package fi.metatavu.edelphi.query.text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
+import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection;
 import fi.metatavu.edelphi.domainmodel.users.User;
+import fi.metatavu.edelphi.i18n.Messages;
 import fi.metatavu.edelphi.query.AbstractQueryPageHandler;
 import fi.metatavu.edelphi.query.QueryExportContext;
 import fi.metatavu.edelphi.query.QueryOption;
@@ -64,6 +68,9 @@ public class TextQueryPageHandler extends AbstractQueryPageHandler {
   public void saveAnswers(RequestContext requestContext, QueryPage queryPage, QueryReply queryReply) {
     QuerySection section = queryPage.getQuerySection();
 
+    Messages messages = Messages.getInstance();
+    Locale locale = requestContext.getRequest().getLocale();
+    
     // Save comment
     if (section.getCommentable() == Boolean.TRUE && getBooleanOptionValue(queryPage, getDefinedOption("text.commentable"))) {
       QueryQuestionCommentDAO queryQuestionCommentDAO = new QueryQuestionCommentDAO();
@@ -93,7 +100,10 @@ public class TextQueryPageHandler extends AbstractQueryPageHandler {
         String replyContent = requestContext.getString("commentReply." + i);
         
         if ((parentId != null) && (!StringUtils.isEmpty(replyContent))) {
-          QueryQuestionComment parentComment = queryQuestionCommentDAO.findById(parentId);
+          QueryQuestionComment parentComment = queryQuestionCommentDAO.findById(parentId); 
+          if (parentComment == null) {
+            throw new SmvcRuntimeException(EdelfoiStatusCode.NO_PARENT_COMMENT, messages.getText(locale, "exception.1043.noParentComment"));
+          }
           
           queryQuestionCommentDAO.create(queryReply, queryPage, parentComment, replyContent, false, loggedUser);
         }
