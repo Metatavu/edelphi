@@ -2,18 +2,22 @@ package fi.metatavu.edelphi.query.thesis;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
+import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection;
 import fi.metatavu.edelphi.domainmodel.users.User;
+import fi.metatavu.edelphi.i18n.Messages;
 import fi.metatavu.edelphi.query.AbstractQueryPageHandler;
 import fi.metatavu.edelphi.query.QueryOption;
 import fi.metatavu.edelphi.query.QueryOptionEditor;
@@ -81,6 +85,8 @@ public abstract class AbstractThesisQueryPageHandler extends AbstractQueryPageHa
   public void saveAnswers(RequestContext requestContext, QueryPage queryPage, QueryReply queryReply) {
     saveThesisAnswers(requestContext, queryPage, queryReply);
 
+    Messages messages = Messages.getInstance();
+    Locale locale = requestContext.getRequest().getLocale();
     QuerySection section = queryPage.getQuerySection();
 
     // Save comment
@@ -113,6 +119,9 @@ public abstract class AbstractThesisQueryPageHandler extends AbstractQueryPageHa
         
         if ((parentId != null) && (!StringUtils.isEmpty(replyContent))) {
           QueryQuestionComment parentComment = queryQuestionCommentDAO.findById(parentId);
+          if (parentComment == null) {
+            throw new SmvcRuntimeException(EdelfoiStatusCode.NO_PARENT_COMMENT, messages.getText(locale, "exception.1043.noParentComment"));
+          }
           
           queryQuestionCommentDAO.create(queryReply, queryPage, parentComment, replyContent, false, loggedUser);
         }
