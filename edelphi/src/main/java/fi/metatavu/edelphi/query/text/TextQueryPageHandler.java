@@ -100,12 +100,10 @@ public class TextQueryPageHandler extends AbstractQueryPageHandler {
         String replyContent = requestContext.getString("commentReply." + i);
         
         if ((parentId != null) && (!StringUtils.isEmpty(replyContent))) {
-          QueryQuestionComment parentComment = queryQuestionCommentDAO.findById(parentId);
-          
+          QueryQuestionComment parentComment = queryQuestionCommentDAO.findById(parentId); 
           if (parentComment == null) {
             throw new SmvcRuntimeException(EdelfoiStatusCode.NO_PARENT_COMMENT, messages.getText(locale, "exception.1043.noParentComment"));
           }
-          
           
           queryQuestionCommentDAO.create(queryReply, queryPage, parentComment, replyContent, false, loggedUser);
         }

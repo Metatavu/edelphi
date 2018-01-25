@@ -119,7 +119,6 @@ public abstract class AbstractThesisQueryPageHandler extends AbstractQueryPageHa
         
         if ((parentId != null) && (!StringUtils.isEmpty(replyContent))) {
           QueryQuestionComment parentComment = queryQuestionCommentDAO.findById(parentId);
-          
           if (parentComment == null) {
             throw new SmvcRuntimeException(EdelfoiStatusCode.NO_PARENT_COMMENT, messages.getText(locale, "exception.1043.noParentComment"));
           }
