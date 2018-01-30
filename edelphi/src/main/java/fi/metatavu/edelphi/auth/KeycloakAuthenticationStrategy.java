@@ -65,7 +65,7 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
   }
   
   public String getAccountUrl() {
-    return String.format("%s/realms/%s/account", getServerUrl(), getRealm());
+    return String.format("%s/realms/%s/account?referrer=%s", getServerUrl(), getRealm(), getApiKey());
   }
   
   private String getLogoutUrl(String redirectUrl) {
