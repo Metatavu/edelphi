@@ -144,6 +144,17 @@ public class AuthUtils {
     }
   }
 
+  /**
+   * Returns OAuth previously stored access token from HTTP session
+   * 
+   * Null is returned if token is present but does not have requested scopes or 
+   * the token has been expired
+   * 
+   * @param requestContext request context
+   * @param provider token provider
+   * @param scopes required scopes
+   * @return OAuth previously stored access token from HTTP session
+   */
   public static OAuthAccessToken getOAuthAccessToken(RequestContext requestContext, String provider, String... scopes) {
     HttpSession session = requestContext.getRequest().getSession();
     
@@ -151,20 +162,20 @@ public class AuthUtils {
     if (accessTokens != null) {
       for (OAuthAccessToken accessToken : accessTokens) {
         List<String> accessTokenScopes = accessToken.getScopes() != null ? Arrays.asList(accessToken.getScopes()) : Collections.emptyList();
-        if (scopes == null || accessTokenScopes.containsAll(Arrays.asList(scopes))) {
-      		return accessToken;
+        if (scopes == null || accessTokenScopes.containsAll(Arrays.asList(scopes)) && !isOAuthTokenExpired(accessToken)) {
+          return accessToken;
       	}
       }
     }
     
     return null;
   }
-  
+
   public static boolean isGrantedOAuthScope(RequestContext requestContext, String provider, String scope) {
     return getOAuthAccessToken(requestContext, provider, scope) != null;
   }
   
-  public static boolean isOAuthTokenExpired(OAuthAccessToken accessToken) {
+  private static boolean isOAuthTokenExpired(OAuthAccessToken accessToken) {
     return (accessToken.getExpires() != null) && (accessToken.getExpires().getTime() < System.currentTimeMillis());
   }
   
