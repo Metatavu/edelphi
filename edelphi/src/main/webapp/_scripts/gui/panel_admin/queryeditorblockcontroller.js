@@ -152,16 +152,6 @@ QueryEditorBlockController = Class.create(BlockController, {
     Event.observe(this._createSectionLink, "click", this._createSectionClickListener);
     Event.observe(this._queryNameInput, "change", this._queryNameChangeListener);
     
-/**
-    this._textContentEditor = CKEDITOR.replace(textContent, {
-      toolbar: "materialToolbar",
-      fniGenericBrowser:{
-        enabledInDialogs: ['image', 'link'],
-        connectorUrl: CONTEXTPATH + '/system/ckbrowserconnector.json?panelId=' + panelId
-      }
-    });
-    **/
-    
     var panelId = JSDATA['securityContextId'];
     this._descriptionEditor = CKEDITOR.replace(this._queryDescriptionInput, {
       toolbar: "materialToolbar",
