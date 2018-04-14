@@ -1092,6 +1092,10 @@ margin:5px 0px 0px 0px;
   padding:6px 10px 10px 5px;
   min-height:55px;  
 }
+ 
+.panelQueryRow img {
+  max-width: 100%;
+}
 
 .panelQueryRow:last-child {
   border:0;
