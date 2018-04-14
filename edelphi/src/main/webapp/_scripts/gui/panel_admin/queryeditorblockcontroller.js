@@ -1,4 +1,4 @@
-/* global getGlobalEventQueue, EventQueueItem, getLocale */
+/* global getGlobalEventQueue, EventQueueItem, getLocale, CKEDITOR, JSDATA */
 
 var QueryEditorUtils;
 var QueryEditorBlockController;
