@@ -1,4 +1,4 @@
-/* global getGlobalEventQueue, EventQueueItem, getLocale */
+/* global getGlobalEventQueue, EventQueueItem, getLocale, CKEDITOR, JSDATA */
 
 var QueryEditorUtils;
 var QueryEditorBlockController;
@@ -140,6 +140,7 @@ QueryEditorBlockController = Class.create(BlockController, {
     this._tabsContainer = this.getBlockElement().down('.panelAdminQueryEditorTabs');
     this._tabControl = new S2.UI.Tabs(this._tabsContainer);
     this._queryNameInput = this.getBlockElement().down('input[name="name"]');
+    this._queryDescriptionInput = this.getBlockElement().down('textarea[name="description"]');
     
     this._queryIdInput = this.getBlockElement().down('input[name="queryId"]');
     if (this._queryIdInput.value != 'NEW') {
@@ -150,6 +151,15 @@ QueryEditorBlockController = Class.create(BlockController, {
     Event.observe(this._createPageLink, "click", this._createPageClickListener);
     Event.observe(this._createSectionLink, "click", this._createSectionClickListener);
     Event.observe(this._queryNameInput, "change", this._queryNameChangeListener);
+    
+    var panelId = JSDATA['securityContextId'];
+    this._descriptionEditor = CKEDITOR.replace(this._queryDescriptionInput, {
+      toolbar: "materialToolbar",
+      fniGenericBrowser:{
+        enabledInDialogs: ['image', 'link'],
+        connectorUrl: CONTEXTPATH + '/system/ckbrowserconnector.json?panelId=' + panelId
+      }
+    });
     
     this._tabControl.element.observe('ui:tabs:change', this._tabChangeListener);
     
@@ -722,7 +732,7 @@ QueryEditorBlockController = Class.create(BlockController, {
     parameters.set("parentFolderId", this.getBlockElement().down('input[name="parentFolderId"]').value);
     
     parameters.set("name", this.getBlockElement().down('input[name="name"]').value);
-    parameters.set("description", this.getBlockElement().down('textarea[name="description"]').value);
+    parameters.set("description", this._descriptionEditor.getData());
     parameters.set("allowEditReply", this.getBlockElement().down('input[name="allowEditReply"]').checked ? '1': '0');
     parameters.set("state", this.getBlockElement().select('input[name="state"]').find(function(radio) { return radio.checked; }).value);
 
