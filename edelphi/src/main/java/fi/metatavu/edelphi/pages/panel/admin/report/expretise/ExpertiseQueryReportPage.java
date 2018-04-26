@@ -117,7 +117,7 @@ public class ExpertiseQueryReportPage extends QueryReportPageController {
         }
       }      
 
-      return ChartModelProvider.createBubbleChart(queryPage.getTitle(), null, xTickLabels, null, yTickLabels, 90, 0, values);
+      return ChartModelProvider.createBubbleChart(queryPage.getTitle(), null, xTickLabels, null, yTickLabels, 90, 0, values, null, null, null, null);
     } else {
       // TODO: Proper exception
       throw new RuntimeException("Could not find query panel");

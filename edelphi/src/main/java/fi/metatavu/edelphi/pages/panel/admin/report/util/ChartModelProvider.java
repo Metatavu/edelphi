@@ -3,17 +3,24 @@ package fi.metatavu.edelphi.pages.panel.admin.report.util;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Vector;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.birt.chart.api.ChartEngine;
+import org.eclipse.birt.chart.computation.withaxes.AutoScale;
 import org.eclipse.birt.chart.device.EmptyUpdateNotifier;
 import org.eclipse.birt.chart.device.IDeviceRenderer;
 import org.eclipse.birt.chart.exception.ChartException;
 import org.eclipse.birt.chart.extension.datafeed.BubbleDataPointDefinition;
 import org.eclipse.birt.chart.extension.datafeed.BubbleEntry;
+import org.eclipse.birt.chart.extension.datafeed.DifferenceEntry;
 import org.eclipse.birt.chart.factory.GeneratedChartState;
 import org.eclipse.birt.chart.factory.Generator;
 import org.eclipse.birt.chart.model.Chart;
@@ -26,21 +33,32 @@ import org.eclipse.birt.chart.model.attribute.ChartDimension;
 import org.eclipse.birt.chart.model.attribute.DataPointComponent;
 import org.eclipse.birt.chart.model.attribute.IntersectionType;
 import org.eclipse.birt.chart.model.attribute.LegendItemType;
+import org.eclipse.birt.chart.model.attribute.LineAttributes;
 import org.eclipse.birt.chart.model.attribute.LineStyle;
+import org.eclipse.birt.chart.model.attribute.MultipleFill;
 import org.eclipse.birt.chart.model.attribute.Position;
 import org.eclipse.birt.chart.model.attribute.TickStyle;
 import org.eclipse.birt.chart.model.attribute.impl.ColorDefinitionImpl;
 import org.eclipse.birt.chart.model.attribute.impl.DataPointImpl;
+import org.eclipse.birt.chart.model.attribute.impl.LineAttributesImpl;
+import org.eclipse.birt.chart.model.attribute.impl.MultipleFillImpl;
 import org.eclipse.birt.chart.model.component.Axis;
 import org.eclipse.birt.chart.model.component.MarkerLine;
+import org.eclipse.birt.chart.model.component.Scale;
 import org.eclipse.birt.chart.model.component.Series;
 import org.eclipse.birt.chart.model.component.impl.MarkerLineImpl;
 import org.eclipse.birt.chart.model.component.impl.SeriesImpl;
+import org.eclipse.birt.chart.model.data.BaseSampleData;
 import org.eclipse.birt.chart.model.data.BubbleDataSet;
+import org.eclipse.birt.chart.model.data.DataFactory;
+import org.eclipse.birt.chart.model.data.DifferenceDataSet;
 import org.eclipse.birt.chart.model.data.NumberDataSet;
+import org.eclipse.birt.chart.model.data.OrthogonalSampleData;
+import org.eclipse.birt.chart.model.data.SampleData;
 import org.eclipse.birt.chart.model.data.SeriesDefinition;
 import org.eclipse.birt.chart.model.data.TextDataSet;
 import org.eclipse.birt.chart.model.data.impl.BubbleDataSetImpl;
+import org.eclipse.birt.chart.model.data.impl.DifferenceDataSetImpl;
 import org.eclipse.birt.chart.model.data.impl.NumberDataElementImpl;
 import org.eclipse.birt.chart.model.data.impl.NumberDataSetImpl;
 import org.eclipse.birt.chart.model.data.impl.SeriesDefinitionImpl;
@@ -49,12 +67,16 @@ import org.eclipse.birt.chart.model.impl.ChartWithAxesImpl;
 import org.eclipse.birt.chart.model.impl.ChartWithoutAxesImpl;
 import org.eclipse.birt.chart.model.layout.Legend;
 import org.eclipse.birt.chart.model.layout.Plot;
+import org.eclipse.birt.chart.model.type.AreaSeries;
 import org.eclipse.birt.chart.model.type.BarSeries;
 import org.eclipse.birt.chart.model.type.BubbleSeries;
+import org.eclipse.birt.chart.model.type.DifferenceSeries;
 import org.eclipse.birt.chart.model.type.LineSeries;
 import org.eclipse.birt.chart.model.type.PieSeries;
+import org.eclipse.birt.chart.model.type.impl.AreaSeriesImpl;
 import org.eclipse.birt.chart.model.type.impl.BarSeriesImpl;
 import org.eclipse.birt.chart.model.type.impl.BubbleSeriesImpl;
+import org.eclipse.birt.chart.model.type.impl.DifferenceSeriesImpl;
 import org.eclipse.birt.chart.model.type.impl.LineSeriesImpl;
 import org.eclipse.birt.chart.model.type.impl.PieSeriesImpl;
 import org.eclipse.birt.chart.plugin.ChartEnginePlugin;
@@ -62,6 +84,8 @@ import org.eclipse.birt.core.exception.BirtException;
 import org.eclipse.emf.common.util.EList;
 
 public class ChartModelProvider {
+
+  private static List<Double> collect;
 
   public static Chart createBarChart(String chartCaption, String xLabel, List<String> categoryCaptions, List<Double> values, Double average, Double q1, Double q3) {
     // bart charts are based on charts that contain axes
@@ -592,15 +616,16 @@ public class ChartModelProvider {
     
     return cwaBar;
   }
-
-  public static Chart createBubbleChart(String chartCaption, String xLabel, List<String> xTickLabels, String yLabel, List<String> yTickLabels, int xAxisLabelRotation, int yAxisLabelRotation, Double[][] values) {
+  
+  public static Chart createBubbleChart(String chartCaption, String xLabel, List<String> xTickLabels, String yLabel, List<String> yTickLabels, int xAxisLabelRotation, int yAxisLabelRotation, 
+      Double[][] values, Double[] q1x, Double[] q3x, Double[] q1y, Double[] q3y) {
     // TODO: Tick labels
     // TODO: y serie colors
     
     ChartWithAxes bubbleChart = ChartWithAxesImpl.create();
     bubbleChart.setType("Bubble Chart");
     bubbleChart.setSubType("Standard Bubble Chart");
-
+    
     // Plot
     bubbleChart.getBlock().setBackground(ColorDefinitionImpl.WHITE());
     bubbleChart.getBlock().getOutline().setVisible(true);
@@ -704,10 +729,56 @@ public class ChartModelProvider {
         component.setOrthogonalType(BubbleDataPointDefinition.TYPE_SIZE);
       }
     }
+    
+    if (q1x != null && q3x != null) {
+//      seriesDefinitionY.getSeries().add(0, createDifferenceSeries(q1x, q3x));
+      seriesDefinitionY.getSeries().add(0, createLineSeries(q1x));
+      seriesDefinitionY.getSeries().add(0, createLineSeries(q3x));
+    }
+    
+    if (q1y != null && q3y != null) {
+      seriesDefinitionX.getSeries().add(0, createLineSeries(q1y));
+      seriesDefinitionX.getSeries().add(0, createLineSeries(q3y));
+    }
 
     return bubbleChart;
   }
+  
+  private static DifferenceSeries createDifferenceSeries(Double[] values1, Double[] values2) {
+    if (values1.length != values2.length) {
+      // TODO: Log
+      return null;
+    }
 
+    DifferenceEntry[] entries = new DifferenceEntry[values1.length];
+    
+    for (int i = 0; i < values1.length; i++) {
+      if (values1[i] != null && values2[i] != null) {
+        entries[i] = new DifferenceEntry(values1[i], values2[i]);
+      }
+    }
+
+    DifferenceDataSet dataSet = DifferenceDataSetImpl.create(entries);
+
+    DifferenceSeries series = (DifferenceSeries) DifferenceSeriesImpl.create();
+    series.setDataSet(dataSet);
+    series.setCurve(true);
+    series.setTranslucent(true);
+    
+    return series;
+  }
+
+  private static LineSeries createLineSeries(Double[] values) {
+    NumberDataSet dataSet = NumberDataSetImpl.create(values);
+
+    LineSeries series = (LineSeries) LineSeriesImpl.create();
+    series.setDataSet(dataSet);
+    series.setCurve(true);
+    series.setTranslucent(true);
+    
+    return series;
+  }
+  
   public static Chart createPieChart(String chartCaption, List<String> captions, List<Double> values) {
     ChartWithoutAxes chart = ChartWithoutAxesImpl.create( );
     chart.setDimension(ChartDimension.TWO_DIMENSIONAL_WITH_DEPTH_LITERAL);

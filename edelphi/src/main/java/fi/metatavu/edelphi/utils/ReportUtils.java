@@ -9,6 +9,7 @@ import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -214,6 +215,101 @@ public class ReportUtils {
   
   public static QueryFieldDataStatistics getStatistics(List<Double> values, Map<Double, String> dataNames) {
     return new QueryFieldDataStatistics(values, dataNames);
+  }
+  
+  /**
+   * Creates statistic objects for every bubble chart x-axis values
+   * 
+   * @param values bubble values
+   * @return statistic objects for every bubble chart x-axis values
+   */
+  public static QueryFieldDataStatistics[] getScaleStatisticsX(Double[][] values) {
+    QueryFieldDataStatistics[] result = new QueryFieldDataStatistics[values.length];
+    for (int x = 0; x < values.length; x++) {
+      result[x] = getScaleXStatistics(values, x);
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Creates statistic objects for every bubble chart x-axis values
+   * 
+   * @param values bubble values
+   * @return statistic objects for every bubble chart x-axis values
+   */
+  public static QueryFieldDataStatistics[] getScaleStatisticsY(Double[][] values) {
+    QueryFieldDataStatistics[] result = new QueryFieldDataStatistics[values[0].length];
+    for (int y = 0; y < values[0].length; y++) {
+      result[y] = getScaleYStatistics(values, y);
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Creates statistics for specified x values
+   * 
+   * @param values bubble values
+   * @param x x index
+   * @return statistics
+   */
+  public static QueryFieldDataStatistics getScaleXStatistics(Double[][] values, int x) {
+    return new QueryFieldDataStatistics(explodeBubbleValues(getScaleValuesX(values, x)));
+  }
+  
+  /**
+   * Creates statistics for specified x values
+   * 
+   * @param values bubble values
+   * @param x x index
+   * @return statistics
+   */
+  public static QueryFieldDataStatistics getScaleYStatistics(Double[][] values, int y) {
+    return new QueryFieldDataStatistics(explodeBubbleValues(getScaleValuesY(values, y)));
+  }
+
+  private static Double[] getScaleValuesX(Double[][] values, int x) {
+    Double[] valuesX = values[x];
+    return valuesX;
+  }
+
+  private static Double[] getScaleValuesY(Double[][] values, int y) {
+    if (values == null || values.length < 1) {
+      return new Double[0];
+    }
+    
+    Double[] result = new Double[values[0].length];
+    
+    for (int x = 0; x < values.length; x++) {
+      result[x] = values[x][y];
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Explodes bubble value array (describes value count in position as value) 
+   * into array of answer values
+   * 
+   * e.g. [2.0, 2.0, 1.0] into [3.0, 3.0, 2.0, 2.0, 1.0, 1.0]
+   * 
+   * @param bubbleValues bubble values
+   * @return answer array
+   */
+  private static List<Double> explodeBubbleValues(Double[] bubbleValues) {
+    List<Double> result = new ArrayList<>();
+    
+    for (int y = 0; y < bubbleValues.length; y++) {
+      if (bubbleValues[y] != null) {
+        for (double c = 0; c < bubbleValues[y]; c++) {
+//          result.add((double) (bubbleValues.length - 1) - y);
+          result.add((double) y);
+        }
+      }
+    }
+    
+    return result;
   }
   
   public static List<Double> getNumberFieldData(QueryField numberField, List<QueryReply> queryReplies) {

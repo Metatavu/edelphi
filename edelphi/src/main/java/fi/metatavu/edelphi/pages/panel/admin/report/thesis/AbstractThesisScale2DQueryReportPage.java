@@ -1,6 +1,7 @@
 package fi.metatavu.edelphi.pages.panel.admin.report.thesis;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +89,23 @@ public abstract class AbstractThesisScale2DQueryReportPage extends QueryReportPa
       }
     }
     
-    return ChartModelProvider.createBubbleChart(title, xLabel, xTickLabels, yLabel, yTickLabels, 0, 0, values);
+    QueryFieldDataStatistics[] bubbleStatisticsX = ReportUtils.getScaleStatisticsX(values);
+    QueryFieldDataStatistics[] bubbleStatisticsY = ReportUtils.getScaleStatisticsY(values);
+    
+    Double[] q1x = getScaleQuartile(bubbleStatisticsX, 1);
+    Double[] q3x = getScaleQuartile(bubbleStatisticsX, 3);
+    Double[] q1y = getScaleQuartile(bubbleStatisticsY, 1);
+    Double[] q3y = getScaleQuartile(bubbleStatisticsY, 3);
+    
+    return ChartModelProvider.createBubbleChart(title, xLabel, xTickLabels, yLabel, yTickLabels, 0, 0, values, q1x, q3x, q1y, q3y);
+  }
+
+  private Double[] getScaleQuartile(QueryFieldDataStatistics[] bubbleStatisticsX, int nth) {
+    return Arrays.asList(bubbleStatisticsX).stream()
+        .map((statistics) -> {
+          return statistics.getQuartile(nth);
+        })
+        .toArray(Double[]::new);
   }
 
   protected Chart createBarChart(ChartContext chartContext, QueryPage queryPage, String title, Render2dAxis render2dAxis, String fieldName) {

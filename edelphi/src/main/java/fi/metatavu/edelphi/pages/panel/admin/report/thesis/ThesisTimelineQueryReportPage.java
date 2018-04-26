@@ -89,7 +89,7 @@ public class ThesisTimelineQueryReportPage extends QueryReportPageController {
         int y = (int) ((yValues.get(i) - min) / step);
         values[x][y] = new Double(values[x][y] != null ? values[x][y] + 1 : 1);
       }
-      return ChartModelProvider.createBubbleChart(queryPage.getTitle(), null, captions, null, captions, 0, 0, values);
+      return ChartModelProvider.createBubbleChart(queryPage.getTitle(), null, captions, null, captions, 0, 0, values, null, null, null, null);
     }
     else {
       QueryField queryField = queryFieldDAO.findByQueryPageAndName(queryPage, "timeline.value1");

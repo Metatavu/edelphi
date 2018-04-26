@@ -121,6 +121,19 @@ public class QueryFieldDataStatistics {
     return (double) data.get(index) + shift;
   }
   
+  public Double getQuartile(int nth) {
+    switch (nth) {
+      case 1:
+        return getQ1();
+      case 2:
+        return getMedian();
+      case 3:
+        return getQ3();
+    }
+    
+    return null;
+  }
+  
   public Double getMedian() {
     return getQuantile(2, 4);
   }
