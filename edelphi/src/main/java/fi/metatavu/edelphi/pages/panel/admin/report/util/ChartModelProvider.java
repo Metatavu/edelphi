@@ -732,9 +732,9 @@ public class ChartModelProvider {
       }
     }
     
-    addMarkerLine("A", avgX, 0.5d, xAxisPrimary);
-    addMarkerLine("Q1", qX1, 0.5d, xAxisPrimary);
-    addMarkerLine("Q3", qX3, 0.5d, xAxisPrimary);    
+    addMarkerLine("A", avgX, 0d, xAxisPrimary);
+    addMarkerLine("Q1", qX1, 0d, xAxisPrimary);
+    addMarkerLine("Q3", qX3, 0d, xAxisPrimary);    
     addMarkerLine("A", avgY, 0d, yAxisPrimary);
     addMarkerLine("Q1", qY1, 0d, yAxisPrimary);
     addMarkerLine("Q3", qY3, 0d, yAxisPrimary);

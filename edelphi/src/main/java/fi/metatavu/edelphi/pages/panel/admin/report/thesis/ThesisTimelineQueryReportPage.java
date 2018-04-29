@@ -96,27 +96,58 @@ public class ThesisTimelineQueryReportPage extends QueryReportPageController {
         int y = (int) ((yValues.get(i) - min) / step);
         values[x][y] = new Double(values[x][y] != null ? values[x][y] + 1 : 1);
       }
-      return ChartModelProvider.createBubbleChart(queryPage.getTitle(), null, captions, null, captions, 0, 0, values);
+      
+      QueryFieldDataStatistics statisticsX = createStatistics(xValues, min, max, step);
+      Double avgX = statisticsX.getCount() >= AVG_MIN_COUNT ? statisticsX.getAvg() : null;
+      Double qX1 = statisticsX.getCount() >= QUARTILE_MIN_COUNT ? statisticsX.getQ1() : null;
+      Double qX3 = statisticsX.getCount() >= QUARTILE_MIN_COUNT ? statisticsX.getQ3() : null;
+      
+      QueryFieldDataStatistics statisticsY = createStatistics(yValues, min, max, step);
+      Double avgY = statisticsY.getCount() >= AVG_MIN_COUNT ? statisticsY.getAvg() : null;
+      Double qY1 = statisticsY.getCount() >= QUARTILE_MIN_COUNT ? statisticsY.getQ1() : null;
+      Double qY3 = statisticsY.getCount() >= QUARTILE_MIN_COUNT ? statisticsY.getQ3() : null;
+
+      return ChartModelProvider.createBubbleChart(queryPage.getTitle(), null, captions, null, captions, 0, 0, values, 
+          avgX, qX1, qX3, avgY, qY1, qY3);
     } else {
       QueryField queryField = queryFieldDAO.findByQueryPageAndName(queryPage, "timeline.value1");
-      List<Double> data = ReportUtils.getNumberFieldData(queryField, queryReplies);
       String chartTitle = QueryPageUtils.getSetting(queryPage, "timeline.value1Label"); 
-      Map<Double, String> dataNames = new HashMap<>();
+      
+      List<Double> data = ReportUtils.getNumberFieldData(queryField, queryReplies);
       List<Double> occurences = new ArrayList<>();
       Map<Double, Long> classifiedData = ReportUtils.getClassifiedNumberFieldData(data);
       
       for (double d = min; d <= max; d += step) {
-        String caption = step % 1 == 0 ? new Long(Math.round(d)).toString() : new Double(d).toString();
-        dataNames.put(d, caption);
         occurences.add(classifiedData.get(d) == null ? 0d : classifiedData.get(d));
       }
 
-      QueryFieldDataStatistics statistics = ReportUtils.getStatistics(data, dataNames);
+      QueryFieldDataStatistics statistics = createStatistics(data, min, max, step);
       Double avg = statistics.getCount() >= AVG_MIN_COUNT ? statistics.getAvg() : null;
       Double q1 = statistics.getCount() >= QUARTILE_MIN_COUNT ? statistics.getQ1() : null;
       Double q3 = statistics.getCount() >= QUARTILE_MIN_COUNT ? statistics.getQ3() : null;
+      
       return ChartModelProvider.createBarChart(chartTitle, null, captions, occurences, avg, q1, q3);
     }
+  }
+  
+  /**
+   * Creates statistics object
+   * 
+   * @param data data
+   * @param min min 
+   * @param max max
+   * @param step step
+   * @return statistics object
+   */
+  private QueryFieldDataStatistics createStatistics(List<Double> data, double min, double max, double step) {
+    Map<Double, String> dataNames = new HashMap<>();
+    
+    for (double d = min; d <= max; d += step) {
+      String caption = step % 1 == 0 ? new Long(Math.round(d)).toString() : new Double(d).toString();
+      dataNames.put(d, caption);
+    }
+    
+    return ReportUtils.getStatistics(data, dataNames);
   }
   
   /**

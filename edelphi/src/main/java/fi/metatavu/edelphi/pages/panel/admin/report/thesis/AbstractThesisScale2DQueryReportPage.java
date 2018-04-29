@@ -104,7 +104,8 @@ public abstract class AbstractThesisScale2DQueryReportPage extends QueryReportPa
     Double qY1 = statisticsY.getCount() >= QUARTILE_MIN_COUNT ? statisticsY.getQ1() : null;
     Double qY3 = statisticsY.getCount() >= QUARTILE_MIN_COUNT ? statisticsY.getQ3() : null;
 
-    return ChartModelProvider.createBubbleChart(title, xLabel, xTickLabels, yLabel, yTickLabels, 0, 0, values, avgX, qX1, qX3, avgY, qY1, qY3);    
+    return ChartModelProvider.createBubbleChart(title, xLabel, xTickLabels, yLabel, yTickLabels, 0, 0, values, 
+        avgX, qX1, qX3, avgY, qY1, qY3);
   }
 
   protected Chart createBarChart(ChartContext chartContext, QueryPage queryPage, String title, Render2dAxis render2dAxis, String fieldName) {
