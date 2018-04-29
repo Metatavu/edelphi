@@ -4,21 +4,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.birt.chart.model.Chart;
 
-import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionOptionAnswerDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingKeyDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
-import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
@@ -41,6 +38,8 @@ import fi.metatavu.edelphi.utils.QueryPageUtils;
 import fi.metatavu.edelphi.utils.QueryUtils;
 import fi.metatavu.edelphi.utils.ReportUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.comments.ReportPageCommentProcessor;
+import fi.metatavu.edelphi.utils.comments.Scale1DReportPageCommentProcessor;
 
 public class ThesisScale1DQueryReportPage extends QueryReportPageController {
 
@@ -82,7 +81,7 @@ public class ThesisScale1DQueryReportPage extends QueryReportPageController {
     QueryQuestionOptionAnswerDAO queryQuestionOptionAnswerDAO = new QueryQuestionOptionAnswerDAO();
 
     QueryOptionField queryOptionField = getOptionFieldFromScale1DPage(queryPage);
-    final Map<Long,String> answerMap = new HashMap<Long,String>();
+    final Map<Long,String> answerMap = new HashMap<>();
 
     List<QueryReportPageComment> comments = reportPage.getComments();
     for (QueryReportPageComment comment : comments) {
@@ -94,6 +93,7 @@ public class ThesisScale1DQueryReportPage extends QueryReportPageController {
         comment.setAnswer(caption, answer.getOption().getText());
       }
     }
+    
     Collections.sort(comments, new Comparator<QueryReportPageComment>() {
       @Override
       public int compare(QueryReportPageComment o1, QueryReportPageComment o2) {
@@ -104,43 +104,19 @@ public class ThesisScale1DQueryReportPage extends QueryReportPageController {
     return reportPage;
   }
   
+  /**
+   * Appends query page comment to request.
+   * 
+   * @param requestContext request contract
+   * @param queryPage query page
+   */
   private void appendQueryPageComments(RequestContext requestContext, final QueryPage queryPage) {
-    QueryQuestionOptionAnswerDAO queryQuestionOptionAnswerDAO = new QueryQuestionOptionAnswerDAO();
-    QueryOptionField queryOptionField = getOptionFieldFromScale1DPage(queryPage);
     PanelStamp panelStamp = RequestUtils.getActiveStamp(requestContext);
-    
-    QueryQuestionCommentDAO queryQuestionCommentDAO = new QueryQuestionCommentDAO();
-    List<QueryQuestionComment> rootComments = queryQuestionCommentDAO.listRootCommentsByQueryPageAndStampOrderByCreated(queryPage, panelStamp);
-
-    @SuppressWarnings("unchecked")
-    Map<Long,Map<String,String>> answers = (Map<Long,Map<String,String>>) requestContext.getRequest().getAttribute("commentAnswers");
-    if (answers == null) {
-      answers = new HashMap<Long,Map<String,String>>();
-      requestContext.getRequest().setAttribute("commentAnswers", answers);
-    }
-    final Map<Long,String> answerMap = new HashMap<Long,String>();
-    for (QueryQuestionComment comment : rootComments) {
-      QueryQuestionOptionAnswer answer = queryQuestionOptionAnswerDAO.findByQueryReplyAndQueryField(comment.getQueryReply(), queryOptionField);
-      answerMap.put(comment.getId(), answer == null ? "-" : answer.getOption().getValue());
-      if (answer != null) {
-        Map<String,String> valueMap = new LinkedHashMap<String,String>();
-        answers.put(comment.getId(), valueMap);
-        String caption = StringUtils.capitalize(StringUtils.lowerCase(answer.getOption().getOptionField().getCaption()));
-        valueMap.put(caption, answer.getOption().getText());
-      }
-    }
-    Collections.sort(rootComments, new Comparator<QueryQuestionComment>() {
-      @Override
-      public int compare(QueryQuestionComment o1, QueryQuestionComment o2) {
-        return answerMap.get(o2.getId()).compareTo(answerMap.get(o1.getId()));
-      }
-    });
-    
-    Map<Long, List<QueryQuestionComment>> childComments = queryQuestionCommentDAO.listTreesByQueryPage(queryPage);
-    QueryUtils.appendQueryPageRootComments(requestContext, queryPage.getId(), rootComments);
-    QueryUtils.appendQueryPageChildComments(requestContext, childComments);
+    Map<Long, Map<String, String>> answers = getRequestAnswerMap(requestContext);
+    ReportPageCommentProcessor sorter = new Scale1DReportPageCommentProcessor(panelStamp, queryPage, answers);
+    appendQueryPageComments(requestContext, queryPage, sorter);
   }
-
+  
   private QueryOptionField getOptionFieldFromScale1DPage(QueryPage queryPage) {
     QueryFieldDAO queryFieldDAO = new QueryFieldDAO(); 
   
@@ -160,8 +136,8 @@ public class ThesisScale1DQueryReportPage extends QueryReportPageController {
     List<QueryReply> queryReplies = ReportUtils.getQueryReplies(queryPage, chartContext.getReportContext());
     Map<Long, Long> data = ReportUtils.getOptionListData(queryOptionField, queryFieldOptions, queryReplies);
     
-    List<Double> values = new ArrayList<Double>();
-    List<String> categoryCaptions = new ArrayList<String>();
+    List<Double> values = new ArrayList<>();
+    List<String> categoryCaptions = new ArrayList<>();
     
     for (QueryOptionFieldOption optionFieldOption : queryFieldOptions) {
       Long optionId = optionFieldOption.getId();
