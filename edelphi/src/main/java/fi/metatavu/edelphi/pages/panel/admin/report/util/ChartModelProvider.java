@@ -123,27 +123,10 @@ public class ChartModelProvider {
     ySeries.getSeriesPalette().update(ColorDefinitionImpl.create(0, 153, 255));
     ySeries.getSeries().add(bs1);
 
-    if (average != null) {
-      MarkerLine ml = MarkerLineImpl.create(xAxisPrimary, NumberDataElementImpl.create(average + 0.5d));
-      ml.getLineAttributes().setStyle(LineStyle.SOLID_LITERAL);
-      ml.getLabel().getCaption().setValue("A");
-      ml.setLabelAnchor(Anchor.NORTH_EAST_LITERAL);
-    }
+    addMarkerLine("A", average, 0.5d, xAxisPrimary);
+    addMarkerLine("Q1", q1, 0.5d, xAxisPrimary);
+    addMarkerLine("Q3", q3, 0.5d, xAxisPrimary);
 
-    if (q1 != null) {
-      MarkerLine ml = MarkerLineImpl.create(xAxisPrimary, NumberDataElementImpl.create(q1 + 0.5d));
-      ml.getLineAttributes().setStyle(LineStyle.DASHED_LITERAL);
-      ml.getLabel().getCaption().setValue("Q1");
-      ml.setLabelAnchor(Anchor.NORTH_EAST_LITERAL);
-    }
-
-    if (q3 != null) {
-      MarkerLine ml = MarkerLineImpl.create(xAxisPrimary, NumberDataElementImpl.create(q3 + 0.5d));
-      ml.getLineAttributes().setStyle(LineStyle.DASHED_LITERAL);
-      ml.getLabel().getCaption().setValue("Q3");
-      ml.setLabelAnchor(Anchor.NORTH_EAST_LITERAL);
-    }
-    
     return cwaBar;
   }
 
@@ -593,7 +576,45 @@ public class ChartModelProvider {
     return cwaBar;
   }
 
+  /**
+   * Creates a bubble chart without averages and quartiles
+   * 
+   * @param chartCaption chart caption
+   * @param xLabel x axis label
+   * @param xTickLabels x axis tick labels
+   * @param yLabel y axis label
+   * @param yTickLabels y axis tick labels
+   * @param xAxisLabelRotation x axis label rotation
+   * @param yAxisLabelRotation y axis label rotation
+   * @param values values
+   * @return created chart
+   */
+  @SuppressWarnings ("squid:S00107")
   public static Chart createBubbleChart(String chartCaption, String xLabel, List<String> xTickLabels, String yLabel, List<String> yTickLabels, int xAxisLabelRotation, int yAxisLabelRotation, Double[][] values) {
+    return createBubbleChart(chartCaption, xLabel, xTickLabels, yLabel, yTickLabels, xAxisLabelRotation, yAxisLabelRotation, values, null, null, null, null, null, null);
+  }
+
+  /**
+   * Creates a bubble chart
+   * 
+   * @param chartCaption chart caption
+   * @param xLabel x axis label
+   * @param xTickLabels x axis tick labels
+   * @param yLabel y axis label
+   * @param yTickLabels y axis tick labels
+   * @param xAxisLabelRotation x axis label rotation
+   * @param yAxisLabelRotation y axis label rotation
+   * @param values values
+   * @param avgX average x
+   * @param qX1 x axis 1st quartile
+   * @param qX3 x axis 3rd quartile
+   * @param avgY average y
+   * @param qY1 y axis 1st quartile
+   * @param qY3 y axis 3rd quartile
+   * @return created chart
+   */
+  @SuppressWarnings ("squid:S00107")
+  public static Chart createBubbleChart(String chartCaption, String xLabel, List<String> xTickLabels, String yLabel, List<String> yTickLabels, int xAxisLabelRotation, int yAxisLabelRotation, Double[][] values, Double avgX, Double qX1, Double qX3, Double avgY, Double qY1, Double qY3) {
     // TODO: Tick labels
     // TODO: y serie colors
     
@@ -617,7 +638,7 @@ public class ChartModelProvider {
 
     // X-Axis
 
-    Map<Double, String> xTickLabelMap = new HashMap<Double, String>();
+    Map<Double, String> xTickLabelMap = new HashMap<>();
     for (int i = 0, l = xTickLabels.size(); i < l; i++) {
       xTickLabelMap.put(new Double(i), xTickLabels.get(i));
     }
@@ -627,8 +648,11 @@ public class ChartModelProvider {
     xAxisPrimary.setType(AxisType.LINEAR_LITERAL);
     xAxisPrimary.getMajorGrid().setTickStyle(TickStyle.BELOW_LITERAL);
     xAxisPrimary.getOrigin().setType(IntersectionType.MIN_LITERAL);
-    if (xAxisLabelRotation > 0)
+    
+    if (xAxisLabelRotation > 0) {
       xAxisPrimary.getLabel().getCaption().getFont().setRotation(xAxisLabelRotation);
+    }
+    
     if (xLabel != null) {
       xAxisPrimary.getTitle().setVisible(true);
       xAxisPrimary.getTitle().getCaption().getFont().setSize(12);
@@ -638,7 +662,7 @@ public class ChartModelProvider {
 
     // Y-Axis
 
-    Map<Double, String> yTickLabelMap = new HashMap<Double, String>();
+    Map<Double, String> yTickLabelMap = new HashMap<>();
     for (int i = 0, l = yTickLabels.size(); i < l; i++) {
       yTickLabelMap.put(new Double(i), yTickLabels.get(i));
     }
@@ -647,8 +671,11 @@ public class ChartModelProvider {
     yAxisPrimary.setFormatSpecifier(new EnumFormatSpecifierImpl(yTickLabelMap));
     yAxisPrimary.setType(AxisType.LINEAR_LITERAL);
     yAxisPrimary.getMajorGrid().setTickStyle(TickStyle.LEFT_LITERAL);
-    if (yAxisLabelRotation > 0)
+    
+    if (yAxisLabelRotation > 0) {
       yAxisPrimary.getLabel().getCaption().getFont().setRotation(yAxisLabelRotation);
+    }
+    
     if (yLabel != null) {
       yAxisPrimary.getTitle().setVisible(true);
       yAxisPrimary.getTitle().getCaption().getFont().setSize(12);
@@ -656,7 +683,7 @@ public class ChartModelProvider {
       yAxisPrimary.getTitle().getCaption().setValue(yLabel);
     }
     
-    Map<Integer, BubbleEntry[]> bubbleEntriesMap = new HashMap<Integer, BubbleEntry[]>();
+    Map<Integer, BubbleEntry[]> bubbleEntriesMap = new HashMap<>();
     double[] xValues = new double[values.length];
 
     for (int i = 0, l = xValues.length; i < l; i++) {
@@ -704,8 +731,32 @@ public class ChartModelProvider {
         component.setOrthogonalType(BubbleDataPointDefinition.TYPE_SIZE);
       }
     }
-
+    
+    addMarkerLine("A", avgX, 0.5d, xAxisPrimary);
+    addMarkerLine("Q1", qX1, 0.5d, xAxisPrimary);
+    addMarkerLine("Q3", qX3, 0.5d, xAxisPrimary);    
+    addMarkerLine("A", avgY, 0d, yAxisPrimary);
+    addMarkerLine("Q1", qY1, 0d, yAxisPrimary);
+    addMarkerLine("Q3", qY3, 0d, yAxisPrimary);
+    
     return bubbleChart;
+  }
+
+  /**
+   * Creates a marker line into specified axis if value is not null.
+   * 
+   * @param label line label
+   * @param value value
+   * @param offset value offset
+   * @param axis axis
+   */
+  private static void addMarkerLine(String label, Double value, Double offset, Axis axis) {
+    if (value != null) {
+      MarkerLine markerLine = MarkerLineImpl.create(axis, NumberDataElementImpl.create(value + offset));
+      markerLine.getLineAttributes().setStyle(LineStyle.DASHED_LITERAL);
+      markerLine.getLabel().getCaption().setValue(label);
+      markerLine.setLabelAnchor(Anchor.NORTH_EAST_LITERAL);
+    }
   }
 
   public static Chart createPieChart(String chartCaption, List<String> captions, List<Double> values) {
