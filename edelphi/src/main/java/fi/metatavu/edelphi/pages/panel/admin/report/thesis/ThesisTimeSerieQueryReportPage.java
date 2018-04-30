@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
@@ -14,6 +15,7 @@ import org.eclipse.birt.chart.model.Chart;
 
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
+import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageType;
@@ -31,6 +33,9 @@ import fi.metatavu.edelphi.utils.MathUtils;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
 import fi.metatavu.edelphi.utils.QueryUtils;
 import fi.metatavu.edelphi.utils.ReportUtils;
+import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.comments.ReportPageCommentProcessor;
+import fi.metatavu.edelphi.utils.comments.TimeSerieReportPageCommentProcessor;
 
 public class ThesisTimeSerieQueryReportPage extends QueryReportPageController {
 
@@ -42,7 +47,7 @@ public class ThesisTimeSerieQueryReportPage extends QueryReportPageController {
   public QueryReportPageData loadPageData(RequestContext requestContext, ReportContext reportContext, QueryPage queryPage) {
     // TODO: Any statistics for web page?
 
-    QueryUtils.appendQueryPageComments(requestContext, queryPage);
+    appendQueryPageComments(requestContext, queryPage);
     QueryUtils.appendQueryPageThesis(requestContext, queryPage);
     
     return new QueryReportPageData(queryPage, "/jsp/blocks/panel_admin_report/time_serie.jsp", null);
@@ -165,5 +170,21 @@ public class ThesisTimeSerieQueryReportPage extends QueryReportPageController {
   
   private String getFieldName(Double x) {
     return  "time_serie." + x;
+  }
+  
+  /**
+   * Appends query page comment to request.
+   * 
+   * @param requestContext request contract
+   * @param queryPage query page
+   */
+  private void appendQueryPageComments(RequestContext requestContext, final QueryPage queryPage) {
+    PanelStamp panelStamp = RequestUtils.getActiveStamp(requestContext);
+    Map<Long, Map<String, String>> answers = getRequestAnswerMap(requestContext);
+    Double maxX = QueryPageUtils.getDoubleSetting(queryPage, "time_serie.maxX");
+    String axisXTitle = QueryPageUtils.getSetting(queryPage, "time_serie.xAxisTitle");
+    
+    ReportPageCommentProcessor sorter = new TimeSerieReportPageCommentProcessor(panelStamp, queryPage, answers, maxX, axisXTitle);
+    appendQueryPageComments(requestContext, queryPage, sorter);
   }
 }
