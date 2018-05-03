@@ -96,19 +96,8 @@ public class ThesisTimelineQueryReportPage extends QueryReportPageController {
         int y = (int) ((yValues.get(i) - min) / step);
         values[x][y] = new Double(values[x][y] != null ? values[x][y] + 1 : 1);
       }
-      
-      QueryFieldDataStatistics statisticsX = createStatistics(xValues, min, max, step);
-      Double avgX = statisticsX.getCount() >= AVG_MIN_COUNT ? statisticsX.getAvg() : null;
-      Double qX1 = statisticsX.getCount() >= QUARTILE_MIN_COUNT ? statisticsX.getQ1() : null;
-      Double qX3 = statisticsX.getCount() >= QUARTILE_MIN_COUNT ? statisticsX.getQ3() : null;
-      
-      QueryFieldDataStatistics statisticsY = createStatistics(yValues, min, max, step);
-      Double avgY = statisticsY.getCount() >= AVG_MIN_COUNT ? statisticsY.getAvg() : null;
-      Double qY1 = statisticsY.getCount() >= QUARTILE_MIN_COUNT ? statisticsY.getQ1() : null;
-      Double qY3 = statisticsY.getCount() >= QUARTILE_MIN_COUNT ? statisticsY.getQ3() : null;
-
-      return ChartModelProvider.createBubbleChart(queryPage.getTitle(), null, captions, null, captions, 0, 0, values, 
-          avgX, qX1, qX3, avgY, qY1, qY3);
+    
+      return ChartModelProvider.createBubbleChart(queryPage.getTitle(), null, captions, null, captions, 0, 0, values);
     } else {
       QueryField queryField = queryFieldDAO.findByQueryPageAndName(queryPage, "timeline.value1");
       String chartTitle = QueryPageUtils.getSetting(queryPage, "timeline.value1Label"); 
