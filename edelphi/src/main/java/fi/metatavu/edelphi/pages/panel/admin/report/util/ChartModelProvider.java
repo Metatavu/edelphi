@@ -613,7 +613,7 @@ public class ChartModelProvider {
    * @param qY3 y axis 3rd quartile
    * @return created chart
    */
-  @SuppressWarnings ("squid:S00107")
+  @SuppressWarnings ({"squid:S00107", "squid:S3776"})
   public static Chart createBubbleChart(String chartCaption, String xLabel, List<String> xTickLabels, String yLabel, List<String> yTickLabels, int xAxisLabelRotation, int yAxisLabelRotation, Double[][] values, Double avgX, Double qX1, Double qX3, Double avgY, Double qY1, Double qY3) {
     // TODO: Tick labels
     // TODO: y serie colors

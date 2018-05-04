@@ -3386,8 +3386,6 @@ QueryBubbleChartLiveReportController = Class.create(QueryLiveReportController, {
   },
   
   _addMarkerLineY: function (data, label, value) {
-    console.log(label, value);
-    
     data.push({ 
       data: [ [ value, Number.MIN_VALUE, 0 ], [ value, Number.MAX_VALUE, 0 ] ],
       label: label,
@@ -3432,7 +3430,7 @@ QueryBubbleChartLiveReportController = Class.create(QueryLiveReportController, {
           1: this._userData[0][1],
           2: this._userData[0][2]
         });
-      };
+      }
 
       let result = [{ data: data }, { data: this._userData } ];
       

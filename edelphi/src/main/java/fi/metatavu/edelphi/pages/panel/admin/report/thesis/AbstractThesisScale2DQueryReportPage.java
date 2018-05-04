@@ -41,7 +41,8 @@ public abstract class AbstractThesisScale2DQueryReportPage extends QueryReportPa
   public AbstractThesisScale2DQueryReportPage(QueryPageType queryPageType) {
     super(queryPageType);
   }
-  
+
+  @SuppressWarnings ({"squid:S3776"})
   protected Chart createBubbleChart(ChartContext chartContext, QueryPage queryPage, String title, String xLabel, String yLabel, String fieldNameX, String fieldNameY) {
     QueryFieldDAO queryFieldDAO = new QueryFieldDAO();
     QueryQuestionOptionAnswerDAO queryQuestionOptionAnswerDAO = new QueryQuestionOptionAnswerDAO();
