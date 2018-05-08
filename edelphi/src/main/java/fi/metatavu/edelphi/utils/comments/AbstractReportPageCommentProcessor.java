@@ -73,9 +73,7 @@ public abstract class AbstractReportPageCommentProcessor implements ReportPageCo
     if (valueMap != null && !valueMap.isEmpty()) {
       Set<Entry<String,String>> entrySet = valueMap.entrySet();
       List<String> labels = entrySet.stream()
-        .map((entry) -> {
-          return String.format("%s / %s", entry.getKey(), entry.getValue());
-        })
+        .map(entry -> String.format("%s / %s", entry.getKey(), entry.getValue()))
         .collect(Collectors.toList());
       
       return StringUtils.join(labels, " - ");

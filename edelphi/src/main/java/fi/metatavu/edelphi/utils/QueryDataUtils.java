@@ -222,7 +222,7 @@ public class QueryDataUtils {
         rows.add(new String[] { rootUser, rootLabel, rootComment.getComment(), "" });
         List<QueryQuestionComment> childComments = childCommentMap.get(rootComment.getId());
         if (childComments != null) {
-          childComments.forEach((childComment) -> {
+          childComments.forEach(childComment -> {
             String childUser = getReplierExportStrategyValue(replierExportStrategy, childComment.getQueryReply());
             rows.add(new String[] { childUser, "", "", childComment.getComment() });
           });

@@ -70,12 +70,10 @@ public class QueryCommentExportBinaryController extends BinaryController {
         replies = filter.filterList(replies);
       }
     }
-
-    switch (format) {
-      case CSV:
-        exportCsv(requestContext, replies, query, panelStamp);
-        break;
-      }
+    
+    if (format == ExportFormat.CSV) {
+      exportCsv(requestContext, replies, query, panelStamp);
+    }
   }
 
   private void exportCsv(BinaryRequestContext requestContext, List<QueryReply> replies, Query query, PanelStamp panelStamp) {
