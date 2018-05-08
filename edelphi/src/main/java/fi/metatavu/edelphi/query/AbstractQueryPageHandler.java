@@ -8,7 +8,6 @@ import java.util.NavigableMap;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
-import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingKeyDAO;
@@ -16,6 +15,7 @@ import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageSetting;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageSettingKey;
 import fi.metatavu.edelphi.domainmodel.users.User;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
 
 public abstract class AbstractQueryPageHandler implements QueryPageHandler {

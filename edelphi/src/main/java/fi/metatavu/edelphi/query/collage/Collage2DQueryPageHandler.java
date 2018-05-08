@@ -53,6 +53,7 @@ import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
 import fi.metatavu.edelphi.utils.QueryUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.comments.ReportPageCommentProcessor;
 import net.sf.json.JSONArray;
 
 public class Collage2DQueryPageHandler extends AbstractQueryPageHandler {
@@ -249,6 +250,11 @@ public class Collage2DQueryPageHandler extends AbstractQueryPageHandler {
   @Override
   public void exportData(QueryExportContext exportContext) {
     
+  }
+  
+  @Override
+  public ReportPageCommentProcessor exportComments(QueryPage queryPage, PanelStamp stamp, List<QueryReply> replies) {
+    return null;
   }
   
   @Override

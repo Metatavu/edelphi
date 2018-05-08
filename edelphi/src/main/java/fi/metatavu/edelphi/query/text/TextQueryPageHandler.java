@@ -1,6 +1,7 @@
 package fi.metatavu.edelphi.query.text;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -12,6 +13,7 @@ import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
+import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
@@ -27,6 +29,8 @@ import fi.metatavu.edelphi.query.RequiredQueryFragment;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
 import fi.metatavu.edelphi.utils.QueryUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.comments.GenericReportPageCommentProcessor;
+import fi.metatavu.edelphi.utils.comments.ReportPageCommentProcessor;
 
 public class TextQueryPageHandler extends AbstractQueryPageHandler {
 
@@ -109,6 +113,11 @@ public class TextQueryPageHandler extends AbstractQueryPageHandler {
         }
       }
     }
+  }
+  
+  @Override
+  public ReportPageCommentProcessor exportComments(QueryPage queryPage, PanelStamp stamp, List<QueryReply> replies) {
+    return new GenericReportPageCommentProcessor(stamp, queryPage, new HashMap<>());
   }
   
   @Override

@@ -5375,9 +5375,10 @@ label.queryScaleSliderItemLabel {
 }
 
 #GUI_panelReportControlsContainer .queryExportPanel .modalPopupLinksContainerBlock {
-  min-width:200px;
   float:left;
   height:100px;
+  padding-right: 8px;
+  width: 177px;
 }
 
 #GUI_panelReportControlsContainer .queryExportPanel .modalPopupLinksContainerBlock h4 {
