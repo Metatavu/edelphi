@@ -1,6 +1,7 @@
 package fi.metatavu.edelphi.query.thesis;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -14,9 +15,6 @@ import java.util.TreeMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
-import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
-import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
-import fi.metatavu.edelphi.smvcj.logging.Logging;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionAnswerDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionNumericAnswerDAO;
@@ -24,6 +22,7 @@ import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryNumericFieldDAO;
 import fi.metatavu.edelphi.dao.users.UserDAO;
+import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionNumericAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
@@ -39,11 +38,16 @@ import fi.metatavu.edelphi.query.QueryOption;
 import fi.metatavu.edelphi.query.QueryOptionEditor;
 import fi.metatavu.edelphi.query.QueryOptionType;
 import fi.metatavu.edelphi.query.RequiredQueryFragment;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
+import fi.metatavu.edelphi.smvcj.logging.Logging;
 import fi.metatavu.edelphi.utils.MathUtils;
 import fi.metatavu.edelphi.utils.QueryDataUtils;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
 import fi.metatavu.edelphi.utils.ReportUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.comments.ReportPageCommentProcessor;
+import fi.metatavu.edelphi.utils.comments.TimeSerieReportPageCommentProcessor;
 
 public class TimeSerieThesisQueryPageHandler extends AbstractThesisQueryPageHandler {
 
@@ -383,6 +387,13 @@ public class TimeSerieThesisQueryPageHandler extends AbstractThesisQueryPageHand
       }
 
     }
+  }
+
+  @Override
+  public ReportPageCommentProcessor exportComments(QueryPage queryPage, PanelStamp stamp, List<QueryReply> replies) {
+    Double maxX = getDoubleOptionValue(queryPage, getDefinedOption("time_serie.maxX"));
+    String axisXTitle = getStringOptionValue(queryPage, getDefinedOption("time_serie.xAxisTitle"));
+    return new TimeSerieReportPageCommentProcessor(stamp, queryPage, new HashMap<>(), maxX, axisXTitle);
   }
   
   @Override

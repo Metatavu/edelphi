@@ -1,6 +1,7 @@
 package fi.metatavu.edelphi.query.thesis;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -13,6 +14,7 @@ import fi.metatavu.edelphi.dao.querydata.QueryQuestionOptionAnswerDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
 import fi.metatavu.edelphi.dao.users.UserDAO;
+import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
@@ -33,6 +35,8 @@ import fi.metatavu.edelphi.utils.QueryDataUtils;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
 import fi.metatavu.edelphi.utils.QueryUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.comments.ReportPageCommentProcessor;
+import fi.metatavu.edelphi.utils.comments.Scale2DReportPageCommentProcessor;
 
 public class Scale2DThesisQueryPageHandler extends AbstractScaleThesisQueryPageHandler {
 
@@ -47,6 +51,8 @@ public class Scale2DThesisQueryPageHandler extends AbstractScaleThesisQueryPageH
   private static final String SCALE2D_TYPE = "scale2d.type";
   private static final String SCALE2D_LABEL_Y = "scale2d.label.y";
   private static final String SCALE2D_LABEL_X = "scale2d.label.x";
+
+  private List<QueryOption> options = new ArrayList<>();
   
   public Scale2DThesisQueryPageHandler() {
     options.add(new QueryOption(QueryOptionType.QUESTION, SCALE2D_LABEL_X, "panelAdmin.block.query.scale2DXLabelOptionLabel", QueryOptionEditor.TEXT, true));
@@ -304,9 +310,13 @@ public class Scale2DThesisQueryPageHandler extends AbstractScaleThesisQueryPageH
     addRequiredFragment(requestContext, requiredFragment);
   }
 
+  @Override
+  public ReportPageCommentProcessor exportComments(QueryPage queryPage, PanelStamp stamp, List<QueryReply> replies) {
+    return new Scale2DReportPageCommentProcessor(stamp, queryPage, new HashMap<>());
+  }
+  
   private String getFieldName(String axis) {
     return "scale2d." + axis;
   }
-
-  private List<QueryOption> options = new ArrayList<QueryOption>();
+  
 }

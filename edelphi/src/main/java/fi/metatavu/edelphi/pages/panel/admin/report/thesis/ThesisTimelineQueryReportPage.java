@@ -132,7 +132,7 @@ public class ThesisTimelineQueryReportPage extends QueryReportPageController {
     Map<Double, String> dataNames = new HashMap<>();
     
     for (double d = min; d <= max; d += step) {
-      String caption = step % 1 == 0 ? new Long(Math.round(d)).toString() : new Double(d).toString();
+      String caption = step % 1 == 0 ? Long.toString(Math.round(d)) : Double.toString(d);
       dataNames.put(d, caption);
     }
     

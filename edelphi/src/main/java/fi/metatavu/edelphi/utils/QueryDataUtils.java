@@ -6,7 +6,6 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -17,13 +16,12 @@ import javax.servlet.http.HttpSession;
 
 import com.opencsv.CSVWriter;
 
-import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvcj.StatusCode;
-import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
+import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionAnswer;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionNumericAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionTextAnswer;
@@ -36,6 +34,10 @@ import fi.metatavu.edelphi.i18n.Messages;
 import fi.metatavu.edelphi.query.QueryExportContextImpl;
 import fi.metatavu.edelphi.query.QueryPageHandler;
 import fi.metatavu.edelphi.query.QueryPageHandlerFactory;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.StatusCode;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
+import fi.metatavu.edelphi.utils.comments.ReportPageCommentProcessor;
 
 public class QueryDataUtils {
 
@@ -104,19 +106,54 @@ public class QueryDataUtils {
     }
     return queryReplyDAO.findByUserAndQueryAndStamp(loggedUser, query, panelStamp);
   }
+  
+  /**
+   * Export query comments into CSV byte array
+   * 
+   * @param locale locale
+   * @param replierExportStrategy replies export strategy
+   * @param replies replies to be exported
+   * @param query query
+   * @param stamp stamp
+   * @return query comments in CSV byte array
+   * @throws IOException throws IOException when CSV writing fails
+   */
+  public static byte[] exportQueryCommentsAsCsv(Locale locale, ReplierExportStrategy replierExportStrategy, List<QueryReply> replies, Query query, PanelStamp stamp) throws IOException {
+    QueryPageDAO queryPageDAO = new QueryPageDAO();
+    
+    List<QueryPage> queryPages = queryPageDAO.listByQuery(query);
+    Collections.sort(queryPages, new QueryPageNumberComparator());
+    
+    String[] columnHeaders = new String[] { 
+      getReplierExportStrategyLabel(locale, replierExportStrategy), 
+      Messages.getInstance().getText(locale, "panelAdmin.query.export.csvCommentAnswerColumn"), 
+      Messages.getInstance().getText(locale, "panelAdmin.query.export.csvCommentCommentColumn"), 
+      Messages.getInstance().getText(locale, "panelAdmin.query.export.csvCommentReplyColumn"), 
+    };
+    
+    List<String[]> rows = new ArrayList<>();
+    
+    for (QueryPage queryPage : queryPages) {
+      List<String[]> pageRows = exportQueryPageCommentsAsCsv(replierExportStrategy, replies, stamp, queryPage);
+      
+      if (!pageRows.isEmpty()) {
+        rows.add(new String[] { "", "", "", "" });
+        rows.add(new String[] { queryPage.getTitle(), "", "", "" });
+        rows.add(new String[] { "", "", "", "" });
+        rows.addAll(pageRows);
+      }
+    }
+
+    return writeCsv(columnHeaders, rows);
+  }
 
   public static byte[] exportQueryDataAsCSV(Locale locale, ReplierExportStrategy replierExportStrategy, List<QueryReply> replies, Query query, PanelStamp panelStamp) throws IOException {
     QueryPageDAO queryPageDAO = new QueryPageDAO();
     List<QueryPage> queryPages = queryPageDAO.listByQuery(query);
-    Collections.sort(queryPages, new Comparator<QueryPage>() {
-      @Override
-      public int compare(QueryPage o1, QueryPage o2) {
-        return o1.getPageNumber() - o2.getPageNumber();
-      }
-    });
+    Collections.sort(queryPages, new QueryPageNumberComparator());
     
-    Map<QueryReply, Map<Integer, Object>> rows = new HashMap<QueryReply, Map<Integer, Object>>();
-    List<String> columns = new ArrayList<String>();
+    Map<QueryReply, Map<Integer, Object>> rows = new HashMap<>();
+    List<String> columns = new ArrayList<>();
     
     for (QueryPage queryPage : queryPages) {
       QueryExportContextImpl exportContext = new QueryExportContextImpl(locale, queryPage, panelStamp, columns, rows);
@@ -139,6 +176,147 @@ public class QueryDataUtils {
     
     return exportDataToCsv(locale, replierExportStrategy, exportContext.getColumns(), exportContext.getRows());
   }
+
+  /**
+   * Exports single query page into CSV rows
+   * 
+   * @param replierExportStrategy replier export strategy
+   * @param replies replies to be exported
+   * @param stamp stamp
+   * @param queryPage query page to be exported
+   * @return CSV rows
+   */
+  private static List<String[]> exportQueryPageCommentsAsCsv(ReplierExportStrategy replierExportStrategy, List<QueryReply> replies, PanelStamp stamp, QueryPage queryPage) {
+    QueryPageHandler queryPageHandler = QueryPageHandlerFactory.getInstance().buildPageHandler(queryPage.getPageType());
+    if (queryPageHandler != null) {
+      ReportPageCommentProcessor processor = queryPageHandler.exportComments(queryPage, stamp, replies);
+      if (processor != null) {
+        return exportQueryPageCommentsAsCsv(replierExportStrategy, queryPage, processor);
+      }
+    }
+    
+    return Collections.emptyList();
+  }
+
+  /**
+   * Exports single query page into CSV rows using comment processor
+   * 
+   * @param replierExportStrategy replier export strategy
+   * @param queryPage query page to be exported
+   * @param processor comment processor
+   * @return CSV rows
+   */
+  private static List<String[]> exportQueryPageCommentsAsCsv(ReplierExportStrategy replierExportStrategy, QueryPage queryPage, ReportPageCommentProcessor processor) {
+    QueryQuestionCommentDAO queryQuestionCommentDAO = new QueryQuestionCommentDAO();
+    List<String[]> rows = new ArrayList<>();
+
+    processor.processComments();
+    List<QueryQuestionComment> rootComments = processor.getRootComments();
+    
+    if (rootComments != null && !rootComments.isEmpty()) {
+      Map<Long, List<QueryQuestionComment>> childCommentMap = queryQuestionCommentDAO.listTreesByQueryPage(queryPage);
+      
+      for (QueryQuestionComment rootComment : rootComments) {
+        String rootUser = getReplierExportStrategyValue(replierExportStrategy, rootComment.getQueryReply());
+        String rootLabel = processor.getCommentLabel(rootComment.getId());
+        rows.add(new String[] { rootUser, rootLabel, rootComment.getComment(), "" });
+        List<QueryQuestionComment> childComments = childCommentMap.get(rootComment.getId());
+        if (childComments != null) {
+          childComments.forEach(childComment -> {
+            String childUser = getReplierExportStrategyValue(replierExportStrategy, childComment.getQueryReply());
+            rows.add(new String[] { childUser, "", "", childComment.getComment() });
+          });
+        }
+      }
+    }
+    
+    return rows;
+  }
+  
+  /**
+   * Writes a CSV file
+   * 
+   * @param columnHeaders headers
+   * @param rows rows
+   * @return CSV file
+   * @throws IOException throws IOException when CSV writing fails
+   */
+  private static byte[] writeCsv(String[] columnHeaders, List<String[]> rows) throws IOException {
+    return writeCsv(columnHeaders, rows.stream().toArray(String[][]::new));
+  }
+
+  /**
+   * Writes a CSV file
+   * 
+   * @param columnHeaders headers
+   * @param rows rows
+   * @return CSV file
+   * @throws IOException throws IOException when CSV writing fails
+   */
+  private static byte[] writeCsv(String[] columnHeaders, String[][] rows) throws IOException {
+    try (ByteArrayOutputStream csvStream = new ByteArrayOutputStream(); OutputStreamWriter streamWriter = new OutputStreamWriter(csvStream, Charset.forName("UTF-8"))) {
+      CSVWriter csvWriter = new CSVWriter(streamWriter, ',');
+
+      csvWriter.writeNext(columnHeaders);
+      
+      for (String[] row : rows) {
+        csvWriter.writeNext(row);
+      }
+
+      csvWriter.close();
+      
+      return csvStream.toByteArray();
+    }
+  }
+  
+  /**
+   * Returns label for given replier export strategy
+   * 
+   * @param locale locale
+   * @param replierExportStrategy replier export strategy
+   * @return label
+   */
+  private static String getReplierExportStrategyLabel(Locale locale, ReplierExportStrategy replierExportStrategy) {
+    switch (replierExportStrategy) {
+      case NONE:
+      break;
+      case HASH:
+        return Messages.getInstance().getText(locale, "panelAdmin.query.export.csvReplierIdColumn");
+      case NAME:
+        return Messages.getInstance().getText(locale, "panelAdmin.query.export.csvReplierNameColumn");
+      case EMAIL:
+        return Messages.getInstance().getText(locale, "panelAdmin.query.export.csvReplierEmailColumn");
+    }
+    
+    return null;
+  }
+  
+  /**
+   * Returns user identifier for given replier export strategy
+   * 
+   * @param replierExportStrategy replier export strategy
+   * @param queryReply reply
+   * @return user identifier
+   */
+  private static String getReplierExportStrategyValue(ReplierExportStrategy replierExportStrategy, QueryReply queryReply) {
+    if (queryReply != null) {
+      User user = queryReply.getUser();
+      if (user != null) {
+        switch (replierExportStrategy) {
+          case NONE:
+          break;
+          case HASH:
+            return RequestUtils.md5EncodeString(String.valueOf(user.getId()));
+          case NAME:
+            return user.getFullName(true, false);
+          case EMAIL:
+            return user.getDefaultEmailAsString();
+        }
+      }
+    }
+    
+    return "-";
+  }
   
   private static byte[] exportDataToCsv(Locale locale, ReplierExportStrategy replierExportStrategy, List<String> columns, Map<QueryReply, Map<Integer, Object>> rows) throws IOException {
     try (
@@ -147,18 +325,9 @@ public class QueryDataUtils {
       CSVWriter csvWriter = new CSVWriter(streamWriter, ',');
       List<String> nextLine = new ArrayList<>();
       
-      switch (replierExportStrategy) {
-      	case NONE:
-      	break;
-      	case HASH:
-      	  nextLine.add(Messages.getInstance().getText(locale, "panelAdmin.query.export.csvReplierIdColumn"));
-      	break;
-      	case NAME:
-      	  nextLine.add(Messages.getInstance().getText(locale, "panelAdmin.query.export.csvReplierNameColumn"));
-      	break;
-      	case EMAIL:
-      	  nextLine.add(Messages.getInstance().getText(locale, "panelAdmin.query.export.csvReplierEmailColumn"));
-      	break;
+      String replierExportStrategyLabel = getReplierExportStrategyLabel(locale, replierExportStrategy);
+      if (replierExportStrategyLabel != null) {
+        nextLine.add(replierExportStrategyLabel);
       }
       
       // Header
@@ -221,4 +390,5 @@ public class QueryDataUtils {
   	NAME,
   	EMAIL
   }
+
 }

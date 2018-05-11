@@ -24,6 +24,7 @@ import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldOptionDAO;
 import fi.metatavu.edelphi.dao.users.UserDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
+import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseClass;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserIntressClass;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionMultiOptionAnswer;
@@ -45,6 +46,7 @@ import fi.metatavu.edelphi.utils.QueryDataUtils;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 import fi.metatavu.edelphi.utils.ResourceUtils;
+import fi.metatavu.edelphi.utils.comments.ReportPageCommentProcessor;
 
 public class ExpertiseQueryPageHandler extends AbstractQueryPageHandler {
 
@@ -357,6 +359,11 @@ public class ExpertiseQueryPageHandler extends AbstractQueryPageHandler {
         }        
       }
     }
+  }
+  
+  @Override
+  public ReportPageCommentProcessor exportComments(QueryPage queryPage, PanelStamp stamp, List<QueryReply> replies) {
+    return null;
   }
   
   @Override

@@ -5,6 +5,12 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang.StringUtils;
+
+import java.util.Set;
 
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
@@ -57,6 +63,26 @@ public abstract class AbstractReportPageCommentProcessor implements ReportPageCo
   }
   
   /**
+   * Returns comment label as string
+   * 
+   * @param id comment id
+   * @return comment label as string
+   */
+  public String getCommentLabel(Long id) {
+    Map<String, String> valueMap = answers.get(id);
+    if (valueMap != null && !valueMap.isEmpty()) {
+      Set<Entry<String,String>> entrySet = valueMap.entrySet();
+      List<String> labels = entrySet.stream()
+        .map(entry -> String.format("%s / %s", entry.getKey(), entry.getValue()))
+        .collect(Collectors.toList());
+      
+      return StringUtils.join(labels, " - ");
+    }
+    
+    return null;
+  }
+  
+  /**
    * Sorts root comment list with specified comparator
    * 
    * @param comparator comparator
@@ -73,11 +99,15 @@ public abstract class AbstractReportPageCommentProcessor implements ReportPageCo
    * @param value value
    */
   protected void setCommentLabel(Long id, String caption, String value) {
-    Map<String,String> valueMap = new LinkedHashMap<>();
+    Map<String, String> valueMap = answers.get(id);
+    if (valueMap == null) {
+      valueMap = new LinkedHashMap<>();
+    }
+    
     valueMap.put(caption, value);
     answers.put(id, valueMap);
   }
-
+  
   /**
    * Lists page's root comments
    * 

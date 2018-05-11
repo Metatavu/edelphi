@@ -23,4 +23,12 @@ public interface ReportPageCommentProcessor {
    */
   public void processComments();
   
+  /**
+   * Returns comment label as string
+   * 
+   * @param id comment id
+   * @return comment label as string
+   */
+  public String getCommentLabel(Long id);
+  
 }
