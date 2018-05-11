@@ -3350,6 +3350,57 @@ QueryBubbleChartLiveReportController = Class.create(QueryLiveReportController, {
     this._flotr = Flotr.draw(this._flotrContainer, this._getDataSeries(), options);
   },
   
+  _getQuartileValues: function (values, data, axis) {
+    for (var i = 0; i < data.length; i++) {
+      for (var x = 0; x < data[i][2]; x++) {
+        values.push(data[i][axis]);
+      }
+    } 
+  },
+  
+  _getQuartile: function (axis, lowerPercent) {
+    var values = [];
+    
+    this._getQuartileValues(values, this._data, axis);
+    this._getQuartileValues(values, this._userData, axis);
+    values.sort();
+
+    var index = Math.round(values.length * lowerPercent / 100);
+    return values[index];
+  },
+  
+  _addMarkerLineX: function (data, label, value) {
+    data.push({ 
+      data: [ [ Number.MIN_VALUE, value, 0 ], [ Number.MAX_VALUE, value, 0 ] ],
+      label: label,
+      lines: {
+        show: true
+      },
+      bubbles: {
+        show: false
+      },
+      markers: {
+        show: false
+      }
+    });
+  },
+  
+  _addMarkerLineY: function (data, label, value) {
+    data.push({ 
+      data: [ [ value, Number.MIN_VALUE, 0 ], [ value, Number.MAX_VALUE, 0 ] ],
+      label: label,
+      lines: {
+        show: true
+      },
+      bubbles: {
+        show: false
+      },
+      markers: {
+        show: false
+      }
+    });
+  },
+  
   _getDataSeries : function() {
     var data = [];
     var userDataFound = false;
@@ -3380,10 +3431,12 @@ QueryBubbleChartLiveReportController = Class.create(QueryLiveReportController, {
           2: this._userData[0][2]
         });
       }
+
+      let result = [{ data: data }, { data: this._userData } ];
       
-      return [{ data: data }, { data: this._userData }];      
+      return result;   
     } else {
-      return [{ data: data }, { data: [[ 0, 0, 0 ]] }];
+      return [{ data: data }, { data: [[ 0, 0, 0 ]] } ];
     }
 
   }

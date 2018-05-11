@@ -35,10 +35,14 @@ public abstract class AbstractThesisScale2DQueryReportPage extends QueryReportPa
   protected static final String RENDER_2D_AXIS_X_OPTION = "x";
   protected static final String RENDER_2D_AXIS_Y_OPTION = "y";
 
+  private static final int AVG_MIN_COUNT = 2;
+  private static final int QUARTILE_MIN_COUNT = 5;
+
   public AbstractThesisScale2DQueryReportPage(QueryPageType queryPageType) {
     super(queryPageType);
   }
-  
+
+  @SuppressWarnings ({"squid:S3776"})
   protected Chart createBubbleChart(ChartContext chartContext, QueryPage queryPage, String title, String xLabel, String yLabel, String fieldNameX, String fieldNameY) {
     QueryFieldDAO queryFieldDAO = new QueryFieldDAO();
     QueryQuestionOptionAnswerDAO queryQuestionOptionAnswerDAO = new QueryQuestionOptionAnswerDAO();
@@ -88,7 +92,21 @@ public abstract class AbstractThesisScale2DQueryReportPage extends QueryReportPa
       }
     }
     
-    return ChartModelProvider.createBubbleChart(title, xLabel, xTickLabels, yLabel, yTickLabels, 0, 0, values);
+    Map<Long, Long> dataX = ReportUtils.getOptionListData(queryFieldX, optionsX, queryReplies);
+    Map<Long, Long> dataY = ReportUtils.getOptionListData(queryFieldY, optionsY, queryReplies);
+    
+    QueryFieldDataStatistics statisticsX = ReportUtils.getOptionListStatistics(optionsX, dataX);
+    Double avgX = statisticsX.getCount() >= AVG_MIN_COUNT ? statisticsX.getAvg() : null;
+    Double qX1 = statisticsX.getCount() >= QUARTILE_MIN_COUNT ? statisticsX.getQ1() : null;
+    Double qX3 = statisticsX.getCount() >= QUARTILE_MIN_COUNT ? statisticsX.getQ3() : null;
+    
+    QueryFieldDataStatistics statisticsY = ReportUtils.getOptionListStatistics(optionsY, dataY);
+    Double avgY = statisticsY.getCount() >= AVG_MIN_COUNT ? statisticsY.getAvg() : null;
+    Double qY1 = statisticsY.getCount() >= QUARTILE_MIN_COUNT ? statisticsY.getQ1() : null;
+    Double qY3 = statisticsY.getCount() >= QUARTILE_MIN_COUNT ? statisticsY.getQ3() : null;
+
+    return ChartModelProvider.createBubbleChart(title, xLabel, xTickLabels, yLabel, yTickLabels, 0, 0, values, 
+        avgX, qX1, qX3, avgY, qY1, qY3);
   }
 
   protected Chart createBarChart(ChartContext chartContext, QueryPage queryPage, String title, Render2dAxis render2dAxis, String fieldName) {
@@ -122,9 +140,9 @@ public abstract class AbstractThesisScale2DQueryReportPage extends QueryReportPa
     // TODO These could be calculated elsewhere and added below the chart image?
     
     QueryFieldDataStatistics statistics = ReportUtils.getOptionListStatistics(queryFieldOptions, data);
-    Double avg = statistics.getCount() > 1 ? statistics.getAvg() : null;
-    Double q1 = statistics.getCount() >= 5 ? statistics.getQ1() : null;
-    Double q3 = statistics.getCount() >= 5 ? statistics.getQ3() : null;
+    Double avg = statistics.getCount() >= AVG_MIN_COUNT ? statistics.getAvg() : null;
+    Double q1 = statistics.getCount() >= QUARTILE_MIN_COUNT ? statistics.getQ1() : null;
+    Double q3 = statistics.getCount() >= QUARTILE_MIN_COUNT ? statistics.getQ3() : null;
     
     // Bar chart rendering
     
