@@ -77,6 +77,15 @@
             class="modalPopupLinkContainer exportGoogle" target="_blank"><fmt:message key="panel.admin.report.options.downloadOrExportExportDataGoogleSpreadsheet" /></a>
         </div>
       </div>
+      <div class="queryExportLinksData">
+        <h3>
+          <fmt:message key="panel.admin.report.options.exportCommentsTitle" />
+        </h3>
+        <div class="queryOptionsLinkWrapper">
+          <a href="${pageContext.request.contextPath}/queries/exportcomments.binary?panelId=${panelId}&amp;serializedContext=${serializedContext}&amp;queryId=${queryId}&amp;stampId=${stampId}&amp;format=CSV"
+            class="modalPopupLinkContainer exportCSV"><fmt:message key="panel.admin.report.options.downloadOrExportExportDataCSV" /></a>
+        </div>
+      </div>
     </c:otherwise>
   </c:choose>
 </div>

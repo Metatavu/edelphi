@@ -1,17 +1,16 @@
 package fi.metatavu.edelphi.query.thesis;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
-import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
-import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
+import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
@@ -23,12 +22,19 @@ import fi.metatavu.edelphi.query.QueryOption;
 import fi.metatavu.edelphi.query.QueryOptionEditor;
 import fi.metatavu.edelphi.query.QueryOptionType;
 import fi.metatavu.edelphi.query.RequiredQueryFragment;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
 import fi.metatavu.edelphi.utils.QueryUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.comments.GenericReportPageCommentProcessor;
+import fi.metatavu.edelphi.utils.comments.ReportPageCommentProcessor;
 
 public abstract class AbstractThesisQueryPageHandler extends AbstractQueryPageHandler {
-  
+ 
+  private List<QueryOption> options = new ArrayList<>();
+
   public AbstractThesisQueryPageHandler() {
   	super();
 
@@ -130,6 +136,11 @@ public abstract class AbstractThesisQueryPageHandler extends AbstractQueryPageHa
   }
   
   @Override
+  public ReportPageCommentProcessor exportComments(QueryPage queryPage, PanelStamp stamp, List<QueryReply> replies) {
+    return new GenericReportPageCommentProcessor(stamp, queryPage, new HashMap<>());
+  }
+  
+  @Override
   public List<QueryOption> getDefinedOptions() {
     List<QueryOption> options = new ArrayList<QueryOption>(super.getDefinedOptions());
     options.addAll(this.options);
@@ -180,5 +191,4 @@ public abstract class AbstractThesisQueryPageHandler extends AbstractQueryPageHa
     addRequiredFragment(requestContext, queryFragment);
   }
   
-  private List<QueryOption> options = new ArrayList<QueryOption>();
 }

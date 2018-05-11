@@ -22,6 +22,7 @@ import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldOptionDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryTextFieldDAO;
+import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionNumericAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionTextAnswer;
@@ -40,6 +41,7 @@ import fi.metatavu.edelphi.query.QueryOptionEditor;
 import fi.metatavu.edelphi.query.QueryOptionType;
 import fi.metatavu.edelphi.query.RequiredQueryFragment;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
+import fi.metatavu.edelphi.utils.comments.ReportPageCommentProcessor;
 
 public class FormQueryPageHandler extends AbstractQueryPageHandler {
 
@@ -372,6 +374,11 @@ public class FormQueryPageHandler extends AbstractQueryPageHandler {
         }
       }
     }
+  }
+  
+  @Override
+  public ReportPageCommentProcessor exportComments(QueryPage queryPage, PanelStamp stamp, List<QueryReply> replies) {
+    return null;
   }
   
   private RequiredQueryFragment textToFragment(FormTextField field, String value) {

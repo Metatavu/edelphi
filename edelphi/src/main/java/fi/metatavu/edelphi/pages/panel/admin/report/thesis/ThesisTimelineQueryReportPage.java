@@ -7,8 +7,8 @@ import java.util.Map;
 
 import org.eclipse.birt.chart.model.Chart;
 
-import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
+import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageType;
@@ -21,11 +21,18 @@ import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReportPageControll
 import fi.metatavu.edelphi.pages.panel.admin.report.util.QueryReportPageData;
 import fi.metatavu.edelphi.pages.panel.admin.report.util.ReportContext;
 import fi.metatavu.edelphi.query.thesis.TimelineThesisQueryPageHandler;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
 import fi.metatavu.edelphi.utils.QueryUtils;
 import fi.metatavu.edelphi.utils.ReportUtils;
+import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.comments.ReportPageCommentProcessor;
+import fi.metatavu.edelphi.utils.comments.TimelineReportPageCommentProcessor;
 
 public class ThesisTimelineQueryReportPage extends QueryReportPageController {
+  
+  private static final int AVG_MIN_COUNT = 2;
+  private static final int QUARTILE_MIN_COUNT = 5;
 
   public ThesisTimelineQueryReportPage() {
     super(QueryPageType.THESIS_TIMELINE);
@@ -45,7 +52,7 @@ public class ThesisTimelineQueryReportPage extends QueryReportPageController {
       dataNames.put(d, step % 1 == 0 ? new Long(Math.round(d)).toString() : new Double(d).toString());
     }
     QueryFieldDataStatistics statistics = ReportUtils.getStatistics(data, dataNames);
-    QueryUtils.appendQueryPageComments(requestContext, queryPage);
+    appendQueryPageComments(requestContext, queryPage);
     QueryUtils.appendQueryPageThesis(requestContext, queryPage);
     return new QueryReportPageData(queryPage, "/jsp/blocks/panel_admin_report/thesis_timeline.jsp", statistics);
   }
@@ -69,7 +76,7 @@ public class ThesisTimelineQueryReportPage extends QueryReportPageController {
     Double step = QueryPageUtils.getDoubleSetting(queryPage, "timeline.step");
     int type = QueryPageUtils.getIntegerSetting(queryPage, "timeline.type");
 
-    List<String> captions = new ArrayList<String>();
+    List<String> captions = new ArrayList<>();
     List<QueryReply> queryReplies = ReportUtils.getQueryReplies(queryPage, chartContext.getReportContext());
     for (double d = min; d <= max; d += step) {
       captions.add(step % 1 == 0 ? new Long(Math.round(d)).toString() : new Double(d).toString());
@@ -89,29 +96,60 @@ public class ThesisTimelineQueryReportPage extends QueryReportPageController {
         int y = (int) ((yValues.get(i) - min) / step);
         values[x][y] = new Double(values[x][y] != null ? values[x][y] + 1 : 1);
       }
+    
       return ChartModelProvider.createBubbleChart(queryPage.getTitle(), null, captions, null, captions, 0, 0, values);
-    }
-    else {
+    } else {
       QueryField queryField = queryFieldDAO.findByQueryPageAndName(queryPage, "timeline.value1");
-      List<Double> data = ReportUtils.getNumberFieldData(queryField, queryReplies);
       String chartTitle = QueryPageUtils.getSetting(queryPage, "timeline.value1Label"); 
-      Map<Double, String> dataNames = new HashMap<Double, String>();
-      List<Double> occurences = new ArrayList<Double>();
+      
+      List<Double> data = ReportUtils.getNumberFieldData(queryField, queryReplies);
+      List<Double> occurences = new ArrayList<>();
       Map<Double, Long> classifiedData = ReportUtils.getClassifiedNumberFieldData(data);
       
       for (double d = min; d <= max; d += step) {
-        String caption = step % 1 == 0 ? new Long(Math.round(d)).toString() : new Double(d).toString();
-        dataNames.put(d, caption);
         occurences.add(classifiedData.get(d) == null ? 0d : classifiedData.get(d));
       }
+
+      QueryFieldDataStatistics statistics = createStatistics(data, min, max, step);
+      Double avg = statistics.getCount() >= AVG_MIN_COUNT ? statistics.getAvg() : null;
+      Double q1 = statistics.getCount() >= QUARTILE_MIN_COUNT ? statistics.getQ1() : null;
+      Double q3 = statistics.getCount() >= QUARTILE_MIN_COUNT ? statistics.getQ3() : null;
       
-      
-      QueryFieldDataStatistics statistics = ReportUtils.getStatistics(data, dataNames);
-      Double avg = statistics.getCount() > 1 ? statistics.getAvg() : null;
-      Double q1 = statistics.getCount() >= 5 ? statistics.getQ1() : null;
-      Double q3 = statistics.getCount() >= 5 ? statistics.getQ3() : null;
       return ChartModelProvider.createBarChart(chartTitle, null, captions, occurences, avg, q1, q3);
     }
+  }
+  
+  /**
+   * Creates statistics object
+   * 
+   * @param data data
+   * @param min min 
+   * @param max max
+   * @param step step
+   * @return statistics object
+   */
+  private QueryFieldDataStatistics createStatistics(List<Double> data, double min, double max, double step) {
+    Map<Double, String> dataNames = new HashMap<>();
+    
+    for (double d = min; d <= max; d += step) {
+      String caption = step % 1 == 0 ? Long.toString(Math.round(d)) : Double.toString(d);
+      dataNames.put(d, caption);
+    }
+    
+    return ReportUtils.getStatistics(data, dataNames);
+  }
+  
+  /**
+   * Appends query page comment to request.
+   * 
+   * @param requestContext request contract
+   * @param queryPage query page
+   */
+  private void appendQueryPageComments(RequestContext requestContext, final QueryPage queryPage) {
+    PanelStamp panelStamp = RequestUtils.getActiveStamp(requestContext);
+    Map<Long, Map<String, String>> answers = getRequestAnswerMap(requestContext);
+    ReportPageCommentProcessor sorter = new TimelineReportPageCommentProcessor(panelStamp, queryPage, answers);
+    appendQueryPageComments(requestContext, queryPage, sorter);
   }
 
 }

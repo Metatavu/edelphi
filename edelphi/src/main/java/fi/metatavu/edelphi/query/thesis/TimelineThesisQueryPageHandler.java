@@ -1,15 +1,13 @@
 package fi.metatavu.edelphi.query.thesis;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
-import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
-import fi.metatavu.edelphi.smvcj.logging.Logging;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionAnswerDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionNumericAnswerDAO;
@@ -17,6 +15,7 @@ import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryNumericFieldDAO;
 import fi.metatavu.edelphi.dao.users.UserDAO;
+import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionNumericAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
@@ -31,10 +30,15 @@ import fi.metatavu.edelphi.query.QueryOption;
 import fi.metatavu.edelphi.query.QueryOptionEditor;
 import fi.metatavu.edelphi.query.QueryOptionType;
 import fi.metatavu.edelphi.query.RequiredQueryFragment;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
+import fi.metatavu.edelphi.smvcj.logging.Logging;
 import fi.metatavu.edelphi.utils.QueryDataUtils;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
 import fi.metatavu.edelphi.utils.ReportUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.comments.ReportPageCommentProcessor;
+import fi.metatavu.edelphi.utils.comments.TimelineReportPageCommentProcessor;
 
 public class TimelineThesisQueryPageHandler extends AbstractThesisQueryPageHandler {
   
@@ -239,6 +243,11 @@ public class TimelineThesisQueryPageHandler extends AbstractThesisQueryPageHandl
         exportContext.addCellValue(queryReply, commentColumnIndex, comment != null ? comment.getComment() : null);
       }
     }
+  }
+
+  @Override
+  public ReportPageCommentProcessor exportComments(QueryPage queryPage, PanelStamp stamp, List<QueryReply> replies) {
+    return new TimelineReportPageCommentProcessor(stamp, queryPage, new HashMap<>());
   }
   
   @Override
