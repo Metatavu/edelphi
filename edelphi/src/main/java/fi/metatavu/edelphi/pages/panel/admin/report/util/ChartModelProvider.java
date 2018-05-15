@@ -62,7 +62,12 @@ import org.eclipse.birt.core.exception.BirtException;
 import org.eclipse.emf.common.util.EList;
 
 public class ChartModelProvider {
+  
+  private ChartModelProvider() {
+    // Private constructors
+  }
 
+  @SuppressWarnings ("squid:S00107")
   public static Chart createBarChart(String chartCaption, String xLabel, List<String> categoryCaptions, List<Double> values, Double min, Double max, Double average, Double q1, Double q3) {
     // bart charts are based on charts that contain axes
     ChartWithAxes cwaBar = ChartWithAxesImpl.create();
@@ -130,6 +135,7 @@ public class ChartModelProvider {
     return cwaBar;
   }
 
+  @SuppressWarnings ("squid:S00107")
   public static Chart createBarChartHorizontal(String chartCaption, String xLabel, List<String> categoryCaptions, List<Double> values, Double min, Double max, Double average, Double q1, Double q3) {
     ChartWithAxes chart = (ChartWithAxes) createBarChart(chartCaption, xLabel, categoryCaptions, values, min, max, average, q1, q3);
     chart.setTransposed(true);
