@@ -92,12 +92,23 @@ public class ThesisTimelineQueryReportPage extends QueryReportPageController {
         if (xValues.get(i) == null || yValues.get(i) == null) {
           continue;
         }
+        
         int x = (int) ((xValues.get(i) - min) / step);
         int y = (int) ((yValues.get(i) - min) / step);
         values[x][y] = new Double(values[x][y] != null ? values[x][y] + 1 : 1);
       }
-    
-      return ChartModelProvider.createBubbleChart(queryPage.getTitle(), null, captions, null, captions, 0, 0, values);
+
+      QueryFieldDataStatistics statisticsX = createStatistics(xValues, min, max, step);
+      QueryFieldDataStatistics statisticsY  = createStatistics(yValues, min, max, step);
+      
+      Double avgX = statisticsX.getCount() >= AVG_MIN_COUNT ? statisticsX.getAvg() : null;
+      Double qX1 = statisticsX.getCount() >= QUARTILE_MIN_COUNT ? statisticsX.getQ1() : null;
+      Double qX3 = statisticsX.getCount() >= QUARTILE_MIN_COUNT ? statisticsX.getQ3() : null;
+      Double avgY = statisticsY.getCount() >= AVG_MIN_COUNT ? statisticsY.getAvg() : null;
+      Double qY1 = statisticsY.getCount() >= QUARTILE_MIN_COUNT ? statisticsY.getQ1() : null;
+      Double qY3 = statisticsY.getCount() >= QUARTILE_MIN_COUNT ? statisticsY.getQ3() : null;
+      
+      return ChartModelProvider.createBubbleChart(queryPage.getTitle(), null, captions, null, captions, 0, 0, values, min, max, min, max, avgX, qX1, qX3, avgY, qY1, qY3);
     } else {
       QueryField queryField = queryFieldDAO.findByQueryPageAndName(queryPage, "timeline.value1");
       String chartTitle = QueryPageUtils.getSetting(queryPage, "timeline.value1Label"); 
@@ -115,7 +126,7 @@ public class ThesisTimelineQueryReportPage extends QueryReportPageController {
       Double q1 = statistics.getCount() >= QUARTILE_MIN_COUNT ? statistics.getQ1() : null;
       Double q3 = statistics.getCount() >= QUARTILE_MIN_COUNT ? statistics.getQ3() : null;
       
-      return ChartModelProvider.createBarChart(chartTitle, null, captions, occurences, avg, q1, q3);
+      return ChartModelProvider.createBarChart(chartTitle, null, captions, occurences, min, max, avg, q1, q3);
     }
   }
   

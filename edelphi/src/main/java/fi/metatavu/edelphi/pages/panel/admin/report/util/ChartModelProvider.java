@@ -63,10 +63,9 @@ import org.eclipse.emf.common.util.EList;
 
 public class ChartModelProvider {
 
-  public static Chart createBarChart(String chartCaption, String xLabel, List<String> categoryCaptions, List<Double> values, Double average, Double q1, Double q3) {
+  public static Chart createBarChart(String chartCaption, String xLabel, List<String> categoryCaptions, List<Double> values, Double min, Double max, Double average, Double q1, Double q3) {
     // bart charts are based on charts that contain axes
     ChartWithAxes cwaBar = ChartWithAxesImpl.create();
-//    cwaBar.getBlock().setBackground(ColorDefinitionImpl.WHITE());
     cwaBar.getBlock().getOutline().setVisible(true);
     cwaBar.setDimension(ChartDimension.TWO_DIMENSIONAL_WITH_DEPTH_LITERAL);
 
@@ -123,15 +122,16 @@ public class ChartModelProvider {
     ySeries.getSeriesPalette().update(ColorDefinitionImpl.create(0, 153, 255));
     ySeries.getSeries().add(bs1);
 
-    addMarkerLine("A", average, 0.5d, xAxisPrimary);
-    addMarkerLine("Q1", q1, 0.5d, xAxisPrimary);
-    addMarkerLine("Q3", q3, 0.5d, xAxisPrimary);
+    int size = categoryCaptions.size() - 1;
+    addMarkerLine("A", translateMarkerToRange(size, min, max, average), 0.5d, xAxisPrimary);
+    addMarkerLine("Q1", translateMarkerToRange(size, min, max, q1), 0.5d, xAxisPrimary);
+    addMarkerLine("Q3", translateMarkerToRange(size, min, max, q3), 0.5d, xAxisPrimary);
 
     return cwaBar;
   }
 
-  public static Chart createBarChartHorizontal(String chartCaption, String xLabel, List<String> categoryCaptions, List<Double> values, Double average, Double q1, Double q3) {
-    ChartWithAxes chart = (ChartWithAxes) createBarChart(chartCaption, xLabel, categoryCaptions, values, average, q1, q3);
+  public static Chart createBarChartHorizontal(String chartCaption, String xLabel, List<String> categoryCaptions, List<Double> values, Double min, Double max, Double average, Double q1, Double q3) {
+    ChartWithAxes chart = (ChartWithAxes) createBarChart(chartCaption, xLabel, categoryCaptions, values, min, max, average, q1, q3);
     chart.setTransposed(true);
     chart.setReverseCategory(true);
     return chart;
@@ -591,7 +591,7 @@ public class ChartModelProvider {
    */
   @SuppressWarnings ("squid:S00107")
   public static Chart createBubbleChart(String chartCaption, String xLabel, List<String> xTickLabels, String yLabel, List<String> yTickLabels, int xAxisLabelRotation, int yAxisLabelRotation, Double[][] values) {
-    return createBubbleChart(chartCaption, xLabel, xTickLabels, yLabel, yTickLabels, xAxisLabelRotation, yAxisLabelRotation, values, null, null, null, null, null, null);
+    return createBubbleChart(chartCaption, xLabel, xTickLabels, yLabel, yTickLabels, xAxisLabelRotation, yAxisLabelRotation, values, null, null, null, null, null, null, null, null, null, null);
   }
 
   /**
@@ -614,7 +614,7 @@ public class ChartModelProvider {
    * @return created chart
    */
   @SuppressWarnings ({"squid:S00107", "squid:S3776"})
-  public static Chart createBubbleChart(String chartCaption, String xLabel, List<String> xTickLabels, String yLabel, List<String> yTickLabels, int xAxisLabelRotation, int yAxisLabelRotation, Double[][] values, Double avgX, Double qX1, Double qX3, Double avgY, Double qY1, Double qY3) {
+  public static Chart createBubbleChart(String chartCaption, String xLabel, List<String> xTickLabels, String yLabel, List<String> yTickLabels, int xAxisLabelRotation, int yAxisLabelRotation, Double[][] values, Double minX, Double maxX, Double minY, Double maxY, Double avgX, Double qX1, Double qX3, Double avgY, Double qY1, Double qY3) {
     // TODO: Tick labels
     // TODO: y serie colors
     
@@ -732,14 +732,16 @@ public class ChartModelProvider {
       }
     }
     
-    if (values.length < 32) {
-      addMarkerLine("A", avgX, 0.5d, xAxisPrimary);
-      addMarkerLine("Q1", qX1, 0.5d, xAxisPrimary);
-      addMarkerLine("Q3", qX3, 0.5d, xAxisPrimary);    
-      addMarkerLine("A", avgY, 0d, yAxisPrimary);
-      addMarkerLine("Q1", qY1, 0d, yAxisPrimary);
-      addMarkerLine("Q3", qY3, 0d, yAxisPrimary);
-    }
+    int sizeX = xTickLabels.size() - 1;
+    int sizeY = yTickLabels.size() - 1;
+
+    addMarkerLine("A", translateMarkerToRange(sizeX, minX, maxX, avgX), 0.5d, xAxisPrimary);
+    addMarkerLine("Q1", translateMarkerToRange(sizeX, minX, maxX, qX1), 0.5d, xAxisPrimary);
+    addMarkerLine("Q3", translateMarkerToRange(sizeX, minX, maxX, qX3), 0.5d, xAxisPrimary);
+    
+    addMarkerLine("A", translateMarkerToRange(sizeY, minY, maxY, avgY), 0d, yAxisPrimary);
+    addMarkerLine("Q1", translateMarkerToRange(sizeY, minY, maxY, qY1), 0d, yAxisPrimary);
+    addMarkerLine("Q3", translateMarkerToRange(sizeY, minY, maxY, qY3), 0d, yAxisPrimary);
     
     return bubbleChart;
   }
@@ -754,11 +756,28 @@ public class ChartModelProvider {
    */
   private static void addMarkerLine(String label, Double value, Double offset, Axis axis) {
     if (value != null) {
-      MarkerLine markerLine = MarkerLineImpl.create(axis, NumberDataElementImpl.create(value + offset));
+      MarkerLine markerLine = MarkerLineImpl.create(axis, NumberDataElementImpl.create(value + (offset != null ? offset : 0d)));
       markerLine.getLineAttributes().setStyle(LineStyle.DASHED_LITERAL);
       markerLine.getLabel().getCaption().setValue(label);
       markerLine.setLabelAnchor(Anchor.NORTH_EAST_LITERAL);
     }
+  }
+  
+  /**
+   * Translates marker value to be correct in given range
+   * 
+   * @param size size of the range
+   * @param min min value
+   * @param max max value
+   * @param value original value
+   * @return translated value
+   */
+  private static Double translateMarkerToRange(double size, Double min, Double max, Double value) {
+    if (value != null && min != null && max != null) {
+      return (size / (max - min)) * (value - min);
+    }
+    
+    return value;
   }
 
   public static Chart createPieChart(String chartCaption, List<String> captions, List<Double> values) {

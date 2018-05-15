@@ -200,8 +200,10 @@ public class FormQueryReportPage extends QueryReportPageController {
     Double avg = statistics.getCount() > 1 ? statistics.getAvg() : null;
     Double q1 = statistics.getCount() >= 5 ? statistics.getQ1() : null;
     Double q3 = statistics.getCount() >= 5 ? statistics.getQ3() : null;
+    Double min = statistics.getMin();
+    Double max = statistics.getMax();
 
-    return ChartModelProvider.createBarChart(queryOptionField.getCaption(), null, categoryCaptions, values, avg, q1, q3);
+    return ChartModelProvider.createBarChart(queryOptionField.getCaption(), null, categoryCaptions, values, min, max, avg, q1, q3);
   }
 
 }
