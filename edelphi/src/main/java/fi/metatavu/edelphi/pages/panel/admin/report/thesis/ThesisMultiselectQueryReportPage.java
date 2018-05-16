@@ -77,6 +77,6 @@ public class ThesisMultiselectQueryReportPage extends QueryReportPageController 
       values.add(new Double(listOptionAnswerCounts.get(optionId)));
     }
     
-    return ChartModelProvider.createBarChartHorizontal(queryPage.getTitle(), null, categoryCaptions, values, null, null, null);
+    return ChartModelProvider.createBarChartHorizontal(queryPage.getTitle(), null, categoryCaptions, values, null, null, null, null, null);
   }
 }

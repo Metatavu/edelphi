@@ -32,6 +32,14 @@
           <td><fmt:formatNumber maxFractionDigits="3" value="${reportPageData.statistics.avg}"/></td>
         </tr>
         <tr>
+          <td>Q1</td>
+          <td><fmt:formatNumber maxFractionDigits="3" value="${reportPageData.statistics.q1}"/></td>
+        </tr>
+        <tr>
+          <td>Q3</td>
+          <td><fmt:formatNumber maxFractionDigits="3" value="${reportPageData.statistics.q3}"/></td>
+        </tr>
+        <tr>
           <td>n</td>
           <td>${reportPageData.statistics.count}</td>
         </tr>
