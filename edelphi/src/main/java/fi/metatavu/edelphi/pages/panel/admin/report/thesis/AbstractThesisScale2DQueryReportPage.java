@@ -106,7 +106,7 @@ public abstract class AbstractThesisScale2DQueryReportPage extends QueryReportPa
     Double qY3 = statisticsY.getCount() >= QUARTILE_MIN_COUNT ? statisticsY.getQ3() : null;
 
     return ChartModelProvider.createBubbleChart(title, xLabel, xTickLabels, yLabel, yTickLabels, 0, 0, values, 
-        avgX, qX1, qX3, avgY, qY1, qY3);
+        null, null, null, null, avgX, qX1, qX3, avgY, qY1, qY3);
   }
 
   protected Chart createBarChart(ChartContext chartContext, QueryPage queryPage, String title, Render2dAxis render2dAxis, String fieldName) {
@@ -146,7 +146,7 @@ public abstract class AbstractThesisScale2DQueryReportPage extends QueryReportPa
     
     // Bar chart rendering
     
-    return ChartModelProvider.createBarChart(title, labelText, categoryCaptions, values, avg, q1, q3);
+    return ChartModelProvider.createBarChart(title, labelText, categoryCaptions, values, 0d, (double) queryFieldOptions.size(), avg, q1, q3);
   }
 
   protected final class ReportCommentComparator implements Comparator<QueryReportPageComment> {
