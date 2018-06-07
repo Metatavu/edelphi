@@ -2,6 +2,8 @@ package fi.metatavu.edelphi.jsons.panel.admin;
 
 import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
+
 import fi.metatavu.edelphi.Defaults;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.dao.panels.PanelInvitationDAO;
@@ -54,7 +56,7 @@ public class AddUserJSONRequestController extends JSONController {
     Long userId = jsonRequestContext.getLong("userId");
     String firstName = jsonRequestContext.getString("firstName");
     String lastName = jsonRequestContext.getString("lastName");
-    String email = jsonRequestContext.getString("email");
+    String email = StringUtils.lowerCase(jsonRequestContext.getString("email"));
     String password = jsonRequestContext.getString("password");
 
     User user = userId == null ? null : userDAO.findById(userId);
