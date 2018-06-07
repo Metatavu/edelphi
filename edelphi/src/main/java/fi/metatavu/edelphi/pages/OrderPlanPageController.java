@@ -74,7 +74,7 @@ public class OrderPlanPageController extends PageController {
 
     String firstName = pageRequestContext.getString("firstName");
     String lastName = pageRequestContext.getString("lastName");
-    String email = pageRequestContext.getString("email");
+    String email = StringUtils.lowerCase(pageRequestContext.getString("email"));
     String mobileNumber = pageRequestContext.getString("mobileNumber");
     String telephoneNumber = pageRequestContext.getString("telephoneNumber");
     String streetAddress = pageRequestContext.getString("streetAddress");
