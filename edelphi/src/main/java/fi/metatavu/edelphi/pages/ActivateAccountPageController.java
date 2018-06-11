@@ -2,6 +2,8 @@ package fi.metatavu.edelphi.pages;
 
 import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
+
 import fi.metatavu.edelphi.smvcj.Severity;
 import fi.metatavu.edelphi.smvcj.SmvcMessage;
 import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
@@ -23,7 +25,7 @@ public class ActivateAccountPageController extends PageController {
   
   @Override
   public void process(PageRequestContext pageRequestContext) {
-    String email = pageRequestContext.getString("email");
+    String email = StringUtils.lowerCase(pageRequestContext.getString("email"));
     String hash = pageRequestContext.getString("hash");
     UserActivationDAO userActivationDAO = new UserActivationDAO();
     UserActivation userActivation = userActivationDAO.findByEmailAndHash(email, hash);

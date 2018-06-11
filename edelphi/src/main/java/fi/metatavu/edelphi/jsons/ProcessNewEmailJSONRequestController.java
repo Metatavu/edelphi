@@ -4,6 +4,8 @@ import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 
 import java.util.Locale;
 
+import org.apache.commons.lang3.StringUtils;
+
 import fi.metatavu.edelphi.Defaults;
 import fi.metatavu.edelphi.dao.users.DelfoiUserDAO;
 import fi.metatavu.edelphi.dao.users.UserDAO;
@@ -23,7 +25,7 @@ public class ProcessNewEmailJSONRequestController extends JSONController {
     Locale locale = jsonRequestContext.getRequest().getLocale();
     
     Boolean linkEmail = jsonRequestContext.getBoolean("link");
-    String email = jsonRequestContext.getString("email");
+    String email = StringUtils.lowerCase(jsonRequestContext.getString("email"));
     if (linkEmail) {
       if (email != null) {
         UserEmailDAO userEmailDAO = new UserEmailDAO();

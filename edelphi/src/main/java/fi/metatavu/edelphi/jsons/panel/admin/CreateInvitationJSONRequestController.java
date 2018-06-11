@@ -3,6 +3,8 @@ package fi.metatavu.edelphi.jsons.panel.admin;
 import java.util.Locale;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
+
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.panels.PanelInvitationDAO;
@@ -53,7 +55,7 @@ public class CreateInvitationJSONRequestController extends JSONController {
     Query query = queryId == null ? null : queryDAO.findById(queryId);
 
     String baseUrl = RequestUtils.getBaseUrl(jsonRequestContext.getRequest());
-    String email = jsonRequestContext.getString("email");
+    String email = StringUtils.lowerCase(jsonRequestContext.getString("email"));
     Long userId = jsonRequestContext.getLong("userId");
     
     if (isDeclined(panel, query, email)) {
