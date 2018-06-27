@@ -1,4 +1,4 @@
-/*global getLocale,S2*/
+/*global getLocale,addBlockController,endLoadingOperation,JSONUtils,startLoadingOperation*/
 
 var UsersEditorBlockController = Class.create(BlockController, {
   initialize: function ($super) {
@@ -14,7 +14,7 @@ var UsersEditorBlockController = Class.create(BlockController, {
     Event.observe(this._emailInput, "keyup", this._emailInputKeyupListener);
   },
   
-  deinitialize: function ($super) {
+  deinitialize: function () {
     Event.stopObserving(this._emailInput, "keyup", this._emailInputKeyupListener);
   },
   

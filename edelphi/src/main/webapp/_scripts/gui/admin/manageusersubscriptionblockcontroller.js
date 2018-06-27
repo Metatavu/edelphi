@@ -1,4 +1,4 @@
-/*global getLocale,S2,flatpickr,moment*/
+/*global getLocale,S2,flatpickr,moment,addBlockController,endLoadingOperation,JSONUtils,startLoadingOperation*/
 
 var UserSubscriptionLevelEditorBlockController = Class.create(BlockController, {
   initialize: function ($super) {
@@ -12,7 +12,7 @@ var UserSubscriptionLevelEditorBlockController = Class.create(BlockController, {
     $super($('panelAdminUserSubscriptionLevelEditorBlock'));
 
     this._setupFlatpicker("[name='subscription-started']");
-    this._setupFlatpicker("[name='subscription-ends']", {
+    this._setupFlatpicker("[name='subscription-ends']", {
       "minDate": "today"
     });
     
@@ -22,7 +22,7 @@ var UserSubscriptionLevelEditorBlockController = Class.create(BlockController, {
     Event.observe(this._saveButton, "click", this._saveButtonClickListener);
   },
   
-  deinitialize: function ($super) {
+  deinitialize: function () {
     Event.stopObserving(this._saveButton, "click", this._saveButtonClickListener);
     Event.stopObserving($("plan-select"), "change", this._planSelectChangeListener);
   },
@@ -55,10 +55,10 @@ var UserSubscriptionLevelEditorBlockController = Class.create(BlockController, {
           return dateObj.getTime();
         }
       }
-    }, options || {}));
+    }, options || {}));
   },
   
-  _onPlanSelectChange: function (event) {
+  _onPlanSelectChange: function () {
     var select = $("plan-select");
     var option = select.options[select.selectedIndex];
     var type = option.value;
@@ -75,7 +75,7 @@ var UserSubscriptionLevelEditorBlockController = Class.create(BlockController, {
         ends = "";
       break;
       default:
-        var days = parseInt(option.readAttribute("data-days")) || 0;
+        var days = parseInt(option.readAttribute("data-days")) || 0;
         started = moment().startOf("day").toISOString();
         ends = moment().add(days, "days").endOf("day").toISOString();              
       break;
@@ -93,10 +93,10 @@ var UserSubscriptionLevelEditorBlockController = Class.create(BlockController, {
     
     JSONUtils.request(CONTEXTPATH + "/admin/saveusersubscription.json", {
       parameters: formValues,
-      onComplete: function (transport) {
+      onComplete: function () {
         endLoadingOperation();
       },
-      onSuccess: function (jsonResponse) {
+      onSuccess: function () {
         window.location.href = CONTEXTPATH + "/admin/manageusersubscription.page?user-id=" + formValues["user-id"];
       }
     });
