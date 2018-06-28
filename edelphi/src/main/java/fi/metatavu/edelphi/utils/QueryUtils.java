@@ -539,32 +539,11 @@ public class QueryUtils {
       
       List<QueryPage> queryPages = queryPageDAO.listByQuerySection(querySection);
       for (QueryPage queryPage : queryPages) {
-      
+        
         // Comments
         
-        Map<Long, QueryQuestionComment> commentMap = new HashMap<Long, QueryQuestionComment>();
-        List<QueryQuestionComment> queryComments = queryQuestionCommentDAO.listByQueryPageAndStamp(queryPage, sourceStamp);
-        Collections.sort(queryComments, new Comparator<QueryQuestionComment>() {
-          @Override
-          public int compare(QueryQuestionComment o1, QueryQuestionComment o2) {
-            return o1.getId().compareTo(o2.getId());
-          }
-        });
-        for (QueryQuestionComment queryComment : queryComments) {
-          QueryReply newReply = replyMap.get(queryComment.getQueryReply().getId());
-          QueryQuestionComment parentComment = queryComment.getParentComment() == null ? null : commentMap.get(queryComment.getParentComment().getId());
-          QueryQuestionComment newComment = queryQuestionCommentDAO.create(
-              newReply,
-              queryPage,
-              parentComment,
-              queryComment.getComment(),
-              queryComment.getHidden(),
-              queryComment.getCreator(),
-              queryComment.getCreated(),
-              queryComment.getLastModifier(),
-              queryComment.getLastModified());
-          commentMap.put(queryComment.getId(), newComment);
-        }
+        QueryCommentCloner commentCloner = new QueryCommentCloner(queryPage, replyMap, queryQuestionCommentDAO.listByQueryPageAndStamp(queryPage, sourceStamp));
+        commentCloner.cloneComments();
         
         // Field answers
         
