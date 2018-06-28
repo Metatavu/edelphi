@@ -41,6 +41,9 @@
 	      </div>
 	      
 	      <div id="GUI_indexNewsPanel" class="pagePanel">
+          <c:if test="${pageContents ne null}">
+            <div class="index-page-document-contents">${pageContents}</div>
+          </c:if>
 				  <jsp:include page="/jsp/blocks/index/news.jsp"></jsp:include>
 	      </div>
 	      

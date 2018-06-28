@@ -4,11 +4,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.dao.base.DelfoiBulletinDAO;
 import fi.metatavu.edelphi.dao.panels.PanelDAO;
 import fi.metatavu.edelphi.dao.panels.PanelInvitationDAO;
+import fi.metatavu.edelphi.dao.resources.LocalDocumentPageDAO;
 import fi.metatavu.edelphi.dao.users.UserEmailDAO;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiBulletin;
@@ -18,10 +23,14 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelAccessLevel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitation;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitationState;
 import fi.metatavu.edelphi.domainmodel.panels.PanelState;
+import fi.metatavu.edelphi.domainmodel.resources.LocalDocument;
+import fi.metatavu.edelphi.domainmodel.resources.LocalDocumentPage;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.utils.ActionUtils;
 import fi.metatavu.edelphi.utils.AuthUtils;
+import fi.metatavu.edelphi.utils.LocalDocumentComparator;
+import fi.metatavu.edelphi.utils.MaterialUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 
 public class IndexPageController extends PageController {
@@ -38,6 +47,7 @@ public class IndexPageController extends PageController {
     PanelDAO panelDAO = new PanelDAO();
     DelfoiBulletinDAO bulletinDAO = new DelfoiBulletinDAO();
     Delfoi delfoi = RequestUtils.getDelfoi(pageRequestContext);
+    Locale locale = pageRequestContext.getRequest().getLocale();
     
     List<Panel> openPanels = panelDAO.listByDelfoiAndAccessLevelAndState(delfoi, PanelAccessLevel.OPEN, PanelState.IN_PROGRESS); 
     Collections.sort(openPanels, new Comparator<Panel>() {
@@ -80,9 +90,11 @@ public class IndexPageController extends PageController {
         return o2.getCreated().compareTo(o1.getCreated());
       }
     });
-    
+        
     Long authSourceId = AuthUtils.getAuthSource("Keycloak").getId();
+    String pageContents = getIndexPageContents(delfoi, locale);
 
+    pageRequestContext.getRequest().setAttribute("pageContents", pageContents);
     pageRequestContext.getRequest().setAttribute("authSourceId", authSourceId);
     pageRequestContext.getRequest().setAttribute("bulletins", bulletins);
     
@@ -90,5 +102,20 @@ public class IndexPageController extends PageController {
     ActionUtils.includeRoleAccessList(pageRequestContext);
     
     pageRequestContext.setIncludeJSP("/jsp/pages/index.jsp");
+  }
+  
+  private String getIndexPageContents(Delfoi delfoi, Locale locale) {
+    LocalDocumentPageDAO localDocumentPageDAO = new LocalDocumentPageDAO();
+    LocalDocument indexPageDocument = MaterialUtils.findIndexPageDocument(delfoi, locale);
+
+    if (indexPageDocument != null) {
+      return StringUtils.trimToNull(localDocumentPageDAO.listByDocument(indexPageDocument).stream()
+        .sorted(new LocalDocumentComparator())
+        .map(LocalDocumentPage::getContent)
+        .filter(StringUtils::isNotEmpty)
+        .collect(Collectors.joining()));
+    }
+
+    return null;
   }
 }

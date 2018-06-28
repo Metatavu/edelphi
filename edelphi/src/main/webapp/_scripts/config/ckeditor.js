@@ -26,7 +26,7 @@
     ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
     ['Link','Unlink'],
     ['Image','MediaEmbed','Flash','Table','HorizontalRule','SpecialChar'],
-    ['FontSize'],
+    ['FontSize', 'Format'],
     ['Maximize', 'ShowBlocks','-','About']
   ];
   

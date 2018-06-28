@@ -8,19 +8,23 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import fi.metatavu.edelphi.dao.resources.FolderDAO;
+import fi.metatavu.edelphi.dao.resources.LocalDocumentDAO;
 import fi.metatavu.edelphi.dao.resources.ResourceDAO;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.resources.Folder;
+import fi.metatavu.edelphi.domainmodel.resources.LocalDocument;
 import fi.metatavu.edelphi.domainmodel.resources.Resource;
 import fi.metatavu.edelphi.domainmodel.resources.ResourceType;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 public class MaterialUtils {
-  
+
+  private static final String INDEX_PAGE_URLNAME = "index";
   private static final String HELP_ROOT_FOLDER = "help";
   private static final String MATERIAL_ROOT_FOLDER = "material";
 
@@ -66,6 +70,50 @@ public class MaterialUtils {
       return (Folder) languageHelp;
     }
 
+    return null;
+  }
+  
+  /**
+   * Finds delfoi index page document
+   * 
+   * @param delfoi delfoi
+   * @param locale document locale
+   * @return index page document or null if not defined
+   */
+  public static LocalDocument findIndexPageDocument(Delfoi delfoi, Locale locale) {
+    String urlName = String.format("%s-%s", INDEX_PAGE_URLNAME, locale.getLanguage());
+    return findLocalDocumentByParentAndUrlName(delfoi.getRootFolder(), urlName);
+  }
+  
+  /**
+   * Creates index page document
+   * 
+   * @param delfoi delfoi
+   * @param locale locale
+   * @param user logged user
+   * @return created document
+   */
+  public static LocalDocument createIndexPageDocument(Delfoi delfoi, Locale locale, User user) {
+    LocalDocumentDAO localDocumentDAO = new LocalDocumentDAO();
+    String urlName = String.format("%s-%s", INDEX_PAGE_URLNAME, locale.getLanguage());
+    return localDocumentDAO.create(urlName, urlName, delfoi.getRootFolder(), user, 0);
+  }
+  
+  /**
+   * Returns local document by parent folder and URL name
+   * 
+   * @param parentFolder parent folder
+   * @param urlName URL name
+   * @return Document or null if not found
+   */
+  public static LocalDocument findLocalDocumentByParentAndUrlName(Folder parentFolder, String urlName) {
+    ResourceDAO resourceDAO = new ResourceDAO();
+    
+    Resource resource = resourceDAO.findByUrlNameAndParentFolder(urlName, parentFolder);
+    if (resource instanceof LocalDocument) {
+      return (LocalDocument) resource;
+    }
+    
     return null;
   }
 
