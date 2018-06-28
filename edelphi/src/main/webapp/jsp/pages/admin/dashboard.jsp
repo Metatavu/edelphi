@@ -81,6 +81,12 @@
             </div>
           </c:if>
           
+          <c:if test="${actions['MANAGE_DELFOI_MATERIALS']}">
+            <div id="GUI_indexAdminDashboardSettingsContainer" class="pagePanel">
+              <jsp:include page="/jsp/blocks/admin/materials.jsp"/>
+            </div>
+          </c:if>
+          
         </div>
 
         <div class="GUI_indexAdminDashboardNarrowColumn">

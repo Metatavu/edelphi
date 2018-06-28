@@ -42,6 +42,27 @@ html {
   margin:15px 0px 10px 0px;
 }
 
+.index-page-document-contents h1 {
+  text-transform: uppercase; 
+}
+
+.index-page-document-contents h1,
+.index-page-document-contents h2,
+.index-page-document-contents h3,
+.index-page-document-contents h4,
+.index-page-document-contents h5,
+.index-page-document-contents h6 {
+  color:#df4d1c;
+}
+
+.index-page-document-contents:after {
+  height:5px;
+  background:url('../gfx/ui/news_spacer.png') no-repeat center center;
+  margin:20px 0px 20px 0px;
+  display: block;
+  content: '';
+}
+
 h2.newsEntryTitle {
   margin: 0;
   padding: 5px 0px 7px 0px;
@@ -128,6 +149,10 @@ h2.newsEntryTitle {
 
 .cke_editor_content {
   max-width:800px;
+}
+
+.wide-editor-container .cke_editor_content {
+  max-width: none;
 }
 
 /* 
