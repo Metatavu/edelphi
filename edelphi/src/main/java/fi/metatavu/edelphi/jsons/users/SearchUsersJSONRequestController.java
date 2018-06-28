@@ -7,11 +7,10 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
-import fi.metatavu.edelphi.dao.users.UserDAO;
+import fi.metatavu.edelphi.dao.users.UserEmailDAO;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.jsons.JSONController;
-import fi.metatavu.edelphi.search.SearchResult;
+import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 
 public class SearchUsersJSONRequestController extends JSONController {
 
@@ -22,16 +21,14 @@ public class SearchUsersJSONRequestController extends JSONController {
     
     String text = jsonRequestContext.getLowercaseString("text");
     if (!StringUtils.isBlank(text)) {
-      text = text.replace("*", "");
+      text = text.replace("*", "").replace("%", "");
     }
-    
-    // Actual search
     
     List<Map<String, Object>> jsonResults = new ArrayList<Map<String, Object>>();
     if (!StringUtils.isBlank(text)) {
-      UserDAO userDAO = new UserDAO();
-      SearchResult<User> results = text.indexOf(" ") > 0 ? userDAO.searchByFullName(10, 0, text) : userDAO.searchByNameOrEmail(10, 0, text);
-      List<User> users = results.getResults();
+      UserEmailDAO userEmailDAO = new UserEmailDAO();
+      List<User> users = userEmailDAO.listUsersByAddressLike(String.format("%s%%", text), 0, 50);
+
       for (User user : users) {
         Map<String, Object> userInfo = new HashMap<String, Object>();
         userInfo.put("id", user.getId());
@@ -40,7 +37,9 @@ public class SearchUsersJSONRequestController extends JSONController {
         userInfo.put("email", user.getDefaultEmail() == null ? null : user.getDefaultEmail().getObfuscatedAddress());
         jsonResults.add(userInfo);
       }
+      
     }
+    
     jsonRequestContext.addResponseParameter("results", jsonResults);
   }
 

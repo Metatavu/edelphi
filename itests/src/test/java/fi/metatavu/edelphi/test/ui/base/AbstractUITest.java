@@ -666,7 +666,7 @@ public class AbstractUITest {
   protected void loginGoogle(String email, String password) {
     waitAndType(new String[] { "#identifierId", "input[type='email']" }, email, 300);
     waitAndClick(new String[] { "#identifierNext", "#next" }, 300);
-    waitAndType(new String[] { "#password input[name='password']", "#Passwd" }, password, 300);
+    waitAndType(new String[] { "input[name='password']", "#Passwd" }, password, 300);
     waitAndClick(new String[] { "#passwordNext", "#signIn" }, 300);
     
     WebElement element = null;

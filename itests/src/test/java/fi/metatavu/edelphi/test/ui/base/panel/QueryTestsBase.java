@@ -304,6 +304,7 @@ public class QueryTestsBase extends AbstractUITest {
   @SuppressWarnings ("squid:S1192")
   private void finishQuery() {
     scrollWaitAndClick(String.format("input[name='%s']", FINISH));
+    waitNotVisible(String.format("input[name='%s']", FINISH));
   }
   
   private void assertFinishDisabled() {
