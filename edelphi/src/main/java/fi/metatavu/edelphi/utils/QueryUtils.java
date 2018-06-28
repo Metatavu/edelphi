@@ -70,7 +70,7 @@ public class QueryUtils {
     @SuppressWarnings("unchecked")
     Map<Long, QueryReportPageThesis> thesises = (Map<Long, QueryReportPageThesis>) requestContext.getRequest().getAttribute("queryPageThesises");
     if (thesises == null) {
-      thesises = new HashMap<Long, QueryReportPageThesis>();
+      thesises = new HashMap<>();
       requestContext.getRequest().setAttribute("queryPageThesises", thesises);
     }
     String text = QueryPageUtils.getSetting(queryPage, "thesis.text");
