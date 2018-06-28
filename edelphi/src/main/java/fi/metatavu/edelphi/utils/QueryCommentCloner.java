@@ -3,6 +3,7 @@ package fi.metatavu.edelphi.utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,7 +32,7 @@ public class QueryCommentCloner {
   private Map<Long, QueryReply> replyMap;
   private List<QueryQuestionComment> queue;
   private int iterations = 0;
-  private Set<Long> originalIds;
+  private Set<Long> cloneIds;
   
   /**
    * Constructor
@@ -45,7 +46,7 @@ public class QueryCommentCloner {
     this.commentMap = new HashMap<>();
     this.queryPage = queryPage;
     this.replyMap = replyMap;
-    this.originalIds = this.queue.stream().map(QueryQuestionComment::getId).collect(Collectors.toSet());
+    this.cloneIds = new HashSet<>(this.queue.stream().map(QueryQuestionComment::getId).collect(Collectors.toSet()));
     
     Collections.sort(queue, (o1, o2) -> {
       if (o1.getParentComment() == o2.getParentComment()) {
@@ -56,7 +57,11 @@ public class QueryCommentCloner {
         return -1;
       }
       
-      return 1;
+      if (o2.getParentComment() == null) {
+        return 1;
+      }
+      
+      return 0;
     });
   }
   
@@ -72,15 +77,16 @@ public class QueryCommentCloner {
       
       QueryReply newReply = replyMap.get(queryComment.getQueryReply().getId());
       if (originalParentComment != null && !commentMap.containsKey(originalParentComment.getId())) {
-        if (this.originalIds.contains(originalParentComment.getId())) {
+        if (this.cloneIds.contains(originalParentComment.getId())) {
           iterations++;
           if (iterations > FAILSAFE_COUNT) {
             throw new SmvcRuntimeException(EdelfoiStatusCode.NO_PARENT_COMMENT, "Comment cloning failed because parent comment could not be found");
           }
-          
+
           queue.add(queryComment);
         } else {
-          logger.severe(String.format("Could not clone comment %d because parent did not exist on original list", queryComment.getId())); 
+          this.cloneIds.remove(queryComment.getId());
+          logger.severe(() -> String.format("Could not clone comment %d because parent did not exist on original list", queryComment.getId()));
         }
         
         continue;
