@@ -57,6 +57,8 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
 
   <properties>
   
+    <maven.javadoc.skip>true</maven.javadoc.skip>
+    
     <!-- Liquibase -->
     
     <liquibase.version>3.5.3</liquibase.version>
