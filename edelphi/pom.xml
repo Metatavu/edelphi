@@ -77,7 +77,7 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
 			<groupId>com.optimaize.languagedetector</groupId>
 			<artifactId>language-detector</artifactId>
 			<version>0.6</version>
-	  </dependency>
+		</dependency>
   
     <!-- Transactions -->
     
