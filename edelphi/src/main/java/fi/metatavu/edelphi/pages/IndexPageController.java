@@ -101,29 +101,29 @@ public class IndexPageController extends PageController {
         return o2.getCreated().compareTo(o1.getCreated());
       }
     });
-    
-    if (!ignoreBulletinLocale) {
-	  	TextLanguageDetector langdetect = null;
+
+		if (!ignoreBulletinLocale) {
+			TextLanguageDetector langdetect = null;
 			try {
 				langdetect = TextLanguageDetector.getInstance();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-      
-      if (langdetect != null) {
-    		Iterator<DelfoiBulletin> bulletinIterator = bulletins.iterator();
-      	
-    		while (bulletinIterator.hasNext()) {
-        	DelfoiBulletin bulletin = bulletinIterator.next();
-        	String text = bulletin.getSummary().toString();
-        	String lang = langdetect.getLanguage(text);
-        	
-      		if (lang == null || !lang.equals(locale.getLanguage())) {
-      			bulletinIterator.remove();
-      		}
-        }
-      }
-    }
+		
+			if (langdetect != null) {
+				Iterator<DelfoiBulletin> bulletinIterator = bulletins.iterator();
+		  	
+				while (bulletinIterator.hasNext()) {
+					DelfoiBulletin bulletin = bulletinIterator.next();
+					String text = bulletin.getSummary().toString();
+					String lang = langdetect.getLanguage(text);
+		  	
+					if (lang == null || !lang.equals(locale.getLanguage())) {
+						bulletinIterator.remove();
+					}
+				}
+			}
+		}
         
 	  Long authSourceId = AuthUtils.getAuthSource("Keycloak").getId();
 	  String pageContents = getIndexPageContents(delfoi, locale);
