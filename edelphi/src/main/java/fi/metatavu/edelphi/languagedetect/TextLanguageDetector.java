@@ -14,6 +14,11 @@ import com.optimaize.langdetect.text.CommonTextObjectFactories;
 import com.optimaize.langdetect.text.TextObject;
 import com.optimaize.langdetect.text.TextObjectFactory;
 
+/**
+* This class is for detecting language from a text
+*
+* @author Ville Koivukangas
+*/
 public class TextLanguageDetector {
 	
   private static TextLanguageDetector INSTANCE = null;
@@ -38,6 +43,12 @@ public class TextLanguageDetector {
     textObjectFactory = CommonTextObjectFactories.forDetectingOnLargeText();
   }
 
+  /**
+   * Get language from string
+   * 
+   * @param text Fetect language from this String
+   * @return String Detected language
+   */
   public String getLanguage (String text) {
     String language = null;
     TextObject textObject = textObjectFactory.forText(text);

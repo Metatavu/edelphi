@@ -125,12 +125,12 @@ public class IndexPageController extends PageController {
       }
     }
         
-	  Long authSourceId = AuthUtils.getAuthSource("Keycloak").getId();
-	  String pageContents = getIndexPageContents(delfoi, locale);
-	
-	  pageRequestContext.getRequest().setAttribute("pageContents", pageContents);
-	  pageRequestContext.getRequest().setAttribute("authSourceId", authSourceId);
-	  pageRequestContext.getRequest().setAttribute("bulletins", bulletins);
+    Long authSourceId = AuthUtils.getAuthSource("Keycloak").getId();
+    String pageContents = getIndexPageContents(delfoi, locale);
+    
+    pageRequestContext.getRequest().setAttribute("pageContents", pageContents);
+    pageRequestContext.getRequest().setAttribute("authSourceId", authSourceId);
+    pageRequestContext.getRequest().setAttribute("bulletins", bulletins);
     
     // Action access information
     ActionUtils.includeRoleAccessList(pageRequestContext);
