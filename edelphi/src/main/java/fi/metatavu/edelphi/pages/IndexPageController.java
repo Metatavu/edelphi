@@ -115,7 +115,7 @@ public class IndexPageController extends PageController {
         	
         while (bulletinIterator.hasNext()) {
           DelfoiBulletin bulletin = bulletinIterator.next();
-          String text = bulletin.getSummary().toString();
+          String text = bulletin.getSummary();
           String lang = langdetect.getLanguage(text);
         
           if (lang == null || !lang.equals(locale.getLanguage())) {

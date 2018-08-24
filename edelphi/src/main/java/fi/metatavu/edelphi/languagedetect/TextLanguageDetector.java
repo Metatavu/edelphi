@@ -3,7 +3,6 @@ package fi.metatavu.edelphi.languagedetect;
 import java.io.IOException;
 import java.util.List;
 
-import com.google.api.client.repackaged.com.google.common.base.Optional;
 import com.optimaize.langdetect.LanguageDetector;
 import com.optimaize.langdetect.LanguageDetectorBuilder;
 import com.optimaize.langdetect.i18n.LdLocale;
@@ -23,7 +22,7 @@ public class TextLanguageDetector {
 	
   private static TextLanguageDetector INSTANCE = null;
   
-  public synchronized static TextLanguageDetector getInstance() throws IOException {
+  public static synchronized TextLanguageDetector getInstance() throws IOException {
     if (INSTANCE == null) {
       INSTANCE = new TextLanguageDetector();
     }
