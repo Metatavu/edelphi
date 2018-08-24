@@ -33,8 +33,8 @@ public class TextLanguageDetector {
 	public TextLanguageDetector() throws IOException {
 		languageProfiles = new LanguageProfileReader().readAllBuiltIn();
     languageDetector = LanguageDetectorBuilder.create(NgramExtractors.standard())
-        .withProfiles(languageProfiles)
-        .build();
+      .withProfiles(languageProfiles)
+      .build();
     textObjectFactory = CommonTextObjectFactories.forDetectingOnLargeText();
   }
 	
