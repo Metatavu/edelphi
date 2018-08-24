@@ -11,9 +11,27 @@
     <jsp:param value="index.block.newsBlockTitle" name="titleLocale"/>
   </jsp:include>
 	-->
-	
 	<div id="newsBlockContent" class="blockContent">
-	
+    <p>
+      <c:if test="${not ignoreBulletinLocale}">
+	      <fmt:message key="index.block.bulletinSelectedLanguage">
+	       <fmt:param>
+	         <c:if test="${selectedLanguage == 'en'}">
+	           English
+           </c:if>
+           <c:if test="${selectedLanguage == 'fi'}">
+             suomi
+           </c:if>
+	       </fmt:param> 
+	      </fmt:message>  
+	      <a href="/?ignoreBulletinLocale=true"><fmt:message key="index.block.bulletinSelectAllLanguages"/></a>
+      </c:if>
+      <c:if test="${ignoreBulletinLocale}">
+        <fmt:message key="index.block.bulletinAllLanguagesSelected"/>
+        <a href="/"><fmt:message key="index.block.bulletinUseCurrentLocale"/></a>
+      </c:if>
+	  </p>
+	  
     <c:forEach var="bulletin" items="${bulletins}" varStatus="vs">
       <div class="newsEntryContainer">
         <h2 class="newsEntryTitle">${bulletin.title}</h2>
