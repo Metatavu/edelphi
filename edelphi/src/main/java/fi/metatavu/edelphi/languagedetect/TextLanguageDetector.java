@@ -19,9 +19,9 @@ public class TextLanguageDetector {
 	private static TextLanguageDetector INSTANCE = null;
 	
 	public synchronized static TextLanguageDetector getInstance() throws IOException {
-		if (INSTANCE == null) {
-			INSTANCE = new TextLanguageDetector();
-		}
+	  if (INSTANCE == null) {
+	    INSTANCE = new TextLanguageDetector();
+	  }
 		
 		return INSTANCE;
 	}
@@ -32,12 +32,12 @@ public class TextLanguageDetector {
 	
 	public TextLanguageDetector() throws IOException {
 		languageProfiles = new LanguageProfileReader().readAllBuiltIn();
-    languageDetector = LanguageDetectorBuilder.create(NgramExtractors.standard())
-      .withProfiles(languageProfiles)
-      .build();
-    textObjectFactory = CommonTextObjectFactories.forDetectingOnLargeText();
-  }
-	
+	  languageDetector = LanguageDetectorBuilder.create(NgramExtractors.standard())
+	    .withProfiles(languageProfiles)
+	    .build();
+	  textObjectFactory = CommonTextObjectFactories.forDetectingOnLargeText();
+	}
+
 	public String getLanguage (String text) {
 		String language = null;
 		TextObject textObject = textObjectFactory.forText(text);

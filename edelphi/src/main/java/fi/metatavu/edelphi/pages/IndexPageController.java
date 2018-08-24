@@ -103,17 +103,17 @@ public class IndexPageController extends PageController {
     });
     
     if (!ignoreBulletinLocale) {
-    	TextLanguageDetector langdetect = null;
-  		try {
-  			langdetect = TextLanguageDetector.getInstance();
-  		} catch (IOException e) {
-  			e.printStackTrace();
-  		}
+	  	TextLanguageDetector langdetect = null;
+			try {
+				langdetect = TextLanguageDetector.getInstance();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
       
       if (langdetect != null) {
-      	Iterator<DelfoiBulletin> bulletinIterator = bulletins.iterator();
+    		Iterator<DelfoiBulletin> bulletinIterator = bulletins.iterator();
       	
-      	while (bulletinIterator.hasNext()) {
+    		while (bulletinIterator.hasNext()) {
         	DelfoiBulletin bulletin = bulletinIterator.next();
         	String text = bulletin.getSummary().toString();
         	String lang = langdetect.getLanguage(text);
@@ -125,12 +125,12 @@ public class IndexPageController extends PageController {
       }
     }
         
-    Long authSourceId = AuthUtils.getAuthSource("Keycloak").getId();
-    String pageContents = getIndexPageContents(delfoi, locale);
-
-    pageRequestContext.getRequest().setAttribute("pageContents", pageContents);
-    pageRequestContext.getRequest().setAttribute("authSourceId", authSourceId);
-    pageRequestContext.getRequest().setAttribute("bulletins", bulletins);
+	  Long authSourceId = AuthUtils.getAuthSource("Keycloak").getId();
+	  String pageContents = getIndexPageContents(delfoi, locale);
+	
+	  pageRequestContext.getRequest().setAttribute("pageContents", pageContents);
+	  pageRequestContext.getRequest().setAttribute("authSourceId", authSourceId);
+	  pageRequestContext.getRequest().setAttribute("bulletins", bulletins);
     
     // Action access information
     ActionUtils.includeRoleAccessList(pageRequestContext);
