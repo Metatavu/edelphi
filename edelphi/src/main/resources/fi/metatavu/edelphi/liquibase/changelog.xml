@@ -3295,8 +3295,4 @@
     <dropTable tableName="PasswordReset"/>
   </changeSet>
   
-  <changeSet author="ville.koivukangas" id="query-page-ordering-localize">
-    <sql>UPDATE localizedvalue SET text='Sorting/Ordering' WHERE id=88 AND text='Ordering';</sql>
-  </changeSet>
-  
 </databaseChangeLog>
