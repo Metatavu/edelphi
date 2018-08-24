@@ -46,7 +46,7 @@ public class TextLanguageDetector {
   /**
    * Get language from string
    * 
-   * @param text Fetect language from this String
+   * @param text Detect language from this String
    * @return String Detected language
    */
   public String getLanguage (String text) {
