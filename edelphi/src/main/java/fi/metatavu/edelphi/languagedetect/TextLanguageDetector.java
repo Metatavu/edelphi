@@ -16,38 +16,38 @@ import com.optimaize.langdetect.text.TextObjectFactory;
 
 public class TextLanguageDetector {
 	
-	private static TextLanguageDetector INSTANCE = null;
-	
-	public synchronized static TextLanguageDetector getInstance() throws IOException {
-		if (INSTANCE == null) {
-			INSTANCE = new TextLanguageDetector();
-		}
-		
-		return INSTANCE;
-	}
+  private static TextLanguageDetector INSTANCE = null;
+  
+  public synchronized static TextLanguageDetector getInstance() throws IOException {
+  	if (INSTANCE == null) {
+  	  INSTANCE = new TextLanguageDetector();
+  	}
+  	
+  	return INSTANCE;
+  }
 	
 	private List<LanguageProfile> languageProfiles;
 	private LanguageDetector languageDetector;
 	private TextObjectFactory textObjectFactory;
 	
 	public TextLanguageDetector() throws IOException {
-		languageProfiles = new LanguageProfileReader().readAllBuiltIn();
-		languageDetector = LanguageDetectorBuilder.create(NgramExtractors.standard())
-			.withProfiles(languageProfiles)
-			.build();
-		textObjectFactory = CommonTextObjectFactories.forDetectingOnLargeText();
+  	languageProfiles = new LanguageProfileReader().readAllBuiltIn();
+  	languageDetector = LanguageDetectorBuilder.create(NgramExtractors.standard())
+  		.withProfiles(languageProfiles)
+  		.build();
+  	textObjectFactory = CommonTextObjectFactories.forDetectingOnLargeText();
 	}
 
-	public String getLanguage (String text) {
-		String language = null;
-		TextObject textObject = textObjectFactory.forText(text);
-		com.google.common.base.Optional<LdLocale> lang = languageDetector.detect(textObject);
-		
-		if (lang.isPresent()) {
-			language = lang.get().toString();
-		}
-		
-		return language;
-	}
+  public String getLanguage (String text) {
+  	String language = null;
+  	TextObject textObject = textObjectFactory.forText(text);
+  	com.google.common.base.Optional<LdLocale> lang = languageDetector.detect(textObject);
+  	
+  	if (lang.isPresent()) {
+  	  language = lang.get().toString();
+  	}
+  	
+  	return language;
+  }
 	
 }
