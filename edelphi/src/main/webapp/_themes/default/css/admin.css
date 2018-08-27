@@ -1,9 +1,30 @@
 @CHARSET "UTF-8";
 
+.loading {
+  background-image: url(//cdn.metatavu.io/assets/edelphi/report-image-loader.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 /* Manage plan */
 
 .planmanagement .formSelectContainer select {
   display: block;
+}
+
+/* Users */
+
+.panelAdminUsersEditorBlock {
+  padding-top: 10px; 
+}
+
+#user-search-results {
+  min-height: 400px;
+}
+
+.user-search-result {
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 /* Bulletins */

@@ -74,7 +74,19 @@
               <jsp:param value="${materialFolderId}" name="parentFolderId"/>
             </jsp:include>
           </div>
-
+          
+          <c:if test="${actions['MANAGE_USERS']}">
+            <div id="GUI_indexAdminDashboardSettingsContainer" class="pagePanel">
+              <jsp:include page="/jsp/blocks/admin/users.jsp"/>
+            </div>
+          </c:if>
+          
+          <c:if test="${actions['MANAGE_DELFOI_MATERIALS']}">
+            <div id="GUI_indexAdminDashboardSettingsContainer" class="pagePanel">
+              <jsp:include page="/jsp/blocks/admin/materials.jsp"/>
+            </div>
+          </c:if>
+          
         </div>
 
         <div class="GUI_indexAdminDashboardNarrowColumn">

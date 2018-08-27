@@ -11,7 +11,7 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
   <parent>
     <groupId>fi.metatavu.edelphi</groupId>
     <artifactId>parent</artifactId>
-    <version>1.1.66-SNAPSHOT</version>    
+    <version>1.1.67-SNAPSHOT</version>    
     <relativePath>../pom.xml</relativePath>
   </parent>
   
@@ -57,6 +57,8 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
 
   <properties>
   
+    <maven.javadoc.skip>true</maven.javadoc.skip>
+    
     <!-- Liquibase -->
     
     <liquibase.version>3.5.3</liquibase.version>
@@ -72,7 +74,13 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
   </properties>
   
   <dependencies>
-    
+  
+		<dependency>
+			<groupId>com.optimaize.languagedetector</groupId>
+			<artifactId>language-detector</artifactId>
+			<version>0.6</version>
+		</dependency>
+  
     <!-- Transactions -->
     
     <dependency>

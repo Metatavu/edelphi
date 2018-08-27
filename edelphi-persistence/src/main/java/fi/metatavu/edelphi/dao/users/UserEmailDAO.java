@@ -3,6 +3,7 @@ package fi.metatavu.edelphi.dao.users;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -46,6 +47,28 @@ public class UserEmailDAO extends GenericDAO<UserEmail> {
     criteria.where(criteriaBuilder.equal(root.get(UserEmail_.user), user));
     
     return entityManager.createQuery(criteria).getResultList();
+  }
+  
+  public List<User> listUsersByAddressLike(String address, Integer firstResult, Integer maxResults) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<User> criteria = criteriaBuilder.createQuery(User.class);
+    Root<UserEmail> root = criteria.from(UserEmail.class);
+    criteria.select(root.get(UserEmail_.user)).distinct(true);
+    criteria.where(criteriaBuilder.like(root.get(UserEmail_.address), address));
+    
+    TypedQuery<User> query = entityManager.createQuery(criteria);
+    
+    if (firstResult != null) {
+      query.setFirstResult(firstResult);
+    }
+
+    if (maxResults != null) {
+      query.setMaxResults(maxResults);
+    }
+    
+    return query.getResultList();
   }
   
   public UserEmail updateAddress(UserEmail userEmail, String address) {
