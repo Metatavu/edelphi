@@ -39,8 +39,6 @@ import fi.metatavu.edelphi.utils.RequestUtils;
 import fi.metatavu.edelphi.languagedetect.TextLanguageDetector;
 
 public class IndexPageController extends PageController {
-
-  private Log log = LogFactory.getLog(IndexPageController.class);
   
   @Override
   public Feature getFeature() {
@@ -111,7 +109,7 @@ public class IndexPageController extends PageController {
       try {
         langdetect = TextLanguageDetector.getInstance();
       } catch (IOException e) {
-        log.error("Failed to get TextLanguageDetector instance");
+        System.out.println("Failed to get TextLanguageDetector instance");
       }
     
       if (langdetect != null) {
