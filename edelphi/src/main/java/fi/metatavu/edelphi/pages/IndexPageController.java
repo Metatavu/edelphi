@@ -10,8 +10,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log; 
-import org.apache.commons.logging.LogFactory;
+import java.util.logging.Logger;
 
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.dao.base.DelfoiBulletinDAO;
@@ -39,6 +38,8 @@ import fi.metatavu.edelphi.utils.RequestUtils;
 import fi.metatavu.edelphi.languagedetect.TextLanguageDetector;
 
 public class IndexPageController extends PageController {
+
+  private Logger logger = Logger.getLogger(IndexPageController.class.getName());
   
   @Override
   public Feature getFeature() {
@@ -109,7 +110,7 @@ public class IndexPageController extends PageController {
       try {
         langdetect = TextLanguageDetector.getInstance();
       } catch (IOException e) {
-        System.out.println("Failed to get TextLanguageDetector instance");
+        logger.severe("Failed to get TextLanguageDetector instance");
       }
     
       if (langdetect != null) {
