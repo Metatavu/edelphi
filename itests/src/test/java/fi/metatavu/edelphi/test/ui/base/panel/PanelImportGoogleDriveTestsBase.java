@@ -29,6 +29,10 @@ public class PanelImportGoogleDriveTestsBase extends AbstractUITest {
 
   @Test
   public void testLoginInternal() {
+    if (skipGoogleTests()) {
+      return;
+    }
+    
     createKeycloakUser(getGoogleUserFirstName(), getGoogleUserLastName(), getGoogleUserEmail(), getGoogleUserEmail(), getGoogleUserPassword());
     try {
       navigate("/");
@@ -61,6 +65,10 @@ public class PanelImportGoogleDriveTestsBase extends AbstractUITest {
   
   @Test
   public void testLoginGoogle() {
+    if (skipGoogleTests()) {
+      return;
+    }
+    
     navigate("/");
     waitAndAssertText(".login-link", "HERE");
     click(".login-link");

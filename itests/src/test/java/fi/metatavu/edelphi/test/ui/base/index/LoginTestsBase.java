@@ -65,6 +65,10 @@ public class LoginTestsBase extends AbstractUITest {
   
   @Test
   public void testIndexLoginGoole() {
+    if (skipGoogleTests()) {
+      return;
+    }
+    
     try {
       navigate("/");
       waitAndAssertText(".login-link", "HERE");
