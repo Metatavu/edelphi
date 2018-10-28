@@ -343,7 +343,7 @@ var InviteActionsBlockController = Class.create(BlockController, {
         for (var i = 0; i < results.length; i++) {
           var result = results[i];
           if (result && result.error) {
-            errorMails.push(result.email);
+            errorMails.push(result.error);
           } else {
             successCount++;
           }
