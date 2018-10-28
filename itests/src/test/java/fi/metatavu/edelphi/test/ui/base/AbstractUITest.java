@@ -448,6 +448,10 @@ public class AbstractUITest {
   protected int getPortSmtp() {
     return Integer.parseInt(System.getProperty("it.port.smtp"));
   }
+
+  protected boolean skipGoogleTests() {
+    return "true".equals(System.getProperty("it.skipGoogleTests"));
+  }
   
   protected void waitAndAssertText(String selector, String text) {
     waitAndAssertText(selector, text, true, true);
