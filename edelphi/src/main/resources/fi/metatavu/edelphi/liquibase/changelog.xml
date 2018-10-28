@@ -3294,5 +3294,9 @@
   <changeSet author="antti.leppa" id="password-reset-drop">
     <dropTable tableName="PasswordReset"/>
   </changeSet>
-  
+
+  <changeSet author="antti.leppa" id="fix-invitations">
+    <customChange class="fi.metatavu.edelphi.liquibase.changes.FixInvitations"/>
+  </changeSet>
+
 </databaseChangeLog>
