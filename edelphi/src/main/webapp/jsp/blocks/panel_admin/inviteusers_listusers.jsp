@@ -43,7 +43,7 @@
         </c:forEach>
       </div>
     </c:if>
-
+    
     <c:if test="${registeredCount gt 0}">
       <div class="userContainer inviteUsersListRegisteredContainer">
         <h3><fmt:message key="panel.admin.inviteUsers.usersListBlock.registeredLabel"></fmt:message>
@@ -52,7 +52,7 @@
           </span>
         </h3>
         <c:forEach var="userBean" items="${userBeans}">
-          <c:if test="${userBean eq 'REGISTERED'}">
+          <c:if test="${userBean.type eq 'REGISTERED'}">
             <div class="inviteUsersListRow">
               <input type="hidden" name="userId" value="${userBean.userId}"/>
               <input type="hidden" name="firstName" value="${userBean.firstName}"/>
