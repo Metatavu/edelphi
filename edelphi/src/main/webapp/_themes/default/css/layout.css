@@ -1666,6 +1666,7 @@ margin:5px 0px 0px 0px;
 }
 
 .inviteUsersListAddedByManagerContainer, 
+.inviteUsersListRegisteredContainer, 
 .inviteUsersListInvitationAcceptedContainer, 
 .inviteUsersListInvitationPendingContainer, 
 .inviteUsersListInvitationDeniedContainer,
@@ -1675,11 +1676,13 @@ margin:5px 0px 0px 0px;
   margin-bottom:20px;
 }
 
+.inviteUsersListRegisteredContainer .inviteUsersListRow,
 .inviteUsersListAddedByManagerContainer .inviteUsersListRow {
   background:url('../gfx/icons/16x16/apps/user_added_by_manager.png') no-repeat 0px 5px;
 }
 
-.inviteUsersListInvitationAcceptedContainer .inviteUsersListRow {
+.inviteUsersListInvitationAcceptedContainer .inviteUsersListRow,
+.inviteUsersListRegisteredContainer .inviteUsersListRow {
   background:url('../gfx/icons/16x16/apps/user_invitation_accepted.png') no-repeat 0px 5px;
 }
 
@@ -1718,6 +1721,7 @@ margin:5px 0px 0px 0px;
   margin-left: 250px;
 }
 
+.inviteUsersListRegisteredContainer .inviteUsersListMeta,
 .inviteUsersListInvitationPendingContainer .inviteUsersListMeta,
 .inviteUsersListInvitationAcceptedContainer .inviteUsersListMeta,
 .inviteUsersListAddedByManagerContainer  .inviteUsersListMeta {
@@ -1725,6 +1729,7 @@ margin:5px 0px 0px 0px;
   margin-left: 0px;
 }
 
+.inviteUsersListRegisteredContainer .inviteUsersListResendLink,
 .inviteUsersListInvitationPendingContainer .inviteUsersListResendLink,
 .inviteUsersListInvitationAcceptedContainer .inviteUsersListResendLink,
 .inviteUsersListAddedByManagerContainer .inviteUsersListResendLink {
