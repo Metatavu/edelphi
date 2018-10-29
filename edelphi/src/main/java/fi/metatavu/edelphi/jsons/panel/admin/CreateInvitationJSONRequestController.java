@@ -26,7 +26,6 @@ import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 import fi.metatavu.edelphi.utils.MailUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
-import fi.metatavu.edelphi.utils.UserUtils;
 
 public class CreateInvitationJSONRequestController extends JSONController {
 
@@ -74,8 +73,6 @@ public class CreateInvitationJSONRequestController extends JSONController {
       // If user has already declined the request, we wont bother him/her anymore
       String personName = getPersonName(email);
       jsonRequestContext.addMessage(Severity.WARNING, messages.getText(locale, "panel.admin.inviteUsers.userDeclinedAlready", new String[] { personName }));
-    } if (isPanelUser(panel, email)) {
-      jsonRequestContext.addMessage(Severity.WARNING, messages.getText(locale, "panel.admin.inviteUsers.userExists", new String[] { email }));
     } else {
       // Create invitations and mail them to users
       PanelInvitation invitation = sendInvitation(locale, panel, query, creator, email, invitationMessage, baseUrl);
@@ -101,24 +98,6 @@ public class CreateInvitationJSONRequestController extends JSONController {
     UserDAO userDAO = new UserDAO();
     User user = userDAO.findById(userId);
     return user.getDefaultEmailAsString();
-  }
-
-  /**
-   * Returns whether user by email is already in panel or not
-   * 
-   * @param panel panel
-   * @param email email
-   * @return whether user by email is already in panel or not
-   */
-  private boolean isPanelUser(Panel panel, String email) {
-    UserEmailDAO userEmailDAO = new UserEmailDAO();
-    UserEmail userEmail = userEmailDAO.findByAddress(email);
-    
-    if (userEmail == null) {
-      return false;
-    }
-    
-    return UserUtils.isPanelUser(panel, userEmail.getUser());
   }
   
   private boolean isDeclined(Panel panel, Query query, String email) {
