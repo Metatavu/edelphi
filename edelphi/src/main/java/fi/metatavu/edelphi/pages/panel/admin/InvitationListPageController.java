@@ -3,12 +3,9 @@ package fi.metatavu.edelphi.pages.panel.admin;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
-import fi.metatavu.edelphi.smvcj.PageNotFoundException;
-import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.dao.panels.PanelInvitationDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserDAO;
@@ -21,7 +18,10 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelInvitationState;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUser;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.pages.panel.PanelPageController;
+import fi.metatavu.edelphi.smvcj.PageNotFoundException;
+import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import one.util.streamex.StreamEx;
 
 public class InvitationListPageController extends PanelPageController {
 
@@ -37,19 +37,12 @@ public class InvitationListPageController extends PanelPageController {
 
   @Override
   public void processPageRequest(PageRequestContext pageRequestContext) {
+    PanelInvitationDAO panelInvitationDAO = new PanelInvitationDAO();
     
     Panel panel = RequestUtils.getPanel(pageRequestContext);
     if (panel == null) {
       throw new PageNotFoundException(pageRequestContext.getRequest().getLocale());
     }
-    
-    PanelInvitationDAO panelInvitationDAO = new PanelInvitationDAO();
-    List<PanelInvitation> invitations = panelInvitationDAO.listByPanel(panel);
-    Collections.sort(invitations, new Comparator<PanelInvitation>() {
-      public int compare(PanelInvitation o1, PanelInvitation o2) {
-        return o1.getEmail().compareTo(o2.getEmail());
-      }
-    });
     
     // Statistic variables to help creating the user interface
     
@@ -60,42 +53,10 @@ public class InvitationListPageController extends PanelPageController {
     int queuedCount = 0;
     int declinedCount = 0;
     int pendingCount = 0;
-    
-    // Prune accepted invitations as the user is listed as a panelist 
-    
-    for (int i = invitations.size() - 1; i >= 0; i--) {
-      if (invitations.get(i).getState() == PanelInvitationState.ACCEPTED) {
-        invitations.remove(i);
-      }
-    }
-    
-    // Prune duplicates (e.g. same user invited to two different queries in the same panel)
-    
-    PanelInvitation currentInvitation, storedInvitation;
-    Map<String, Integer> userIndices = new HashMap<String, Integer>();
-    for (int i = 0; i < invitations.size(); i++) {
-      currentInvitation = invitations.get(i);
-      Integer storedIndex = userIndices.get(currentInvitation.getEmail());
-      if (storedIndex != null) {
-        storedInvitation = invitations.get(storedIndex);
-        long currentStamp = currentInvitation.getLastModified() == null ? 0 : currentInvitation.getLastModified().getTime(); 
-        long storedStamp = storedInvitation.getLastModified() == null ? 0 : storedInvitation.getLastModified().getTime(); 
-        if (storedStamp < currentStamp) {
-          userIndices.put(currentInvitation.getEmail(), i - 1);
-          invitations.remove(storedIndex.intValue());
-        }
-        else {
-          invitations.remove(i);
-        }
-        i--;
-      }
-      else {
-        userIndices.put(currentInvitation.getEmail(), i);
-      }
-    }
 
-    List<UserBean> userBeans = new ArrayList<UserBean>();
-
+    List<UserBean> userBeans = new ArrayList<>();
+    List<String> emails = new ArrayList<>();
+    
     // Convert panel users to user beans
     
     PanelUserDAO panelUserDAO = new PanelUserDAO();
@@ -120,9 +81,24 @@ public class InvitationListPageController extends PanelPageController {
       String lastName = panelUser.getUser().getLastName();
       String fullName = panelUser.getUser().getFullName(true,  false);
       UserEmail userEmail = panelUser.getUser().getDefaultEmail();
-      String email = userEmail == null ? null : userEmail.getObfuscatedAddress();
-      userBeans.add(new UserBean(type, userId, firstName, lastName, fullName, email));
+      String obfuscatedEmail = userEmail == null ? null : userEmail.getObfuscatedAddress();
+      String email = userEmail == null ? null : userEmail.getAddress();
+      
+      if (email != null) {
+        emails.add(email);
+      }
+      
+      userBeans.add(new UserBean(type, userId, firstName, lastName, fullName, obfuscatedEmail));
     }
+
+    // Only invitations not in previous lists (by email) and not in state accepted are accepted
+    
+    List<PanelInvitation> invitations = StreamEx.of(panelInvitationDAO.listByPanel(panel))
+      .filter(invitation -> invitation.getState() != PanelInvitationState.ACCEPTED)
+      .filter(invitation -> !emails.contains(invitation.getEmail()))
+      .distinct(PanelInvitation::getEmail)
+      .sortedBy(PanelInvitation::getEmail)
+      .collect(Collectors.toList());
     
     // Convert invitations to user beans
     
