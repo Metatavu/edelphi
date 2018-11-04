@@ -71,16 +71,25 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
    
    <jsoup.version>1.10.1</jsoup.version>
    
+   <streamex.version>0.6.7</streamex.version>
+   <language-detector.version>0.6</language-detector.version>
+ 
   </properties>
   
   <dependencies>
   
-		<dependency>
-			<groupId>com.optimaize.languagedetector</groupId>
-			<artifactId>language-detector</artifactId>
-			<version>0.6</version>
-		</dependency>
-  
+    <dependency> 
+	  <groupId>one.util</groupId> 
+	  <artifactId>streamex</artifactId> 
+	  <version>${streamex.version}</version>
+	</dependency>
+	
+	<dependency>
+		<groupId>com.optimaize.languagedetector</groupId>
+		<artifactId>language-detector</artifactId>
+		<version>${language-detector.version}</version>
+	</dependency>
+ 
     <!-- Transactions -->
     
     <dependency>
