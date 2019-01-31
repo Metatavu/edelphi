@@ -369,7 +369,7 @@
                 <log>${project.basedir}/target/cargo.log</log>
                 <output>${project.basedir}/target/wildfly.log</output>
                 <zipUrlInstaller>
-                  <url>https://dl.dropboxusercontent.com/s/ldyeiv0gtsg5oyo/wildfly-10.1.0.Final.zip?dl=0</url>
+                  <url>https://download.jboss.org/wildfly/10.1.0.Final/wildfly-10.1.0.Final.zip</url>
                   <downloadDir>${project.basedir}/.cargo/downloads</downloadDir>
                   <extractDir>${project.basedir}/.cargo/extracts</extractDir>
                 </zipUrlInstaller>
