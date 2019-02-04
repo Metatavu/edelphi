@@ -369,7 +369,7 @@
                 <log>${project.basedir}/target/cargo.log</log>
                 <output>${project.basedir}/target/wildfly.log</output>
                 <zipUrlInstaller>
-                  <url>https://dl.dropboxusercontent.com/s/ldyeiv0gtsg5oyo/wildfly-10.1.0.Final.zip?dl=0</url>
+                  <url>https://download.jboss.org/wildfly/10.1.0.Final/wildfly-10.1.0.Final.zip</url>
                   <downloadDir>${project.basedir}/.cargo/downloads</downloadDir>
                   <extractDir>${project.basedir}/.cargo/extracts</extractDir>
                 </zipUrlInstaller>
@@ -417,22 +417,40 @@
           <plugin>
             <groupId>org.wildfly.plugins</groupId>
             <artifactId>wildfly-maven-plugin</artifactId>
-            <version>1.0.2.Final</version>
+            <version>2.0.0.Final</version>
             <executions>
               <execution>
-                <id>deploy-app</id>
+               <id>wildfly-configure</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>execute-commands</goal>
+                </goals>
+                <configuration>
+                  <batch>true</batch>
+                  <commands>
+                    <command>/system-property=edelphi.googleServiceAccount.key:add(value="${env.GOOGLE_SERVICE_ACCOUNT_KEY}")</command>
+                    <command>/subsystem=undertow/server=default-server/host=edelphi:add(alias=["${it.host}"])</command>
+                    <command>/socket-binding-group=standard-sockets/remote-destination-outbound-socket-binding=mail-smtp:write-attribute(name=port,value=3025)</command>
+                  </commands>
+                </configuration>
+              </execution>
+              <execution>
+               <id>wildfly-reload</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>shutdown</goal>
+                </goals>
+                <configuration>
+                  <reload>true</reload>
+                </configuration>
+              </execution>
+              <execution>
+               <id>wildfly-deploy</id>
                 <phase>pre-integration-test</phase>
                 <goals>
                   <goal>deploy</goal>
                 </goals>
                 <configuration>
-                  <before-deployment>
-                    <batch>true</batch>
-                    <commands>
-                      <command>/system-property=edelphi.googleServiceAccount.key:add(value="${env.GOOGLE_SERVICE_ACCOUNT_KEY}")</command>
-                      <command>/subsystem=undertow/server=default-server/host=edelphi:add(alias=["${it.host}"])</command>
-                    </commands>
-                  </before-deployment>
                   <filename>../../edelphi/target/edelphi-${project.version}.war</filename>
                 </configuration>
               </execution>
