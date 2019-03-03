@@ -1,0 +1,39 @@
+{
+  "name": "edelphi-frontend",
+  "description": "eDelphi frontend",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "node_modules/.bin/tsc"
+  },
+  "author": {
+    "name": "Metatavu",
+    "email": "devs@metatavu.fi"
+  },
+  "dependencies": {
+    "object-assign": "^4.1.1",
+    "react": "^16.8.3",
+    "react-dom": "^16.8.3",
+    "reactdom": "^2.0.0",
+    "semantic-ui-react": "^0.85.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
+    "@babel/preset-react": "^7.0.0",
+    "@types/react": "^16.8.6",
+    "@types/react-dom": "^16.8.2",
+    "awesome-typescript-loader": "^5.2.1",
+    "babel-loader": "^8.0.5",
+    "ts-loader": "^5.3.3",
+    "tslint": "^5.13.1",
+    "typescript": "^3.3.3333",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.2.3"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ]
+  }
+}

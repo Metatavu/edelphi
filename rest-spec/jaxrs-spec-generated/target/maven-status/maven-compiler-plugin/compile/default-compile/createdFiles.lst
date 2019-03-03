@@ -1,0 +1,7 @@
+fi/metatavu/edelphi/rest/model/QueryQuestionComment.class
+fi/metatavu/edelphi/rest/model/Panel.class
+fi/metatavu/edelphi/rest/api/PanelsApi.class
+fi/metatavu/edelphi/rest/model/QueryReply.class
+fi/metatavu/edelphi/rest/model/Query.class
+fi/metatavu/edelphi/rest/model/QueryPage.class
+fi/metatavu/edelphi/rest/model/ErrorResponse.class
