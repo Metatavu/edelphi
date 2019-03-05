@@ -12,7 +12,7 @@
     "bearer" : [ ]
   } ],
   "paths" : {
-    "/panels/{panelId}/queries/{queryId}/pages/{pageId}/comments/" : {
+    "/panels/{panelId}/queryQuestionComments" : {
       "get" : {
         "tags" : [ "QueryQuestionComments" ],
         "summary" : "Lists query question comments",
@@ -31,22 +31,33 @@
           }
         }, {
           "name" : "queryId",
-          "in" : "path",
-          "description" : "query  id",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
+          "in" : "query",
+          "description" : "Filter by query id",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
           "schema" : {
             "type" : "integer",
             "format" : "int64"
           }
         }, {
           "name" : "pageId",
-          "in" : "path",
-          "description" : "query page  id",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
+          "in" : "query",
+          "description" : "Filter by query page id",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "stampId",
+          "in" : "query",
+          "description" : "Filter by stamp id. Defaults to current stamp",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
           "schema" : {
             "type" : "integer",
             "format" : "int64"
@@ -114,28 +125,6 @@
             "type" : "integer",
             "format" : "int64"
           }
-        }, {
-          "name" : "queryId",
-          "in" : "path",
-          "description" : "query  id",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        }, {
-          "name" : "pageId",
-          "in" : "path",
-          "description" : "query page  id",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
         } ],
         "requestBody" : {
           "description" : "Payload",
@@ -192,7 +181,7 @@
         }
       }
     },
-    "/panels/{panelId}/queries/{queryId}/pages/{pageId}/comments/{commentId}" : {
+    "/panels/{panelId}/queryQuestionComments/{commentId}" : {
       "get" : {
         "tags" : [ "QueryQuestionComments" ],
         "summary" : "Find query question comment",
@@ -202,28 +191,6 @@
           "name" : "panelId",
           "in" : "path",
           "description" : "panel id",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        }, {
-          "name" : "queryId",
-          "in" : "path",
-          "description" : "query  id",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        }, {
-          "name" : "pageId",
-          "in" : "path",
-          "description" : "query page  id",
           "required" : true,
           "style" : "simple",
           "explode" : false,
@@ -295,28 +262,6 @@
           "name" : "panelId",
           "in" : "path",
           "description" : "panel id",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        }, {
-          "name" : "queryId",
-          "in" : "path",
-          "description" : "query  id",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        }, {
-          "name" : "pageId",
-          "in" : "path",
-          "description" : "query page  id",
           "required" : true,
           "style" : "simple",
           "explode" : false,
@@ -407,28 +352,6 @@
             "format" : "int64"
           }
         }, {
-          "name" : "queryId",
-          "in" : "path",
-          "description" : "query  id",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        }, {
-          "name" : "pageId",
-          "in" : "path",
-          "description" : "query page  id",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        }, {
           "name" : "commentId",
           "in" : "path",
           "description" : "query question comment id",
@@ -484,8 +407,8 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "type" : "string",
-            "format" : "uuid"
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -493,8 +416,8 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "type" : "string",
-            "format" : "uuid"
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -502,16 +425,16 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "type" : "string",
-            "format" : "uuid"
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
       "QueryReply" : {
         "properties" : {
           "id" : {
-            "type" : "string",
-            "format" : "uuid"
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -520,44 +443,54 @@
         "type" : "object",
         "properties" : {
           "id" : {
-            "type" : "string",
-            "format" : "uuid"
+            "type" : "integer",
+            "description" : "Comment's id",
+            "format" : "int64"
           },
           "parentId" : {
-            "type" : "string",
-            "format" : "uuid"
+            "type" : "integer",
+            "description" : "PArent comment's id",
+            "format" : "int64"
           },
           "hidden" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Whether the comment has been hided by the manager"
           },
           "queryPageId" : {
-            "type" : "string",
-            "format" : "uuid"
+            "type" : "integer",
+            "description" : "Page's id where the comment is",
+            "format" : "int64"
           },
           "queryReplyId" : {
-            "type" : "string",
-            "format" : "uuid"
+            "type" : "integer",
+            "description" : "Comment's query reply id",
+            "format" : "int64"
           },
-          "comment" : {
-            "type" : "string"
+          "contents" : {
+            "type" : "string",
+            "description" : "Comment's contents"
           },
           "creatorId" : {
-            "type" : "string",
-            "format" : "uuid",
+            "type" : "integer",
+            "description" : "Comment's creator id",
+            "format" : "int64",
             "readOnly" : true
           },
           "lastModifierId" : {
-            "type" : "string",
-            "format" : "uuid",
+            "type" : "integer",
+            "description" : "Comment's last modifier id",
+            "format" : "int64",
             "readOnly" : true
           },
           "created" : {
             "type" : "string",
+            "description" : "Comment's creation time",
             "format" : "date-time",
             "readOnly" : true
           },
           "lastModified" : {
             "type" : "string",
+            "description" : "Comment's last modification time",
             "format" : "date-time",
             "readOnly" : true
           }

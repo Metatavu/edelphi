@@ -7,7 +7,7 @@ security:
   - bearer:
       []
 paths:
-  /panels/{panelId}/queries/{queryId}/pages/{pageId}/comments/:
+  /panels/{panelId}/queryQuestionComments:
     post:
       operationId: createQueryQuestionComment
       summary: Create query question comment
@@ -26,20 +26,6 @@ paths:
           required: true
           in: path
           description: panel id
-          schema:
-            type: integer
-            format: int64
-        - name: queryId
-          required: true
-          in: path
-          description: query id
-          schema:
-            type: integer
-            format: int64
-        - name: pageId
-          required: true
-          in: path
-          description: query page id
           schema:
             type: integer
             format: int64
@@ -83,16 +69,23 @@ paths:
             type: integer
             format: int64
         - name: queryId
-          required: true
-          in: path
-          description: query id
+          required: false
+          in: query
+          description: Filter by query id
           schema:
             type: integer
             format: int64
         - name: pageId
-          required: true
-          in: path
-          description: query page id
+          required: false
+          in: query
+          description: Filter by query page id
+          schema:
+            type: integer
+            format: int64
+        - name: stampId
+          required: false
+          in: query
+          description: Filter by stamp id. Defaults to current stamp
           schema:
             type: integer
             format: int64
@@ -123,7 +116,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-  /panels/{panelId}/queries/{queryId}/pages/{pageId}/comments/{commentId}:
+  /panels/{panelId}/queryQuestionComments/{commentId}:
     get:
       operationId: findQueryQuestionComment
       summary: Find query question comment
@@ -135,20 +128,6 @@ paths:
           required: true
           in: path
           description: panel id
-          schema:
-            type: integer
-            format: int64
-        - name: queryId
-          required: true
-          in: path
-          description: query id
-          schema:
-            type: integer
-            format: int64
-        - name: pageId
-          required: true
-          in: path
-          description: query page id
           schema:
             type: integer
             format: int64
@@ -195,20 +174,6 @@ paths:
           required: true
           in: path
           description: panel id
-          schema:
-            type: integer
-            format: int64
-        - name: queryId
-          required: true
-          in: path
-          description: query id
-          schema:
-            type: integer
-            format: int64
-        - name: pageId
-          required: true
-          in: path
-          description: query page id
           schema:
             type: integer
             format: int64
@@ -265,20 +230,6 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: queryId
-          required: true
-          in: path
-          description: query id
-          schema:
-            type: integer
-            format: int64
-        - name: pageId
-          required: true
-          in: path
-          description: query page id
-          schema:
-            type: integer
-            format: int64
         - name: commentId
           required: true
           in: path
@@ -307,7 +258,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
- 
+
 components:
   securitySchemes:
     bearer:
@@ -318,29 +269,29 @@ components:
     Panel:
       type: object
       properties:
-       id:
-          type: string
-          format: uuid
+        id:
+          type: integer
+          format: int64
           
     Query:
       type: object
       properties:
         id:
-          type: string
-          format: uuid
+          type: integer
+          format: int64
           
     QueryPage:
       type: object
       properties:
         id:
-          type: string
-          format: uuid
+          type: integer
+          format: int64
           
     QueryReply:
       properties:
         id:
-          type: string
-          format: uuid
+          type: integer
+          format: int64
           
     QueryQuestionComment:
       type: object
@@ -350,37 +301,47 @@ components:
         - queryReplyId
       properties:
         id:
-          type: string
-          format: uuid
+          description: Comment's id
+          type: integer
+          format: int64
         parentId:
-          type: string
-          format: uuid
+          description: PArent comment's id
+          type: integer
+          format: int64
         hidden:
+          description: Whether the comment has been hided by the manager
           type: boolean
         queryPageId:
-          type: string
-          format: uuid
+          description: Page's id where the comment is
+          type: integer
+          format: int64
         queryReplyId:
-          type: string
-          format: uuid
-        comment:
+          description: Comment's query reply id
+          type: integer
+          format: int64
+        contents:
+          description: Comment's contents
           type: string
         creatorId:
-          type: string
-          format: uuid
+          description: Comment's creator id
+          type: integer
+          format: int64
           readOnly: true
         lastModifierId:
-          type: string
-          format: uuid
+          description: Comment's last modifier id
+          type: integer
+          format: int64
           readOnly: true
         created:
+          description: Comment's creation time
           type: string
           format: date-time
           readOnly: true
         lastModified:
+          description: Comment's last modification time
           type: string
           format: date-time
-          readOnly: true
+          readOnly: true          
           
     ErrorResponse:
       type: object
