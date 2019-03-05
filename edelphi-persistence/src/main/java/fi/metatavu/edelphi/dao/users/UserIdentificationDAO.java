@@ -46,6 +46,30 @@ public class UserIdentificationDAO extends GenericDAO<UserIdentification> {
     
     return getSingleResult(entityManager.createQuery(criteria));
   }
+  
+  /**
+   * Finds an user identification by user and auth source
+   * 
+   * @param user user
+   * @param authSource auth source
+   * @return user identification
+   */
+  public UserIdentification findByUserAndAuthSource(User user, AuthSource authSource) {
+    EntityManager entityManager = getEntityManager(); 
+    
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<UserIdentification> criteria = criteriaBuilder.createQuery(UserIdentification.class);
+    Root<UserIdentification> root = criteria.from(UserIdentification.class);
+    criteria.select(root);
+    criteria.where(
+        criteriaBuilder.and(
+            criteriaBuilder.equal(root.get(UserIdentification_.user), user),
+            criteriaBuilder.equal(root.get(UserIdentification_.authSource), authSource)
+        )
+    );
+    
+    return getSingleResult(entityManager.createQuery(criteria));
+  }
 
   public List<UserIdentification> listByUser(User user) {
     EntityManager entityManager = getEntityManager(); 
