@@ -11,6 +11,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingKeyDAO;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageSetting;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageSettingKey;
@@ -123,6 +124,28 @@ public abstract class AbstractQueryPageHandler implements QueryPageHandler {
   
   protected Double getDoubleOptionValue(QueryPage queryPage, QueryOption queryOption) {
     return NumberUtils.createDouble(getStringOptionValue(queryPage, queryOption));
+  }
+  
+  /**
+   * Renders comment list and comment editor
+   * 
+   * @param requestContext request context
+   * @param queryPage query page
+   * @param queryReply query reply
+   * @param commentable whether to render comment editor
+   * @param viewDiscussion whether to render comment list
+   */
+  protected void renderComments(PageRequestContext requestContext, QueryPage queryPage, QueryReply queryReply, boolean commentable, boolean viewDiscussion) {
+    RequiredQueryFragment queryFragment = new RequiredQueryFragment("comments");
+    queryFragment.addAttribute("queryPageId", queryPage.getId().toString());
+    
+    if (queryReply != null) {
+      queryFragment.addAttribute("queryReplyId", queryReply.getId().toString());
+    }
+    
+    queryFragment.addAttribute("queryPageCommentable", commentable ? "true" : "false");
+    queryFragment.addAttribute("queryViewDiscussion", viewDiscussion ? "true" : "false");
+    addRequiredFragment(requestContext, queryFragment);  
   }
   
   private List<QueryOption> options = new ArrayList<QueryOption>();
