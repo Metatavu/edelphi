@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.dao.users;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -13,6 +14,7 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserIdentification;
 import fi.metatavu.edelphi.domainmodel.users.UserIdentification_;
 
+@ApplicationScoped
 public class UserIdentificationDAO extends GenericDAO<UserIdentification> {
 
   public UserIdentification create(User user, String externalId, AuthSource authSource) {
