@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 public class PrettyUrlFilter implements Filter {
 
   public void init(FilterConfig arg0) throws ServletException {
+   
   }
 
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
@@ -21,7 +22,7 @@ public class PrettyUrlFilter implements Filter {
     if (ctxPath.length() > 1) {
       uri = uri.substring(ctxPath.length());
     }
-    if (uri.startsWith("/_") || uri.equals("/robots.txt")) {
+    if (uri.startsWith("/api") || uri.startsWith("/_") || uri.equals("/robots.txt")) {
       filterChain.doFilter(request, response);
     }
     else {
