@@ -6,5 +6,6 @@
    
   <context-root></context-root>
   <virtual-host>edelphi</virtual-host>
+  <security-domain>keycloak</security-domain> 
   
 </jboss-web>
