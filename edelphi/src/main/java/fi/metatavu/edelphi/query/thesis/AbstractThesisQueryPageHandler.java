@@ -26,7 +26,6 @@ import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
-import fi.metatavu.edelphi.utils.QueryUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 import fi.metatavu.edelphi.utils.comments.GenericReportPageCommentProcessor;
 import fi.metatavu.edelphi.utils.comments.ReportPageCommentProcessor;
@@ -57,12 +56,10 @@ public abstract class AbstractThesisQueryPageHandler extends AbstractQueryPageHa
     
     if (getBooleanOptionValue(queryPage, getDefinedOption("thesis.showLiveReport")))
       renderReport(requestContext, queryPage);
-
-    if ((section.getCommentable() == Boolean.TRUE) && getBooleanOptionValue(queryPage, getDefinedOption("thesis.commentable")))
-      renderCommentEditor(requestContext, queryPage, queryReply);
     
-    if ((section.getViewDiscussions() == Boolean.TRUE) && getBooleanOptionValue(queryPage, getDefinedOption("thesis.viewDiscussions")))
-      renderComments(requestContext, queryPage);
+    boolean commentable = (section.getCommentable() == Boolean.TRUE) && getBooleanOptionValue(queryPage, getDefinedOption("thesis.commentable"));
+    boolean viewDiscussions = (section.getViewDiscussions() == Boolean.TRUE) && getBooleanOptionValue(queryPage, getDefinedOption("thesis.viewDiscussions"));
+    renderComments(requestContext, queryPage, queryReply, commentable, viewDiscussions);
   }
   
   @Override
@@ -162,33 +159,6 @@ public abstract class AbstractThesisQueryPageHandler extends AbstractQueryPageHa
   protected abstract void renderQuestion(PageRequestContext requestContext, QueryPage queryPage, QueryReply queryReply);
   protected abstract void saveThesisAnswers(RequestContext requestContext, QueryPage queryPage, QueryReply queryReply);
 
-  protected void renderCommentEditor(PageRequestContext requestContext, QueryPage queryPage, QueryReply queryReply) {
-    RequiredQueryFragment commentEditorFragment = new RequiredQueryFragment("comment_editor");
-
-    if (queryReply != null) {
-      QueryQuestionCommentDAO commentDAO = new QueryQuestionCommentDAO();
-      QueryQuestionComment comment = commentDAO.findRootCommentByQueryReplyAndQueryPage(queryReply, queryPage);
-  
-      if (comment != null) {
-        commentEditorFragment.addAttribute("userCommentId", comment.getId().toString());
-        commentEditorFragment.addAttribute("userCommentContent", comment.getComment());
-      }
-    }
-    
-    addRequiredFragment(requestContext, commentEditorFragment);
-  }
-
   protected abstract void renderReport(PageRequestContext requestContext, QueryPage queryPage);
-
-  private void renderComments(PageRequestContext requestContext, QueryPage queryPage) {
-    Boolean commentable = getBooleanOptionValue(queryPage, getDefinedOption("thesis.commentable"));
-    
-    QueryUtils.appendQueryPageComments(requestContext, queryPage);
-    
-    RequiredQueryFragment queryFragment = new RequiredQueryFragment("commentlist");
-    queryFragment.addAttribute("queryPageId", queryPage.getId().toString());
-    queryFragment.addAttribute("queryPageCommentable", commentable.toString());
-    addRequiredFragment(requestContext, queryFragment);
-  }
   
 }
