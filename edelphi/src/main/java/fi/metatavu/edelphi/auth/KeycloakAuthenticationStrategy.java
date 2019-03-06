@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -15,6 +16,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.NameValuePair;
+import org.apache.http.StatusLine;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.representations.idm.CredentialRepresentation;
@@ -27,6 +38,7 @@ import org.scribe.model.Verb;
 import org.scribe.model.Verifier;
 import org.scribe.oauth.OAuthService;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -103,11 +115,12 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
 
     Verifier verifier = new Verifier(code);
     Token accessToken = service.getAccessToken(null, verifier);
-    Date expiresAt = getExpiresAt(accessToken);
 
-    Response response = doSignedGet(accessToken, getUserinfoUrl());
+    Date expiresAt = getExpiresAt(accessToken);
+    String refreshToken = getRefreshToken(accessToken);
     
-    AuthUtils.storeOAuthAccessToken(requestContext, getName(), new OAuthAccessToken(accessToken.getToken(), expiresAt, requestedScopes));
+    Response response = doSignedGet(accessToken, getUserinfoUrl());
+    AuthUtils.storeOAuthAccessToken(requestContext, getName(), new OAuthAccessToken(accessToken.getToken(), refreshToken, expiresAt, requestedScopes));
     
     ObjectMapper objectMapper = new ObjectMapper();
     try (InputStream stream = response.getStream()) {
@@ -122,6 +135,56 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
       logger.log(Level.SEVERE, "Failed to read user info", e);
       return null;
     }
+  }
+  
+  /**
+   * Refreshes the access token
+   * 
+   * @param requestContext request context
+   * @param token token
+   * @return refreshed token
+   */
+  public OAuthAccessToken refreshToken(RequestContext requestContext, OAuthAccessToken token) {
+    OAuthAccessToken result = token;
+    
+    String[] scopes = token.getScopes();
+    String tokenUrl = String.format("%s/realms/%s/protocol/openid-connect/token", getServerUrl(), getRealm());
+    
+    HttpPost httpPost = new HttpPost(tokenUrl);
+    
+    try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+      List<NameValuePair> params = new ArrayList<NameValuePair>();
+      params.add(new BasicNameValuePair("client_id", getApiKey()));
+      params.add(new BasicNameValuePair("client_secret", getApiSecret()));
+      params.add(new BasicNameValuePair("grant_type", "refresh_token"));
+      params.add(new BasicNameValuePair("refresh_token", token.getRefreshToken()));
+
+      httpPost.setEntity(new UrlEncodedFormEntity(params));
+      try (CloseableHttpResponse response = httpclient.execute(httpPost)) {
+        StatusLine statusLine = response.getStatusLine();
+        
+        if (statusLine.getStatusCode() == 200) {
+          HttpEntity entity = response.getEntity();
+          
+          ObjectMapper objectMapper = new ObjectMapper();
+          try (InputStream stream = entity.getContent()) {
+            RefreshTokenResponse refreshTokenResponse = objectMapper.readValue(stream, RefreshTokenResponse.class);
+            Date expiresAt = getExpiresAt(refreshTokenResponse.getExpiresIn());
+            result = new OAuthAccessToken(refreshTokenResponse.getAccessToken(), refreshTokenResponse.getRefreshToken(), expiresAt, scopes);
+            AuthUtils.purgeOAuthAccessTokens(requestContext, getName());
+            AuthUtils.storeOAuthAccessToken(requestContext, getName(), result);            
+          }
+          
+          EntityUtils.consume(entity);
+        } else {
+          logger.log(Level.WARNING, String.format("Failed to refresh access token with message [%d]: %s", statusLine.getStatusCode(), statusLine.getReasonPhrase()));
+        }
+      }
+    } catch (IOException e) {
+      logger.log(Level.WARNING, "Failed to refresh access token", e);
+    }
+    
+    return result;
   }
   
   public OAuthAccessToken getBrokerToken(RequestContext requestContext, String broker) {
@@ -147,7 +210,7 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     try (InputStream stream = response.getStream()) {
       KeycloakBrokerToken brokerToken = objectMapper.readValue(stream, KeycloakBrokerToken.class);
       Date expiresAt = getExpiresAt(brokerToken.getExpiresIn());
-      resolvedBrokerToken = new OAuthAccessToken(brokerToken.getAccessToken(), expiresAt, null);
+      resolvedBrokerToken = new OAuthAccessToken(brokerToken.getAccessToken(), null, expiresAt, null);
       AuthUtils.storeOAuthAccessToken(requestContext, broker, resolvedBrokerToken);
     } catch (IOException e) {
       logger.log(Level.SEVERE, "Failed to process broker token response", e);
@@ -236,6 +299,17 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     int expiresIn = rawJson.getInt("expires_in");
     return getExpiresAt(expiresIn);
   }
+
+  /**
+   * Parses refresh token from the access token
+   * 
+   * @param accessToken access token
+   * @return refresh token
+   */
+  private String getRefreshToken(Token accessToken) {
+    JSONObject rawJson = JSONObject.fromObject(accessToken.getRawResponse());
+    return rawJson.getString("refresh_token");
+  }
   
   private Date getExpiresAt(int expiresIn) {
     Calendar calendar = new GregorianCalendar();
@@ -267,7 +341,61 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
   private String getAdminUser() {
     return settings.get("oauth.keycloak.adminUser");
   }
+
+  /**
+   * Keycloak refresh token end-point result
+   * 
+   * @author Antti Leppä
+   */
+  @JsonIgnoreProperties (ignoreUnknown = true)
+  public static class RefreshTokenResponse {
+    
+    @JsonProperty ("access_token")
+    private String accessToken;
+    
+    @JsonProperty ("expires_in")
+    private Integer expiresIn;
+
+    @JsonProperty ("refresh_expires_in")
+    private Integer refreshExpiresIn;
+
+    @JsonProperty ("refresh_token")
+    private String refreshToken;
+
+    public String getAccessToken() {
+      return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+      this.accessToken = accessToken;
+    }
+
+    public Integer getExpiresIn() {
+      return expiresIn;
+    }
+
+    public void setExpiresIn(Integer expiresIn) {
+      this.expiresIn = expiresIn;
+    }
+
+    public Integer getRefreshExpiresIn() {
+      return refreshExpiresIn;
+    }
+
+    public void setRefreshExpiresIn(Integer refreshExpiresIn) {
+      this.refreshExpiresIn = refreshExpiresIn;
+    }
+
+    public String getRefreshToken() {
+      return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+      this.refreshToken = refreshToken;
+    }
+  }
   
+  @JsonIgnoreProperties (ignoreUnknown = true)
   public static class UserInfo {
     private String sub;
 

@@ -9,10 +9,12 @@ public class OAuthAccessToken implements Serializable {
   
   private Date expires;
   private String token;
+  private String refreshToken;
   private String[] scopes;
   
-  public OAuthAccessToken(String token, Date expires, String[] scopes) {
+  public OAuthAccessToken(String token, String refreshToken, Date expires, String[] scopes) {
     this.token = token;
+    this.refreshToken = refreshToken;
     this.expires = expires;
     this.scopes = scopes;
   }
@@ -23,6 +25,10 @@ public class OAuthAccessToken implements Serializable {
   
   public String getToken() {
     return token;
+  }
+  
+  public String getRefreshToken() {
+    return refreshToken;
   }
   
   public String[] getScopes() {
