@@ -1,6 +1,5 @@
 package fi.metatavu.edelphi.rest.model;
 
-import java.util.UUID;
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -11,11 +10,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class QueryReply   {
-  private @Valid UUID id = null;
+  private @Valid Long id = null;
 
   /**
    **/
-  public QueryReply id(UUID id) {
+  public QueryReply id(Long id) {
     this.id = id;
     return this;
   }
@@ -23,10 +22,10 @@ public class QueryReply   {
   
   @ApiModelProperty(value = "")
   @JsonProperty("id")
-  public UUID getId() {
+  public Long getId() {
     return id;
   }
-  public void setId(UUID id) {
+  public void setId(Long id) {
     this.id = id;
   }
 

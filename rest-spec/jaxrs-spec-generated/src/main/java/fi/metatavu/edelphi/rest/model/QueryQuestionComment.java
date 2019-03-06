@@ -12,43 +12,46 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class QueryQuestionComment   {
-  private @Valid UUID id = null;  private @Valid UUID parentId = null;  private @Valid Boolean hidden = null;  private @Valid UUID queryPageId = null;  private @Valid UUID queryReplyId = null;  private @Valid String comment = null;  private @Valid UUID creatorId = null;  private @Valid UUID lastModifierId = null;  private @Valid OffsetDateTime created = null;  private @Valid OffsetDateTime lastModified = null;
+  private @Valid Long id = null;  private @Valid Long parentId = null;  private @Valid Boolean hidden = null;  private @Valid Long queryPageId = null;  private @Valid Long queryReplyId = null;  private @Valid String contents = null;  private @Valid UUID creatorId = null;  private @Valid UUID lastModifierId = null;  private @Valid OffsetDateTime created = null;  private @Valid OffsetDateTime lastModified = null;
 
   /**
+   * Comment&#x27;s id
    **/
-  public QueryQuestionComment id(UUID id) {
+  public QueryQuestionComment id(Long id) {
     this.id = id;
     return this;
   }
 
   
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Comment's id")
   @JsonProperty("id")
-  public UUID getId() {
+  public Long getId() {
     return id;
   }
-  public void setId(UUID id) {
+  public void setId(Long id) {
     this.id = id;
   }
 
   /**
+   * PArent comment&#x27;s id
    **/
-  public QueryQuestionComment parentId(UUID parentId) {
+  public QueryQuestionComment parentId(Long parentId) {
     this.parentId = parentId;
     return this;
   }
 
   
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "PArent comment's id")
   @JsonProperty("parentId")
-  public UUID getParentId() {
+  public Long getParentId() {
     return parentId;
   }
-  public void setParentId(UUID parentId) {
+  public void setParentId(Long parentId) {
     this.parentId = parentId;
   }
 
   /**
+   * Whether the comment has been hided by the manager
    **/
   public QueryQuestionComment hidden(Boolean hidden) {
     this.hidden = hidden;
@@ -56,7 +59,7 @@ public class QueryQuestionComment   {
   }
 
   
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Whether the comment has been hided by the manager")
   @JsonProperty("hidden")
   public Boolean isisHidden() {
     return hidden;
@@ -66,60 +69,63 @@ public class QueryQuestionComment   {
   }
 
   /**
+   * Page&#x27;s id where the comment is
    **/
-  public QueryQuestionComment queryPageId(UUID queryPageId) {
+  public QueryQuestionComment queryPageId(Long queryPageId) {
     this.queryPageId = queryPageId;
     return this;
   }
 
   
-  @ApiModelProperty(required = true, value = "")
+  @ApiModelProperty(required = true, value = "Page's id where the comment is")
   @JsonProperty("queryPageId")
   @NotNull
-  public UUID getQueryPageId() {
+  public Long getQueryPageId() {
     return queryPageId;
   }
-  public void setQueryPageId(UUID queryPageId) {
+  public void setQueryPageId(Long queryPageId) {
     this.queryPageId = queryPageId;
   }
 
   /**
+   * Comment&#x27;s query reply id
    **/
-  public QueryQuestionComment queryReplyId(UUID queryReplyId) {
+  public QueryQuestionComment queryReplyId(Long queryReplyId) {
     this.queryReplyId = queryReplyId;
     return this;
   }
 
   
-  @ApiModelProperty(required = true, value = "")
+  @ApiModelProperty(required = true, value = "Comment's query reply id")
   @JsonProperty("queryReplyId")
   @NotNull
-  public UUID getQueryReplyId() {
+  public Long getQueryReplyId() {
     return queryReplyId;
   }
-  public void setQueryReplyId(UUID queryReplyId) {
+  public void setQueryReplyId(Long queryReplyId) {
     this.queryReplyId = queryReplyId;
   }
 
   /**
+   * Comment&#x27;s contents
    **/
-  public QueryQuestionComment comment(String comment) {
-    this.comment = comment;
+  public QueryQuestionComment contents(String contents) {
+    this.contents = contents;
     return this;
   }
 
   
-  @ApiModelProperty(required = true, value = "")
-  @JsonProperty("comment")
-  @NotNull
-  public String getComment() {
-    return comment;
+  @ApiModelProperty(value = "Comment's contents")
+  @JsonProperty("contents")
+  public String getContents() {
+    return contents;
   }
-  public void setComment(String comment) {
-    this.comment = comment;
+  public void setContents(String contents) {
+    this.contents = contents;
   }
 
   /**
+   * Comment&#x27;s creator id
    **/
   public QueryQuestionComment creatorId(UUID creatorId) {
     this.creatorId = creatorId;
@@ -127,7 +133,7 @@ public class QueryQuestionComment   {
   }
 
   
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Comment's creator id")
   @JsonProperty("creatorId")
   public UUID getCreatorId() {
     return creatorId;
@@ -137,6 +143,7 @@ public class QueryQuestionComment   {
   }
 
   /**
+   * Comment&#x27;s last modifier id
    **/
   public QueryQuestionComment lastModifierId(UUID lastModifierId) {
     this.lastModifierId = lastModifierId;
@@ -144,7 +151,7 @@ public class QueryQuestionComment   {
   }
 
   
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Comment's last modifier id")
   @JsonProperty("lastModifierId")
   public UUID getLastModifierId() {
     return lastModifierId;
@@ -154,6 +161,7 @@ public class QueryQuestionComment   {
   }
 
   /**
+   * Comment&#x27;s creation time
    **/
   public QueryQuestionComment created(OffsetDateTime created) {
     this.created = created;
@@ -161,7 +169,7 @@ public class QueryQuestionComment   {
   }
 
   
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Comment's creation time")
   @JsonProperty("created")
   public OffsetDateTime getCreated() {
     return created;
@@ -171,6 +179,7 @@ public class QueryQuestionComment   {
   }
 
   /**
+   * Comment&#x27;s last modification time
    **/
   public QueryQuestionComment lastModified(OffsetDateTime lastModified) {
     this.lastModified = lastModified;
@@ -178,7 +187,7 @@ public class QueryQuestionComment   {
   }
 
   
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Comment's last modification time")
   @JsonProperty("lastModified")
   public OffsetDateTime getLastModified() {
     return lastModified;
@@ -202,7 +211,7 @@ public class QueryQuestionComment   {
         Objects.equals(hidden, queryQuestionComment.hidden) &&
         Objects.equals(queryPageId, queryQuestionComment.queryPageId) &&
         Objects.equals(queryReplyId, queryQuestionComment.queryReplyId) &&
-        Objects.equals(comment, queryQuestionComment.comment) &&
+        Objects.equals(contents, queryQuestionComment.contents) &&
         Objects.equals(creatorId, queryQuestionComment.creatorId) &&
         Objects.equals(lastModifierId, queryQuestionComment.lastModifierId) &&
         Objects.equals(created, queryQuestionComment.created) &&
@@ -211,7 +220,7 @@ public class QueryQuestionComment   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, parentId, hidden, queryPageId, queryReplyId, comment, creatorId, lastModifierId, created, lastModified);
+    return Objects.hash(id, parentId, hidden, queryPageId, queryReplyId, contents, creatorId, lastModifierId, created, lastModified);
   }
 
   @Override
@@ -224,7 +233,7 @@ public class QueryQuestionComment   {
     sb.append("    hidden: ").append(toIndentedString(hidden)).append("\n");
     sb.append("    queryPageId: ").append(toIndentedString(queryPageId)).append("\n");
     sb.append("    queryReplyId: ").append(toIndentedString(queryReplyId)).append("\n");
-    sb.append("    comment: ").append(toIndentedString(comment)).append("\n");
+    sb.append("    contents: ").append(toIndentedString(contents)).append("\n");
     sb.append("    creatorId: ").append(toIndentedString(creatorId)).append("\n");
     sb.append("    lastModifierId: ").append(toIndentedString(lastModifierId)).append("\n");
     sb.append("    created: ").append(toIndentedString(created)).append("\n");
