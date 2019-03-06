@@ -471,15 +471,15 @@
             "description" : "Comment's contents"
           },
           "creatorId" : {
-            "type" : "integer",
+            "type" : "string",
             "description" : "Comment's creator id",
-            "format" : "int64",
+            "format" : "uuid",
             "readOnly" : true
           },
           "lastModifierId" : {
-            "type" : "integer",
+            "type" : "string",
             "description" : "Comment's last modifier id",
-            "format" : "int64",
+            "format" : "uuid",
             "readOnly" : true
           },
           "created" : {

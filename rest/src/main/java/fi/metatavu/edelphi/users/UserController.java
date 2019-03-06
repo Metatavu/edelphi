@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.users;
 
+import java.util.List;
 import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -50,6 +51,30 @@ public class UserController {
     }
     
     return null;
+  }
+  
+  /**
+   * Returns Keycloak id for an user
+   * 
+   * @param user user
+   * @return Keycloak id or null if id could not be resolved
+   */
+  public UUID getUserKeycloakId(User user) {
+    AuthSource authSource = authSourceDAO.findByStrategy(KEYCLOAK_AUTH_SOURCE);
+    if (authSource == null) {
+      logger.error("Could not find Keycloak auth source");
+    }
+    
+    List<UserIdentification> userIdentifications = userIdentificationDAO.listByUserAndAuthSource(user, authSource);
+    if (userIdentifications.size() == 1) {
+      return UUID.fromString(userIdentifications.get(0).getExternalId());
+    }
+    
+    if (userIdentifications.size() > 1) {
+      logger.warn("User {} has more than one identity", user.getId());
+    }
+    
+    return new UUID(0L, 0L);
   }
   
 }

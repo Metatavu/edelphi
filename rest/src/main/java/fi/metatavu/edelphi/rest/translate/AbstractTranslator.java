@@ -3,8 +3,12 @@ package fi.metatavu.edelphi.rest.translate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.UUID;
+
+import javax.inject.Inject;
 
 import fi.metatavu.edelphi.domainmodel.users.User;
+import fi.metatavu.edelphi.users.UserController;
 
 /**
  * Abstract base class for all translators
@@ -16,6 +20,9 @@ import fi.metatavu.edelphi.domainmodel.users.User;
  */
 public abstract class AbstractTranslator<J, R> {
 
+  @Inject
+  private UserController userController;
+  
   /**
    * Translates JPA entity into REST entity
    * 
@@ -44,12 +51,12 @@ public abstract class AbstractTranslator<J, R> {
    * @param user user
    * @return user id
    */
-  protected Long translateUserId(User user) {
+  protected UUID translateUserId(User user) {
     if (user == null) {
       return null;
     }
     
-    return user.getId();
+    return userController.getUserKeycloakId(user);
   }
   
 }

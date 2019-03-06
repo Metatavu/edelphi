@@ -324,13 +324,13 @@ components:
           type: string
         creatorId:
           description: Comment's creator id
-          type: integer
-          format: int64
+          type: string
+          format: uuid
           readOnly: true
         lastModifierId:
           description: Comment's last modifier id
-          type: integer
-          format: int64
+          type: string
+          format: uuid
           readOnly: true
         created:
           description: Comment's creation time
