@@ -13,6 +13,8 @@
         <fmt:param>${panel.name}</fmt:param>
       </fmt:message>
     </title>
+    <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
     <jsp:include page="/jsp/templates/panel_head.jsp"></jsp:include>
     <jsp:include page="/jsp/supports/flotr_support.jsp"></jsp:include>
     <jsp:include page="/jsp/supports/dragdrop_support.jsp"></jsp:include>
@@ -20,6 +22,7 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/mathutils.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/panel/queryblockcontroller.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/ping.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/bundle.min.js"></script>
   </head>
   <body class="panel index">
   
