@@ -3,13 +3,17 @@ package fi.metatavu.edelphi.rest;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateful;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.jboss.ejb3.annotation.SecurityDomain;
 
 import fi.metatavu.edelphi.comments.QueryQuestionCommentController;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
@@ -30,9 +34,11 @@ import fi.metatavu.edelphi.rest.translate.QueryQuestionCommentTranslator;
  * @author Antti Leppä
  */
 @RequestScoped
+@Path("/panels")
 @Stateful
 @Produces (MediaType.APPLICATION_JSON)
 @Consumes (MediaType.APPLICATION_JSON)
+@SecurityDomain("keycloak")
 public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Inject
@@ -48,6 +54,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   private QueryQuestionCommentTranslator queryQuestionCommentTranslator;
 
   @Override
+  @RolesAllowed("user")
   public Response createQueryQuestionComment(QueryQuestionComment body, Long panelId) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
@@ -93,6 +100,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   }
 
   @Override
+  @RolesAllowed("user")
   public Response deleteQueryQuestionComment(Long panelId, Long commentId) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
@@ -118,6 +126,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   }
 
   @Override
+  @RolesAllowed("user")
   public Response findQueryQuestionComment(Long panelId, Long commentId) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
@@ -137,6 +146,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   }
 
   @Override
+  @RolesAllowed("user")
   public Response listQueryQuestionComments(Long panelId, Long queryId, Long pageId, Long stampId) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
@@ -164,6 +174,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   }
 
   @Override
+  @RolesAllowed("user")  
   public Response updateQueryQuestionComment(QueryQuestionComment body, Long panelId, Long commentId) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
