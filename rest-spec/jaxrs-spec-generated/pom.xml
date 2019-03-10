@@ -94,7 +94,6 @@
             <checkModificationExclude>jaxrs-spec-generated/src/**</checkModificationExclude>
             <checkModificationExclude>jaxrs-spec-generated/pom.xml.before</checkModificationExclude>
             <checkModificationExclude>jaxrs-spec-generated/.swagger-codegen/**</checkModificationExclude>
-            <checkModificationExclude>rest-spec/jaxrs-spec-generated/pom.xml.before</checkModificationExclude>
           </checkModificationExcludes>
         </configuration>
       </plugin>
