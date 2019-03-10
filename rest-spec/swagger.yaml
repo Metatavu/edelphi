@@ -89,6 +89,13 @@ paths:
           schema:
             type: integer
             format: int64
+        - name: parentId
+          required: true
+          in: query
+          description: parent comment id. With zero only root comments are returned
+          schema:
+            type: integer
+            format: int64
       responses:
         "200":
           description: List of query question comments
