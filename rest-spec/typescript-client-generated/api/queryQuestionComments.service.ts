@@ -85,11 +85,12 @@ export class QueryQuestionCommentsService {
    * Lists query question comments
    * @summary Lists query question comments
    * @param panelId panel id
+   * @param parentId parent comment id. With zero only root comments are returned
    * @param queryId Filter by query id
    * @param pageId Filter by query page id
    * @param stampId Filter by stamp id. Defaults to current stamp
   */
-  public listQueryQuestionComments(panelId: number, queryId?: number, pageId?: number, stampId?: number, ):Promise<Array<QueryQuestionComment>> {
+  public listQueryQuestionComments(panelId: number, parentId: number, queryId?: number, pageId?: number, stampId?: number, ):Promise<Array<QueryQuestionComment>> {
     const uri = new URI(`${this.basePath}/panels/${encodeURIComponent(String(panelId))}/queryQuestionComments`);
     if (queryId !== undefined && queryId !== null) {
         uri.addQuery('queryId', <any>queryId);
@@ -99,6 +100,9 @@ export class QueryQuestionCommentsService {
     }
     if (stampId !== undefined && stampId !== null) {
         uri.addQuery('stampId', <any>stampId);
+    }
+    if (parentId !== undefined && parentId !== null) {
+        uri.addQuery('parentId', <any>parentId);
     }
     const options = {
       method: "get",
