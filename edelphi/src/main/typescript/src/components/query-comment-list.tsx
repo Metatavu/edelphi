@@ -2,6 +2,8 @@ import * as React from "react";
 import * as actions from "../actions";
 import { StoreState, AccessToken } from "../types";
 import { connect } from "react-redux";
+import Api from "edelphi-client";
+import { QueryQuestionCommentsService } from "edelphi-client/dist/api/api";
 
 /**
  * Interface representing component properties
@@ -32,6 +34,9 @@ class QueryCommentList extends React.Component<Props, State> {
     this.state = { };
   }
 
+  public componentDidMount() {
+  }
+
   /** 
    * Render edit pest view
    */
@@ -50,6 +55,20 @@ class QueryCommentList extends React.Component<Props, State> {
       </div>
     );
   }
+
+  /**
+   * Returns query question comments API
+   * 
+   * @returns query question comments API
+   */
+  private getQueryQuestionCommentsService(): QueryQuestionCommentsService | null {
+    if (this.props.accessToken) {
+      return Api.getQueryQuestionCommentsService(this.props.accessToken.token);
+    }
+
+    return null;
+  }
+
 }
 
 /**

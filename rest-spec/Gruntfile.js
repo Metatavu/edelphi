@@ -17,61 +17,8 @@ module.exports = function(grunt) {
   const JAVA_ARTIFACT = "edelphi-api-client";
   const JAVA_PACKAGE = "fi.metatavu.edelphi.client";
   const JAVA_GROUP = "fi.metatavu.edelphi.client";
-  const TYPESCRIPT_MODEL_PACKAGE = "edelphi-typescript-models";
-  const TYPESCRIPT_MODEL_VERSION = require("./typescript-model-generated/package.json").version;
-
-  grunt.registerMultiTask('typescript-model-post-process', 'Post process', function () {
-    const modelFiles = {};
-
-    const eventDataFiles = fs.readdirSync(`${this.data.folder}/model`).filter((eventDataFile) => {
-      return eventDataFile.endsWith("EventData.ts");
-    });
-
-    eventDataFiles.forEach((eventDataFile) => {
-      const modelName = eventDataFile.substring(0, 1).toUpperCase() + eventDataFile.substring(1, eventDataFile.length - 3);
-      modelFiles[modelName] = eventDataFile.substring(0, eventDataFile.length - 3);
-    });
-
-    const eventDataModelType = Object.keys(modelFiles).join(" | ");
-
-    const eventDataModelImports = Object.keys(modelFiles).map((modelName) => {
-      const modelFile = modelFiles[modelName];
-      return `import { ${modelName} } from './${modelFile}';`;
-    }).join("\n");
-
-    const eventFile = `${this.data.folder}/model/event.ts`;
-    let contents = fs.readFileSync(eventFile, "utf8");
-    contents = contents.replace(/import \{ ModelObject } from \'\.\/modelObject\'\;/g, eventDataModelImports);
-    contents = contents.replace(/data\: ModelObject\;/g, `data: ${eventDataModelType};`);
-    contents = contents.replace(/data\?\: ModelObject\;/g, `data?: ${eventDataModelType};`);
-
-    fs.writeFileSync(eventFile, contents);
-  });
-
-  grunt.registerMultiTask('typescript-api-post-process', 'Post process', function () {
-    const serviceFiles = fs.readdirSync(`${this.data.folder}/api`).filter((file) => {
-      return file.endsWith("service.ts");
-    })  
-    .map((file) => {
-      return `${this.data.folder}/api/${file}`;
-    });
-
-    serviceFiles.forEach((serviceFile) => {
-      let contents = fs.readFileSync(serviceFile, "utf8");
-      contents = contents.replace(/from '\.\.\/model\/[a-zA-Z]*\'/g, 'from "edelphi-typescript-models"');
-      fs.writeFileSync(serviceFile, contents);
-    });
-
-    fs.renameSync(`${this.data.folder}/api/api.ts`, `${this.data.folder}/api/index.ts`);
-
-    if (process.env.EDELPHI_API_FOLDER) {
-      if (fs.existsSync(process.env.EDELPHI_API_FOLDER)) {
-        rimraf.sync(process.env.EDELPHI_API_FOLDER);
-      }
-
-      fs.renameSync(`${this.data.folder}/api`, process.env.EDELPHI_API_FOLDER);
-    }
-  });
+  const TYPESCRIPT_CLIENT_PACKAGE = "edelphi-client";
+  const TYPESCRIPT_CLIENT_VERSION = require("./typescript-client-generated/package.json").version;
 
   grunt.initConfig({
     "curl": {
@@ -80,31 +27,20 @@ module.exports = function(grunt) {
         dest: SWAGGER_JAR
       }
     },
+
     "clean": {
       "jaxrs-spec-cruft": [
         "jaxrs-spec-generated/src/main/java/fi/metatavu/edelphi/server/RestApplication.java"
       ],
       "jaxrs-spec-sources": ["jaxrs-spec-generated/src"],
       'java-sources': ['java-generated/src'],
-      "typescript-model-api": [
-        "typescript-model-generated/api", 
-        "typescript-model-generated/api.module.ts", 
-        "typescript-model-generated/typings.json",
-        "typescript-model-generated/variables.ts",
-        "typescript-model-generated/encoder.ts",
-        "typescript-model-generated/configuration.ts",
-        "typescript-model-generated/git_push.sh"
+      "typescript-client": [
+        "typescript-client-generated/typings.json",
+        "typescript-client-generated/api.module.ts",
+        "typescript-client-generated/variables.ts",
+        "typescript-client-generated/encoder.ts",
+        "typescript-client-generated/configuration.ts"
       ]
-    },
-    "typescript-model-post-process": {
-      "event-data": {
-        "folder": "typescript-model-generated"
-      }
-    },
-    "typescript-api-post-process": {
-      "api": {
-        "folder": "typescript-model-generated"
-      }
     },
     "shell": {
       "jaxrs-spec-generate": {
@@ -173,37 +109,37 @@ module.exports = function(grunt) {
           }
         }
       },
-      "typescript-model-generate": {
+      "typescript-client-generate": {
         command : `java -jar ${SWAGGER_JAR} generate ` +
           "-i ./swagger.yaml " +
           "-l typescript-angular " +
-          "-t typescript-model-template/ " +
-          "-o typescript-model-generated/ " +
+          "-t typescript-client-template/ " +
+          "-o typescript-client-generated/ " +
           "--template-engine mustache " +
           "--type-mappings Date=string " +
-          `--additional-properties projectName=${TYPESCRIPT_MODEL_PACKAGE},npmName=${TYPESCRIPT_MODEL_PACKAGE},npmVersion=${TYPESCRIPT_MODEL_VERSION}`
+          `--additional-properties projectName=${TYPESCRIPT_CLIENT_PACKAGE},npmName=${TYPESCRIPT_CLIENT_PACKAGE},npmVersion=${TYPESCRIPT_CLIENT_VERSION}`
       },
-      'typescript-model-bump-version': {
+      'typescript-client-bump-version': {
         command: 'npm version patch',
         options: {
           execOptions: {
-            cwd: 'typescript-model-generated'
+            cwd: 'typescript-client-generated'
           }
         }
       },
-      'typescript-model-push': {
+      'typescript-client-push': {
         command : 'git add . && git commit -m "Generated javascript source" && git push',
         options: {
           execOptions: {
-            cwd: 'typescript-model-generated'
+            cwd: 'typescript-client-generated'
           }
         }
       },
-      "typescript-model-publish": {
-        command : 'npm publish',
+      "typescript-client-publish": {
+        command : 'npm install && npm run build && npm publish',
         options: {
           execOptions: {
-            cwd: 'typescript-model-generated'
+            cwd: 'typescript-client-generated'
           }
         }
       },
@@ -215,9 +151,9 @@ module.exports = function(grunt) {
   grunt.registerTask("jaxrs-spec", [ "jaxrs-gen", "shell:jaxrs-spec-release" ]);
   grunt.registerTask('java-gen', [ 'download-dependencies', 'clean:java-sources', 'shell:java-generate', 'shell:java-install' ]);
   grunt.registerTask('java', [ 'java-gen', 'shell:java-release' ]);
-  grunt.registerTask('typescript-model-gen', [ 'shell:typescript-model-generate', 'clean:typescript-model-api', 'typescript-model-post-process:event-data' ]);
-  grunt.registerTask('typescript-model', [ 'typescript-model-gen', "shell:typescript-model-bump-version", "shell:typescript-model-push", "shell:typescript-model-publish" ]);
-  grunt.registerTask('typescript-api-gen', [ 'shell:typescript-model-generate', 'typescript-api-post-process:api' ]);
+
+  grunt.registerTask('typescript-client-gen', [ 'shell:typescript-client-generate', 'clean:typescript-client']);
+  grunt.registerTask('typescript-client', [ 'typescript-client-gen', "shell:typescript-client-bump-version", "shell:typescript-client-push", "shell:typescript-client-publish" ]);
 
   grunt.registerTask("default", [ "jaxrs-spec", "java"]);
   

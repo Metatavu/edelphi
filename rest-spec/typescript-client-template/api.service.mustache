@@ -1,0 +1,72 @@
+{{#imports}}
+import { {{classname}} } from '../{{filename}}';
+{{/imports}}
+import * as URI from "urijs";
+import { ApiUtils } from "./api";
+
+{{#operations}}
+export class {{classname}} {
+
+  private token: string;
+  private basePath: string;
+
+  constructor(basePath: string, token: string) {
+    this.token = token;
+    this.basePath = basePath;
+  }
+
+{{#operation}}
+
+  /**
+   * {{&notes}}
+   {{#summary}}
+   * @summary {{&summary}}
+   {{/summary}}
+{{#allParams}}   * @param {{paramName}} {{description}}
+{{/allParams}}
+  */
+  public {{nickname}}({{#allParams}}{{^isConstEnumParam}}{{paramName}}{{^required}}?{{/required}}: {{{dataType}}}, {{/isConstEnumParam}}{{/allParams}}):Promise<{{#returnType}}{{{returnType}}}{{#isResponseTypeFile}}|undefined{{/isResponseTypeFile}}{{/returnType}}{{^returnType}}any{{/returnType}}> {
+    const uri = new URI(`${this.basePath}{{{path}}}`);
+{{#hasQueryParams}}
+{{#queryParams}}
+    {{#isListContainer}}
+    if ({{paramName}}) {
+    {{#isCollectionFormatMulti}}
+        {{paramName}}.forEach((element) => {
+          uri.addQuery('{{baseName}}', <any>element);
+        })
+    {{/isCollectionFormatMulti}}
+    {{^isCollectionFormatMulti}}
+        uri.addQuery('{{baseName}}', {{paramName}}.join(COLLECTION_FORMATS['{{collectionFormat}}']));
+    {{/isCollectionFormatMulti}}
+    }
+    {{/isListContainer}}
+    {{^isListContainer}}
+    if ({{paramName}} !== undefined && {{paramName}} !== null) {
+    {{#isDateTime}}
+        uri.addQuery('{{baseName}}', <any>{{paramName}}.toISOString());
+    {{/isDateTime}}
+    {{^isDateTime}}
+        uri.addQuery('{{baseName}}', <any>{{paramName}});
+    {{/isDateTime}}
+    }
+    {{/isListContainer}}
+{{/queryParams}}
+{{/hasQueryParams}}
+    const options = {
+      method: "{{httpMethod}}",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${this.token}`
+      }{{#isBodyAllowed}}{{#bodyParam}},
+      body: JSON.stringify({{paramName}}){{/bodyParam}}{{/isBodyAllowed}}
+    };
+
+    return fetch(uri.toString(), options).then((response) => {
+      return ApiUtils.handleResponse(response);
+    });
+  }
+
+{{/operation}}
+{{/operations}}
+}
