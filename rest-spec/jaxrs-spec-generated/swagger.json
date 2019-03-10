@@ -62,6 +62,17 @@
             "type" : "integer",
             "format" : "int64"
           }
+        }, {
+          "name" : "parentId",
+          "in" : "query",
+          "description" : "parent comment id. With zero only root comments are returned",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
         } ],
         "responses" : {
           "200" : {
