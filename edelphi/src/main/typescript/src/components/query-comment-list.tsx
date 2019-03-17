@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as actions from "../actions";
 import strings from "../localization/strings";
-import QueryRootComment from "./query-root-comment";
+import QueryComment from "./query-comment";
 import { StoreState } from "../types";
 import { connect } from "react-redux";
 import Api, { QueryQuestionComment } from "edelphi-client";
@@ -77,7 +77,7 @@ class QueryCommentList extends React.Component<Props, State> {
     return <div className="queryCommentsContainer">
       {
         this.state.rootComments.map((rootComment) => {
-          return <QueryRootComment rootComment={ rootComment }/>
+          return <QueryComment comment={ rootComment } pageId={ this.props.pageId } panelId={ this.props.panelId} queryId={ this.props.queryId }/>
         })
       } 
     </div>
