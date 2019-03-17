@@ -69,11 +69,12 @@ var QueryQuestionCommentsService = /** @class */ (function () {
      * Lists query question comments
      * @summary Lists query question comments
      * @param panelId panel id
+     * @param parentId parent comment id. With zero only root comments are returned
      * @param queryId Filter by query id
      * @param pageId Filter by query page id
      * @param stampId Filter by stamp id. Defaults to current stamp
     */
-    QueryQuestionCommentsService.prototype.listQueryQuestionComments = function (panelId, queryId, pageId, stampId) {
+    QueryQuestionCommentsService.prototype.listQueryQuestionComments = function (panelId, parentId, queryId, pageId, stampId) {
         var uri = new URI(this.basePath + "/panels/" + encodeURIComponent(String(panelId)) + "/queryQuestionComments");
         if (queryId !== undefined && queryId !== null) {
             uri.addQuery('queryId', queryId);
@@ -83,6 +84,9 @@ var QueryQuestionCommentsService = /** @class */ (function () {
         }
         if (stampId !== undefined && stampId !== null) {
             uri.addQuery('stampId', stampId);
+        }
+        if (parentId !== undefined && parentId !== null) {
+            uri.addQuery('parentId', parentId);
         }
         var options = {
             method: "get",

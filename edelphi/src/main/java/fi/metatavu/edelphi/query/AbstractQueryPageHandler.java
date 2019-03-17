@@ -11,13 +11,16 @@ import org.apache.commons.lang3.math.NumberUtils;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingKeyDAO;
+import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageSetting;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageSettingKey;
+import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
+import fi.metatavu.edelphi.utils.ResourceUtils;
 
 public abstract class AbstractQueryPageHandler implements QueryPageHandler {
 
@@ -136,8 +139,13 @@ public abstract class AbstractQueryPageHandler implements QueryPageHandler {
    * @param viewDiscussion whether to render comment list
    */
   protected void renderComments(PageRequestContext requestContext, QueryPage queryPage, QueryReply queryReply, boolean commentable, boolean viewDiscussion) {
+    Query query = queryPage.getQuerySection().getQuery();
+    Panel panel = ResourceUtils.getResourcePanel(query);
+    
     RequiredQueryFragment queryFragment = new RequiredQueryFragment("comments");
-    queryFragment.addAttribute("queryPageId", queryPage.getId().toString());
+    queryFragment.addAttribute("panelId", panel.getId().toString());
+    queryFragment.addAttribute("queryId", query.getId().toString());
+    queryFragment.addAttribute("pageId", queryPage.getId().toString());
     
     if (queryReply != null) {
       queryFragment.addAttribute("queryReplyId", queryReply.getId().toString());

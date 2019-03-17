@@ -8,6 +8,11 @@ import { StoreState } from "../types";
 import { AppAction } from "../actions";
 import { reducer } from "../reducers";
 import { Provider } from "react-redux";
+import Api from "edelphi-client";
+import strings from "../localization/strings";
+
+Api.configure("http://dev.edelphi.org:8080/api/v1");
+declare function getLocale() : any;
 
 const getAttribute = (element: Element, attributeName: string): string | null => {
   if (!element) {
@@ -33,23 +38,30 @@ const getBoolAttribute = (element: Element, attributeName: string): boolean => {
 }
 
 window.addEventListener('load', () => {
+  const locale: string = getLocale().getLanguage();
+  strings.setLanguage(locale);
+
   const queryComments = document.getElementById("query-comments");
-  const initalStoreState: StoreState = { };
+  const initalStoreState: StoreState = { 
+    locale: locale
+  };
   
   const store = createStore<StoreState, AppAction, any, any>(reducer as any, initalStoreState);
   
   if (queryComments) {
+    const panelId: number | null = getIntAttribute(queryComments, "data-panel-id");
     const queryId: number | null = getIntAttribute(queryComments, "data-query-id");
+    const pageId: number | null = getIntAttribute(queryComments, "data-page-id");
     const queryReplyId: number | null = getIntAttribute(queryComments, "data-query-reply-id");
     const commentable: boolean = getBoolAttribute(queryComments, "data-commentable");
     const viewDiscussion: boolean  = getBoolAttribute(queryComments, "data-view-discussion");
 
-    if (queryId) {
+    if (panelId && queryId && pageId) {
       const component = 
         <Provider store={store}>
           <AccessTokenRefresh/>
           { commentable ? <QueryCommentEditor queryReplyId={queryReplyId}/> : null }
-          { viewDiscussion ? <QueryCommentList queryId={queryId}/> : null }
+          { viewDiscussion ? <QueryCommentList panelId={panelId} queryId={queryId} pageId={pageId}/> : null }
         </Provider>;
 
       ReactDOM.render(component, queryComments);

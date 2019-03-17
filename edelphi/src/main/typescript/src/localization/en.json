@@ -1,0 +1,15 @@
+{
+  "panel": {
+    "query": {
+      "comments": {
+        "title": "Elaborate on this topic (add a comment)",
+        "reply": "Reply",
+        "hide": "Hide",
+        "edit": "Edit",
+        "remove": "Remove",
+        "show": "Show",
+        "commentDate": "Comment date {0}"
+      }
+    }
+  }
+}

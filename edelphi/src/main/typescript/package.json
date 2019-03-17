@@ -10,7 +10,10 @@
     "email": "devs@metatavu.fi"
   },
   "dependencies": {
-    "edelphi-client": "0.0.2",
+    "@types/node": "^11.11.3",
+    "edelphi-client": "0.0.3",
+    "localized-strings": "^0.2.1",
+    "moment": "^2.24.0",
     "object-assign": "^4.1.1",
     "react": "^16.8.3",
     "react-dom": "^16.8.3",
@@ -22,6 +25,7 @@
     "@babel/core": "^7.3.4",
     "@babel/preset-env": "^7.3.4",
     "@babel/preset-react": "^7.0.0",
+    "@types/moment": "^2.13.0",
     "@types/react": "^16.8.6",
     "@types/react-dom": "^16.8.2",
     "@types/react-redux": "^7.0.1",

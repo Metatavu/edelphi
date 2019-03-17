@@ -1,0 +1,15 @@
+{
+  "panel": {
+    "query": {
+      "comments": {
+        "title": "Kommentoi",
+        "reply": "Vastaa",
+        "hide": "Piilota",
+        "edit": "Muokkaa",
+        "remove": "Poista",
+        "show": "Palauta näkyviin",
+        "commentDate": "Kommentti kirjoitettu {0}"
+      }
+    }
+  }
+}

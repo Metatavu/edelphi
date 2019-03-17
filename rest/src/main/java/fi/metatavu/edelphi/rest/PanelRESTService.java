@@ -144,10 +144,10 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     
     return createOk(queryQuestionCommentTranslator.translate(comment));
   }
-
+  
   @Override
   @RolesAllowed("user")
-  public Response listQueryQuestionComments(Long panelId, Long queryId, Long pageId, Long stampId) {
+  public Response listQueryQuestionComments(Long panelId, Long parentId, Long queryId, Long pageId, Long stampId) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
@@ -168,7 +168,21 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createBadRequest(String.format("Invalid panel stamp id %d", stampId));
     }
     
-    return createOk(queryQuestionCommentController.listQueryQuestionComments(panel, stamp, queryPage, query).stream()
+    fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment parentComment = null; 
+    boolean onlyRootComments = false;
+    
+    if (parentId != null) {
+      if (parentId == 0) {
+        onlyRootComments = true;
+      } else {
+        parentComment = queryQuestionCommentController.findQueryQuestionCommentById(parentId);
+        if (parentComment == null) {
+          return createBadRequest("Invalid parent comment");
+        }
+      }
+    }
+    
+    return createOk(queryQuestionCommentController.listQueryQuestionComments(panel, stamp, queryPage, query, parentComment, onlyRootComments).stream()
       .map(queryQuestionCommentTranslator::translate)
       .collect(Collectors.toList()));
   }

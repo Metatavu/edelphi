@@ -127,11 +127,13 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
    * @param stamp filter by panel stamp
    * @param query filter by query
    * @param queryParentFolder filter by query parent folder
+   * @param parentComment filter by parent comment. Ignored if null
+   * @param onlyRootComments return only root comments. 
    * @param archived filter by archived
    * 
    * @return a list of comments
    */
-  public List<QueryQuestionComment> list(QueryPage queryPage, PanelStamp stamp, Query query, Folder queryParentFolder, Boolean archived) {
+  public List<QueryQuestionComment> list(QueryPage queryPage, PanelStamp stamp, Query query, Folder queryParentFolder, QueryQuestionComment parentComment, boolean onlyRootComments, Boolean archived) {
     EntityManager entityManager = getEntityManager();
 
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -159,6 +161,12 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
     
     if (queryParentFolder != null) {
       criterias.add(criteriaBuilder.equal(queryJoin.get(Query_.parentFolder), queryParentFolder));
+    }
+    
+    if (onlyRootComments) {
+      criterias.add(criteriaBuilder.isNull(root.get(QueryQuestionComment_.parentComment)));      
+    } else if (parentComment != null) {
+      criterias.add(criteriaBuilder.equal(root.get(QueryQuestionComment_.parentComment), parentComment)); 
     }
 
     if (archived != null) {
