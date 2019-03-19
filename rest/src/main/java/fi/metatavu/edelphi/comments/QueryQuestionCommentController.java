@@ -90,6 +90,7 @@ public class QueryQuestionCommentController {
    * @return
    */
   public QueryQuestionComment updateQueryQuestionComment(QueryQuestionComment queryQuestionComment, String comment, Boolean hidden, User modifier, Date modified) {
+    queryQuestionCommentDAO.updateHidden(queryQuestionComment, hidden, modifier);
     return queryQuestionCommentDAO.updateComment(queryQuestionComment, comment, modifier, modified);
   }
   

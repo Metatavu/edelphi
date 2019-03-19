@@ -1,12 +1,10 @@
 import * as React from "react";
 import * as actions from "../actions";
 import strings from "../localization/strings";
-import QueryComment from "./query-comment";
+import QueryCommentContainer from "./query-comment-container";
 import { StoreState } from "../types";
 import { connect } from "react-redux";
-import Api, { QueryQuestionComment } from "edelphi-client";
-import { QueryQuestionCommentsService } from "edelphi-client/dist/api/api";
-import { Loader } from "semantic-ui-react";
+import { QueryQuestionComment } from "edelphi-client";
 
 /**
  * Interface representing component properties
@@ -23,7 +21,7 @@ interface Props {
  * Interface representing component state
  */
 interface State {
-  rootComments?: QueryQuestionComment[]
+  comments?: QueryQuestionComment[]
 }
 
 /**
@@ -38,20 +36,7 @@ class QueryCommentList extends React.Component<Props, State> {
    */
   constructor(props: Props) {
     super(props);
-    this.state = { 
-
-    };
-  }
-
-  /**
-   * Component did update life-cycly event
-   */
-  public async componentDidUpdate() {
-    if (!this.state.rootComments && this.props.accessToken) {
-      this.setState({
-        rootComments: await (this.getQueryQuestionCommentsService(this.props.accessToken)).listQueryQuestionComments(this.props.panelId, 0, this.props.queryId, this.props.pageId, undefined)
-      });
-    }
+    this.state = { };
   }
 
   /** 
@@ -61,37 +46,11 @@ class QueryCommentList extends React.Component<Props, State> {
     return (
       <div className="queryCommentList">
         <h2 className="querySubTitle queryCommentListSubTitle">{ strings.panel.query.comments.title }</h2>
-        { this.renderRootComments() } 
+        <QueryCommentContainer className="queryCommentsContainer" parentId={ 0 } pageId={ this.props.pageId } panelId={ this.props.panelId } queryId={ this.props.queryId }/>
       </div>
     );
   }
-
-  /**
-   * Renders root comments
-   */
-  private renderRootComments() {
-    if (!this.state.rootComments || !this.props.accessToken) {
-      return <Loader/>;
-    }
-
-    return <div className="queryCommentsContainer">
-      {
-        this.state.rootComments.map((rootComment) => {
-          return <QueryComment comment={ rootComment } pageId={ this.props.pageId } panelId={ this.props.panelId} queryId={ this.props.queryId }/>
-        })
-      } 
-    </div>
-  }
-
-  /**
-   * Returns query question comments API
-   * 
-   * @returns query question comments API
-   */
-  private getQueryQuestionCommentsService(accessToken: string): QueryQuestionCommentsService {
-    return Api.getQueryQuestionCommentsService(accessToken);
-  }
-
+  
 }
 
 /**

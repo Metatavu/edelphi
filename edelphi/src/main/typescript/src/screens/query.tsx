@@ -3,6 +3,7 @@ import * as ReactDOM from "react-dom";
 import AccessTokenRefresh from "../components/access-token-refresh";
 import QueryCommentEditor from "../components/query-comment-editor";
 import QueryCommentList from "../components/query-comment-list";
+import MqttConnector from "../components/mqtt-connector";
 import { createStore } from 'redux';
 import { StoreState } from "../types";
 import { AppAction } from "../actions";
@@ -60,8 +61,10 @@ window.addEventListener('load', () => {
       const component = 
         <Provider store={store}>
           <AccessTokenRefresh/>
-          { commentable ? <QueryCommentEditor queryReplyId={queryReplyId}/> : null }
-          { viewDiscussion ? <QueryCommentList panelId={panelId} queryId={queryId} pageId={pageId}/> : null }
+          <MqttConnector>
+            { commentable ? <QueryCommentEditor queryReplyId={queryReplyId}/> : null }
+            { viewDiscussion ? <QueryCommentList panelId={panelId} queryId={queryId} pageId={pageId}/> : null }
+          </MqttConnector>
         </Provider>;
 
       ReactDOM.render(component, queryComments);

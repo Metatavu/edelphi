@@ -14,3 +14,14 @@ export interface AccessToken {
   token: string
   expires: Date
 }
+
+/**
+ * Interface describing an query question comment notification MQTT message
+ */
+export interface QueryQuestionCommentNotification {
+  type: "CREATED" | "UPDATED" | "DELETED";
+  panelId: number,
+  queryId: number,
+  pageId: number,
+  commentId: number,
+}

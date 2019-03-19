@@ -1,18 +1,18 @@
 import * as React from "react";
 import * as moment from "moment";
 import * as actions from "../actions";
+import QueryCommentContainer from "./query-comment-container";
 import strings from "../localization/strings";
 import { StoreState } from "../types";
 import { connect } from "react-redux";
 import Api, { QueryQuestionComment } from "edelphi-client";
-import { Loader } from "semantic-ui-react";
 import { QueryQuestionCommentsService } from "edelphi-client/dist/api/api";
 
 /**
  * Interface representing component properties
  */
 interface Props {
-  accessToken?: string,
+  accessToken: string,
   locale: string,
   comment: QueryQuestionComment,
   panelId: number,
@@ -24,7 +24,7 @@ interface Props {
  * Interface representing component state
  */
 interface State {
-  childComments?: QueryQuestionComment[],
+
 }
 
 /**
@@ -39,25 +39,9 @@ class QueryCommentClass extends React.Component<Props, State> {
    */
   constructor(props: Props) {
     super(props);
-    this.state = { 
-
-    };
+    this.state = { };
   }
-
- /**
-   * Component did update life-cycle event
-   */
-  public async componentWillMount() {
-    this.loadChildComments();
-  }
-
-  /**
-   * Component did update life-cycle event
-   */
-  public async componentDidUpdate() {
-    this.loadChildComments();
-  }
-
+  
   /** 
    * Render edit pest view
    */
@@ -71,16 +55,12 @@ class QueryCommentClass extends React.Component<Props, State> {
         </div>
         <div className="queryCommentContainerWrapper">
           <div className="queryCommentText">{ this.props.comment.contents }</div>
-          <div className="queryCommentMeta">
-            <div className="queryCommentNewComment"><a href="#" className="queryCommentNewCommentLink">{ strings.panel.query.comments.reply }</a></div>
-            <div className="queryCommentShowComment"><a href="#" className="queryCommentShowCommentLink">{ strings.panel.query.comments.show }</a></div>
-            <div className="queryCommentHideComment"><a href="#" className="queryCommentHideCommentLink">{ strings.panel.query.comments.hide }</a></div>
-            <div className="queryCommentEditComment"><a href="#" className="queryCommentEditCommentLink">{ strings.panel.query.comments.edit }</a></div>
-            <div className="queryCommentDeleteComment"><a href="#" className="queryCommentDeleteCommentLink">{ strings.panel.query.comments.edit }</a></div>
-          </div>
+          { 
+            this.renderLinks()
+          }
           {
             this.renderChildComments()
-          }          
+          }
         </div>
       </div>
     );
@@ -94,29 +74,25 @@ class QueryCommentClass extends React.Component<Props, State> {
       return null;
     }
 
-    if (!this.state.childComments) {
-      return <Loader/>
-    }
-
-    return (
-      <div className="queryCommentChildren">
-        { 
-          this.state.childComments.map((comment) => {
-            return <QueryComment comment={ comment } pageId={ this.props.pageId} panelId={ this.props.panelId} queryId={ this.props.queryId }/>
-          })
-        }        
-      </div> 
-    );
+    return <QueryCommentContainer className="queryCommentChildren" parentId={ this.props.comment.id! } pageId={ this.props.pageId } panelId={ this.props.panelId } queryId={ this.props.queryId }/>
   }
 
-  private async loadChildComments() {
-    console.log("this.isRootComment()", this.isRootComment());
-
-    if (!this.state.childComments && this.props.accessToken && this.props.comment.id && this.isRootComment()) {
-      this.setState({
-        childComments: await (this.getQueryQuestionCommentsService(this.props.accessToken)).listQueryQuestionComments(this.props.panelId, this.props.comment.id, this.props.queryId, this.props.pageId, undefined)
-      });
-    }
+  /**
+   * Renders comment links
+   */
+  private renderLinks() {
+    return (
+      <div className="queryCommentMeta">
+        <div className="queryCommentNewComment"><a href="#" className="queryCommentNewCommentLink">{ strings.panel.query.comments.reply }</a></div>
+        {
+          this.props.comment.hidden 
+            ? <div className="queryCommentShowComment"><a href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onShowClick(event) } className="queryCommentShowCommentLink">{ strings.panel.query.comments.show }</a></div>
+            : <div className="queryCommentHideComment"><a href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onHideClick(event) } className="queryCommentHideCommentLink">{ strings.panel.query.comments.hide }</a></div>
+        }
+        <div className="queryCommentEditComment"><a href="#" className="queryCommentEditCommentLink">{ strings.panel.query.comments.edit }</a></div>
+        <div className="queryCommentDeleteComment"><a href="#" className="queryCommentDeleteCommentLink">{ strings.panel.query.comments.edit }</a></div>
+      </div>  
+    );
   }
 
   /**
@@ -145,6 +121,38 @@ class QueryCommentClass extends React.Component<Props, State> {
    */
   private getQueryQuestionCommentsService(accessToken: string): QueryQuestionCommentsService {
     return Api.getQueryQuestionCommentsService(accessToken);
+  }
+
+  /**
+   * Click handler for show link
+   * 
+   * @param event event
+   */
+  private onShowClick(event: React.MouseEvent<HTMLElement>) {
+    event.preventDefault();
+
+    if (!this.props.accessToken || !this.props.comment.id) {
+      return;
+    }
+
+    const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken);
+    queryQuestionCommentsService.updateQueryQuestionComment({ ... this.props.comment, hidden: false }, this.props.panelId, this.props.comment.id);
+  }
+
+  /**
+   * Click handler for hide link
+   * 
+   * @param event event
+   */
+  private onHideClick(event: React.MouseEvent<HTMLElement>) {
+    event.preventDefault();
+
+    if (!this.props.accessToken || !this.props.comment.id) {
+      return;
+    }
+
+    const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken);
+    queryQuestionCommentsService.updateQueryQuestionComment({ ... this.props.comment, hidden: true }, this.props.panelId, this.props.comment.id);
   }
 }
 

@@ -101,6 +101,10 @@
     
     <keycloak.version>4.8.3.Final</keycloak.version>
 
+    <!-- Paho -->
+    
+    <paho.version>1.2.0</paho.version>
+
   </properties>
 
   <dependencyManagement>
@@ -231,6 +235,12 @@
         <groupId>org.keycloak</groupId>
         <artifactId>keycloak-adapter-core</artifactId>
         <version>${keycloak.version}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.eclipse.paho</groupId>
+        <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+        <version>${paho.version}</version>
       </dependency>
       
     </dependencies>

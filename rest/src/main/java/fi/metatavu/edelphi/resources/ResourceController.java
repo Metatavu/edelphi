@@ -1,5 +1,7 @@
 package fi.metatavu.edelphi.resources;
 
+import java.util.List;
+import java.util.ArrayList;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -30,8 +32,27 @@ public class ResourceController {
    * @return panel or null if not found
    */
   public Panel getResourcePanel(Resource resource) {
-    Folder resourceRootFolder = getResourceRootFolder(resource);
-    return panelDAO.findByRootFolder(resourceRootFolder);
+    List<Folder> resourceFolders = new ArrayList<Folder>();
+    Resource current = resource;
+    Folder folder = current instanceof Folder ? (Folder) current : current == null ? null : current.getParentFolder();
+    while (folder != null) {
+      resourceFolders.add(folder);
+      current = folder;
+      folder = current.getParentFolder();
+    }
+    
+    Folder panelFolder = null;
+    int panelIndex = resourceFolders.size() - 2;
+
+    if (panelIndex >= 0) {
+      panelFolder = resourceFolders.get(panelIndex);
+    }
+
+    if (panelFolder != null) {
+      return panelDAO.findByRootFolder(panelFolder);
+    }
+    
+    return null;
   }
   
   /**

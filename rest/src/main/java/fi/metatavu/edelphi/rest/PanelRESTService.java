@@ -22,10 +22,12 @@ import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
+import fi.metatavu.edelphi.mqtt.MqttController;
 import fi.metatavu.edelphi.panels.PanelController;
 import fi.metatavu.edelphi.queries.QueryController;
 import fi.metatavu.edelphi.rest.api.PanelsApi;
 import fi.metatavu.edelphi.rest.model.QueryQuestionComment;
+import fi.metatavu.edelphi.rest.mqtt.QueryQuestionCommentNotification;
 import fi.metatavu.edelphi.rest.translate.QueryQuestionCommentTranslator;
 
 /**
@@ -41,11 +43,16 @@ import fi.metatavu.edelphi.rest.translate.QueryQuestionCommentTranslator;
 @SecurityDomain("keycloak")
 public class PanelRESTService extends AbstractApi implements PanelsApi {
 
+  private static final String QUERY_QUESTION_COMMENTS_MQTT_CHANNEL = "queryquestioncomments";
+
   @Inject
   private PanelController panelController;
 
   @Inject
   private QueryController queryController;
+
+  @Inject
+  private MqttController mqttController;
 
   @Inject
   private QueryQuestionCommentController queryQuestionCommentController;
@@ -95,8 +102,15 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     Boolean hidden = body.isisHidden();
     Date created = new Date(System.currentTimeMillis());
     User creator = getLoggedUser();
+    fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment comment = queryQuestionCommentController.createQueryQuestionComment(queryReply, queryPage, parentComment, contents, hidden, creator, created);
+
+    mqttController.publish(QUERY_QUESTION_COMMENTS_MQTT_CHANNEL, new QueryQuestionCommentNotification(QueryQuestionCommentNotification.Type.CREATED, 
+        panelId, 
+        replyQuery.getId(), 
+        pageQuery.getId(), 
+        comment.getId()));
     
-    return createOk(queryQuestionCommentTranslator.translate(queryQuestionCommentController.createQueryQuestionComment(queryReply, queryPage, parentComment, contents, hidden, creator, created)));
+    return createOk(queryQuestionCommentTranslator.translate(comment));
   }
 
   @Override
@@ -116,11 +130,20 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createNotFound();
     }
     
+    QueryPage page = comment.getQueryPage();
+    Query query = page.getQuerySection().getQuery();
+    
     if (inTestMode()) {
       queryQuestionCommentController.deleteQueryQuestionComment(comment);
     } else {
       queryQuestionCommentController.archiveQueryQuestionComment(comment);
     }
+    
+    mqttController.publish(QUERY_QUESTION_COMMENTS_MQTT_CHANNEL, new QueryQuestionCommentNotification(QueryQuestionCommentNotification.Type.DELETED, 
+        panelId, 
+        query.getId(), 
+        page.getId(), 
+        commentId));
     
     return createNoContent();
   }
@@ -192,24 +215,34 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   public Response updateQueryQuestionComment(QueryQuestionComment body, Long panelId, Long commentId) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
-      return createNotFound();
+      return createNotFound(String.format("Panel with id %s not found", panelId));
     }
 
     fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment comment = queryQuestionCommentController.findQueryQuestionCommentById(commentId);
     if (comment == null || queryQuestionCommentController.isQueryQuestionCommentArchived(comment)) {
-      return createNotFound();
+      return createNotFound(String.format("Comment with id %s not found", commentId));
     }
     
     if (!queryQuestionCommentController.isPanelsComment(comment, panel)) {
-      return createNotFound();
+      return createNotFound("Comment not found from given panel");
     }
  
     String contents = body.getContents();
     Boolean hidden = body.isisHidden();
     Date modified = new Date(System.currentTimeMillis());
     User modifier = getLoggedUser();
+    fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment updatedComment = queryQuestionCommentController.updateQueryQuestionComment(comment, contents, hidden, modifier, modified);
+
+    QueryPage page = updatedComment.getQueryPage();
+    Query query = page.getQuerySection().getQuery();
     
-    return createOk(queryQuestionCommentTranslator.translate(queryQuestionCommentController.updateQueryQuestionComment(comment, contents, hidden, modifier, modified)));
+    mqttController.publish(QUERY_QUESTION_COMMENTS_MQTT_CHANNEL, new QueryQuestionCommentNotification(QueryQuestionCommentNotification.Type.UPDATED, 
+        panelId, 
+        query.getId(), 
+        page.getId(), 
+        commentId));
+    
+    return createOk(queryQuestionCommentTranslator.translate(updatedComment));
   }
 
   

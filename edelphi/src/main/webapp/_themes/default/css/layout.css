@@ -3584,10 +3584,6 @@ div.queryCommentChildren div.queryComment {
   padding:3px 0 5px 0px;
 }
 
-.queryComment .queryCommentShowComment {
-  display: none;
-}
-
 .queryCommentHidden .queryCommentShowComment {
   display: block;
 }
