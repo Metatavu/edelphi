@@ -278,14 +278,11 @@ public class OrderingThesisQueryPageHandler extends AbstractScaleThesisQueryPage
     for (int itemIndex = 0; itemIndex < items.size(); itemIndex++) {
       String fieldName = "orderItem." + itemIndex;
       QueryNumericField numberField = (QueryNumericField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldName);
-      for (QueryReply queryReply : includeReplies) {
-        for (int position = 0; position < items.size(); position++) {
-          Double key = new Double(position);
-          Long count = queryQuestionNumericAnswerDAO.countByQueryFieldQueryReplyAndData(numberField, queryReply, key);
-          List<Double> list = stackedSeries.get(position);
-          list.set(itemIndex, list.get(itemIndex) + new Double(count));
-        }
-      }      
+      for (int position = 0; position < items.size(); position++) {
+        Double key = new Double(position);
+        Long count = queryQuestionNumericAnswerDAO.countByQueryFieldQueryRepliesInAndData(numberField, includeReplies, key);
+        stackedSeries.get(position).set(itemIndex, new Double(count));
+      }
     }
 
     requiredFragment.addAttribute("title", queryPage.getTitle());
@@ -296,7 +293,7 @@ public class OrderingThesisQueryPageHandler extends AbstractScaleThesisQueryPage
       requiredFragment.addAttribute("item." + i + ".label", item);
       requiredFragment.addAttribute("item." + i + ".values", StringUtils.join(stackedSerie, ','));
     }
-    
+
     addRequiredFragment(requestContext, requiredFragment);
   }
   
