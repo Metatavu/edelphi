@@ -144,7 +144,7 @@ public class ExportReportBinaryController extends BinaryController {
       Tidy tidy = new Tidy();
       tidy.setInputEncoding("UTF-8");
       tidy.setOutputEncoding("UTF-8");
-      tidy.setShowWarnings(true);
+      tidy.setShowWarnings(false);
       tidy.setNumEntities(false);
       tidy.setXmlOut(true);
       tidy.setXHTML(true);
