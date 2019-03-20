@@ -11,16 +11,20 @@
 
 package fi.metatavu.edelphi.taglib;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.ServletContext;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.taglibs.standard.tag.common.core.ParamParent;
 import org.eclipse.birt.chart.model.Chart;
 import org.eclipse.birt.chart.model.attribute.Bounds;
+import org.eclipse.birt.core.exception.BirtException;
 
 import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
@@ -33,6 +37,7 @@ import fi.metatavu.edelphi.pages.panel.admin.report.util.ReportContext;
 import fi.metatavu.edelphi.taglib.chartutil.ChartWebHelper;
 import fi.metatavu.edelphi.taglib.chartutil.ImageHTMLEmitter;
 import fi.metatavu.edelphi.taglib.chartutil.PngImageHTMLEmitter;
+import fi.metatavu.edelphi.taglib.chartutil.ReportChartCache;
 import fi.metatavu.edelphi.taglib.chartutil.SvgImageHTMLEmitter;
 import fi.metatavu.edelphi.utils.ResourceUtils;
 
@@ -76,26 +81,11 @@ public class QueryPageChartTag extends BodyTagSupport implements ParamParent {
         throw new SmvcRuntimeException(EdelfoiStatusCode.REPORTING_ERROR, "Unknown output format.");
       }
       
-      QueryPageDAO queryPageDAO = new QueryPageDAO();
-      QueryPage queryPage = queryPageDAO.findById(queryPageId);
-      QueryReportPageController queryReportPageController = QueryReportPageProvider.getController(queryPage.getPageType());
-      
-      Map<String, String> chartParameters = new HashMap<>();
-      chartParameters.putAll(parameters);
-      ChartContext chartContext = new ChartContext(reportContext, chartParameters);
-      
-      Chart chartModel = queryReportPageController.constructChart(chartContext, queryPage);
-
-      if (chartModel != null) {
-        // Set size in chart model
-        Bounds bounds = chartModel.getBlock().getBounds();
-        bounds.setWidth(width);
-        bounds.setHeight(height);
+      if ("PNG".equals(output)) {
+        generatePng();
       } else {
-        throw new SmvcRuntimeException(EdelfoiStatusCode.REPORTING_ERROR, "ChartModel was not found.");
+        generateSvg();
       }
-      
-      pageContext.getOut().println(createEmitter(chartModel).generateHTML());
       
     } catch (Exception e) {
       // TODO Auto-generated catch block
@@ -216,6 +206,52 @@ public class QueryPageChartTag extends BodyTagSupport implements ParamParent {
     name = ResourceUtils.decodeUrlName(name);
     value = ResourceUtils.decodeUrlName(value);
     parameters.put(name, value);
+  }
+
+  private void generateSvg() throws IOException, BirtException {
+    QueryPageDAO queryPageDAO = new QueryPageDAO();
+    QueryPage queryPage = queryPageDAO.findById(queryPageId);
+    QueryReportPageController queryReportPageController = QueryReportPageProvider.getController(queryPage.getPageType());
+    
+    Map<String, String> chartParameters = new HashMap<>();
+    chartParameters.putAll(parameters);
+    ChartContext chartContext = new ChartContext(reportContext, chartParameters);
+    
+    Chart chartModel = queryReportPageController.constructChart(chartContext, queryPage);
+
+    if (chartModel != null) {
+      // Set size in chart model
+      Bounds bounds = chartModel.getBlock().getBounds();
+      bounds.setWidth(width);
+      bounds.setHeight(height);
+    } else {
+      throw new SmvcRuntimeException(EdelfoiStatusCode.REPORTING_ERROR, "ChartModel was not found.");
+    }
+    
+    pageContext.getOut().println(createEmitter(chartModel).generateHTML());
+  }
+  
+  private void generatePng() throws IOException {
+    boolean dynamicSize = "true".equals(parameters.get("dynamicSize"));
+    
+    Map<String, String> chartParameters = new HashMap<>();
+    chartParameters.putAll(parameters);
+    GenerateChartImageData chartImageData = new GenerateChartImageData(width, height, chartParameters, queryPageId, reportContext);
+    
+    String id = UUID.randomUUID().toString();
+    ReportChartCache.put(id, SerializationUtils.serialize(chartImageData));
+    String url = String.format("/queries/generatechartimage.binary?id=%s", id);
+    
+    StringBuilder html = new StringBuilder();
+    if (dynamicSize) {
+      html.append(String.format("<img src=\"%s\" width=\"100%%\"/>", url));
+    } else {
+      html.append(String.format("<img src=\"%s\" width=\"%s\" height=\"%s\"/>", url, width, height));
+    }
+    
+    html.append("<br/>");
+    
+    pageContext.getOut().println(html.toString());
   }
 
 }
