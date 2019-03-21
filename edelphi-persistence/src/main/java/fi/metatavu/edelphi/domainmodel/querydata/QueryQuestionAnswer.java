@@ -15,11 +15,15 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryField;
 
 @Entity
 @Inheritance(strategy=InheritanceType.JOINED)
 @Cacheable (true)
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
 public class QueryQuestionAnswer {
 
   @Id 

@@ -204,11 +204,11 @@ public class Scale2DThesisQueryPageHandler extends AbstractScaleThesisQueryPageH
     int commentColumnIndex = commentable ? exportContext.addColumn(queryPage.getTitle() + "/" + messages.getText(locale, "panelAdmin.query.export.comment")) : -1; 
     
     for (QueryReply queryReply : queryReplies) {
-      QueryQuestionOptionAnswer answerX = queryQuestionOptionAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryFieldX);
-      QueryQuestionOptionAnswer answerY = queryQuestionOptionAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryFieldY);
-
-      exportContext.addCellValue(queryReply, columnIndexX, answerX != null ? answerX.getOption().getText() : null);
-      exportContext.addCellValue(queryReply, columnIndexY, answerY != null ? answerY.getOption().getText() : null);
+      String answerX = queryQuestionOptionAnswerDAO.findTextByQueryReplyAndQueryField(queryReply, queryFieldX);
+      String answerY = queryQuestionOptionAnswerDAO.findTextByQueryReplyAndQueryField(queryReply, queryFieldY);
+      
+      exportContext.addCellValue(queryReply, columnIndexX, answerX);
+      exportContext.addCellValue(queryReply, columnIndexY, answerY);
 
       if (commentable) {
         QueryQuestionComment comment = queryQuestionCommentDAO.findRootCommentByQueryReplyAndQueryPage(queryReply, queryPage);
