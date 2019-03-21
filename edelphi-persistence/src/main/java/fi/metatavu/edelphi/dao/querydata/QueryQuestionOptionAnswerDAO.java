@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
@@ -13,6 +14,7 @@ import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionAnswer_;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryField;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption;
+import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption_;
 
 public class QueryQuestionOptionAnswerDAO extends GenericDAO<QueryQuestionOptionAnswer> {
 
@@ -30,7 +32,41 @@ public class QueryQuestionOptionAnswerDAO extends GenericDAO<QueryQuestionOption
     queryQuestionOptionAnswer.setLastModified(lastModified);
     return persist(queryQuestionOptionAnswer);
   }
+
+  /**
+   * Finds answer text by query reply and query field
+   * 
+   * @param queryReply reply
+   * @param queryField field
+   * @return answer text
+   */
+  public String findTextByQueryReplyAndQueryField(QueryReply queryReply, QueryField queryField) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<String> criteria = criteriaBuilder.createQuery(String.class);
+    Root<QueryQuestionOptionAnswer> root = criteria.from(QueryQuestionOptionAnswer.class);
+    Join<QueryQuestionOptionAnswer, QueryOptionFieldOption> option = root.join(QueryQuestionOptionAnswer_.option);
+    
+    criteria.select(option.get(QueryOptionFieldOption_.text));
+    
+    criteria.where(
+      criteriaBuilder.and(
+        criteriaBuilder.equal(root.get(QueryQuestionOptionAnswer_.queryField), queryField),
+        criteriaBuilder.equal(root.get(QueryQuestionOptionAnswer_.queryReply), queryReply)
+      )
+    );
+    
+    return getSingleResult(entityManager.createQuery(criteria));
+  }
   
+  /**
+   * Finds answer by query reply and query field
+   * 
+   * @param queryReply reply
+   * @param queryField field
+   * @return answer
+   */
   public QueryQuestionOptionAnswer findByQueryReplyAndQueryField(QueryReply queryReply, QueryField queryField) {
     EntityManager entityManager = getEntityManager();
 
