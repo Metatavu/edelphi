@@ -107,7 +107,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     mqttController.publish(QUERY_QUESTION_COMMENTS_MQTT_CHANNEL, new QueryQuestionCommentNotification(QueryQuestionCommentNotification.Type.CREATED, 
         panelId, 
         replyQuery.getId(), 
-        pageQuery.getId(), 
+        queryPage.getId(), 
         comment.getId()));
     
     return createOk(queryQuestionCommentTranslator.translate(comment));

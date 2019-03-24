@@ -13,6 +13,7 @@ interface Props {
   queryId: number,
   panelId: number,
   pageId: number,
+  queryReplyId: number,
   accessToken?: string,
   locale: string
 }
@@ -46,7 +47,7 @@ class QueryCommentList extends React.Component<Props, State> {
     return (
       <div className="queryCommentList">
         <h2 className="querySubTitle queryCommentListSubTitle">{ strings.panel.query.comments.title }</h2>
-        <QueryCommentContainer className="queryCommentsContainer" parentId={ 0 } pageId={ this.props.pageId } panelId={ this.props.panelId } queryId={ this.props.queryId }/>
+        <QueryCommentContainer className="queryCommentsContainer" queryReplyId={this.props.queryReplyId} parentId={ 0 } pageId={ this.props.pageId } panelId={ this.props.panelId } queryId={ this.props.queryId }/>
       </div>
     );
   }

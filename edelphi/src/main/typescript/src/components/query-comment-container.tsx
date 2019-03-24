@@ -16,6 +16,7 @@ interface Props {
   panelId: number,
   pageId: number,
   parentId: number,
+  queryReplyId: number,
   accessToken?: string,
   locale: string,
   className: string
@@ -70,7 +71,7 @@ class QueryCommentContainer extends React.Component<Props, State> {
     return <div className={ this.props.className }>
       {
         this.state.comments.map((comment) => {
-          return <QueryComment key={ comment.id } comment={ comment } pageId={ this.props.pageId } panelId={ this.props.panelId} queryId={ this.props.queryId }/>
+          return <QueryComment key={ comment.id } comment={ comment } queryReplyId={this.props.queryReplyId} pageId={ this.props.pageId } panelId={ this.props.panelId} queryId={ this.props.queryId }/>
         })
       } 
     </div>
@@ -90,20 +91,29 @@ class QueryCommentContainer extends React.Component<Props, State> {
       return;
     }
 
-    const comments = [];
+    if (message.type == "CREATED" && message.pageId == this.props.pageId) {
+      const comment = await this.getQueryQuestionCommentsService(this.props.accessToken).findQueryQuestionComment(this.props.panelId, message.commentId);
+      this.setState({
+        comments: this.state.comments.concat([comment])
+      });      
+    } else {
+      const comments = [];
 
-    for (let i = 0; i < this.state.comments.length; i++) {
-      const comment = this.state.comments[i];
-      if (message.commentId == comment.id) {
-        comments.push(await this.getQueryQuestionCommentsService(this.props.accessToken).findQueryQuestionComment(this.props.panelId, message.commentId));
-      } else {
-        comments.push(comment);
+      for (let i = 0; i < this.state.comments.length; i++) {
+        const comment = this.state.comments[i];
+        if (message.commentId == comment.id) {
+          if (message.type == "UPDATED") {
+            comments.push(await this.getQueryQuestionCommentsService(this.props.accessToken).findQueryQuestionComment(this.props.panelId, message.commentId));
+          }
+        } else {
+          comments.push(comment);
+        }
       }
-    }
 
-    this.setState({
-      comments: comments
-    });
+      this.setState({
+        comments: comments
+      });
+    }
   }
   /**
    * Loads child comments

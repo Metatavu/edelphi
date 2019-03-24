@@ -13,7 +13,8 @@ export interface IStrings extends LocalizedStringsMethods {
         show: string,
         edit: string,
         remove: string,
-        commentDate: string
+        commentDate: string,
+        saveReply: string
       }
     }
   }

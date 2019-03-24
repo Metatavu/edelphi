@@ -8,7 +8,8 @@
         "edit": "Muokkaa",
         "remove": "Poista",
         "show": "Palauta näkyviin",
-        "commentDate": "Kommentti kirjoitettu {0}"
+        "commentDate": "Kommentti kirjoitettu {0}",
+        "saveReply": "Tallenna kommentti"
       }
     }
   }

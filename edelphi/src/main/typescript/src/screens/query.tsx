@@ -57,13 +57,13 @@ window.addEventListener('load', () => {
     const commentable: boolean = getBoolAttribute(queryComments, "data-commentable");
     const viewDiscussion: boolean  = getBoolAttribute(queryComments, "data-view-discussion");
 
-    if (panelId && queryId && pageId) {
+    if (panelId && queryId && pageId && queryReplyId) {
       const component = 
         <Provider store={store}>
           <AccessTokenRefresh/>
           <MqttConnector>
             { commentable ? <QueryCommentEditor queryReplyId={queryReplyId}/> : null }
-            { viewDiscussion ? <QueryCommentList panelId={panelId} queryId={queryId} pageId={pageId}/> : null }
+            { viewDiscussion ? <QueryCommentList panelId={panelId} queryId={queryId} pageId={pageId} queryReplyId={queryReplyId}/> : null }
           </MqttConnector>
         </Provider>;
 
