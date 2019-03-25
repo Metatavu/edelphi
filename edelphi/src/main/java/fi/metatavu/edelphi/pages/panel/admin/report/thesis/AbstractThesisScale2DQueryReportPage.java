@@ -13,7 +13,6 @@ import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingKeyDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
-import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageSetting;
@@ -81,13 +80,12 @@ public abstract class AbstractThesisScale2DQueryReportPage extends QueryReportPa
 
     List<QueryReply> queryReplies = ReportUtils.getQueryReplies(queryPage, chartContext.getReportContext());
     for (QueryReply queryReply : queryReplies) {
-      QueryQuestionOptionAnswer answerX = queryQuestionOptionAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryFieldX);
-      QueryQuestionOptionAnswer answerY = queryQuestionOptionAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryFieldY);
+      String answerX = queryQuestionOptionAnswerDAO.findValueByQueryReplyAndQueryField(queryReply, queryFieldX);
+      String answerY = queryQuestionOptionAnswerDAO.findValueByQueryReplyAndQueryField(queryReply, queryFieldY);
 
       if (answerX != null && answerY != null) {
-        int x = NumberUtils.createInteger(answerX.getOption().getValue());
-        int y = NumberUtils.createInteger(answerY.getOption().getValue());
-
+        int x = NumberUtils.createInteger(answerX);
+        int y = NumberUtils.createInteger(answerY);
         values[x][y] = values[x][y] != null ? values[x][y] + 1 : 1; 
       }
     }
