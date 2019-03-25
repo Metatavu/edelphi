@@ -59,6 +59,33 @@ public class QueryQuestionOptionAnswerDAO extends GenericDAO<QueryQuestionOption
     
     return getSingleResult(entityManager.createQuery(criteria));
   }
+
+  /**
+   * Finds answer value by query reply and query field
+   * 
+   * @param queryReply reply
+   * @param queryField field
+   * @return answer value
+   */
+  public String findValueByQueryReplyAndQueryField(QueryReply queryReply, QueryField queryField) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<String> criteria = criteriaBuilder.createQuery(String.class);
+    Root<QueryQuestionOptionAnswer> root = criteria.from(QueryQuestionOptionAnswer.class);
+    Join<QueryQuestionOptionAnswer, QueryOptionFieldOption> option = root.join(QueryQuestionOptionAnswer_.option);
+    
+    criteria.select(option.get(QueryOptionFieldOption_.value));
+    
+    criteria.where(
+      criteriaBuilder.and(
+        criteriaBuilder.equal(root.get(QueryQuestionOptionAnswer_.queryField), queryField),
+        criteriaBuilder.equal(root.get(QueryQuestionOptionAnswer_.queryReply), queryReply)
+      )
+    );
+    
+    return getSingleResult(entityManager.createQuery(criteria));
+  }
   
   /**
    * Finds answer by query reply and query field
