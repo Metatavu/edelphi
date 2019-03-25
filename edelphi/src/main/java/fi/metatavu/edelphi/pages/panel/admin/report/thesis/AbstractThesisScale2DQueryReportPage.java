@@ -5,6 +5,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Tuple;
+
 import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.birt.chart.model.Chart;
 
@@ -77,17 +79,13 @@ public abstract class AbstractThesisScale2DQueryReportPage extends QueryReportPa
     for (int x = 0; x < maxX; x++) {
       values[x] = new Double[maxY];
     }
-
+    
     List<QueryReply> queryReplies = ReportUtils.getQueryReplies(queryPage, chartContext.getReportContext());
-    for (QueryReply queryReply : queryReplies) {
-      String answerX = queryQuestionOptionAnswerDAO.findValueByQueryReplyAndQueryField(queryReply, queryFieldX);
-      String answerY = queryQuestionOptionAnswerDAO.findValueByQueryReplyAndQueryField(queryReply, queryFieldY);
-
-      if (answerX != null && answerY != null) {
-        int x = NumberUtils.createInteger(answerX);
-        int y = NumberUtils.createInteger(answerY);
-        values[x][y] = values[x][y] != null ? values[x][y] + 1 : 1; 
-      }
+    List<Tuple> tuples = queryQuestionOptionAnswerDAO.countReplies2d(queryReplies, queryFieldX, queryFieldY);
+    for (Tuple tuple : tuples) {
+      int x = NumberUtils.createInteger(tuple.get("x", String.class));
+      int y = NumberUtils.createInteger(tuple.get("y", String.class));
+      values[x][y] = Double.valueOf(tuple.get("count", Long.class));
     }
     
     Map<Long, Long> dataX = ReportUtils.getOptionListData(queryFieldX, optionsX, queryReplies);
