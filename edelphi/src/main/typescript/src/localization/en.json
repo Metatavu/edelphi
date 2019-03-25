@@ -9,7 +9,9 @@
         "remove": "Remove",
         "show": "Show",
         "commentDate": "Comment date {0}",
-        "saveReply": "Save comment"
+        "commentModified": "Comment modified {0}",
+        "saveReply": "Save comment",
+        "saveEdit": "Save"
       }
     }
   }

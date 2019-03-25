@@ -27,7 +27,9 @@ interface Props {
  * Interface representing component state
  */
 interface State {
-  editorOpen: boolean,
+  commentEditorOpen: boolean,
+  commentEditorContents?: string
+  replyEditorOpen: boolean,
   updating: boolean
 }
 
@@ -36,6 +38,7 @@ interface State {
  */
 class QueryCommentClass extends React.Component<Props, State> {
 
+  private commentEditor: HTMLTextAreaElement | null;
   private replyEditor: HTMLTextAreaElement | null;
 
   /**
@@ -46,7 +49,8 @@ class QueryCommentClass extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = { 
-      editorOpen: false,
+      commentEditorOpen: false,
+      replyEditorOpen: false,
       updating: false
     };
 
@@ -65,7 +69,12 @@ class QueryCommentClass extends React.Component<Props, State> {
           <div className="queryCommentDate">{ strings.formatString(strings.panel.query.comments.commentDate, this.formatDateTime(this.props.comment.created)) } </div>
         </div>
         <div className="queryCommentContainerWrapper">
-          <div className="queryCommentText">{ this.props.comment.contents }</div>
+          {
+            this.renderModified()
+          }
+          {
+            this.renderContents()
+          }
           { 
             this.renderLinks()
           }
@@ -81,10 +90,37 @@ class QueryCommentClass extends React.Component<Props, State> {
   }
 
   /**
+   * Renders comment text or editor
+   */
+  private renderContents() {
+    if (this.state.commentEditorOpen) {
+      return (
+        <div className="editCommentEditor">
+          <textarea ref={ (textarea) => { this.commentEditor = textarea; }} onChange={ (event) => { this.setState({ commentEditorContents: event.target.value }); } } value={ this.state.commentEditorContents }></textarea>
+          <input type="button" className="formButton" disabled={ !this.state.commentEditorContents || !this.state.commentEditorContents.trim() } onClick={ (event: React.MouseEvent<HTMLElement>) => this.onEditCommentSaveClick(event) } value={ strings.panel.query.comments.saveEdit }></input>
+        </div>
+      );
+    }
+
+    return (<div className="queryCommentText">{ this.props.comment.contents }</div>);
+  }
+
+  /**
+   * Renders comment modified text (if comment has been modified)
+   */
+  private renderModified() {
+    if (this.props.comment.created == this.props.comment.lastModified) {
+      return null;
+    }
+
+    return <div className="queryCommentModified">{ strings.formatString(strings.panel.query.comments.commentModified, this.formatDateTime(this.props.comment.lastModified)) } </div>
+  }
+
+  /**
    * Renders new comment editor
    */
   private renderNewCommentEditor() {
-    if (!this.state.editorOpen) {
+    if (!this.state.replyEditorOpen) {
       return null;
     }
 
@@ -116,8 +152,8 @@ class QueryCommentClass extends React.Component<Props, State> {
             ? <div className="queryCommentShowComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onShowClick(event) } className="queryCommentShowCommentLink">{ strings.panel.query.comments.show }</a></div>
             : <div className="queryCommentHideComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onHideClick(event) } className="queryCommentHideCommentLink">{ strings.panel.query.comments.hide }</a></div>
         }
-        <div className="queryCommentEditComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" className="queryCommentEditCommentLink">{ strings.panel.query.comments.edit }</a></div>
-        <div className="queryCommentDeleteComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" className="queryCommentDeleteCommentLink">{ strings.panel.query.comments.edit }</a></div>
+        <div className="queryCommentEditComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onEditCommentClick(event) }   className="queryCommentEditCommentLink">{ strings.panel.query.comments.edit }</a></div>
+        <div className="queryCommentDeleteComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" className="queryCommentDeleteCommentLink">{ strings.panel.query.comments.remove }</a></div>
       </div>  
     );
   }
@@ -142,7 +178,7 @@ class QueryCommentClass extends React.Component<Props, State> {
   }
     
   /**
-   * Click handler for show link
+   * Click handler for reply comment link
    * 
    * @param event event
    */
@@ -150,12 +186,49 @@ class QueryCommentClass extends React.Component<Props, State> {
     event.preventDefault();
 
     this.setState({
-      editorOpen: true
+      replyEditorOpen: true
     });
   }
     
   /**
-   * Click handler for show link
+   * Click handler for edit link
+   * 
+   * @param event event
+   */
+  private onEditCommentClick(event: React.MouseEvent<HTMLElement>) {
+    event.preventDefault();
+
+    this.setState({
+      commentEditorOpen: true,
+      commentEditorContents: this.props.comment.contents
+    });
+  }
+
+  /**
+   * Click handler edit comment save button 
+   * 
+   * @param event event
+   */
+  private onEditCommentSaveClick(event: React.MouseEvent<HTMLElement>) {
+    event.preventDefault();
+
+    if (!this.commentEditor || this.state.updating || !this.props.accessToken || !this.props.comment.id) {
+      return;
+    }
+
+    const contents = this.state.commentEditorContents;
+
+    this.setState({
+      commentEditorOpen: false,
+      updating: true
+    });
+
+    const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken);
+    queryQuestionCommentsService.updateQueryQuestionComment({ ... this.props.comment, contents: contents }, this.props.panelId, this.props.comment.id);
+  }
+    
+  /**
+   * Click handler new save button 
    * 
    * @param event event
    */
@@ -169,7 +242,7 @@ class QueryCommentClass extends React.Component<Props, State> {
     const contents = this.replyEditor.value;
 
     this.setState({
-      editorOpen: false,
+      replyEditorOpen: false,
       updating: true
     });
 

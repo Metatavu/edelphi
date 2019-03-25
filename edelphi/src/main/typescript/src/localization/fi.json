@@ -9,7 +9,9 @@
         "remove": "Poista",
         "show": "Palauta näkyviin",
         "commentDate": "Kommentti kirjoitettu {0}",
-        "saveReply": "Tallenna kommentti"
+        "commentModified": "Kommenttia muokattu {0}",
+        "saveReply": "Tallenna kommentti",
+        "saveEdit": "Tallenna"
       }
     }
   }
