@@ -3,6 +3,7 @@ package fi.metatavu.edelphi.dao.querydata;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
@@ -13,6 +14,7 @@ import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionAnswer_;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryField;
+import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionField;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption_;
 
@@ -177,6 +179,40 @@ public class QueryQuestionOptionAnswerDAO extends GenericDAO<QueryQuestionOption
     queryQuestionOptionAnswer.setOption(option);
     queryQuestionOptionAnswer.setLastModified(new Date());
     return persist(queryQuestionOptionAnswer);
+  }
+
+
+  /**
+   * Returns list of tuples containing x (string), y (string) and count (long) describing 2d answer counts for given x ad y fields within given reply set
+   * 
+   * @param queryReplies query replies
+   * @param queryFieldX x field
+   * @param queryFieldY y field
+   * @return list of tuples
+   */
+  public List<Tuple> countReplies2d(List<QueryReply> queryReplies, QueryOptionField queryFieldX, QueryOptionField queryFieldY) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Tuple> criteria = criteriaBuilder.createTupleQuery();
+    
+    Root<QueryQuestionOptionAnswer> xAnswerRoot = criteria.from(QueryQuestionOptionAnswer.class);
+    Root<QueryQuestionOptionAnswer> yAnswerRoot = criteria.from(QueryQuestionOptionAnswer.class);
+
+    Join<QueryQuestionOptionAnswer, QueryOptionFieldOption> xOption = xAnswerRoot.join(QueryQuestionOptionAnswer_.option);
+    Join<QueryQuestionOptionAnswer, QueryOptionFieldOption> yOption = yAnswerRoot.join(QueryQuestionOptionAnswer_.option);
+
+    criteria.multiselect(xOption.get(QueryOptionFieldOption_.value).alias("x"), yOption.get(QueryOptionFieldOption_.value).alias("y"), criteriaBuilder.count(xAnswerRoot).alias("count"));
+    criteria.where(
+      xAnswerRoot.get(QueryQuestionOptionAnswer_.queryReply).in(queryReplies),
+      criteriaBuilder.equal(xAnswerRoot.get(QueryQuestionOptionAnswer_.queryField), queryFieldX),
+      criteriaBuilder.equal(yAnswerRoot.get(QueryQuestionOptionAnswer_.queryField), queryFieldY),
+      criteriaBuilder.equal(xAnswerRoot.get(QueryQuestionOptionAnswer_.queryReply), yAnswerRoot.get(QueryQuestionOptionAnswer_.queryReply))
+    );
+    
+    criteria.groupBy(xOption.get(QueryOptionFieldOption_.value), yOption.get(QueryOptionFieldOption_.value));
+
+    return entityManager.createQuery(criteria).getResultList();
   }
 
 }
