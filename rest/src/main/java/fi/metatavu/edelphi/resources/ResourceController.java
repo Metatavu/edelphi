@@ -79,18 +79,4 @@ public class ResourceController {
     return false;
   }
   
-  /**
-   * Returns a root folder of given resource
-   * 
-   * @param resource resource
-   * @return root folder
-   */
-  private Folder getResourceRootFolder(Resource resource) {
-    if (resource.getParentFolder() == null) {
-      return (Folder) resource;
-    }
-    
-    return getResourceRootFolder(resource.getParentFolder());
-  }
-  
 }

@@ -24,4 +24,5 @@ export interface QueryQuestionCommentNotification {
   queryId: number,
   pageId: number,
   commentId: number,
+  parentCommentId: number | null,
 }

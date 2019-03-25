@@ -91,7 +91,7 @@ class QueryCommentContainer extends React.Component<Props, State> {
       return;
     }
 
-    if (message.type == "CREATED" && message.pageId == this.props.pageId) {
+    if (message.type == "CREATED" && message.parentCommentId == this.props.parentId) {
       const comment = await this.getQueryQuestionCommentsService(this.props.accessToken).findQueryQuestionComment(this.props.panelId, message.commentId);
       this.setState({
         comments: this.state.comments.concat([comment])

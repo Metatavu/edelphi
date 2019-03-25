@@ -12,6 +12,7 @@ public class QueryQuestionCommentNotification {
   private Long queryId;
   private Long pageId;
   private Long commentId;
+  private Long parentCommentId;
 
   /**
    * Constructor
@@ -29,13 +30,14 @@ public class QueryQuestionCommentNotification {
    * @param pageId page id
    * @param commentId comment id
    */
-  public QueryQuestionCommentNotification(Type type, Long panelId, Long queryId, Long pageId, Long commentId) {
+  public QueryQuestionCommentNotification(Type type, Long panelId, Long queryId, Long pageId, Long commentId, Long parentCommentId) {
     super();
     this.type = type;
     this.panelId = panelId;
     this.queryId = queryId;
     this.pageId = pageId;
     this.commentId = commentId;
+    this.parentCommentId = parentCommentId;
   }
 
   public Type getType() {
@@ -76,6 +78,14 @@ public class QueryQuestionCommentNotification {
 
   public void setCommentId(Long commentId) {
     this.commentId = commentId;
+  }
+  
+  public Long getParentCommentId() {
+    return parentCommentId;
+  }
+  
+  public void setParentCommentId(Long parentCommentId) {
+    this.parentCommentId = parentCommentId;
   }
 
   public enum Type {

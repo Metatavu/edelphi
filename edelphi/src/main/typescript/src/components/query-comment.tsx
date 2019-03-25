@@ -70,10 +70,10 @@ class QueryCommentClass extends React.Component<Props, State> {
             this.renderLinks()
           }
           {
-            this.renderNewCommentEditor()
+            this.renderChildComments()
           }
           {
-            this.renderChildComments()
+            this.renderNewCommentEditor()
           }
         </div>
       </div>
@@ -101,10 +101,6 @@ class QueryCommentClass extends React.Component<Props, State> {
    * Renders child comments
    */
   private renderChildComments() {
-    if (!this.isRootComment()) {
-      return null;
-    }
-
     return <QueryCommentContainer className="queryCommentChildren" parentId={ this.props.comment.id! } queryReplyId={this.props.queryReplyId} pageId={ this.props.pageId } panelId={ this.props.panelId } queryId={ this.props.queryId }/>
   }
 
@@ -124,15 +120,6 @@ class QueryCommentClass extends React.Component<Props, State> {
         <div className="queryCommentDeleteComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" className="queryCommentDeleteCommentLink">{ strings.panel.query.comments.edit }</a></div>
       </div>  
     );
-  }
-
-  /**
-   * Returns whether this is a root comment or not
-   * 
-   * @returns whether this is a root comment or not
-   */
-  private isRootComment() {
-    return !this.props.comment.parentId;
   }
 
   /**
@@ -175,14 +162,15 @@ class QueryCommentClass extends React.Component<Props, State> {
   private onNewCommentSaveClick(event: React.MouseEvent<HTMLElement>) {
     event.preventDefault();
 
-    if (!this.replyEditor) {
+    if (!this.replyEditor || this.state.updating || !this.props.accessToken || !this.props.comment.id) {
       return;
     }
 
     const contents = this.replyEditor.value;
 
     this.setState({
-      editorOpen: false
+      editorOpen: false,
+      updating: true
     });
 
     const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken);
@@ -241,10 +229,21 @@ class QueryCommentClass extends React.Component<Props, State> {
    * @param message message
    */
   private async onQueryQuestionCommentNotification(message: QueryQuestionCommentNotification) {
-    if ((message.commentId == this.props.comment.id) && (message.type == 'UPDATED')) {
-      this.setState({
-        updating: false
-      });
+    switch (message.type) {
+      case "UPDATED":
+        if (message.commentId == this.props.comment.id) {
+          this.setState({
+            updating: false
+          });
+        }
+      break;
+      case "CREATED":
+        if (message.parentCommentId == this.props.comment.id) {
+          this.setState({
+            updating: false
+          });
+        }
+      break;
     }
   }
 }

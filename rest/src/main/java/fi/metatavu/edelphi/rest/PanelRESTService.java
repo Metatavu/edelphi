@@ -104,11 +104,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     User creator = getLoggedUser();
     fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment comment = queryQuestionCommentController.createQueryQuestionComment(queryReply, queryPage, parentComment, contents, hidden, creator, created);
 
-    mqttController.publish(QUERY_QUESTION_COMMENTS_MQTT_CHANNEL, new QueryQuestionCommentNotification(QueryQuestionCommentNotification.Type.CREATED, 
-        panelId, 
-        replyQuery.getId(), 
-        queryPage.getId(), 
-        comment.getId()));
+    publishMqttNotification(QueryQuestionCommentNotification.Type.CREATED, panel, comment);
     
     return createOk(queryQuestionCommentTranslator.translate(comment));
   }
@@ -130,21 +126,14 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createNotFound();
     }
     
-    QueryPage page = comment.getQueryPage();
-    Query query = page.getQuerySection().getQuery();
-    
     if (inTestMode()) {
       queryQuestionCommentController.deleteQueryQuestionComment(comment);
     } else {
       queryQuestionCommentController.archiveQueryQuestionComment(comment);
     }
     
-    mqttController.publish(QUERY_QUESTION_COMMENTS_MQTT_CHANNEL, new QueryQuestionCommentNotification(QueryQuestionCommentNotification.Type.DELETED, 
-        panelId, 
-        query.getId(), 
-        page.getId(), 
-        commentId));
-    
+    publishMqttNotification(QueryQuestionCommentNotification.Type.DELETED, panel, comment);
+
     return createNoContent();
   }
 
@@ -233,17 +222,23 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     User modifier = getLoggedUser();
     fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment updatedComment = queryQuestionCommentController.updateQueryQuestionComment(comment, contents, hidden, modifier, modified);
 
-    QueryPage page = updatedComment.getQueryPage();
-    Query query = page.getQuerySection().getQuery();
-    
-    mqttController.publish(QUERY_QUESTION_COMMENTS_MQTT_CHANNEL, new QueryQuestionCommentNotification(QueryQuestionCommentNotification.Type.UPDATED, 
-        panelId, 
-        query.getId(), 
-        page.getId(), 
-        commentId));
+    publishMqttNotification(QueryQuestionCommentNotification.Type.UPDATED, panel, comment);
     
     return createOk(queryQuestionCommentTranslator.translate(updatedComment));
   }
-
+  
+  private void publishMqttNotification(QueryQuestionCommentNotification.Type type, Panel panel, fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment comment) {
+    QueryPage page = comment.getQueryPage();
+    Query query = page.getQuerySection().getQuery();
+    Long commentParentId = comment.getParentComment() != null ? comment.getParentComment().getId() : null;
+    
+    mqttController.publish(QUERY_QUESTION_COMMENTS_MQTT_CHANNEL, new QueryQuestionCommentNotification(type, 
+        panel.getId(), 
+        query.getId(), 
+        page.getId(), 
+        comment.getId(),
+        commentParentId));
+    
+  }
   
 }
