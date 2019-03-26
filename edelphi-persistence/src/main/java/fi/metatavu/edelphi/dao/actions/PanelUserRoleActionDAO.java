@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.dao.actions;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -14,6 +15,7 @@ import fi.metatavu.edelphi.domainmodel.actions.PanelUserRoleAction_;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.users.UserRole;
 
+@ApplicationScoped
 public class PanelUserRoleActionDAO extends GenericDAO<PanelUserRoleAction> {
   
   public PanelUserRoleAction create(Panel panel, DelfoiAction delfoiAction, UserRole userRole) {

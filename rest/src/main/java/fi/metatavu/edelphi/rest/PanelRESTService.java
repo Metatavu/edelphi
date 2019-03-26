@@ -24,6 +24,8 @@ import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.mqtt.MqttController;
 import fi.metatavu.edelphi.panels.PanelController;
+import fi.metatavu.edelphi.permissions.DelfoiActionName;
+import fi.metatavu.edelphi.permissions.PermissionController;
 import fi.metatavu.edelphi.queries.QueryController;
 import fi.metatavu.edelphi.rest.api.PanelsApi;
 import fi.metatavu.edelphi.rest.model.QueryQuestionComment;
@@ -60,12 +62,19 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   @Inject
   private QueryQuestionCommentTranslator queryQuestionCommentTranslator;
 
+  @Inject
+  private PermissionController permissionController;
+  
   @Override
   @RolesAllowed("user")
   public Response createQueryQuestionComment(QueryQuestionComment body, Long panelId) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
+    }
+
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.ACCESS_PANEL)) {
+      return createForbidden("Forbidden");
     }
 
     fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment parentComment = body.getParentId() != null ? queryQuestionCommentController.findQueryQuestionCommentById(body.getParentId()) : null;
@@ -117,6 +126,10 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createNotFound();
     }
     
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.MANAGE_QUERY_COMMENTS)) {
+      return createForbidden("Forbidden");
+    }
+    
     fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment comment = queryQuestionCommentController.findQueryQuestionCommentById(commentId);
     if (comment == null || queryQuestionCommentController.isQueryQuestionCommentArchived(comment)) {
       return createNotFound();
@@ -144,6 +157,10 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
     }
+
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.ACCESS_PANEL)) {
+      return createForbidden("Forbidden");
+    }
     
     fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment comment = queryQuestionCommentController.findQueryQuestionCommentById(commentId);
     if (comment == null || queryQuestionCommentController.isQueryQuestionCommentArchived(comment)) {
@@ -163,6 +180,10 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
+    }
+
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.ACCESS_PANEL)) {
+      return createForbidden("Forbidden");
     }
     
     Query query = queryId != null ? queryController.findQueryById(queryId) : null;
@@ -206,7 +227,11 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound(String.format("Panel with id %s not found", panelId));
     }
-
+    
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.MANAGE_QUERY_COMMENTS)) {
+      return createForbidden("Forbidden");
+    }
+    
     fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment comment = queryQuestionCommentController.findQueryQuestionCommentById(commentId);
     if (comment == null || queryQuestionCommentController.isQueryQuestionCommentArchived(comment)) {
       return createNotFound(String.format("Comment with id %s not found", commentId));

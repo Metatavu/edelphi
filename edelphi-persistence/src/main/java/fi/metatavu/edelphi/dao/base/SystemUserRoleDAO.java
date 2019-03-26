@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.dao.base;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -10,6 +11,7 @@ import fi.metatavu.edelphi.domainmodel.base.SystemUserRole;
 import fi.metatavu.edelphi.domainmodel.base.SystemUserRoleType;
 import fi.metatavu.edelphi.domainmodel.base.SystemUserRole_;
 
+@ApplicationScoped
 public class SystemUserRoleDAO extends GenericDAO<SystemUserRole> {
 
   public SystemUserRole findByType(SystemUserRoleType type) {
