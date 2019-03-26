@@ -93,15 +93,15 @@ public class GenericDAO<T> {
     return entity;
   }
   
-  protected T getSingleResult(Query query) {
-    @SuppressWarnings("unchecked")
+  @SuppressWarnings("unchecked")
+  protected <R> R getSingleResult(Query query) {
     List<T> list = query.getResultList();
     
     if (list.isEmpty())
       return null;
     
     if (list.size() == 1)
-      return list.get(0);
+      return (R) list.get(0);
     
     throw new NonUniqueResultException("SingleResult query returned " + list.size() + " elements");
   }

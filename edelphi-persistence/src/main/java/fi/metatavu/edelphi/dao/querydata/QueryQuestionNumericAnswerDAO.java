@@ -1,6 +1,7 @@
 package fi.metatavu.edelphi.dao.querydata;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -85,6 +86,39 @@ public class QueryQuestionNumericAnswerDAO extends GenericDAO<QueryQuestionNumer
     criteria.orderBy(criteriaBuilder.asc(root.get(QueryQuestionNumericAnswer_.data)));
 
     return entityManager.createQuery(criteria).getResultList();
+  }
+  
+  /**
+   * Counts query question numeric answers
+   * 
+   * @param queryField query field
+   * @param queryReplies query reply set must be in this set
+   * @param data data must equal this value
+   * @return count of query question numeric answers
+   */
+  public Long countByQueryFieldQueryRepliesInAndData(QueryField queryField, Collection<QueryReply> queryReplies, Double data) {
+    if (queryReplies == null || queryReplies.isEmpty()) {
+      return 0l;
+    }
+    
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
+    Root<QueryQuestionNumericAnswer> root = criteria.from(QueryQuestionNumericAnswer.class);
+    Join<QueryQuestionNumericAnswer, QueryReply> replyJoin = root.join(QueryQuestionNumericAnswer_.queryReply);
+    
+    criteria.select(criteriaBuilder.count(root));
+    criteria.where(
+      criteriaBuilder.and(
+        criteriaBuilder.equal(root.get(QueryQuestionNumericAnswer_.queryField), queryField),
+        root.get(QueryQuestionNumericAnswer_.queryReply).in(queryReplies),
+        criteriaBuilder.equal(root.get(QueryQuestionNumericAnswer_.data), data),
+        criteriaBuilder.equal(replyJoin.get(QueryReply_.archived), Boolean.FALSE)
+      )
+    );
+    
+    return entityManager.createQuery(criteria).getSingleResult();
   }
   
   public Long countByQueryFieldQueryReplyAndData(QueryField queryField, QueryReply queryReply, Double data) {
