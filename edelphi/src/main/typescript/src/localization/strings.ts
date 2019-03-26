@@ -16,7 +16,10 @@ export interface IStrings extends LocalizedStringsMethods {
         commentModified: string,
         commentDate: string,
         saveReply: string,
-        saveEdit: string
+        saveEdit: string,
+        confirmRemoveConfirm: string,
+        confirmRemoveCancel: string,
+        confirmRemoveText: string
       }
     }
   }

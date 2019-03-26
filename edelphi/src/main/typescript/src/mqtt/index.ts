@@ -30,6 +30,8 @@ interface PendingMessage {
  */
 export class MqttConnection {
   
+  private connected: boolean;
+  private connecting: boolean;
   private pending: Array<PendingMessage>;
   private config: MqttConfig;
   private client?: mqtt.MqttClient;
@@ -41,9 +43,12 @@ export class MqttConnection {
   constructor () {
     this.pending = [];
     this.subscribers = new Map();
+    this.connected = false;
+    this.connecting = false;
   }
 
   public connect(config: MqttConfig) {
+    this.connecting = true;
     this.config = config;
     const url = config.clientUrl;
     const options: IClientOptions = { 
@@ -57,6 +62,24 @@ export class MqttConnection {
     this.client.on("offline", this.onClientOffline.bind(this));
     this.client.on("error", this.onClientError.bind(this));
     this.client.on("message", this.onClientMessage.bind(this));
+  }
+
+  /**
+   * Returns whether client is connecting to the server
+   * 
+   * @return whether client is connecting to the server
+   */
+  public isConnecting() {
+    return this.connecting;
+  }
+
+  /**
+   * Returns whether client is connected to the server
+   * 
+   * @return whether client is connected to the server
+   */
+  public isConnected() {
+    return this.connected;
   }
 
   /**
@@ -99,7 +122,20 @@ export class MqttConnection {
     topicSubscribers.push(onMessage);
     this.subscribers.set(subtopic, topicSubscribers);
   }
-
+  
+  /**
+   * Unsubscribes from given subtopic
+   * 
+   * @param subtopic subtopic
+   * @param onMessage message handler
+   */
+  public unsubscribe(subtopic: string, onMessage: OnMessageCallback) {
+    const topicSubscribers = this.subscribers.get(subtopic) || [];
+    this.subscribers.set(subtopic, topicSubscribers.filter((topicSubscriber) => {
+      return topicSubscriber !== onMessage;
+    }));
+  }
+  
   /**
    * Disconnects from the server
    */
@@ -113,6 +149,9 @@ export class MqttConnection {
    * Handles client connect event
    */
   private onClientConnect() {
+    this.connected = true;
+    this.connecting = false;
+
     console.log("MQTT connection open");
 
     while (this.pending.length) {
@@ -125,6 +164,8 @@ export class MqttConnection {
    * Handles client close event
    */
   private onClientClose() {
+    this.connected = false;
+    this.connecting = false;
     console.log("MQTT connection closed");
   }
 
@@ -132,6 +173,8 @@ export class MqttConnection {
    * Handles client offline event
    */
   private onClientOffline() {
+    this.connected = false;
+    this.connecting = false;
     console.log("MQTT connection offline");
   }
 

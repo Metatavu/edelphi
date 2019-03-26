@@ -19,6 +19,9 @@
 @h5: 1.10em;
 @h6: 1.00em;
 
+@paragraphMargin: 10px 0px 10px 0px;
+@paragraphLineHeight: 1.35em;
+
 @linkColor: #0099ff;
 @linkUnderline: 'underline';
 @linkHoverColor: #0099ff;

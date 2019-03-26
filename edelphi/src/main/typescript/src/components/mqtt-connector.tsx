@@ -45,15 +45,13 @@ class MqttConnector extends React.Component<Props, State> {
    * @param prevState previous state
    */
   public async componentDidUpdate(prevProps: Props, prevState: State) {
-    if (this.props.accessToken !==  prevProps.accessToken) {
+    if (this.props.accessToken !== prevProps.accessToken) {
       this.setState({
         options: await this.getConnectionOptions()
       });
     }
 
-    if (this.state.options !== prevState.options) {
-      this.connection.disconnect();
-
+    if (this.state.options && !this.connection.isConnected() && !this.connection.isConnecting()) {
       if (this.state.options) {
         this.connection.connect(this.state.options);
       }

@@ -11,7 +11,10 @@
         "commentDate": "Kommentti kirjoitettu {0}",
         "commentModified": "Kommenttia muokattu {0}",
         "saveReply": "Tallenna kommentti",
-        "saveEdit": "Tallenna"
+        "saveEdit": "Tallenna",
+        "confirmRemoveConfirm": "Poista", 
+        "confirmRemoveCancel": "Peruuta",
+        "confirmRemoveText": "Oletko varma, että haluat poistaa kommentin \"{0}\" sekä kaikki siihen liittyvät vastaukset?"
       }
     }
   }

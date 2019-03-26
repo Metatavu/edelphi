@@ -1,14 +1,16 @@
 import * as React from "react";
 import * as moment from "moment";
 import * as actions from "../actions";
+import * as _ from "lodash";
 import QueryCommentContainer from "./query-comment-container";
 import strings from "../localization/strings";
 import { StoreState, QueryQuestionCommentNotification } from "../types";
 import { connect } from "react-redux";
 import Api, { QueryQuestionComment } from "edelphi-client";
 import { QueryQuestionCommentsService } from "edelphi-client/dist/api/api";
-import { mqttConnection } from "../mqtt";
+import { mqttConnection, OnMessageCallback } from "../mqtt";
 import styles from "../constants/styles";
+import { Confirm } from "semantic-ui-react";
 
 /**
  * Interface representing component properties
@@ -28,7 +30,8 @@ interface Props {
  */
 interface State {
   commentEditorOpen: boolean,
-  commentEditorContents?: string
+  commentEditorContents?: string,
+  commentDeleteOpen: boolean,
   replyEditorOpen: boolean,
   updating: boolean
 }
@@ -38,6 +41,7 @@ interface State {
  */
 class QueryCommentClass extends React.Component<Props, State> {
 
+  private queryQuestionCommentsListener: OnMessageCallback;
   private commentEditor: HTMLTextAreaElement | null;
   private replyEditor: HTMLTextAreaElement | null;
 
@@ -51,12 +55,27 @@ class QueryCommentClass extends React.Component<Props, State> {
     this.state = { 
       commentEditorOpen: false,
       replyEditorOpen: false,
+      commentDeleteOpen: false,
       updating: false
     };
 
-    mqttConnection.subscribe("queryquestioncomments", this.onQueryQuestionCommentNotification.bind(this));
+    this.queryQuestionCommentsListener = this.onQueryQuestionCommentNotification.bind(this);
   }
   
+  /**
+   * Component will mount life-cycle event
+   */
+  public async componentWillMount() {
+    mqttConnection.subscribe("queryquestioncomments", this.queryQuestionCommentsListener);
+  }
+
+  /**
+   * Component will unmount life-cycle event
+   */
+  public async componentWillUnmount() {
+    mqttConnection.unsubscribe("queryquestioncomments", this.onQueryQuestionCommentNotification.bind(this));
+  }
+
   /** 
    * Render edit pest view
    */
@@ -69,6 +88,9 @@ class QueryCommentClass extends React.Component<Props, State> {
           <div className="queryCommentDate">{ strings.formatString(strings.panel.query.comments.commentDate, this.formatDateTime(this.props.comment.created)) } </div>
         </div>
         <div className="queryCommentContainerWrapper">
+          {
+            this.renderCommentDeleteConfirm()
+          }
           {
             this.renderModified()
           }
@@ -87,6 +109,21 @@ class QueryCommentClass extends React.Component<Props, State> {
         </div>
       </div>
     );
+  }
+
+  private renderCommentDeleteConfirm() {
+    const message = _.truncate(this.props.comment.contents, {
+      length: 30
+    });
+
+    return <Confirm 
+      centered={ true }
+      confirmButton={ strings.panel.query.comments.confirmRemoveConfirm }
+      cancelButton={ strings.panel.query.comments.confirmRemoveCancel }
+      content={ strings.formatString(strings.panel.query.comments.confirmRemoveText, message) } 
+      open={this.state.commentDeleteOpen} 
+      onCancel={() => { this.setState({ commentDeleteOpen: false}); }} 
+      onConfirm={() => { this.onCommentDeleteConfirm(); }} />
   }
 
   /**
@@ -153,7 +190,7 @@ class QueryCommentClass extends React.Component<Props, State> {
             : <div className="queryCommentHideComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onHideClick(event) } className="queryCommentHideCommentLink">{ strings.panel.query.comments.hide }</a></div>
         }
         <div className="queryCommentEditComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onEditCommentClick(event) }   className="queryCommentEditCommentLink">{ strings.panel.query.comments.edit }</a></div>
-        <div className="queryCommentDeleteComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" className="queryCommentDeleteCommentLink">{ strings.panel.query.comments.remove }</a></div>
+        <div className="queryCommentDeleteComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onDeleteClick(event) }  className="queryCommentDeleteCommentLink">{ strings.panel.query.comments.remove }</a></div>
       </div>  
     );
   }
@@ -202,6 +239,27 @@ class QueryCommentClass extends React.Component<Props, State> {
       commentEditorOpen: true,
       commentEditorContents: this.props.comment.contents
     });
+  }
+
+  /**
+   * Event handler for comment delete dialog confirm click
+   */
+  private onCommentDeleteConfirm() {
+    if (!this.props.accessToken || !this.props.comment.id) {
+      return;
+    }
+
+    if (this.state.updating || !this.props.accessToken || !this.props.comment.id) {
+      return;
+    }
+
+    this.setState({
+      commentDeleteOpen: false,
+      updating: true
+    });
+
+    const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken);
+    queryQuestionCommentsService.deleteQueryQuestionComment(this.props.panelId, this.props.comment.id);
   }
 
   /**
@@ -254,6 +312,19 @@ class QueryCommentClass extends React.Component<Props, State> {
       queryPageId: this.props.pageId,
       queryReplyId: this.props.queryReplyId,
     }, this.props.panelId);
+  }
+
+  /**
+   * Click handler for delete link
+   * 
+   * @param event event
+   */
+  private onDeleteClick(event: React.MouseEvent<HTMLElement>) {
+    event.preventDefault();
+
+    this.setState({
+      commentDeleteOpen: true
+    });
   }
   
   /**

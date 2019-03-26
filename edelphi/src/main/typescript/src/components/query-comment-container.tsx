@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import Api, { QueryQuestionComment } from "edelphi-client";
 import { QueryQuestionCommentsService } from "edelphi-client/dist/api/api";
 import { Loader } from "semantic-ui-react";
-import { mqttConnection } from "../mqtt";
+import { mqttConnection, OnMessageCallback } from "../mqtt";
 
 /**
  * Interface representing component properties
@@ -34,6 +34,8 @@ interface State {
  */
 class QueryCommentContainer extends React.Component<Props, State> {
 
+  private queryQuestionCommentsListener: OnMessageCallback;
+
   /**
    * Constructor
    * 
@@ -42,15 +44,22 @@ class QueryCommentContainer extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = { };
-
-    mqttConnection.subscribe("queryquestioncomments", this.onQueryQuestionCommentNotification.bind(this));
+    this.queryQuestionCommentsListener = this.onQueryQuestionCommentNotification.bind(this);
   }
 
   /**
-   * Component did update life-cycle event
+   * Component will mount life-cycle event
    */
   public async componentWillMount() {
+    mqttConnection.subscribe("queryquestioncomments", this.queryQuestionCommentsListener);
     this.loadChildComments();
+  }
+
+  /**
+   * Component will unmount life-cycle event
+   */
+  public async componentWillUnmount() {
+    mqttConnection.unsubscribe("queryquestioncomments", this.onQueryQuestionCommentNotification.bind(this));
   }
 
   /**
@@ -106,7 +115,9 @@ class QueryCommentContainer extends React.Component<Props, State> {
             comments.push(await this.getQueryQuestionCommentsService(this.props.accessToken).findQueryQuestionComment(this.props.panelId, message.commentId));
           }
         } else {
-          comments.push(comment);
+          if (!(message.type == "DELETED" && message.commentId == comment.id)) {
+            comments.push(comment);
+          }
         }
       }
 
