@@ -3,10 +3,15 @@
   "env": {
     "es6": true,
     "browser": true,
-    "prototypejs": trure
+    "prototypejs": true
   },
   "globals": {
     "CONTEXTPATH": false
   },
+  "overrides": [
+    {
+      "excludedFiles": "rest-spec/*"
+    }
+  ],
   "extends": "eslint:recommended"
 }

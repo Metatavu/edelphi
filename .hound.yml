@@ -4,3 +4,6 @@ eslint:
   
 jshint:
   enabled: false
+
+tslint:
+  config_file: edelphi/src/main/typescript/tslint.json
