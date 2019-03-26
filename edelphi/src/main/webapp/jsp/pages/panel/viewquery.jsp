@@ -22,7 +22,7 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/mathutils.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/panel/queryblockcontroller.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/ping.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/bundle.min.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/dist/bundle.min.js"></script>
   </head>
   <body class="panel index">
   

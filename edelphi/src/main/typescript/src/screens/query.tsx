@@ -11,6 +11,7 @@ import { reducer } from "../reducers";
 import { Provider } from "react-redux";
 import Api from "edelphi-client";
 import strings from "../localization/strings";
+import "semantic-ui-less/semantic.less";
 
 Api.configure("http://dev.edelphi.org:8080/api/v1");
 declare function getLocale() : any;

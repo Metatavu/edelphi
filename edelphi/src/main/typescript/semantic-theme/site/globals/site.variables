@@ -1,0 +1,25 @@
+/*******************************
+         Site Settings
+*******************************/
+
+@pageFont: 'PT Sans', Arial, sans-serif;
+@fontSize: 14px;
+@lineHeight: 1.45em;
+@textColor: #1e1e1e;
+
+@headerFont: 'PT Sans', Arial, sans-serif;
+@headerLineHeight: 1.35em;
+@headerMargin: 20px 0px 10px 0px;
+@headerFontWeight: normal;
+  
+@h1: 1.45em;  
+@h2: 1.35em;
+@h3: 1.25em;
+@h4: 1.15em;
+@h5: 1.10em;
+@h6: 1.00em;
+
+@linkColor: #0099ff;
+@linkUnderline: 'underline';
+@linkHoverColor: #0099ff;
+@linkHoverUnderline: 'underline';
