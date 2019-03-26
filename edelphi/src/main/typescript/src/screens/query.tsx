@@ -15,6 +15,7 @@ import "semantic-ui-less/semantic.less";
 
 Api.configure("http://dev.edelphi.org:8080/api/v1");
 declare function getLocale() : any;
+declare const JSDATA: any;
 
 const getAttribute = (element: Element, attributeName: string): string | null => {
   if (!element) {
@@ -56,7 +57,8 @@ window.addEventListener('load', () => {
     const pageId: number | null = getIntAttribute(queryComments, "data-page-id");
     const queryReplyId: number | null = getIntAttribute(queryComments, "data-query-reply-id");
     const commentable: boolean = getBoolAttribute(queryComments, "data-commentable");
-    const viewDiscussion: boolean  = getBoolAttribute(queryComments, "data-view-discussion");
+    const viewDiscussion: boolean = getBoolAttribute(queryComments, "data-view-discussion");
+    const canManageComments: boolean = JSDATA['canManageComments'] == 'true';
 
     if (panelId && queryId && pageId && queryReplyId) {
       const component = 
@@ -64,7 +66,7 @@ window.addEventListener('load', () => {
           <AccessTokenRefresh/>
           <MqttConnector>
             { commentable ? <QueryCommentEditor queryReplyId={queryReplyId}/> : null }
-            { viewDiscussion ? <QueryCommentList panelId={panelId} queryId={queryId} pageId={pageId} queryReplyId={queryReplyId}/> : null }
+            { viewDiscussion ? <QueryCommentList canManageComments={ canManageComments } panelId={panelId} queryId={queryId} pageId={pageId} queryReplyId={queryReplyId}/> : null }
           </MqttConnector>
         </Provider>;
 

@@ -19,7 +19,8 @@ interface Props {
   queryReplyId: number,
   accessToken?: string,
   locale: string,
-  className: string
+  className: string,
+  canManageComments: boolean
 }
 
 /**
@@ -52,14 +53,14 @@ class QueryCommentContainer extends React.Component<Props, State> {
    */
   public async componentWillMount() {
     mqttConnection.subscribe("queryquestioncomments", this.queryQuestionCommentsListener);
-    this.loadChildComments();
+    await this.loadChildComments();
   }
 
   /**
    * Component will unmount life-cycle event
    */
-  public async componentWillUnmount() {
-    mqttConnection.unsubscribe("queryquestioncomments", this.onQueryQuestionCommentNotification.bind(this));
+  public componentWillUnmount() {
+    mqttConnection.unsubscribe("queryquestioncomments", this.queryQuestionCommentsListener);
   }
 
   /**
@@ -80,7 +81,7 @@ class QueryCommentContainer extends React.Component<Props, State> {
     return <div className={ this.props.className }>
       {
         this.state.comments.map((comment) => {
-          return <QueryComment key={ comment.id } comment={ comment } queryReplyId={this.props.queryReplyId} pageId={ this.props.pageId } panelId={ this.props.panelId} queryId={ this.props.queryId }/>
+          return <QueryComment key={ comment.id } canManageComments={ this.props.canManageComments } comment={ comment } queryReplyId={this.props.queryReplyId} pageId={ this.props.pageId } panelId={ this.props.panelId} queryId={ this.props.queryId }/>
         })
       } 
     </div>

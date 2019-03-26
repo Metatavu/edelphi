@@ -22,7 +22,8 @@ interface Props {
   panelId: number,
   queryId: number,
   pageId: number,
-  queryReplyId: number
+  queryReplyId: number,
+  canManageComments: boolean
 }
 
 /**
@@ -67,14 +68,14 @@ class QueryCommentClass extends React.Component<Props, State> {
   /**
    * Component will mount life-cycle event
    */
-  public async componentWillMount() {
+  public componentWillMount() {
     mqttConnection.subscribe("queryquestioncomments", this.queryQuestionCommentsListener);
   }
 
   /**
    * Component will unmount life-cycle event
    */
-  public async componentWillUnmount() {
+  public componentWillUnmount() {
     mqttConnection.unsubscribe("queryquestioncomments", this.onQueryQuestionCommentNotification.bind(this));
   }
 
@@ -191,7 +192,7 @@ class QueryCommentClass extends React.Component<Props, State> {
    * Renders child comments
    */
   private renderChildComments() {
-    return <QueryCommentContainer className="queryCommentChildren" parentId={ this.props.comment.id! } queryReplyId={this.props.queryReplyId} pageId={ this.props.pageId } panelId={ this.props.panelId } queryId={ this.props.queryId }/>
+    return <QueryCommentContainer className="queryCommentChildren" canManageComments={ this.props.canManageComments } parentId={ this.props.comment.id! } queryReplyId={this.props.queryReplyId} pageId={ this.props.pageId } panelId={ this.props.panelId } queryId={ this.props.queryId }/>
   }
 
   /**
@@ -202,14 +203,51 @@ class QueryCommentClass extends React.Component<Props, State> {
       <div className="queryCommentMeta">
         <div className="queryCommentNewComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onNewCommentClick(event) }  className="queryCommentNewCommentLink">{ strings.panel.query.comments.reply }</a></div>
         {
-          this.props.comment.hidden 
-            ? <div className="queryCommentShowComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onShowClick(event) } className="queryCommentShowCommentLink">{ strings.panel.query.comments.show }</a></div>
-            : <div className="queryCommentHideComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onHideClick(event) } className="queryCommentHideCommentLink">{ strings.panel.query.comments.hide }</a></div>
+          this.renderShowHideComment()
         }
-        <div className="queryCommentEditComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onEditCommentClick(event) }   className="queryCommentEditCommentLink">{ strings.panel.query.comments.edit }</a></div>
-        <div className="queryCommentDeleteComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onDeleteClick(event) }  className="queryCommentDeleteCommentLink">{ strings.panel.query.comments.remove }</a></div>
+        {
+          this.renderEditComment()
+        }
+        {
+          this.renderDeleteComment()
+        }
       </div>  
     );
+  }
+
+  /**
+   * Renders show / hide comment link
+   */
+  private renderShowHideComment() {
+    if (!this.props.canManageComments) {
+      return null
+    }
+
+    return this.props.comment.hidden 
+      ? <div className="queryCommentShowComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onShowClick(event) } className="queryCommentShowCommentLink">{ strings.panel.query.comments.show }</a></div>
+      : <div className="queryCommentHideComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onHideClick(event) } className="queryCommentHideCommentLink">{ strings.panel.query.comments.hide }</a></div>
+  }
+
+  /**
+   * Renders edit comment link
+   */
+  private renderEditComment() {
+    if (!this.props.canManageComments) {
+      return null
+    }
+
+    return <div className="queryCommentEditComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onEditCommentClick(event) }   className="queryCommentEditCommentLink">{ strings.panel.query.comments.edit }</a></div>
+  }
+
+  /**
+   * Renders delete comment link
+   */
+  private renderDeleteComment() {
+    if (!this.props.canManageComments) {
+      return null
+    }
+
+    return <div className="queryCommentDeleteComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onDeleteClick(event) }  className="queryCommentDeleteCommentLink">{ strings.panel.query.comments.remove }</a></div>
   }
 
   /**
@@ -395,7 +433,7 @@ class QueryCommentClass extends React.Component<Props, State> {
    * 
    * @param message message
    */
-  private async onQueryQuestionCommentNotification(message: QueryQuestionCommentNotification) {
+  private onQueryQuestionCommentNotification(message: QueryQuestionCommentNotification) {
     switch (message.type) {
       case "UPDATED":
         if (message.commentId == this.props.comment.id) {
