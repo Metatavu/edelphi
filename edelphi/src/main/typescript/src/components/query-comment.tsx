@@ -33,7 +33,8 @@ interface State {
   commentEditorContents?: string,
   commentDeleteOpen: boolean,
   replyEditorOpen: boolean,
-  updating: boolean
+  updating: boolean,
+  folded: boolean
 }
 
 /**
@@ -56,7 +57,8 @@ class QueryCommentClass extends React.Component<Props, State> {
       commentEditorOpen: false,
       replyEditorOpen: false,
       commentDeleteOpen: false,
-      updating: false
+      updating: false,
+      folded: false
     };
 
     this.queryQuestionCommentsListener = this.onQueryQuestionCommentNotification.bind(this);
@@ -83,30 +85,45 @@ class QueryCommentClass extends React.Component<Props, State> {
     return (
       <div key={ this.props.comment.id } className="queryComment">
         <a id={`comment.${this.props.comment.id}`}></a>
-        <div className="queryCommentShowHideButton hideIcon"></div> 
+        <div className={ this.state.folded ? "queryCommentShowHideButton hideIcon" : "queryCommentShowHideButton showIcon" } onClick={ () => this.onHoldClick() }></div>
         <div className="queryCommentHeader">
           <div className="queryCommentDate">{ strings.formatString(strings.panel.query.comments.commentDate, this.formatDateTime(this.props.comment.created)) } </div>
         </div>
-        <div className="queryCommentContainerWrapper">
-          {
-            this.renderCommentDeleteConfirm()
-          }
-          {
-            this.renderModified()
-          }
-          {
-            this.renderContents()
-          }
-          { 
-            this.renderLinks()
-          }
-          {
-            this.renderChildComments()
-          }
-          {
-            this.renderNewCommentEditor()
-          }
-        </div>
+        {
+          this.renderFoldableContent()
+        }        
+      </div>
+    );
+  }
+  
+  /**
+   * Renders foldable content
+   */
+  private renderFoldableContent() {
+    if (this.state.folded) {
+      return null;
+    }
+
+    return (
+      <div className="queryCommentContainerWrapper">
+        {
+          this.renderCommentDeleteConfirm()
+        }
+        {
+          this.renderModified()
+        }
+        {
+          this.renderContents()
+        }
+        { 
+          this.renderLinks()
+        }
+        {
+          this.renderChildComments()
+        }
+        {
+          this.renderNewCommentEditor()
+        }
       </div>
     );
   }
@@ -365,6 +382,12 @@ class QueryCommentClass extends React.Component<Props, State> {
 
     const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken);
     queryQuestionCommentsService.updateQueryQuestionComment({ ... this.props.comment, hidden: true }, this.props.panelId, this.props.comment.id);
+  }
+
+  private onHoldClick() {
+    this.setState({
+      folded: !this.state.folded
+    });
   }
 
   /**
