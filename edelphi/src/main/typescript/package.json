@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@types/node": "^11.11.3",
-    "edelphi-client": "0.0.3",
+    "edelphi-client": "0.0.4",
     "localized-strings": "^0.2.1",
     "lodash": "^4.17.11",
     "log4js": "^4.0.2",

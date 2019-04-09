@@ -23,6 +23,7 @@ public class AccessTokenJSONRequestController extends JSONController {
       String expires = OffsetDateTime.ofInstant(keycloakToken.getExpires().toInstant(), ZoneId.systemDefault()).format(DateTimeFormatter.ISO_DATE_TIME);
       requestContext.addResponseParameter("expires", expires);
       requestContext.addResponseParameter("token", keycloakToken.getToken());
+      requestContext.addResponseParameter("userId", keycloakToken.getExternalId());
     }    
   }
 }

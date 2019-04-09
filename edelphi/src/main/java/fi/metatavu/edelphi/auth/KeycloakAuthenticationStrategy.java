@@ -120,7 +120,6 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     String refreshToken = getRefreshToken(accessToken);
     
     Response response = doSignedGet(accessToken, getUserinfoUrl());
-    AuthUtils.storeOAuthAccessToken(requestContext, getName(), new OAuthAccessToken(accessToken.getToken(), refreshToken, expiresAt, requestedScopes));
     
     ObjectMapper objectMapper = new ObjectMapper();
     try (InputStream stream = response.getStream()) {
@@ -129,6 +128,8 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
       List<String> emails = Arrays.asList(userInfo.getEmail());
       String firstName = userInfo.getGivenName();
       String lastName = userInfo.getFamilyName();
+
+      AuthUtils.storeOAuthAccessToken(requestContext, getName(), new OAuthAccessToken(externalId, accessToken.getToken(), refreshToken, expiresAt, requestedScopes));
       
       return processExternalLogin(requestContext, externalId, emails, firstName, lastName);
     } catch (IOException e) {
@@ -170,7 +171,7 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
           try (InputStream stream = entity.getContent()) {
             RefreshTokenResponse refreshTokenResponse = objectMapper.readValue(stream, RefreshTokenResponse.class);
             Date expiresAt = getExpiresAt(refreshTokenResponse.getExpiresIn());
-            result = new OAuthAccessToken(refreshTokenResponse.getAccessToken(), refreshTokenResponse.getRefreshToken(), expiresAt, scopes);
+            result = new OAuthAccessToken(token.getExternalId(), refreshTokenResponse.getAccessToken(), refreshTokenResponse.getRefreshToken(), expiresAt, scopes);
             AuthUtils.purgeOAuthAccessTokens(requestContext, getName());
             AuthUtils.storeOAuthAccessToken(requestContext, getName(), result);            
           }
@@ -210,7 +211,7 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     try (InputStream stream = response.getStream()) {
       KeycloakBrokerToken brokerToken = objectMapper.readValue(stream, KeycloakBrokerToken.class);
       Date expiresAt = getExpiresAt(brokerToken.getExpiresIn());
-      resolvedBrokerToken = new OAuthAccessToken(brokerToken.getAccessToken(), null, expiresAt, null);
+      resolvedBrokerToken = new OAuthAccessToken(null, brokerToken.getAccessToken(), null, expiresAt, null);
       AuthUtils.storeOAuthAccessToken(requestContext, broker, resolvedBrokerToken);
     } catch (IOException e) {
       logger.log(Level.SEVERE, "Failed to process broker token response", e);

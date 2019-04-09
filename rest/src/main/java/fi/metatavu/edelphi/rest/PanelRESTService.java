@@ -1,6 +1,7 @@
 package fi.metatavu.edelphi.rest;
 
 import java.util.Date;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
@@ -31,6 +32,7 @@ import fi.metatavu.edelphi.rest.api.PanelsApi;
 import fi.metatavu.edelphi.rest.model.QueryQuestionComment;
 import fi.metatavu.edelphi.rest.mqtt.QueryQuestionCommentNotification;
 import fi.metatavu.edelphi.rest.translate.QueryQuestionCommentTranslator;
+import fi.metatavu.edelphi.users.UserController;
 
 /**
  * Panel REST Services
@@ -52,6 +54,9 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Inject
   private QueryController queryController;
+
+  @Inject  
+  private UserController userController;
 
   @Inject
   private MqttController mqttController;
@@ -176,7 +181,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   
   @Override
   @RolesAllowed("user")
-  public Response listQueryQuestionComments(Long panelId, Long parentId, Long queryId, Long pageId, Long stampId) {
+  public Response listQueryQuestionComments(Long panelId, Long parentId, Long queryId, Long pageId, UUID userId, Long stampId) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
@@ -201,6 +206,11 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createBadRequest(String.format("Invalid panel stamp id %d", stampId));
     }
     
+    User user = userId != null ? userController.findUserByKeycloakId(userId) : null;
+    if (userId != null && user == null) {
+      return createBadRequest(String.format("Invalid user id %s", userId));
+    }
+    
     fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment parentComment = null; 
     boolean onlyRootComments = false;
     
@@ -215,7 +225,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       }
     }
     
-    return createOk(queryQuestionCommentController.listQueryQuestionComments(panel, stamp, queryPage, query, parentComment, onlyRootComments).stream()
+    return createOk(queryQuestionCommentController.listQueryQuestionComments(panel, stamp, queryPage, query, parentComment, user, onlyRootComments).stream()
       .map(queryQuestionCommentTranslator::translate)
       .collect(Collectors.toList()));
   }

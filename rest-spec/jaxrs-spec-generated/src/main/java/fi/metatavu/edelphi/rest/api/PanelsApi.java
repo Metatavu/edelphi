@@ -1,6 +1,7 @@
 package fi.metatavu.edelphi.rest.api;
 
 import fi.metatavu.edelphi.rest.model.*;
+import java.util.UUID;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
@@ -14,7 +15,7 @@ import javax.validation.Valid;
 
 @Path("/panels")
 @Api(description = "the panels API")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-03-10T17:44:54.045+02:00[Europe/Helsinki]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-04-09T09:23:50.713+03:00[Europe/Helsinki]")
 public interface PanelsApi {
 
     @POST
@@ -61,7 +62,7 @@ public interface PanelsApi {
         @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class, responseContainer = "List"),
         @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class, responseContainer = "List"),
         @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class, responseContainer = "List") })
-    Response listQueryQuestionComments(@PathParam("panelId") @ApiParam("panel id") Long panelId,@QueryParam("parentId") @NotNull   @ApiParam("parent comment id. With zero only root comments are returned")  Long parentId,@QueryParam("queryId")   @ApiParam("Filter by query id")  Long queryId,@QueryParam("pageId")   @ApiParam("Filter by query page id")  Long pageId,@QueryParam("stampId")   @ApiParam("Filter by stamp id. Defaults to current stamp")  Long stampId);
+    Response listQueryQuestionComments(@PathParam("panelId") @ApiParam("panel id") Long panelId,@QueryParam("parentId") @NotNull   @ApiParam("parent comment id. With zero only root comments are returned")  Long parentId,@QueryParam("queryId")   @ApiParam("Filter by query id")  Long queryId,@QueryParam("pageId")   @ApiParam("Filter by query page id")  Long pageId,@QueryParam("userId")   @ApiParam("Filter by user id")  UUID userId,@QueryParam("stampId")   @ApiParam("Filter by stamp id. Defaults to current stamp")  Long stampId);
     @PUT
     @Path("/{panelId}/queryQuestionComments/{commentId}")
     @Consumes({ "application/json" })

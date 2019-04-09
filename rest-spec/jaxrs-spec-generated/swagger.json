@@ -52,6 +52,17 @@
             "format" : "int64"
           }
         }, {
+          "name" : "userId",
+          "in" : "query",
+          "description" : "Filter by user id",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }, {
           "name" : "stampId",
           "in" : "query",
           "description" : "Filter by stamp id. Defaults to current stamp",

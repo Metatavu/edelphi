@@ -68,15 +68,16 @@ public class QueryQuestionCommentController {
    * @param queryPage filter by comment's query page. Ignored if null
    * @param query filter by query. Ignored if null
    * @param parentComment filter by parent comment. Ignored if null
+   * @param user filter by user. Ignored if null.
    * @param onlyRootComments return only root comments. 
    * @return a list of comments
    */
-  public List<QueryQuestionComment> listQueryQuestionComments(Panel panel, PanelStamp stamp, QueryPage queryPage, Query query, QueryQuestionComment parentComment, boolean onlyRootComments) {
+  public List<QueryQuestionComment> listQueryQuestionComments(Panel panel, PanelStamp stamp, QueryPage queryPage, Query query, QueryQuestionComment parentComment, User user, boolean onlyRootComments) {
     if (stamp == null) {
       stamp = panel.getCurrentStamp();
     }
     
-    return queryQuestionCommentDAO.list(queryPage, stamp, query, panel.getRootFolder(), parentComment, onlyRootComments, Boolean.FALSE);
+    return queryQuestionCommentDAO.list(queryPage, stamp, query, panel.getRootFolder(), parentComment, onlyRootComments, user, Boolean.FALSE);
   }
 
   /**
