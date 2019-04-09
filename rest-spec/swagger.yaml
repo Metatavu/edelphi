@@ -82,6 +82,13 @@ paths:
           schema:
             type: integer
             format: int64
+        - name: userId
+          required: false
+          in: query
+          description: Filter by user id
+          schema:
+            type: string
+            format: uuid
         - name: stampId
           required: false
           in: query
