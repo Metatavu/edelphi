@@ -65,8 +65,8 @@ window.addEventListener('load', () => {
         <Provider store={store}>
           <AccessTokenRefresh/>
           <MqttConnector>
-            { commentable ? <QueryCommentEditor queryReplyId={queryReplyId}/> : null }
-            { viewDiscussion ? <QueryCommentList canManageComments={ canManageComments } panelId={panelId} queryId={queryId} pageId={pageId} queryReplyId={queryReplyId}/> : null }
+            { commentable ? <QueryCommentEditor pageId={ pageId } panelId={ panelId } queryId={ queryId } queryReplyId={ queryReplyId}/> : null }
+            { viewDiscussion ? <QueryCommentList canManageComments={ canManageComments } panelId={ panelId } queryId={ queryId } pageId={ pageId } queryReplyId={ queryReplyId }/> : null }
           </MqttConnector>
         </Provider>;
 

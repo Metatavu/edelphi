@@ -6,6 +6,10 @@ export interface IStrings extends LocalizedStringsMethods {
 
   panel: {
     query: {
+      commentEditor: {
+        title: string,
+        save: string
+      },
       comments: {
         title: string,
         reply: string,

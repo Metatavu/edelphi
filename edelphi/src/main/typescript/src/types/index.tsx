@@ -12,7 +12,8 @@ export interface StoreState {
  */
 export interface AccessToken {
   token: string
-  expires: Date
+  expires: Date,
+  userId: string
 }
 
 /**

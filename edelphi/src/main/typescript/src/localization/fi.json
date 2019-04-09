@@ -1,6 +1,10 @@
 {
   "panel": {
     "query": {
+      "commentEditor": {
+        "title": "Kommentoi",
+        "save": "Tallenna"
+      },
       "comments": {
         "title": "Kommentoi",
         "reply": "Vastaa",

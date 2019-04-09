@@ -1,6 +1,10 @@
 {
   "panel": {
     "query": {
+      "commentEditor": {
+        "title": "Elaborate on this topic (add a comment)",
+        "save": "Save"
+      },
       "comments": {
         "title": "Elaborate on this topic (add a comment)",
         "reply": "Reply",

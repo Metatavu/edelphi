@@ -93,22 +93,6 @@ public class TextQueryPageHandler extends AbstractQueryPageHandler {
           queryQuestionCommentDAO.create(queryReply, queryPage, null, commentText, false, loggedUser);
         }
       }
-      
-      Long replyCount = requestContext.getLong("newRepliesCount");
-      
-      for (int i = 0; i < replyCount; i++) {
-        Long parentId = requestContext.getLong("commentReplyParent." + i);
-        String replyContent = requestContext.getString("commentReply." + i);
-        
-        if ((parentId != null) && (!StringUtils.isEmpty(replyContent))) {
-          QueryQuestionComment parentComment = queryQuestionCommentDAO.findById(parentId); 
-          if (parentComment == null) {
-            throw new SmvcRuntimeException(EdelfoiStatusCode.NO_PARENT_COMMENT, messages.getText(locale, "exception.1043.noParentComment"));
-          }
-          
-          queryQuestionCommentDAO.create(queryReply, queryPage, parentComment, replyContent, false, loggedUser);
-        }
-      }
     }
   }
   
