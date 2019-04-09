@@ -5,7 +5,7 @@ import { StoreState, AccessToken } from "../types";
 import { connect } from "react-redux";
 import { QueryQuestionCommentsService } from "edelphi-client/dist/api/api";
 import Api from "edelphi-client";
-import strings from "src/localization/strings";
+import strings from "../localization/strings";
 
 /**
  * Interface representing component properties

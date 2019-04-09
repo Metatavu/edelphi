@@ -13,7 +13,9 @@ import Api from "edelphi-client";
 import strings from "../localization/strings";
 import "semantic-ui-less/semantic.less";
 
-Api.configure("http://dev.edelphi.org:8080/api/v1");
+const location = window.location;
+
+Api.configure(`${location.protocol}//${location.hostname}:${location.port}/api/v1`);
 declare function getLocale() : any;
 declare const JSDATA: any;
 
