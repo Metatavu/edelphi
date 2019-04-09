@@ -49,7 +49,7 @@
 
   <properties>
     <maven.javadoc.skip>true</maven.javadoc.skip>
-    <edelphi-rest-spec.version>0.0.5-SNAPSHOT</edelphi-rest-spec.version>
+    <edelphi-rest-spec.version>0.0.5</edelphi-rest-spec.version>
   </properties>
   
   <dependencies>
