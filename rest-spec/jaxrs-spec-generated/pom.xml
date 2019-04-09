@@ -4,7 +4,7 @@
   <artifactId>edelphi-api-spec</artifactId>
   <packaging>jar</packaging>
   <name>edelphi-api-spec</name>
-  <version>0.0.5</version>
+  <version>0.0.6-SNAPSHOT</version>
   <description>Specifications for Famifarm API</description>
   <url>https://github.com/Metatavu/famifarm-api-spec</url>
 
@@ -33,7 +33,7 @@
     <developerConnection>scm:git:git@github.com:Metatavu/famifarm-api-spec.git</developerConnection>
     <url>git@github.com:Metatavu/famifarm-api-spec.git</url>
     <connection>scm:git:git@github.com:Metatavu/famifarm-api-spec.git</connection>
-    <tag>0.0.5</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <organization>
