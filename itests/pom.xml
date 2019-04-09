@@ -362,10 +362,10 @@
           <plugin>
             <groupId>org.codehaus.cargo</groupId>
             <artifactId>cargo-maven2-plugin</artifactId>
-            <version>1.6.0</version>
+            <version>1.7.3</version>
             <configuration>
               <container>
-                <containerId>wildfly10x</containerId>
+                <containerId>wildfly16x</containerId>
                 <log>${project.basedir}/target/cargo.log</log>
                 <output>${project.basedir}/target/wildfly.log</output>
                 <zipUrlInstaller>
