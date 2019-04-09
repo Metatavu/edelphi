@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.dao.users;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -13,6 +14,7 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserIdentification;
 import fi.metatavu.edelphi.domainmodel.users.UserIdentification_;
 
+@ApplicationScoped
 public class UserIdentificationDAO extends GenericDAO<UserIdentification> {
 
   public UserIdentification create(User user, String externalId, AuthSource authSource) {
@@ -43,6 +45,30 @@ public class UserIdentificationDAO extends GenericDAO<UserIdentification> {
     );
     
     return getSingleResult(entityManager.createQuery(criteria));
+  }
+  
+  /**
+   * Lists user identifications by user and auth source
+   * 
+   * @param user user
+   * @param authSource auth source
+   * @return user identification
+   */
+  public List<UserIdentification> listByUserAndAuthSource(User user, AuthSource authSource) {
+    EntityManager entityManager = getEntityManager(); 
+    
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<UserIdentification> criteria = criteriaBuilder.createQuery(UserIdentification.class);
+    Root<UserIdentification> root = criteria.from(UserIdentification.class);
+    criteria.select(root);
+    criteria.where(
+        criteriaBuilder.and(
+            criteriaBuilder.equal(root.get(UserIdentification_.user), user),
+            criteriaBuilder.equal(root.get(UserIdentification_.authSource), authSource)
+        )
+    );
+    
+    return entityManager.createQuery(criteria).getResultList();
   }
 
   public List<UserIdentification> listByUser(User user) {

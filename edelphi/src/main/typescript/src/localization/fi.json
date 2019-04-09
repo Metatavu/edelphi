@@ -1,0 +1,25 @@
+{
+  "panel": {
+    "query": {
+      "commentEditor": {
+        "title": "Kommentoi",
+        "save": "Tallenna"
+      },
+      "comments": {
+        "title": "Kommentoi",
+        "reply": "Vastaa",
+        "hide": "Piilota",
+        "edit": "Muokkaa",
+        "remove": "Poista",
+        "show": "Palauta näkyviin",
+        "commentDate": "Kommentti kirjoitettu {0}",
+        "commentModified": "Kommenttia muokattu {0}",
+        "saveReply": "Tallenna kommentti",
+        "saveEdit": "Tallenna",
+        "confirmRemoveConfirm": "Poista", 
+        "confirmRemoveCancel": "Peruuta",
+        "confirmRemoveText": "Oletko varma, että haluat poistaa kommentin \"{0}\" sekä kaikki siihen liittyvät vastaukset?"
+      }
+    }
+  }
+}

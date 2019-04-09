@@ -1,0 +1,150 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>rest</artifactId>
+  <packaging>jar</packaging>
+  <name>${project.groupId}:${project.artifactId}</name>
+  <description>REST services for eDelphi</description>
+  <url>https://github.com/Metatavu/edelphi</url>  
+
+  <parent>
+    <groupId>fi.metatavu.edelphi</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.1.78-SNAPSHOT</version>    
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  
+  <licenses>
+    <license>
+      <name>GNU LGPL v3</name>
+      <url>http://www.gnu.org/licenses/lgpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/Metatavu/edelphi/issues</url>
+  </issueManagement>
+  
+  <scm>
+    <developerConnection>scm:git:git@github.com:Metatavu/edelphi.git</developerConnection>
+    <url>git@github.com:Metatavu/edelphi.git</url>
+    <connection>scm:git:git@github.com:Metatavu/edelphi.git</connection>
+    <tag>1.1.0</tag>
+  </scm>
+  
+  <organization>
+    <name>Metatavu Oy</name>
+    <url>https://metatavu.fi</url>
+  </organization>
+  
+  <developers>
+    <developer>
+      <email>devs@metatavu.fi</email>
+      <name>Metatavu Oy</name>
+      <organization>Metatavu Oy</organization>
+      <organizationUrl>https://www.metatavu.fi</organizationUrl>
+    </developer>    
+  </developers>
+
+  <properties>
+    <maven.javadoc.skip>true</maven.javadoc.skip>
+    <edelphi-rest-spec.version>0.0.6</edelphi-rest-spec.version>
+  </properties>
+  
+  <dependencies>
+  
+    <dependency>
+      <groupId>fi.metatavu.edelphi</groupId>
+      <artifactId>edelphi-api-spec</artifactId>
+      <version>${edelphi-rest-spec.version}</version>
+    </dependency>
+  
+    <!-- Transactions -->
+    
+    <dependency>
+      <groupId>org.jboss.spec.javax.transaction</groupId>
+      <artifactId>jboss-transaction-api_1.2_spec</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.jboss.spec.javax.servlet</groupId>
+      <artifactId>jboss-servlet-api_4.0_spec</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.jboss.spec.javax.servlet.jsp</groupId>
+      <artifactId>jboss-jsp-api_2.3_spec</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.jboss.spec.javax.ejb</groupId>
+      <artifactId>jboss-ejb-api_3.2_spec</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>javax.enterprise</groupId>
+      <artifactId>cdi-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jaxrs</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.wildfly</groupId>
+      <artifactId>wildfly-ejb3</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.jboss.spec.javax.ws.rs</groupId>
+      <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+     <dependency>
+      <groupId>fi.metatavu.edelphi</groupId>
+      <artifactId>persistence</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-lang3</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <scope>provided</scope>
+    </dependency>
+        
+    <dependency>
+      <groupId>xalan</groupId>
+      <artifactId>xalan</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.eclipse.paho</groupId>
+      <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+    </dependency>
+    
+  </dependencies>
+  
+</project>

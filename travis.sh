@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo "Skpping tests"
+exit 0
+
 if [ "$TRAVIS_PULL_REQUEST" != "false" ] && [ -n "${GITHUB_TOKEN}" ] && [ -n "${SONAR_TOKEN}" ]; then
   echo "Pull request"
   

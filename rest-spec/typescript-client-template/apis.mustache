@@ -1,0 +1,46 @@
+{{#apiInfo}}
+{{#apis}}
+{{#operations}}
+export * from './{{ classFilename }}';
+import { {{ classname }} } from './{{ classFilename }}';
+{{/operations}}
+{{#withInterfaces}}
+export * from './{{ classFilename }}Interface'
+{{/withInterfaces}}
+{{/apis}}
+
+export class ApiUtils {
+  /**
+   * Handles response from API
+   * 
+   * @param response response object
+   */
+  public static handleResponse(response: any) {
+    switch (response.status) {
+      case 204:
+        return {};
+      default:
+        return response.json();
+    }
+  }
+}
+
+export default new class Api {
+
+  private apiUrl = "http://localhost";
+
+  /**
+   * Configures api endpoint
+   *
+   */
+  public configure(baseUrl: string) {
+    this.apiUrl = baseUrl;
+  }
+
+  {{#apis}}{{#operations}}
+  public get{{ classname }}(token: string): {{ classname }} {
+    return new {{ classname }}(this.apiUrl, token);
+  }
+  {{/operations}}{{/apis}}
+}
+{{/apiInfo}}

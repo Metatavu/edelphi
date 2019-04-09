@@ -1,0 +1,538 @@
+{
+  "openapi" : "3.0.3",
+  "info" : {
+    "title" : "eDelphi REST API",
+    "description" : "REST API for eDelphi",
+    "version" : "0.0.1"
+  },
+  "servers" : [ {
+    "url" : "/"
+  } ],
+  "security" : [ {
+    "bearer" : [ ]
+  } ],
+  "paths" : {
+    "/panels/{panelId}/queryQuestionComments" : {
+      "get" : {
+        "tags" : [ "QueryQuestionComments" ],
+        "summary" : "Lists query question comments",
+        "description" : "Lists query question comments",
+        "operationId" : "listQueryQuestionComments",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "queryId",
+          "in" : "query",
+          "description" : "Filter by query id",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "pageId",
+          "in" : "query",
+          "description" : "Filter by query page id",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "query",
+          "description" : "Filter by user id",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }, {
+          "name" : "stampId",
+          "in" : "query",
+          "description" : "Filter by stamp id. Defaults to current stamp",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "parentId",
+          "in" : "query",
+          "description" : "parent comment id. With zero only root comments are returned",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of query question comments",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/QueryQuestionComment"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "QueryQuestionComments" ],
+        "summary" : "Create query question comment",
+        "description" : "Creates query question comment",
+        "operationId" : "createQueryQuestionComment",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "Payload",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/QueryQuestionComment"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Created query question comment",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/QueryQuestionComment"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panels/{panelId}/queryQuestionComments/{commentId}" : {
+      "get" : {
+        "tags" : [ "QueryQuestionComments" ],
+        "summary" : "Find query question comment",
+        "description" : "Finds query question comment by id",
+        "operationId" : "findQueryQuestionComment",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "commentId",
+          "in" : "path",
+          "description" : "query question comment id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A queryQuestionComment",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/QueryQuestionComment"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "QueryQuestionComments" ],
+        "summary" : "Update query question comment",
+        "description" : "Updates query question comment",
+        "operationId" : "updateQueryQuestionComment",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "commentId",
+          "in" : "path",
+          "description" : "query question comment id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "Payload",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/QueryQuestionComment"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Updated query question comment",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/QueryQuestionComment"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "QueryQuestionComments" ],
+        "summary" : "Delete query question comment",
+        "description" : "Deletes query question comment",
+        "operationId" : "deleteQueryQuestionComment",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "commentId",
+          "in" : "path",
+          "description" : "query question comment id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No content to indicate successful delete"
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "Panel" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "Query" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "QueryPage" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "QueryReply" : {
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "QueryQuestionComment" : {
+        "required" : [ "comment", "queryPageId", "queryReplyId" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "description" : "Comment's id",
+            "format" : "int64"
+          },
+          "parentId" : {
+            "type" : "integer",
+            "description" : "PArent comment's id",
+            "format" : "int64"
+          },
+          "hidden" : {
+            "type" : "boolean",
+            "description" : "Whether the comment has been hided by the manager"
+          },
+          "queryPageId" : {
+            "type" : "integer",
+            "description" : "Page's id where the comment is",
+            "format" : "int64"
+          },
+          "queryReplyId" : {
+            "type" : "integer",
+            "description" : "Comment's query reply id",
+            "format" : "int64"
+          },
+          "contents" : {
+            "type" : "string",
+            "description" : "Comment's contents"
+          },
+          "creatorId" : {
+            "type" : "string",
+            "description" : "Comment's creator id",
+            "format" : "uuid",
+            "readOnly" : true
+          },
+          "lastModifierId" : {
+            "type" : "string",
+            "description" : "Comment's last modifier id",
+            "format" : "uuid",
+            "readOnly" : true
+          },
+          "created" : {
+            "type" : "string",
+            "description" : "Comment's creation time",
+            "format" : "date-time",
+            "readOnly" : true
+          },
+          "lastModified" : {
+            "type" : "string",
+            "description" : "Comment's last modification time",
+            "format" : "date-time",
+            "readOnly" : true
+          }
+        }
+      },
+      "ErrorResponse" : {
+        "type" : "object",
+        "properties" : {
+          "message" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "securitySchemes" : {
+      "bearer" : {
+        "type" : "apiKey",
+        "name" : "Authorization",
+        "in" : "header"
+      }
+    }
+  }
+}

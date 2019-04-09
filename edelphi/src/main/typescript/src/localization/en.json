@@ -1,0 +1,25 @@
+{
+  "panel": {
+    "query": {
+      "commentEditor": {
+        "title": "Elaborate on this topic (add a comment)",
+        "save": "Save"
+      },
+      "comments": {
+        "title": "Elaborate on this topic (add a comment)",
+        "reply": "Reply",
+        "hide": "Hide",
+        "edit": "Edit",
+        "remove": "Remove",
+        "show": "Show",
+        "commentDate": "Comment date {0}",
+        "commentModified": "Comment modified {0}",
+        "saveReply": "Save comment",
+        "saveEdit": "Save",
+        "confirmRemoveConfirm": "Delete", 
+        "confirmRemoveCancel": "Cancel",
+        "confirmRemoveText": "Are you sure that you want to delete comment \"{0}\" including all its replies?"
+      }
+    }
+  }
+}

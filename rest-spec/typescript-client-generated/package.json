@@ -1,0 +1,26 @@
+{
+  "name": "edelphi-client",
+  "version": "0.0.4",
+  "description": "swagger client for edelphi-client",
+  "author": "Swagger Codegen Contributors",
+  "keywords": [
+    "fetch",
+    "typescript",
+    "swagger-client",
+    "edelphi-client"
+  ],
+  "license": "Unlicense",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --outDir dist/"
+  },
+  "dependencies": {
+    "urijs": "^1.19.1"
+  },
+  "devDependencies": {
+    "@types/node": "^8.0.9",
+    "@types/urijs": "^1.15.38",
+    "typescript": "^2.0"
+  }
+}

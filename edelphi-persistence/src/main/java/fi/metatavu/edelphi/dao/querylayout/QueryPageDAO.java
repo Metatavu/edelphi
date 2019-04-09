@@ -3,6 +3,7 @@ package fi.metatavu.edelphi.dao.querylayout;
 import java.util.Date;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -20,6 +21,7 @@ import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.resources.Query_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
+@ApplicationScoped
 public class QueryPageDAO extends GenericDAO<QueryPage> {
 
   public QueryPage create(User creator, QuerySection querySection, QueryPageType pageType, Integer pageNumber, String title, Boolean visible) {

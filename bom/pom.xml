@@ -51,7 +51,7 @@
   <properties>
     <!-- WildFly -->
 
-    <wildfly-spec-api.version>10.1.0.Final</wildfly-spec-api.version>
+    <wildfly.version>16.0.0.Final</wildfly.version>
     
     <!-- Commons -->
     
@@ -99,7 +99,11 @@
     
     <!-- Keycloak admin client -->
     
-    <keycloak-admin-client.version>3.4.3.Final</keycloak-admin-client.version>
+    <keycloak.version>4.8.3.Final</keycloak.version>
+
+    <!-- Paho -->
+    
+    <paho.version>1.2.0</paho.version>
 
   </properties>
 
@@ -109,7 +113,7 @@
       <dependency>    
         <groupId>org.wildfly</groupId>
         <artifactId>wildfly-spec-api</artifactId>
-        <version>${wildfly-spec-api.version}</version>
+        <version>${wildfly.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -212,7 +216,31 @@
       <dependency>
         <groupId>org.keycloak</groupId>
         <artifactId>keycloak-admin-client</artifactId>
-        <version>${keycloak-admin-client.version}</version>
+        <version>${keycloak.version}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.keycloak</groupId>
+        <artifactId>keycloak-core</artifactId>
+          <version>${keycloak.version}</version>
+      </dependency>
+    
+      <dependency>
+        <groupId>org.keycloak</groupId>
+        <artifactId>keycloak-adapter-spi</artifactId>
+        <version>${keycloak.version}</version>
+      </dependency>
+    
+      <dependency>
+        <groupId>org.keycloak</groupId>
+        <artifactId>keycloak-adapter-core</artifactId>
+        <version>${keycloak.version}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.eclipse.paho</groupId>
+        <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+        <version>${paho.version}</version>
       </dependency>
       
     </dependencies>

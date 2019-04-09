@@ -3584,33 +3584,6 @@ div.queryCommentChildren div.queryComment {
   padding:3px 0 5px 0px;
 }
 
-.queryComment .queryCommentShowComment {
-  display: none;
-}
-
-.queryCommentHidden .queryCommentShowComment {
-  display: block;
-}
-
-.queryCommentHidden .queryCommentHideComment {
-  display: none;
-}
-
-.queryCommentHidden .queryCommentNewComment {
-  display: none;
-}
-
-.queryCommentHidden .queryComment .queryCommentHeader .queryCommentNewCommentLink,
-.queryCommentHidden .queryComment .queryCommentHeader .queryCommentHideComment,
-.queryCommentHidden .queryComment .queryCommentHeader .queryCommentShowComment {
-  display: none;
-}
-
-.queryCommentHidden .queryCommentHeader {
-  background: url("../gfx/icons/16x16/actions/hidden.png") no-repeat left 4px;
-  padding:3px 0 5px 26px;
-}
-
 .editCommentEditor {
   margin-bottom:4px;
 }
