@@ -5,6 +5,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
+import javax.annotation.security.PermitAll;
 import javax.ejb.Stateful;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -100,7 +101,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     if (parentComment != null && !parentComment.getQueryPage().getId().equals(queryPage.getId())) {
       return createBadRequest(String.format("Invalid parent id %d", body.getParentId()));
     }
-    
+
     Query pageQuery = queryPage.getQuerySection().getQuery();
     Query replyQuery = queryReply.getQuery();
     
@@ -131,13 +132,15 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createNotFound();
     }
     
-    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.MANAGE_QUERY_COMMENTS)) {
-      return createForbidden("Forbidden");
-    }
-    
     fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment comment = queryQuestionCommentController.findQueryQuestionCommentById(commentId);
     if (comment == null || queryQuestionCommentController.isQueryQuestionCommentArchived(comment)) {
       return createNotFound();
+    }
+
+    if (!comment.getCreator().getId().equals(getLoggedUser().getId())) {
+      if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.MANAGE_QUERY_COMMENTS)) {
+        return createForbidden("Forbidden");
+      }
     }
     
     if (!queryQuestionCommentController.isPanelsComment(comment, panel)) {
@@ -238,15 +241,17 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createNotFound(String.format("Panel with id %s not found", panelId));
     }
     
-    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.MANAGE_QUERY_COMMENTS)) {
-      return createForbidden("Forbidden");
-    }
-    
     fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment comment = queryQuestionCommentController.findQueryQuestionCommentById(commentId);
     if (comment == null || queryQuestionCommentController.isQueryQuestionCommentArchived(comment)) {
       return createNotFound(String.format("Comment with id %s not found", commentId));
     }
-    
+
+    if (!comment.getCreator().getId().equals(getLoggedUser().getId())) {
+      if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.MANAGE_QUERY_COMMENTS)) {
+        return createForbidden("Forbidden");
+      }
+    }
+   
     if (!queryQuestionCommentController.isPanelsComment(comment, panel)) {
       return createNotFound("Comment not found from given panel");
     }

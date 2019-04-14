@@ -83,17 +83,32 @@ public class PermissionController {
    * @return whether user role required action access
    */
   public boolean hasPanelAccess(Panel panel, User user, DelfoiActionName actionName) {
-    if (isSuperUser(user))
+    if (panel == null) {
+      logger.warn("Panel was null when checking panel access");
+      return false;
+    }
+
+    if (user == null) {
+      logger.warn("User was null when checking panel access");
+      return false;
+    }
+
+    if (isSuperUser(user)) {
       return true;
+    }
 
     UserRole userRole = getPanelRole(user, panel);
+    if (userRole == null) {
+      return false;
+    }
+
     DelfoiAction action = delfoiActionDAO.findByActionName(actionName.toString());
     
     if (action == null) {
       logger.info(String.format("ActionUtils.hasDelfoiAccess - undefined action: '%s'", actionName));
       return false;
     }
-    
+
     return hasPanelAccess(panel, action, userRole);
   }
 
