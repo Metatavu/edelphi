@@ -11,9 +11,11 @@
  */
 
 
-export interface Query { 
-    readonly id?: number;
+export interface QueryQuestionAnswerDataLive2d { 
+    x: number;
+    y: number;
 }
-export interface QueryOpt { 
-    readonly id?: number;
+export interface QueryQuestionAnswerDataLive2dOpt { 
+    x?: number;
+    y?: number;
 }
