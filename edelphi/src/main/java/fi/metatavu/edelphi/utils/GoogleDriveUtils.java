@@ -115,9 +115,13 @@ public class GoogleDriveUtils {
 
   private static GoogleCredential getAdminCredential() {
 	  String keyFile = System.getProperty("edelphi.googleServiceAccount.key");
+    if (keyFile == null) {
+      keyFile = System.getenv("GOOGLE_SERVICE_ACCOUNT_KEY");
+    }
+
 	  if (keyFile == null) {
 	    logger.severe("Google service account keyfile is not configured");
-	    return null;
+	    keyFile = "/opt/google-service-account.json";
 	  }
 	  
 	  try {
