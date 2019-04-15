@@ -2,11 +2,179 @@ openapi: 3.0.3
 info:
   title: eDelphi REST API
   description: REST API for eDelphi
-  version: 0.0.1
+  version: 1.0.1
 security:
   - bearer:
       []
 paths:
+  /panels/{panelId}/queryQuestionAnswers:
+    get:
+      operationId: listQueryQuestionAnswers
+      summary: Lists query question answers
+      description: Lists query question answers
+      tags:
+        - QueryQuestionAnswers
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: queryId
+          required: false
+          in: query
+          description: Filter by query id
+          schema:
+            type: integer
+            format: int64
+        - name: pageId
+          required: false
+          in: query
+          description: Filter by query page id
+          schema:
+            type: integer
+            format: int64
+        - name: userId
+          required: false
+          in: query
+          description: Filter by user id
+          schema:
+            type: string
+            format: uuid
+        - name: stampId
+          required: false
+          in: query
+          description: Filter by stamp id. Defaults to current stamp
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: List of query question answers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/QueryQuestionAnswer"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /panels/{panelId}/queryQuestionAnswers/{answerId}:
+    get:
+      operationId: findQueryQuestionAnswer
+      summary: Find query question answer.
+      description: Finds query question answer by id
+      tags:
+        - QueryQuestionAnswers
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: answerId
+          required: true
+          in: path
+          description: query question answer id
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A queryQuestionAnswer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryQuestionAnswer"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: upsertQueryQuestionAnswer
+      summary: Creates or updates query question answer
+      description: Creates or updates query question answer
+      tags:
+        - QueryQuestionAnswers
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: answerId
+          required: true
+          in: path
+          description: query question answer id
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QueryQuestionAnswer"
+        description: Payload
+        required: true
+      responses:
+        "200":
+          description: Updated query question answer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryQuestionAnswer"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /panels/{panelId}/queryQuestionComments:
     post:
       operationId: createQueryQuestionComment
@@ -286,6 +454,7 @@ components:
         id:
           type: integer
           format: int64
+          readOnly: true
           
     Query:
       type: object
@@ -293,6 +462,7 @@ components:
         id:
           type: integer
           format: int64
+          readOnly: true
           
     QueryPage:
       type: object
@@ -300,12 +470,46 @@ components:
         id:
           type: integer
           format: int64
+          readOnly: true
           
     QueryReply:
       properties:
         id:
           type: integer
           format: int64
+          readOnly: true
+          
+    QueryQuestionAnswer:
+      required: 
+        - queryPageId
+        - queryReplyId
+        - data
+      properties:
+        id:
+          type: string
+          description: Id of the query answer. Id is a composed from queryReplyId and queryReplyId by joining them with minus sign (e.g. 123-456)
+          readOnly: true
+        queryPageId:
+          type: integer
+          format: int64
+        queryReplyId:
+          type: integer
+          format: int64
+        data:
+          oneOf:
+            - $ref: '#/components/schemas/QueryQuestionAnswerDataLive2d'
+          
+    QueryQuestionAnswerDataLive2d:
+      required: 
+        - x
+        - y
+      properties:
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
           
     QueryQuestionComment:
       type: object
@@ -318,6 +522,7 @@ components:
           description: Comment's id
           type: integer
           format: int64
+          readOnly: true
         parentId:
           description: PArent comment's id
           type: integer
