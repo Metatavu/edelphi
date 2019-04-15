@@ -3,7 +3,7 @@
   "info" : {
     "title" : "eDelphi REST API",
     "description" : "REST API for eDelphi",
-    "version" : "0.0.1"
+    "version" : "2.0.1"
   },
   "servers" : [ {
     "url" : "/"
@@ -12,6 +12,268 @@
     "bearer" : [ ]
   } ],
   "paths" : {
+    "/panels/{panelId}/queryQuestionAnswers" : {
+      "get" : {
+        "tags" : [ "QueryQuestionAnswers" ],
+        "summary" : "Lists query question answers",
+        "description" : "Lists query question answers",
+        "operationId" : "listQueryQuestionAnswers",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "queryId",
+          "in" : "query",
+          "description" : "Filter by query id",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "pageId",
+          "in" : "query",
+          "description" : "Filter by query page id",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "userId",
+          "in" : "query",
+          "description" : "Filter by user id",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }, {
+          "name" : "stampId",
+          "in" : "query",
+          "description" : "Filter by stamp id. Defaults to current stamp",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of query question answers",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/QueryQuestionAnswer"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panels/{panelId}/queryQuestionAnswers/{answerId}" : {
+      "get" : {
+        "tags" : [ "QueryQuestionAnswers" ],
+        "summary" : "Find query question answer.",
+        "description" : "Finds query question answer by id",
+        "operationId" : "findQueryQuestionAnswer",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "answerId",
+          "in" : "path",
+          "description" : "query question answer id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A queryQuestionAnswer",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/QueryQuestionAnswer"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "QueryQuestionAnswers" ],
+        "summary" : "Creates or updates query question answer",
+        "description" : "Creates or updates query question answer",
+        "operationId" : "upsertQueryQuestionAnswer",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "answerId",
+          "in" : "path",
+          "description" : "query question answer id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "Payload",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/QueryQuestionAnswer"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Updated query question answer",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/QueryQuestionAnswer"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/panels/{panelId}/queryQuestionComments" : {
       "get" : {
         "tags" : [ "QueryQuestionComments" ],
@@ -430,7 +692,8 @@
         "properties" : {
           "id" : {
             "type" : "integer",
-            "format" : "int64"
+            "format" : "int64",
+            "readOnly" : true
           }
         }
       },
@@ -439,7 +702,8 @@
         "properties" : {
           "id" : {
             "type" : "integer",
-            "format" : "int64"
+            "format" : "int64",
+            "readOnly" : true
           }
         }
       },
@@ -448,7 +712,8 @@
         "properties" : {
           "id" : {
             "type" : "integer",
-            "format" : "int64"
+            "format" : "int64",
+            "readOnly" : true
           }
         }
       },
@@ -456,7 +721,44 @@
         "properties" : {
           "id" : {
             "type" : "integer",
+            "format" : "int64",
+            "readOnly" : true
+          }
+        }
+      },
+      "QueryQuestionAnswer" : {
+        "required" : [ "data", "queryPageId", "queryReplyId" ],
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "description" : "Id of the query answer. Id is a composed from queryReplyId and queryReplyId by joining them with minus sign (e.g. 123-456)",
+            "readOnly" : true
+          },
+          "queryPageId" : {
+            "type" : "integer",
             "format" : "int64"
+          },
+          "queryReplyId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "data" : {
+            "oneOf" : [ {
+              "$ref" : "#/components/schemas/QueryQuestionAnswerDataLive2d"
+            } ]
+          }
+        }
+      },
+      "QueryQuestionAnswerDataLive2d" : {
+        "required" : [ "x", "y" ],
+        "properties" : {
+          "x" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "y" : {
+            "type" : "number",
+            "format" : "double"
           }
         }
       },
@@ -467,7 +769,8 @@
           "id" : {
             "type" : "integer",
             "description" : "Comment's id",
-            "format" : "int64"
+            "format" : "int64",
+            "readOnly" : true
           },
           "parentId" : {
             "type" : "integer",
