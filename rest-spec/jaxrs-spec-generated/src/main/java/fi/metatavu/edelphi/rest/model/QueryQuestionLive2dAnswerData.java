@@ -1,5 +1,8 @@
 package fi.metatavu.edelphi.rest.model;
 
+import java.time.*;
+import java.util.*;
+
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -9,12 +12,12 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
-public class QueryQuestionAnswerDataLive2d   {
+public class QueryQuestionLive2dAnswerData   {
   private @Valid Double x = null;  private @Valid Double y = null;
 
   /**
    **/
-  public QueryQuestionAnswerDataLive2d x(Double x) {
+  public QueryQuestionLive2dAnswerData x(Double x) {
     this.x = x;
     return this;
   }
@@ -32,7 +35,7 @@ public class QueryQuestionAnswerDataLive2d   {
 
   /**
    **/
-  public QueryQuestionAnswerDataLive2d y(Double y) {
+  public QueryQuestionLive2dAnswerData y(Double y) {
     this.y = y;
     return this;
   }
@@ -57,9 +60,9 @@ public class QueryQuestionAnswerDataLive2d   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    QueryQuestionAnswerDataLive2d queryQuestionAnswerDataLive2d = (QueryQuestionAnswerDataLive2d) o;
-    return Objects.equals(x, queryQuestionAnswerDataLive2d.x) &&
-        Objects.equals(y, queryQuestionAnswerDataLive2d.y);
+    QueryQuestionLive2dAnswerData queryQuestionLive2dAnswerData = (QueryQuestionLive2dAnswerData) o;
+    return Objects.equals(x, queryQuestionLive2dAnswerData.x) &&
+        Objects.equals(y, queryQuestionLive2dAnswerData.y);
   }
 
   @Override
@@ -70,7 +73,7 @@ public class QueryQuestionAnswerDataLive2d   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class QueryQuestionAnswerDataLive2d {\n");
+    sb.append("class QueryQuestionLive2dAnswerData {\n");
     
     sb.append("    x: ").append(toIndentedString(x)).append("\n");
     sb.append("    y: ").append(toIndentedString(y)).append("\n");

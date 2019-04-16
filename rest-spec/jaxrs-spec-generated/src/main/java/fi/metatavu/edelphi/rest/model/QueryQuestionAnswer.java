@@ -1,5 +1,8 @@
 package fi.metatavu.edelphi.rest.model;
 
+import java.time.*;
+import java.util.*;
+
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 
@@ -13,7 +16,7 @@ public class QueryQuestionAnswer   {
   private @Valid String id = null;  private @Valid Long queryPageId = null;  private @Valid Long queryReplyId = null;  private @Valid Object data = null;
 
   /**
-   * Id of the query answer. Id is a composed from queryReplyId and queryReplyId by joining them with minus sign (e.g. 123-456)
+   * Id of the query answer. Id is a composed from queryPageId and queryReplyId by joining them with minus sign (e.g. 123-456)
    **/
   public QueryQuestionAnswer id(String id) {
     this.id = id;
@@ -21,7 +24,7 @@ public class QueryQuestionAnswer   {
   }
 
   
-  @ApiModelProperty(value = "Id of the query answer. Id is a composed from queryReplyId and queryReplyId by joining them with minus sign (e.g. 123-456)")
+  @ApiModelProperty(value = "Id of the query answer. Id is a composed from queryPageId and queryReplyId by joining them with minus sign (e.g. 123-456)")
   @JsonProperty("id")
   public String getId() {
     return id;
