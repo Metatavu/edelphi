@@ -28,8 +28,6 @@ module.exports = function(grunt) {
       return objectFile.endsWith(`${postfix}.ts`);
     });
 
-    console.log(objectFiles);
-
     objectFiles.forEach((objectFile) => {
       const modelName = objectFile.substring(0, 1).toUpperCase() + objectFile.substring(1, objectFile.length - 3);
       modelFiles[modelName] = objectFile.substring(0, objectFile.length - 3);

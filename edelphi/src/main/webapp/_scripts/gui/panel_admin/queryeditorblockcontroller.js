@@ -517,6 +517,9 @@ QueryEditorBlockController = Class.create(BlockController, {
             case 'THESIS_MULTIPLE_2D_SCALES':
               this._elementEditor = new QueryEditorMultipleScale2DThesisPageEditor(this);
             break;
+            case 'LIVE2D':
+              this._elementEditor = new QueryEditorLive2DThesisPageEditor(this);
+            break;
             case 'COLLAGE_2D':
               this._elementEditor = new QueryEditorCollage2DPageEditor(this);
             break;
@@ -4360,6 +4363,24 @@ QueryEditorScale2DThesisPageEditor = Class.create(QueryEditorThesisPageEditor, {
 });
 
 QueryEditorMultipleScale2DThesisPageEditor = Class.create(QueryEditorThesisPageEditor, {
+  initialize: function ($super,blockController) {
+    $super(blockController);
+  },
+  deinitialize: function($super) {
+    $super();
+  },
+  setup: function ($super) {
+    $super();
+    
+    this._thesisTextContainer.remove();
+    this._showLiveReportContainer.remove();
+    
+    this._thesisTextContainer = null;
+    this._showLiveReportContainer = null;
+  }
+});
+
+QueryEditorLive2DThesisPageEditor = Class.create(QueryEditorThesisPageEditor, {
   initialize: function ($super,blockController) {
     $super(blockController);
   },

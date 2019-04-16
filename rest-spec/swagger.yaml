@@ -7,6 +7,7 @@ security:
   - bearer:
       []
 paths:
+    
   /panels/{panelId}/queryQuestionAnswers:
     get:
       operationId: listQueryQuestionAnswers
@@ -471,7 +472,24 @@ components:
           type: integer
           format: int64
           readOnly: true
+        options:
+          oneOf:
+            - $ref: '#/components/schemas/QueryPageLive2DOptions'
+
+    QueryPageLive2DAxis:
+      properties:
+        label: 
+          type: string
+        color:
+          type: string
           
+    QueryPageLive2DOptions:
+      properties:
+        axisX:
+          $ref: '#/components/schemas/QueryPageLive2DAxis'
+        axisY:
+          $ref: '#/components/schemas/QueryPageLive2DAxis'
+        
     QueryReply:
       properties:
         id:
@@ -487,7 +505,7 @@ components:
       properties:
         id:
           type: string
-          description: Id of the query answer. Id is a composed from queryReplyId and queryReplyId by joining them with minus sign (e.g. 123-456)
+          description: Id of the query answer. Id is a composed from queryPageId and queryReplyId by joining them with minus sign (e.g. 123-456)
           readOnly: true
         queryPageId:
           type: integer
