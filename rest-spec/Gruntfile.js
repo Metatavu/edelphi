@@ -20,6 +20,37 @@ module.exports = function(grunt) {
   const TYPESCRIPT_CLIENT_PACKAGE = "edelphi-client";
   const TYPESCRIPT_CLIENT_VERSION = require("./typescript-client-generated/package.json").version;
 
+  grunt.registerMultiTask('typescript-process-any', 'Process any', function () {
+    const modelFiles = {};
+    const postfix = this.data.postfix;
+
+    const objectFiles = fs.readdirSync(`${this.data.folder}/model`).filter((objectFile) => {
+      return objectFile.endsWith(`${postfix}.ts`);
+    });
+
+    console.log(objectFiles);
+
+    objectFiles.forEach((objectFile) => {
+      const modelName = objectFile.substring(0, 1).toUpperCase() + objectFile.substring(1, objectFile.length - 3);
+      modelFiles[modelName] = objectFile.substring(0, objectFile.length - 3);
+    });
+
+    const objectModelType = Object.keys(modelFiles).join(" | ");
+
+    const objectModelImports = Object.keys(modelFiles).map((modelName) => {
+      const modelFile = modelFiles[modelName];
+      return `import { ${modelName} } from './${modelFile}';`;
+    }).join("\n");
+
+    const eventFile = `${this.data.folder}/${this.data.file}`;
+    let contents = fs.readFileSync(eventFile, "utf8");
+    contents = contents.replace(/import \{ ModelObject } from \'\.\/modelObject\'\;/g, objectModelImports);
+    contents = contents.replace(/data\: ModelObject\;/g, `data: ${objectModelType};`);
+    contents = contents.replace(/data\?\: ModelObject\;/g, `data?: ${objectModelType};`);
+
+    fs.writeFileSync(eventFile, contents);
+  });
+  
   grunt.initConfig({
     "curl": {
       "swagger-codegen":  {
@@ -41,6 +72,13 @@ module.exports = function(grunt) {
         "typescript-client-generated/encoder.ts",
         "typescript-client-generated/configuration.ts"
       ]
+    },
+    "typescript-process-any": {
+      "answer-data": {
+        "folder": "typescript-client-generated",
+        "postfix": "AnswerData",
+        "file": "model/queryQuestionAnswer.ts"
+      }
     },
     "shell": {
       "jaxrs-spec-generate": {
@@ -152,7 +190,7 @@ module.exports = function(grunt) {
   grunt.registerTask('java-gen', [ 'download-dependencies', 'clean:java-sources', 'shell:java-generate', 'shell:java-install' ]);
   grunt.registerTask('java', [ 'java-gen', 'shell:java-release' ]);
 
-  grunt.registerTask('typescript-client-gen', [ 'shell:typescript-client-generate', 'clean:typescript-client']);
+  grunt.registerTask('typescript-client-gen', [ 'shell:typescript-client-generate', 'typescript-process-any:answer-data', 'clean:typescript-client']);
   grunt.registerTask('typescript-client', [ 'typescript-client-gen', "shell:typescript-client-bump-version", "shell:typescript-client-push", "shell:typescript-client-publish" ]);
 
   grunt.registerTask("default", [ "jaxrs-spec", "java"]);

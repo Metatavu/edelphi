@@ -497,9 +497,9 @@ components:
           format: int64
         data:
           oneOf:
-            - $ref: '#/components/schemas/QueryQuestionAnswerDataLive2d'
+            - $ref: '#/components/schemas/QueryQuestionLive2dAnswerData'
           
-    QueryQuestionAnswerDataLive2d:
+    QueryQuestionLive2dAnswerData:
       required: 
         - x
         - y
