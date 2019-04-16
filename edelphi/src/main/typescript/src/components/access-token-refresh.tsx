@@ -63,8 +63,14 @@ class AccessTokenRefresh extends React.Component<Props, State> {
     return null;
   }
 
+  /**
+   * Refreshes access token
+   */
   private async refreshAccessToken() {
-    this.props.onAccessTokenUpdate(await (await fetch("/system/accesstoken.json")).json());
+    const response: AccessToken = await (await fetch("/system/accesstoken.json")).json();
+    if (response && response.expires && response.token && response.userId) {
+      this.props.onAccessTokenUpdate(response);
+    }
   }
 
 }

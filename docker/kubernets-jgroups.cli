@@ -1,0 +1,22 @@
+embed-server --server-config=standalone-full-ha.xml
+
+/subsystem=jgroups/stack=kubernetes:add()
+/subsystem=jgroups/stack=kubernetes/transport=TCP:add(socket-binding=jgroups-tcp)
+/subsystem=jgroups/stack=kubernetes/protocol=kubernetes.KUBE_PING:add()
+/subsystem=jgroups/stack=kubernetes/protocol=kubernetes.KUBE_PING/property=port_range:add(value="0")
+/subsystem=jgroups/stack=kubernetes/protocol=kubernetes.KUBE_PING/property=namespace:add(value="${env.KUBERNETES_NAMESPACE}")
+/subsystem=jgroups/stack=kubernetes/protocol=MERGE3:add()
+/subsystem=jgroups/stack=kubernetes/protocol=FD_SOCK:add()
+/subsystem=jgroups/stack=kubernetes/protocol=FD:add()
+/subsystem=jgroups/stack=kubernetes/protocol=VERIFY_SUSPECT:add()
+/subsystem=jgroups/stack=kubernetes/protocol=pbcast.NAKACK2:add()
+/subsystem=jgroups/stack=kubernetes/protocol=UNICAST3:add()
+/subsystem=jgroups/stack=kubernetes/protocol=pbcast.STABLE:add()
+/subsystem=jgroups/stack=kubernetes/protocol=pbcast.GMS:add()
+/subsystem=jgroups/stack=kubernetes/protocol=UFC:add()
+/subsystem=jgroups/stack=kubernetes/protocol=MFC:add()
+/subsystem=jgroups/stack=kubernetes/protocol=FRAG3:add()
+/subsystem=jgroups/stack=kubernetes/protocol=RSVP:add()
+/subsystem=jgroups/channel=ee:write-attribute(name=stack,value=kubernetes)
+/subsystem=jgroups/stack=udp:remove
+/subsystem=jgroups/stack=tcp:remove

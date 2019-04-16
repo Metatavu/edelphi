@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: eDelphi REST API
   description: REST API for eDelphi
-  version: 2.0.1
+  version: 1.0.1
 security:
   - bearer:
       []
@@ -497,8 +497,7 @@ components:
           format: int64
         data:
           oneOf:
-            - $ref: '#/components/schemas/QueryQuestionLive2dAnswerData'
-          
+            - $ref: '#/components/schemas/QueryQuestionLive2dAnswerData'          
     QueryQuestionLive2dAnswerData:
       required: 
         - x
