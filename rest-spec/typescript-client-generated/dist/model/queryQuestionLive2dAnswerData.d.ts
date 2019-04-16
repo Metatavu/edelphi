@@ -9,9 +9,11 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-export interface QueryReply {
-    readonly id?: number;
+export interface QueryQuestionLive2dAnswerData {
+    x: number;
+    y: number;
 }
-export interface QueryReplyOpt {
-    readonly id?: number;
+export interface QueryQuestionLive2dAnswerDataOpt {
+    x?: number;
+    y?: number;
 }

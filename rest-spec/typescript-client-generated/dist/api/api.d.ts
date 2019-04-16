@@ -1,3 +1,5 @@
+export * from './queryQuestionAnswers.service';
+import { QueryQuestionAnswersService } from './queryQuestionAnswers.service';
 export * from './queryQuestionComments.service';
 import { QueryQuestionCommentsService } from './queryQuestionComments.service';
 export declare class ApiUtils {
@@ -15,6 +17,7 @@ declare const _default: {
      *
      */
     configure(baseUrl: string): void;
+    getQueryQuestionAnswersService(token: string): QueryQuestionAnswersService;
     getQueryQuestionCommentsService(token: string): QueryQuestionCommentsService;
 };
 export default _default;
