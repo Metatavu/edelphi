@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@types/node": "^11.11.3",
+    "@types/recharts": "^1.1.16",
     "edelphi-client": "0.0.4",
     "localized-strings": "^0.2.1",
     "lodash": "^4.17.11",
@@ -22,6 +23,7 @@
     "react-dom": "^16.8.3",
     "react-redux": "^6.0.1",
     "reactdom": "^2.0.0",
+    "recharts": "^1.5.0",
     "semantic-ui-react": "^0.85.0"
   },
   "devDependencies": {
