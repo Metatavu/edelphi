@@ -197,7 +197,7 @@ module.exports = function(grunt) {
   grunt.registerTask('java-gen', [ 'download-dependencies', 'clean:java-sources', 'shell:java-generate', 'shell:java-install' ]);
   grunt.registerTask('java', [ 'java-gen', 'shell:java-release' ]);
 
-  grunt.registerTask('typescript-client-gen', [ 'download-dependencies', 'shell:typescript-client-generate', 'typescript-process-any:answer-data', 'clean:typescript-client']);
+  grunt.registerTask('typescript-client-gen', [ 'download-dependencies', 'shell:typescript-client-generate', 'typescript-process-any:query-options', 'typescript-process-any:answer-data', 'clean:typescript-client']);
   grunt.registerTask('typescript-client', [ 'typescript-client-gen', "shell:typescript-client-bump-version", "shell:typescript-client-push", "shell:typescript-client-publish" ]);
 
   grunt.registerTask("default", [ "jaxrs-spec", "java"]);
