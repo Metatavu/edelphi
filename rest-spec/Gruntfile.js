@@ -23,6 +23,7 @@ module.exports = function(grunt) {
   grunt.registerMultiTask('typescript-process-any', 'Process any', function () {
     const modelFiles = {};
     const postfix = this.data.postfix;
+    const field = this.data.field;
 
     const objectFiles = fs.readdirSync(`${this.data.folder}/model`).filter((objectFile) => {
       return objectFile.endsWith(`${postfix}.ts`);
@@ -34,17 +35,18 @@ module.exports = function(grunt) {
     });
 
     const objectModelType = Object.keys(modelFiles).join(" | ");
-
+    
     const objectModelImports = Object.keys(modelFiles).map((modelName) => {
       const modelFile = modelFiles[modelName];
       return `import { ${modelName} } from './${modelFile}';`;
     }).join("\n");
-
+    
     const eventFile = `${this.data.folder}/${this.data.file}`;
     let contents = fs.readFileSync(eventFile, "utf8");
+
     contents = contents.replace(/import \{ ModelObject } from \'\.\/modelObject\'\;/g, objectModelImports);
-    contents = contents.replace(/data\: ModelObject\;/g, `data: ${objectModelType};`);
-    contents = contents.replace(/data\?\: ModelObject\;/g, `data?: ${objectModelType};`);
+    contents = contents.replace(new RegExp(`${field}\\: ModelObject;`, 'g'), `${field}: ${objectModelType};`);
+    contents = contents.replace(new RegExp(`${field}\\?\\: ModelObject;`, 'g'), `${field}?: ${objectModelType};`);
 
     fs.writeFileSync(eventFile, contents);
   });
@@ -75,7 +77,14 @@ module.exports = function(grunt) {
       "answer-data": {
         "folder": "typescript-client-generated",
         "postfix": "AnswerData",
-        "file": "model/queryQuestionAnswer.ts"
+        "file": "model/queryQuestionAnswer.ts",
+        "field": "data"
+      },
+      "query-options": {
+        "folder": "typescript-client-generated",
+        "postfix": "Options",
+        "file": "model/queryPage.ts",
+        "field": "options"
       }
     },
     "shell": {
@@ -188,7 +197,7 @@ module.exports = function(grunt) {
   grunt.registerTask('java-gen', [ 'download-dependencies', 'clean:java-sources', 'shell:java-generate', 'shell:java-install' ]);
   grunt.registerTask('java', [ 'java-gen', 'shell:java-release' ]);
 
-  grunt.registerTask('typescript-client-gen', [ 'shell:typescript-client-generate', 'typescript-process-any:answer-data', 'clean:typescript-client']);
+  grunt.registerTask('typescript-client-gen', [ 'download-dependencies', 'shell:typescript-client-generate', 'typescript-process-any:answer-data', 'clean:typescript-client']);
   grunt.registerTask('typescript-client', [ 'typescript-client-gen', "shell:typescript-client-bump-version", "shell:typescript-client-push", "shell:typescript-client-publish" ]);
 
   grunt.registerTask("default", [ "jaxrs-spec", "java"]);
