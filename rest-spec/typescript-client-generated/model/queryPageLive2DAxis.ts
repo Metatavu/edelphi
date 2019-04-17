@@ -11,9 +11,11 @@
  */
 
 
-export interface QueryReply { 
-    readonly id?: number;
+export interface QueryPageLive2DAxis { 
+    label?: string;
+    color?: string;
 }
-export interface QueryReplyOpt { 
-    readonly id?: number;
+export interface QueryPageLive2DAxisOpt { 
+    label?: string;
+    color?: string;
 }
