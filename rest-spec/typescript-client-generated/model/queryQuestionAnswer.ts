@@ -9,7 +9,7 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { ModelObject } from './modelObject';
+import { QueryQuestionLive2dAnswerData } from './queryQuestionLive2dAnswerData';
 
 
 export interface QueryQuestionAnswer { 
@@ -19,7 +19,7 @@ export interface QueryQuestionAnswer {
     readonly id?: string;
     queryPageId: number;
     queryReplyId: number;
-    data: ModelObject;
+    data: QueryQuestionLive2dAnswerData;
 }
 export interface QueryQuestionAnswerOpt { 
     /**
@@ -28,5 +28,5 @@ export interface QueryQuestionAnswerOpt {
     readonly id?: string;
     queryPageId?: number;
     queryReplyId?: number;
-    data?: ModelObject;
+    data?: QueryQuestionLive2dAnswerData;
 }
