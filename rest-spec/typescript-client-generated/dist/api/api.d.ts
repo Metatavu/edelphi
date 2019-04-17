@@ -1,3 +1,5 @@
+export * from './queryPages.service';
+import { QueryPagesService } from './queryPages.service';
 export * from './queryQuestionAnswers.service';
 import { QueryQuestionAnswersService } from './queryQuestionAnswers.service';
 export * from './queryQuestionComments.service';
@@ -17,6 +19,7 @@ declare const _default: {
      *
      */
     configure(baseUrl: string): void;
+    getQueryPagesService(token: string): QueryPagesService;
     getQueryQuestionAnswersService(token: string): QueryQuestionAnswersService;
     getQueryQuestionCommentsService(token: string): QueryQuestionCommentsService;
 };
