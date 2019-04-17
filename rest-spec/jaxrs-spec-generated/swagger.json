@@ -3,7 +3,7 @@
   "info" : {
     "title" : "eDelphi REST API",
     "description" : "REST API for eDelphi",
-    "version" : "2.0.1"
+    "version" : "1.0.1"
   },
   "servers" : [ {
     "url" : "/"
@@ -683,6 +683,79 @@
           }
         }
       }
+    },
+    "/panels/{panelId}/queryPages/{queryPageId}" : {
+      "get" : {
+        "tags" : [ "QueryPages" ],
+        "summary" : "Find query page.",
+        "description" : "Finds query page by id",
+        "operationId" : "findQueryPage",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "queryPageId",
+          "in" : "path",
+          "description" : "query page id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A queryPage",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/QueryPage"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components" : {
@@ -707,6 +780,10 @@
           }
         }
       },
+      "QueryPageType" : {
+        "type" : "string",
+        "enum" : [ "TEXT", "FORM", "EXPERTISE", "THESIS_SCALE_1D", "THESIS_SCALE_2D", "THESIS_ORDER", "THESIS_TIME_SERIE", "THESIS_MULTI_SELECT", "THESIS_TIMELINE", "THESIS_GROUPING", "THESIS_MULTIPLE_2D_SCALES", "LIVE_2D", "COLLAGE_2D" ]
+      },
       "QueryPage" : {
         "type" : "object",
         "properties" : {
@@ -714,6 +791,34 @@
             "type" : "integer",
             "format" : "int64",
             "readOnly" : true
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/QueryPageType"
+          },
+          "options" : {
+            "oneOf" : [ {
+              "$ref" : "#/components/schemas/QueryPageLive2DOptions"
+            } ]
+          }
+        }
+      },
+      "QueryPageLive2DAxis" : {
+        "properties" : {
+          "label" : {
+            "type" : "string"
+          },
+          "color" : {
+            "type" : "string"
+          }
+        }
+      },
+      "QueryPageLive2DOptions" : {
+        "properties" : {
+          "axisX" : {
+            "$ref" : "#/components/schemas/QueryPageLive2DAxis"
+          },
+          "axisY" : {
+            "$ref" : "#/components/schemas/QueryPageLive2DAxis"
           }
         }
       },
@@ -731,7 +836,7 @@
         "properties" : {
           "id" : {
             "type" : "string",
-            "description" : "Id of the query answer. Id is a composed from queryReplyId and queryReplyId by joining them with minus sign (e.g. 123-456)",
+            "description" : "Id of the query answer. Id is a composed from queryPageId and queryReplyId by joining them with minus sign (e.g. 123-456)",
             "readOnly" : true
           },
           "queryPageId" : {
@@ -744,12 +849,12 @@
           },
           "data" : {
             "oneOf" : [ {
-              "$ref" : "#/components/schemas/QueryQuestionAnswerDataLive2d"
+              "$ref" : "#/components/schemas/QueryQuestionLive2dAnswerData"
             } ]
           }
         }
       },
-      "QueryQuestionAnswerDataLive2d" : {
+      "QueryQuestionLive2dAnswerData" : {
         "required" : [ "x", "y" ],
         "properties" : {
           "x" : {
