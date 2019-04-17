@@ -2,19 +2,18 @@ package fi.metatavu.edelphi.query.thesis;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
-import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
-import fi.metatavu.edelphi.dao.querydata.QueryQuestionOptionAnswerDAO;
+import org.apache.commons.lang3.math.NumberUtils;
+
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
-import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
-import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionAnswer;
+import fi.metatavu.edelphi.dao.querymeta.QueryNumericFieldDAO;
+import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
-import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionField;
+import fi.metatavu.edelphi.domainmodel.querymeta.QueryNumericField;
+import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
-import fi.metatavu.edelphi.i18n.Messages;
 import fi.metatavu.edelphi.query.QueryExportContext;
 import fi.metatavu.edelphi.query.QueryOption;
 import fi.metatavu.edelphi.query.QueryOptionEditor;
@@ -23,27 +22,30 @@ import fi.metatavu.edelphi.query.RequiredQueryFragment;
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
-
-import fi.metatavu.edelphi.domainmodel.panels.Panel;
-import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.utils.ResourceUtils;
 
-public class Live2DThesisQueryPageHandler extends AbstractScaleThesisQueryPageHandler {
-/**
-  private static final String LABEL_X_OPTION = "multiple2dscales.labelx";
-  private static final String LABEL_Y_OPTION = "multiple2dscales.labely";
-  private static final String OPTIONS_OPTION = "multiple2dscales.options";
-  private static final String THESES_OPTION = "multiple2dscales.theses";
- */
+public class Live2DThesisQueryPageHandler extends AbstractThesisQueryPageHandler {
+
+  private static final String LABEL_X_OPTION = "live2d.labelx";
+  private static final String COLOR_X_OPTION = "live2d.colorx";
+  private static final String LABEL_Y_OPTION = "live2d.labely";
+  private static final String COLOR_Y_OPTION = "live2d.colory";
+  private static final String MIN_OPTION = "live2d.min";
+  private static final String MAX_OPTION = "live2d.max";
+  private static final String PRECISION_OPTION = "live2d.precision";
+  private static final String FIELD_X = "x";
+  private static final String FIELD_Y = "y";
+
   private List<QueryOption> options = new ArrayList<>();
 
   public Live2DThesisQueryPageHandler() {
-    /**
-    options.add(new QueryOption(QueryOptionType.QUESTION, LABEL_X_OPTION, "panelAdmin.block.query.multiple2dScales.options.labelX", QueryOptionEditor.TEXT, true));
-    options.add(new QueryOption(QueryOptionType.QUESTION, LABEL_Y_OPTION, "panelAdmin.block.query.multiple2dScales.options.labelY", QueryOptionEditor.TEXT, true));
-    options.add(new QueryOption(QueryOptionType.QUESTION, OPTIONS_OPTION, "panelAdmin.block.query.multiple2dScales.options.options", QueryOptionEditor.OPTION_SET, false));
-    options.add(new QueryOption(QueryOptionType.QUESTION, THESES_OPTION, "panelAdmin.block.query.multiple2dScales.options.theses", QueryOptionEditor.OPTION_SET, false));
-     */
+    options.add(new QueryOption(QueryOptionType.QUESTION, LABEL_X_OPTION, "panelAdmin.block.query.live2d.options.labelX", QueryOptionEditor.TEXT, true));
+    options.add(new QueryOption(QueryOptionType.QUESTION, COLOR_X_OPTION, "panelAdmin.block.query.live2d.options.colorX", QueryOptionEditor.COLOR, true));
+    options.add(new QueryOption(QueryOptionType.QUESTION, LABEL_Y_OPTION, "panelAdmin.block.query.live2d.options.labelY", QueryOptionEditor.TEXT, true));
+    options.add(new QueryOption(QueryOptionType.QUESTION, COLOR_Y_OPTION, "panelAdmin.block.query.live2d.options.colorY", QueryOptionEditor.COLOR, true));
+    options.add(new QueryOption(QueryOptionType.QUESTION, MIN_OPTION, "panelAdmin.block.query.live2d.options.min", QueryOptionEditor.FLOAT, true));
+    options.add(new QueryOption(QueryOptionType.QUESTION, MAX_OPTION, "panelAdmin.block.query.live2d.options.max", QueryOptionEditor.FLOAT, true));
+    options.add(new QueryOption(QueryOptionType.QUESTION, PRECISION_OPTION, "panelAdmin.block.query.live2d.options.precision", QueryOptionEditor.FLOAT, true));
   }
 
   @Override
@@ -123,7 +125,6 @@ public class Live2DThesisQueryPageHandler extends AbstractScaleThesisQueryPageHa
   
   @Override
   public void updatePageOptions(Map<String, String> settings, QueryPage queryPage, User modifier, boolean hasAnswers) {
-    /**
     super.updatePageOptions(settings, queryPage, modifier, hasAnswers);
 
     for (QueryOption queryOption : getDefinedOptions()) {
@@ -132,29 +133,32 @@ public class Live2DThesisQueryPageHandler extends AbstractScaleThesisQueryPageHa
       }
     }
     
-    String thesesOption = settings.get(THESES_OPTION);
     String labelX = settings.get(LABEL_X_OPTION);
     String labelY = settings.get(LABEL_Y_OPTION);
-    List<String> fieldOptions = QueryPageUtils.parseSerializedList(settings.get(OPTIONS_OPTION));
-    List<String> theses = QueryPageUtils.parseSerializedList(thesesOption);
-
-    for (int thesisIndex = 0, thesisCount = theses.size(); thesisIndex < thesisCount; thesisIndex++) {
-      String thesis = theses.get(thesisIndex);
-      
-      String fieldNameX = getFieldName(thesisIndex, "x");
-      String fieldNameY = getFieldName(thesisIndex, "y");
-      String fieldLabelX = getFieldLabel(thesis, labelX);
-      String fieldLabelY = getFieldLabel(thesis, labelY);
-      Boolean mandatory = false;
-      
-      if (hasAnswers) {
-        synchronizeFieldCaption(queryPage, fieldNameX, fieldLabelX);
-        synchronizeFieldCaption(queryPage, fieldNameY, fieldLabelY);
-      } else {
-        synchronizeField(queryPage, fieldOptions, fieldNameX, fieldLabelX, mandatory);
-        synchronizeField(queryPage, fieldOptions, fieldNameY, fieldLabelY, mandatory);
+    Double min = NumberUtils.createDouble(settings.getOrDefault(MIN_OPTION, "0"));
+    Double max = NumberUtils.createDouble(settings.getOrDefault(MAX_OPTION, "100"));
+    Double precision = NumberUtils.createDouble(settings.getOrDefault(PRECISION_OPTION, "100"));
+    
+    synchronizeField(queryPage, FIELD_X, labelX, min, max, precision, hasAnswers);
+    synchronizeField(queryPage, FIELD_Y, labelY, min, max, precision, hasAnswers);
+  }
+  
+  private void synchronizeField(QueryPage queryPage, String fieldName, String label, Double min, Double max, Double precision, Boolean hasAnswers) {
+    QueryFieldDAO queryFieldDAO = new QueryFieldDAO();
+    QueryNumericFieldDAO queryNumericFieldDAO = new QueryNumericFieldDAO();
+    
+    QueryNumericField queryNumericField = (QueryNumericField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldName);
+    
+    if (queryNumericField != null) {
+      queryFieldDAO.updateCaption(queryNumericField, label);
+      if (!hasAnswers) {
+        queryNumericFieldDAO.updateMin(queryNumericField, min);
+        queryNumericFieldDAO.updateMax(queryNumericField, max);
+        queryNumericFieldDAO.updatePrecision(queryNumericField, precision);
       }
-    } */
+    } else {
+      queryNumericFieldDAO.create(queryPage, fieldName, Boolean.TRUE, label, min, max, precision);
+    }
   }
   
   private void addFragmentStringList(RequiredQueryFragment requiredFragment, String name, List<String> list) {
@@ -164,8 +168,8 @@ public class Live2DThesisQueryPageHandler extends AbstractScaleThesisQueryPageHa
     }
   }
 
-  private String getFieldName(int index, String axis) {
-    return String.format("multiple2dscales.%d.%s", index, axis);
+  private String getFieldName(String axis) {
+    return String.format("live2d.%s", axis);
   }
   
   private String getFieldLabel(String thesis, String label) {
