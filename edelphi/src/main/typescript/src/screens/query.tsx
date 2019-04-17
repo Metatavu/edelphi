@@ -12,7 +12,7 @@ import { Provider } from "react-redux";
 import Api from "edelphi-client";
 import strings from "../localization/strings";
 import "semantic-ui-less/semantic.less";
-import Live2dChart from "../components/Live2dChart";
+import Live2dChart from "../components/live-2d-chart";
 
 const location = window.location;
 

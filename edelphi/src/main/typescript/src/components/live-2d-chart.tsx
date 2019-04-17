@@ -3,7 +3,7 @@ import * as actions from "../actions";
 import { StoreState, AccessToken } from "../types";
 import { connect } from "react-redux";
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Cell, RechartsFunction } from 'recharts';
-
+import Api, { QueryQuestionLive2dAnswerData } from "edelphi-client";
 
 /**
  * Interface representing component properties
@@ -16,6 +16,17 @@ interface Props {
   queryId: number
 }
 
+interface Answer {
+  x: number,
+  y: number
+}
+
+interface ChartValue {
+  x: number,
+  y: number,
+  z: number
+}
+
 /**
  * Interface representing component state
  */
@@ -24,8 +35,7 @@ interface State {
   updating: boolean,
   loaded: boolean,
   commentId?: number
-  xValue?: number
-  yValue?: number
+  values?: { [ answerId: string ]: Answer }
 }
 
 /**
@@ -51,24 +61,68 @@ class Live2dChart extends React.Component<Props, State> {
    * Component did update life-cycle event
    */
   public async componentDidMount() {
-
-    console.log(this.props);
-
+    this.loadValues();
   }
 
   /**
    * Component did update life-cycle event
    */
-  public async componentDidUpdate() {
-    console.log(this.props);
+  public async componentDidUpdate(prevProps: Props) {
+    if (this.props.accessToken && !this.state.values) {
+      this.loadValues();
+    }
+  }
+
+  private async loadValues() {
+    if (!this.props.accessToken) {
+      return;
+    }
+
+    const queryQuestionAnswersService = Api.getQueryQuestionAnswersService(this.props.accessToken.token);
+    const answers = await queryQuestionAnswersService.listQueryQuestionAnswers(this.props.panelId, this.props.queryId, this.props.pageId);
+    const values: { [ answerId: string ]: Answer } = this.state.values || {};
+
+    answers.forEach((answer) => {
+      const data: QueryQuestionLive2dAnswerData = answer.data;
+      values[answer.id!] = data;
+    });
+
+    this.setState({
+      values: values
+    });
   }
 
   /**
    * Add user scatter
    */
   private addUserScatter = async (data: any) => {
+    if (!this.props.accessToken) {
+      return;
+    }
+
     const { xValue, yValue } = data;
-    await this.setState({ xValue, yValue });
+
+    const queryQuestionAnswersService = Api.getQueryQuestionAnswersService(this.props.accessToken.token);
+    const answerData: QueryQuestionLive2dAnswerData = {
+      x: xValue,
+      y: yValue
+    };
+
+    const answerId = `${this.props.pageId}-${this.props.queryReplyId}`;
+
+    const result = await queryQuestionAnswersService.upsertQueryQuestionAnswer({
+      queryReplyId: this.props.queryReplyId,
+      queryPageId: this.props.pageId,
+      data: answerData
+    }, this.props.panelId, answerId);
+
+    const values: { [ answerId: string ]: Answer } = this.state.values;
+
+    values[result.id!] = result.data;
+
+    this.setState({
+      values: values
+    });
   }
 
   /**
@@ -113,15 +167,18 @@ class Live2dChart extends React.Component<Props, State> {
    * Component render method
    */
   public render() {
-    const data = [
-      { x: 34, y: 23, z: 200 },
-      { x: 50, y: 50, z: 260 },
-      { x: 80, y: 30, z: 400 },
-      { x: 25, y: 25, z: 280 },
-      { x: 50, y: 10, z: 500 },
-      { x: 75, y: 75, z: 200 },
-      { x: this.state.xValue, y: this.state.yValue, z: 1000 }
-    ];
+    const answers: Answer[] = Object.values(this.state.values);
+
+    const data: ChartValue[] = answers.map((answer) => {
+      return {
+        x: answer.x,
+        y: answer.y,
+        z: 500
+      };
+    });
+    
+    console.log("data", data);
+
     return (
       <div style={{margin:"auto"}}>
         <ScatterChart onMouseDown={(data: RechartsFunction) => { this.addUserScatter(data) }} width={400} height={400} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
