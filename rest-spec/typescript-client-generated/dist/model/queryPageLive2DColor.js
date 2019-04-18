@@ -1,3 +1,4 @@
+"use strict";
 /**
  * eDelphi REST API
  * REST API for eDelphi
@@ -9,12 +10,9 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { QueryPageLive2DColor } from './queryPageLive2DColor';
-export interface QueryPageLive2DAxis {
-    label?: string;
-    color?: QueryPageLive2DColor;
-}
-export interface QueryPageLive2DAxisOpt {
-    label?: string;
-    color?: QueryPageLive2DColor;
-}
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.QueryPageLive2DColor = {
+    RED: 'RED',
+    GREEN: 'GREEN',
+    BLUE: 'BLUE'
+};

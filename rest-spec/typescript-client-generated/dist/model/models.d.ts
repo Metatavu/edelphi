@@ -3,6 +3,7 @@ export * from './panel';
 export * from './query';
 export * from './queryPage';
 export * from './queryPageLive2DAxis';
+export * from './queryPageLive2DColor';
 export * from './queryPageLive2DOptions';
 export * from './queryPageType';
 export * from './queryQuestionAnswer';
