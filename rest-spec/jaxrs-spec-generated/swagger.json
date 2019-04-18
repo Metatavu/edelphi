@@ -802,13 +802,17 @@
           }
         }
       },
+      "QueryPageLive2DColor" : {
+        "type" : "string",
+        "enum" : [ "RED", "GREEN", "BLUE" ]
+      },
       "QueryPageLive2DAxis" : {
         "properties" : {
           "label" : {
             "type" : "string"
           },
           "color" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/QueryPageLive2DColor"
           }
         }
       },

@@ -15,7 +15,7 @@ import javax.validation.Valid;
 
 @Path("/panels")
 @Api(description = "the panels API")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-04-16T16:02:11.574+03:00[Europe/Helsinki]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-04-18T06:52:32.840+03:00[Europe/Helsinki]")
 public interface PanelsApi {
 
     @POST

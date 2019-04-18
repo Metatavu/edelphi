@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class QueryPageLive2DAxis   {
-  private @Valid String label = null;  private @Valid String color = null;
+  private @Valid String label = null;  private @Valid QueryPageLive2DColor color = null;
 
   /**
    **/
@@ -34,7 +34,7 @@ public class QueryPageLive2DAxis   {
 
   /**
    **/
-  public QueryPageLive2DAxis color(String color) {
+  public QueryPageLive2DAxis color(QueryPageLive2DColor color) {
     this.color = color;
     return this;
   }
@@ -42,10 +42,10 @@ public class QueryPageLive2DAxis   {
   
   @ApiModelProperty(value = "")
   @JsonProperty("color")
-  public String getColor() {
+  public QueryPageLive2DColor getColor() {
     return color;
   }
-  public void setColor(String color) {
+  public void setColor(QueryPageLive2DColor color) {
     this.color = color;
   }
 
