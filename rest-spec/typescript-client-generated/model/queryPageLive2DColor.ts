@@ -9,14 +9,12 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-import { QueryPageLive2DColor } from './queryPageLive2DColor';
 
 
-export interface QueryPageLive2DAxis { 
-    label?: string;
-    color?: QueryPageLive2DColor;
-}
-export interface QueryPageLive2DAxisOpt { 
-    label?: string;
-    color?: QueryPageLive2DColor;
-}
+export type QueryPageLive2DColor = 'RED' | 'GREEN' | 'BLUE';
+
+export const QueryPageLive2DColor = {
+    RED: 'RED' as QueryPageLive2DColor,
+    GREEN: 'GREEN' as QueryPageLive2DColor,
+    BLUE: 'BLUE' as QueryPageLive2DColor
+};
