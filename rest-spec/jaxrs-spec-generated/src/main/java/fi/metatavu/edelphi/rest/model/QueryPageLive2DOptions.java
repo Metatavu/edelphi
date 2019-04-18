@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class QueryPageLive2DOptions   {
-  private @Valid QueryPageLive2DAxis axisX = null;  private @Valid QueryPageLive2DAxis axisY = null;  private @Valid Double min = null;  private @Valid Double max = null;  private @Valid Double precision = null;
+  private @Valid QueryPageLive2DAxis axisX = null;  private @Valid QueryPageLive2DAxis axisY = null;
 
   /**
    **/
@@ -49,57 +49,6 @@ public class QueryPageLive2DOptions   {
     this.axisY = axisY;
   }
 
-  /**
-   **/
-  public QueryPageLive2DOptions min(Double min) {
-    this.min = min;
-    return this;
-  }
-
-  
-  @ApiModelProperty(value = "")
-  @JsonProperty("min")
-  public Double getMin() {
-    return min;
-  }
-  public void setMin(Double min) {
-    this.min = min;
-  }
-
-  /**
-   **/
-  public QueryPageLive2DOptions max(Double max) {
-    this.max = max;
-    return this;
-  }
-
-  
-  @ApiModelProperty(value = "")
-  @JsonProperty("max")
-  public Double getMax() {
-    return max;
-  }
-  public void setMax(Double max) {
-    this.max = max;
-  }
-
-  /**
-   **/
-  public QueryPageLive2DOptions precision(Double precision) {
-    this.precision = precision;
-    return this;
-  }
-
-  
-  @ApiModelProperty(value = "")
-  @JsonProperty("precision")
-  public Double getPrecision() {
-    return precision;
-  }
-  public void setPrecision(Double precision) {
-    this.precision = precision;
-  }
-
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -111,15 +60,12 @@ public class QueryPageLive2DOptions   {
     }
     QueryPageLive2DOptions queryPageLive2DOptions = (QueryPageLive2DOptions) o;
     return Objects.equals(axisX, queryPageLive2DOptions.axisX) &&
-        Objects.equals(axisY, queryPageLive2DOptions.axisY) &&
-        Objects.equals(min, queryPageLive2DOptions.min) &&
-        Objects.equals(max, queryPageLive2DOptions.max) &&
-        Objects.equals(precision, queryPageLive2DOptions.precision);
+        Objects.equals(axisY, queryPageLive2DOptions.axisY);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(axisX, axisY, min, max, precision);
+    return Objects.hash(axisX, axisY);
   }
 
   @Override
@@ -129,9 +75,6 @@ public class QueryPageLive2DOptions   {
     
     sb.append("    axisX: ").append(toIndentedString(axisX)).append("\n");
     sb.append("    axisY: ").append(toIndentedString(axisY)).append("\n");
-    sb.append("    min: ").append(toIndentedString(min)).append("\n");
-    sb.append("    max: ").append(toIndentedString(max)).append("\n");
-    sb.append("    precision: ").append(toIndentedString(precision)).append("\n");
     sb.append("}");
     return sb.toString();
   }

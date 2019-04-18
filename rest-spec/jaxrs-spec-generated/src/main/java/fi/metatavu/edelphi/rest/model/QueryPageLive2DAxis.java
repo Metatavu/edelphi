@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class QueryPageLive2DAxis   {
-  private @Valid String label = null;  private @Valid QueryPageLive2DColor color = null;
+  private @Valid String label = null;  private @Valid QueryPageLive2DColor color = null;  private @Valid List<String> options = new ArrayList<>();
 
   /**
    **/
@@ -49,6 +49,23 @@ public class QueryPageLive2DAxis   {
     this.color = color;
   }
 
+  /**
+   **/
+  public QueryPageLive2DAxis options(List<String> options) {
+    this.options = options;
+    return this;
+  }
+
+  
+  @ApiModelProperty(value = "")
+  @JsonProperty("options")
+  public List<String> getOptions() {
+    return options;
+  }
+  public void setOptions(List<String> options) {
+    this.options = options;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -60,12 +77,13 @@ public class QueryPageLive2DAxis   {
     }
     QueryPageLive2DAxis queryPageLive2DAxis = (QueryPageLive2DAxis) o;
     return Objects.equals(label, queryPageLive2DAxis.label) &&
-        Objects.equals(color, queryPageLive2DAxis.color);
+        Objects.equals(color, queryPageLive2DAxis.color) &&
+        Objects.equals(options, queryPageLive2DAxis.options);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(label, color);
+    return Objects.hash(label, color, options);
   }
 
   @Override
@@ -75,6 +93,7 @@ public class QueryPageLive2DAxis   {
     
     sb.append("    label: ").append(toIndentedString(label)).append("\n");
     sb.append("    color: ").append(toIndentedString(color)).append("\n");
+    sb.append("    options: ").append(toIndentedString(options)).append("\n");
     sb.append("}");
     return sb.toString();
   }
