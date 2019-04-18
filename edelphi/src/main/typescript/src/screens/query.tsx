@@ -12,7 +12,7 @@ import { Provider } from "react-redux";
 import Api from "edelphi-client";
 import strings from "../localization/strings";
 import "semantic-ui-less/semantic.less";
-import Live2dChart from "../components/live-2d-chart";
+import QueryPageLive2d from "../components/query-page-live-2d";
 
 const location = window.location;
 
@@ -90,7 +90,7 @@ window.addEventListener('load', () => {
         <Provider store={store}>
           <AccessTokenRefresh />
           <MqttConnector>
-            <Live2dChart pageId={pageId} panelId={panelId} queryId={queryId} queryReplyId={queryReplyId} />
+            <QueryPageLive2d pageId={pageId} panelId={panelId} queryId={queryId} queryReplyId={queryReplyId} />
           </MqttConnector>
         </Provider>;
 

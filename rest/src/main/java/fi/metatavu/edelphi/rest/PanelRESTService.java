@@ -32,15 +32,16 @@ import fi.metatavu.edelphi.panels.PanelController;
 import fi.metatavu.edelphi.permissions.DelfoiActionName;
 import fi.metatavu.edelphi.permissions.PermissionController;
 import fi.metatavu.edelphi.queries.QueryController;
+import fi.metatavu.edelphi.queries.QueryPageController;
 import fi.metatavu.edelphi.queries.QueryQuestionAnswer;
 import fi.metatavu.edelphi.queries.QueryQuestionAnswerData;
 import fi.metatavu.edelphi.queries.QueryQuestionLive2dAnswerData;
 import fi.metatavu.edelphi.queries.QueryReplyController;
 import fi.metatavu.edelphi.rest.api.PanelsApi;
-import fi.metatavu.edelphi.rest.model.QueryQuestionAnswerDataLive2d;
 import fi.metatavu.edelphi.rest.model.QueryQuestionComment;
 import fi.metatavu.edelphi.rest.mqtt.QueryQuestionAnswerNotification;
 import fi.metatavu.edelphi.rest.mqtt.QueryQuestionCommentNotification;
+import fi.metatavu.edelphi.rest.translate.QueryPageTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryQuestionAnswerTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryQuestionCommentTranslator;
 import fi.metatavu.edelphi.users.UserController;
@@ -84,6 +85,12 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Inject
   private QueryQuestionAnswerTranslator queryQuestionAnswerTranslator;
+  
+  @Inject
+  private QueryPageController queryPageController;
+  
+  @Inject
+  private QueryPageTranslator queryPageTranslator;
   
   @Inject
   private PermissionController permissionController;
@@ -292,6 +299,24 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createNotFound();
     }
     
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.ACCESS_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    QueryPage queryPage = answerData.getQueryPage();
+    if (queryPage == null) {
+      return createNotFound();
+    }
+    
+    if (!queryPageController.isPanelsPage(panel, queryPage)) {
+      return createNotFound(String.format("Page %d is not from panel %d", queryPage.getId(), panel.getId()));
+    }
+       
     return createOk(queryQuestionAnswerTranslator.translate(answerData));
   }
 
@@ -345,13 +370,22 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createNotFound();
     }
     
-    QueryPageType pageType = answerData.getQueryPage().getPageType();
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.ACCESS_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    QueryPage queryPage = answerData.getQueryPage();
+    if (!queryPageController.isPanelsPage(panel, queryPage)) {
+      return createForbidden("Forbidden");
+    }
+    
+    QueryPageType pageType = queryPage.getPageType();
     
     switch (pageType) {
       case LIVE_2D:
-      QueryQuestionAnswerDataLive2d data;
+        fi.metatavu.edelphi.rest.model.QueryQuestionLive2dAnswerData data;
         try {
-          data = readQueryQuestionAnswerData(body, QueryQuestionAnswerDataLive2d.class);
+          data = readQueryQuestionAnswerData(body, fi.metatavu.edelphi.rest.model.QueryQuestionLive2dAnswerData.class);
         } catch (IOException e) {
           return createBadRequest("Failed to read data");
         }
@@ -363,6 +397,30 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       default:
         return createInternalServerError(String.format("Pages type %s not supported", pageType));
     }
+  }
+
+  @Override
+  @RolesAllowed("user")  
+  public Response findQueryPage(Long panelId, Long queryPageId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.ACCESS_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    QueryPage queryPage = queryPageController.findQueryPage(queryPageId);
+    if (queryPage == null) {
+      return createNotFound();
+    }
+    
+    if (!queryPageController.isPanelsPage(panel, queryPage)) {
+      return createNotFound(String.format("Page %d is not from panel %d", queryPage.getId(), panel.getId()));
+    }
+    
+    return createOk(queryPageTranslator.translate(queryPage));
   }
   
   /**

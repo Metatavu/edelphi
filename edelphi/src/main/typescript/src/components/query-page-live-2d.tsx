@@ -2,9 +2,10 @@ import * as React from "react";
 import * as actions from "../actions";
 import { StoreState, AccessToken, QueryQuestionAnswerNotification } from "../types";
 import { connect } from "react-redux";
-import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Cell, RechartsFunction } from 'recharts';
-import Api, { QueryQuestionLive2dAnswerData } from "edelphi-client";
+import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Cell, RechartsFunction, AxisDomain, ZAxis } from 'recharts';
+import Api, { QueryQuestionLive2dAnswerData, QueryPageLive2DColor, QueryPage, QueryPageLive2DOptions } from "edelphi-client";
 import { mqttConnection, OnMessageCallback } from "../mqtt";
+import { Loader } from "semantic-ui-react";
 
 /**
  * Interface representing component properties
@@ -22,16 +23,9 @@ interface Props {
  */
 interface Answer {
   x: number,
-  y: number
-}
-
-/**
- * Interface representing a single value in chart
- */
-interface ChartValue {
-  x: number,
   y: number,
-  z: number
+  z: number,
+  id: string
 }
 
 /**
@@ -42,7 +36,8 @@ interface State {
   updating: boolean,
   loaded: boolean,
   commentId?: number
-  values?: { [ answerId: string ]: Answer }
+  values: Answer[],
+  page?: QueryPage
 }
 
 /**
@@ -50,6 +45,7 @@ interface State {
  */
 class Live2dChart extends React.Component<Props, State> {
 
+  private wrapperDiv: HTMLDivElement | null;
   private queryQuestionAnswersListener: OnMessageCallback;
 
   /**
@@ -61,9 +57,11 @@ class Live2dChart extends React.Component<Props, State> {
     super(props);
     this.state = {
       updating: true,
-      loaded: false
+      loaded: false,
+      values: []
     };
 
+    this.wrapperDiv = null;
     this.queryQuestionAnswersListener = this.onQueryQuestionAnswerNotification.bind(this);
   }
   
@@ -85,15 +83,19 @@ class Live2dChart extends React.Component<Props, State> {
    * Component did update life-cycle event
    */
   public async componentDidMount() {
-    this.loadValues();
+    await this.load();
+
+    setInterval(() => {
+      this.pulse();
+    }, 500);
   }
 
   /**
    * Component did update life-cycle event
    */
   public async componentDidUpdate(prevProps: Props) {
-    if (this.props.accessToken && !this.state.values) {
-      this.loadValues();
+    if (!this.state.loaded) {
+      this.load();
     }
   }
 
@@ -101,32 +103,88 @@ class Live2dChart extends React.Component<Props, State> {
    * Component render method
    */
   public render() {
-    const answers: Answer[] = this.state.values ? Object.values(this.state.values) : [];
-
-    const data: ChartValue[] = answers.map((answer) => {
-      return {
-        x: answer.x,
-        y: answer.y,
-        z: 500
-      };
-    });
-    
     return (
-      <div style={{margin:"auto"}}>
-        <ScatterChart onMouseDown={(data: RechartsFunction) => { this.onScatterMouseDown(data) }} width={400} height={400} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-          <XAxis type="number" domain={[0, 100]} dataKey={'x'} unit='%' />
-          <YAxis type="number" domain={[0, 100]} dataKey={'y'} unit='%' />
-          <CartesianGrid />
-          <Scatter isAnimationActive={false} name='A school' data={data} fill={'#fff'}>
-            {
-              data.map((entry, index) => {
-                return <Cell key={`cell-${index}`} fill={this.getColor('GREEN', 'RED', entry.x || 0, entry.y || 0, 100, 100)} />
-              })
-            }
-          </Scatter>
-        </ScatterChart>
+      <div style={{margin:"auto"}} ref={ (element) => this.setWrapperDiv(element) }>
+        { this.renderChart() }
       </div>
     );
+  }
+
+  /**
+   * Renders chart component
+   */
+  private renderChart() {
+    if (!this.state.loaded || !this.state.page || !this.wrapperDiv) {
+      return <Loader/>;
+    }
+
+    const pageOptions = this.state.page.options as QueryPageLive2DOptions;
+    const minX = pageOptions.min || 0;
+    const maxX = pageOptions.max || 100;
+    const minY = pageOptions.min || 0;
+    const maxY = pageOptions.max || 100;
+    const domain: [ AxisDomain, AxisDomain ] = [ pageOptions.min || 0, pageOptions.max || 100 ];
+    const colorX = ( pageOptions.axisX ? pageOptions.axisX.color : undefined ) || "GREEN";
+    const colorY = ( pageOptions.axisY ? pageOptions.axisY.color : undefined ) || "RED";
+    const labelX = pageOptions.axisX ? pageOptions.axisX.label : undefined;
+    const labelY = pageOptions.axisY ? pageOptions.axisY.label : undefined;
+    const size = this.wrapperDiv.offsetWidth;
+
+    return (
+      <ScatterChart onMouseDown={(data: RechartsFunction) => { this.onScatterMouseDown(data) }} width={ size } height={ size } margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+        <XAxis type="number" domain={ domain } dataKey={'x'} label={ labelX }/>
+        <YAxis type="number" domain={ domain } dataKey={'y'} label={ labelY }/>
+        <ZAxis type="number" range={[500, 1000]} dataKey={'z'} />
+        <CartesianGrid />
+        <Scatter data={ this.state.values } fill={'#fff'}>
+          {
+            this.state.values.map((entry, index) => {
+              return <Cell key={`cell-${index}`} fill={this.getColor(colorX, colorY, entry.x || minX, entry.y || minY, maxX, maxY)} />
+            })
+          }
+        </Scatter>
+      </ScatterChart>
+    );
+  }
+
+  /**
+   * Ref callback for wrapper div
+   */
+  private setWrapperDiv(element: HTMLDivElement | null) {
+    if (element) {
+      this.wrapperDiv = element;
+    }
+  }
+
+  /**
+   * Loads initial datas
+   */
+  private async load() {
+    if (!this.props.accessToken) {
+      return;
+    }
+
+    await this.loadSettings();
+    await this.loadValues();
+
+    this.setState({
+      loaded: true
+    });
+  }
+
+  /**
+   * Loads settings
+   */
+  private async loadSettings() {
+    if (!this.props.accessToken) {
+      return;
+    }
+
+    const getQueryPagesService= Api.getQueryPagesService(this.props.accessToken.token);
+
+    this.setState({
+      page: await getQueryPagesService.findQueryPage(this.props.panelId, this.props.pageId)
+    });
   }
 
   /**
@@ -139,13 +197,16 @@ class Live2dChart extends React.Component<Props, State> {
 
     const queryQuestionAnswersService = Api.getQueryQuestionAnswersService(this.props.accessToken.token);
     const answers = await queryQuestionAnswersService.listQueryQuestionAnswers(this.props.panelId, this.props.queryId, this.props.pageId);
-    const values: { [ answerId: string ]: Answer } = this.state.values || {};
 
-    answers.forEach((answer) => {
-      const data: QueryQuestionLive2dAnswerData = answer.data;
-      values[answer.id!] = data;
+    const values: Answer[] = answers.map((answer) => {
+      return {
+        x: answer.data.x,
+        y: answer.data.y,
+        z: 500,
+        id: answer.id!
+      };
     });
-
+    
     this.setState({
       values: values
     });
@@ -175,7 +236,17 @@ class Live2dChart extends React.Component<Props, State> {
     return newValue;
   }
 
-  private getColor(colorX: any, colorY: any, x: number, y: number, maxX: number, maxY: number) {
+  /**
+   * Returns color for given point in coordinates
+   * 
+   * @param colorX color for x-axis
+   * @param colorY color for y-axis
+   * @param x x
+   * @param y y
+   * @param maxX max x 
+   * @param maxY max y
+   */
+  private getColor(colorX: QueryPageLive2DColor, colorY: QueryPageLive2DColor, x: number, y: number, maxX: number, maxY: number) {
     const cX = colorX || 'RED';
     const cY = colorY || 'BLUE';
     const bColor = 100;
@@ -207,13 +278,13 @@ class Live2dChart extends React.Component<Props, State> {
 
     const answerId = `${this.props.pageId}-${this.props.queryReplyId}`;
 
-    const result = await queryQuestionAnswersService.upsertQueryQuestionAnswer({
+    await queryQuestionAnswersService.upsertQueryQuestionAnswer({
       queryReplyId: this.props.queryReplyId,
       queryPageId: this.props.pageId,
       data: answerData
     }, this.props.panelId, answerId);
 
-    this.updateAnswer(result.id!, result.data.x, result.data.y);
+    // this.updateAnswer(result.id!, result.data.x, result.data.y);
   }
 
   /**
@@ -235,20 +306,56 @@ class Live2dChart extends React.Component<Props, State> {
     }
   }
 
+  private pulse = () => {
+    console.log("pulsing");
+
+    const values = this.state.values;
+    const id = `${this.props.pageId}-${this.props.queryReplyId}`;
+    
+    for (let i = 0; i < values.length; i++) {
+      if (values[i].id == id) {
+        values[i].z = values[i].z > 500 ? 500 : 1000;
+
+        console.log("pulse", values[i].z);
+
+        this.setState({
+          values: values
+        });
+        return;
+      }
+    }
+  }
+
   /**
    * Updates single answer
    * 
    * @param id answer id
    * @param x x
    * @param y y
+   * @param own whether answer is own or not
    */
   private updateAnswer(id: string, x: number, y: number) {
-    const values: { [ answerId: string ]: Answer } = this.state.values || {};
+    const values = this.state.values;
+    let updated = false;
 
-    values[id] = {
-      x, y
-    };
-
+    for (let i = 0; i < values.length; i++) {
+      if (values[i].id == id) {
+        values[i].x = x;
+        values[i].y = y;
+        updated = true;
+        break;
+      }
+    }
+    
+    if (!updated) {
+      values.push({
+        x: x,
+        y: y,
+        z: 500,
+        id: id
+      });
+    }
+    
     this.setState({
       values: values
     });

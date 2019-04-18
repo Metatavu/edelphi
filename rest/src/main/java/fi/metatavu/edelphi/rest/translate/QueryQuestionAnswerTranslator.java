@@ -7,7 +7,6 @@ import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.queries.QueryQuestionAnswer;
 import fi.metatavu.edelphi.queries.QueryQuestionAnswerData;
 import fi.metatavu.edelphi.queries.QueryQuestionLive2dAnswerData;
-import fi.metatavu.edelphi.rest.model.QueryQuestionAnswerDataLive2d;
 
 /**
  * Translator for QueryQuestionAnswers
@@ -64,8 +63,8 @@ public class QueryQuestionAnswerTranslator extends AbstractTranslator<QueryQuest
    * @param data data
    * @return answer data object
    */
-  private QueryQuestionAnswerDataLive2d createLive2dData(QueryPage queryPage, QueryQuestionLive2dAnswerData data) {
-    QueryQuestionAnswerDataLive2d result = new QueryQuestionAnswerDataLive2d();
+  private fi.metatavu.edelphi.rest.model.QueryQuestionLive2dAnswerData createLive2dData(QueryPage queryPage, QueryQuestionLive2dAnswerData data) {
+    fi.metatavu.edelphi.rest.model.QueryQuestionLive2dAnswerData result = new fi.metatavu.edelphi.rest.model.QueryQuestionLive2dAnswerData();
     result.setX(data.getX());
     result.setY(data.getY());
     return result;
