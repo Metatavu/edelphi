@@ -33,10 +33,13 @@ import fi.metatavu.edelphi.permissions.DelfoiActionName;
 import fi.metatavu.edelphi.permissions.PermissionController;
 import fi.metatavu.edelphi.queries.QueryController;
 import fi.metatavu.edelphi.queries.QueryQuestionAnswer;
+import fi.metatavu.edelphi.queries.QueryQuestionAnswerData;
+import fi.metatavu.edelphi.queries.QueryQuestionLive2dAnswerData;
 import fi.metatavu.edelphi.queries.QueryReplyController;
 import fi.metatavu.edelphi.rest.api.PanelsApi;
 import fi.metatavu.edelphi.rest.model.QueryQuestionAnswerDataLive2d;
 import fi.metatavu.edelphi.rest.model.QueryQuestionComment;
+import fi.metatavu.edelphi.rest.mqtt.QueryQuestionAnswerNotification;
 import fi.metatavu.edelphi.rest.mqtt.QueryQuestionCommentNotification;
 import fi.metatavu.edelphi.rest.translate.QueryQuestionAnswerTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryQuestionCommentTranslator;
@@ -56,6 +59,7 @@ import fi.metatavu.edelphi.users.UserController;
 public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   private static final String QUERY_QUESTION_COMMENTS_MQTT_CHANNEL = "queryquestioncomments";
+  private static final String QUERY_QUESTION_ANSWERS_MQTT_CHANNEL = "queryquestionanswers";
 
   @Inject
   private PanelController panelController;
@@ -336,6 +340,11 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createNotFound();
     }
     
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
     QueryPageType pageType = answerData.getQueryPage().getPageType();
     
     switch (pageType) {
@@ -347,7 +356,10 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
           return createBadRequest("Failed to read data");
         }
         
-        return createOk(queryQuestionAnswerTranslator.translate(queryReplyController.setLive2dAnswer(answerData, data.getX(), data.getY())));
+        QueryQuestionAnswer<QueryQuestionLive2dAnswerData> answer = queryReplyController.setLive2dAnswer(answerData, data.getX(), data.getY());
+        publishAnswerMqttNotification(QueryQuestionAnswerNotification.Type.UPDATED, panel, answer);
+        
+        return createOk(queryQuestionAnswerTranslator.translate(answer));
       default:
         return createInternalServerError(String.format("Pages type %s not supported", pageType));
     }
@@ -368,7 +380,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   }
 
   /**
-   * Publishes notification about MQTT update 
+   * Publishes MQTT notification about comment update 
    * 
    * @param type type
    * @param panel panel
@@ -385,6 +397,27 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
         page.getId(), 
         comment.getId(),
         commentParentId));
+    
+  }
+
+  /**
+   * Publishes MQTT notification about answer update 
+   * 
+   * @param type type
+   * @param panel panel
+   * @param answer answer
+   */
+  private void publishAnswerMqttNotification(QueryQuestionAnswerNotification.Type type, Panel panel, QueryQuestionAnswer<? extends QueryQuestionAnswerData> answer) {
+    QueryPage page = answer.getQueryPage();
+    QueryReply queryReply = answer.getQueryReply();
+    Query query = page.getQuerySection().getQuery();
+    String answerId = String.format("%d-%d", page.getId(), queryReply.getId());
+    
+    mqttController.publish(QUERY_QUESTION_ANSWERS_MQTT_CHANNEL, new QueryQuestionAnswerNotification(type, 
+        panel.getId(), 
+        query.getId(), 
+        page.getId(), 
+        answerId));
     
   }
 

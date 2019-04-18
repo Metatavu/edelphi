@@ -1,9 +1,10 @@
 import * as React from "react";
 import * as actions from "../actions";
-import { StoreState, AccessToken } from "../types";
+import { StoreState, AccessToken, QueryQuestionAnswerNotification } from "../types";
 import { connect } from "react-redux";
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Cell, RechartsFunction } from 'recharts';
 import Api, { QueryQuestionLive2dAnswerData } from "edelphi-client";
+import { mqttConnection, OnMessageCallback } from "../mqtt";
 
 /**
  * Interface representing component properties
@@ -16,11 +17,17 @@ interface Props {
   queryId: number
 }
 
+/**
+ * Interface representing a single user answer 
+ */
 interface Answer {
   x: number,
   y: number
 }
 
+/**
+ * Interface representing a single value in chart
+ */
 interface ChartValue {
   x: number,
   y: number,
@@ -43,6 +50,8 @@ interface State {
  */
 class Live2dChart extends React.Component<Props, State> {
 
+  private queryQuestionAnswersListener: OnMessageCallback;
+
   /**
    * Constructor
    * 
@@ -54,9 +63,24 @@ class Live2dChart extends React.Component<Props, State> {
       updating: true,
       loaded: false
     };
+
+    this.queryQuestionAnswersListener = this.onQueryQuestionAnswerNotification.bind(this);
+  }
+  
+  /**
+   * Component will mount life-cycle event
+   */
+  public componentWillMount() {
+    mqttConnection.subscribe("queryquestionanswers", this.queryQuestionAnswersListener);
   }
 
-
+  /**
+   * Component will unmount life-cycle event
+   */
+  public componentWillUnmount() {
+    mqttConnection.unsubscribe("queryquestionanswers", this.queryQuestionAnswersListener);
+  }
+  
   /**
    * Component did update life-cycle event
    */
@@ -73,6 +97,41 @@ class Live2dChart extends React.Component<Props, State> {
     }
   }
 
+  /** 
+   * Component render method
+   */
+  public render() {
+    const answers: Answer[] = this.state.values ? Object.values(this.state.values) : [];
+
+    const data: ChartValue[] = answers.map((answer) => {
+      return {
+        x: answer.x,
+        y: answer.y,
+        z: 500
+      };
+    });
+    
+    return (
+      <div style={{margin:"auto"}}>
+        <ScatterChart onMouseDown={(data: RechartsFunction) => { this.onScatterMouseDown(data) }} width={400} height={400} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+          <XAxis type="number" domain={[0, 100]} dataKey={'x'} unit='%' />
+          <YAxis type="number" domain={[0, 100]} dataKey={'y'} unit='%' />
+          <CartesianGrid />
+          <Scatter isAnimationActive={false} name='A school' data={data} fill={'#fff'}>
+            {
+              data.map((entry, index) => {
+                return <Cell key={`cell-${index}`} fill={this.getColor('GREEN', 'RED', entry.x || 0, entry.y || 0, 100, 100)} />
+              })
+            }
+          </Scatter>
+        </ScatterChart>
+      </div>
+    );
+  }
+
+  /**
+   * Loads values from server
+   */
   private async loadValues() {
     if (!this.props.accessToken) {
       return;
@@ -93,39 +152,6 @@ class Live2dChart extends React.Component<Props, State> {
   }
 
   /**
-   * Add user scatter
-   */
-  private addUserScatter = async (data: any) => {
-    if (!this.props.accessToken) {
-      return;
-    }
-
-    const { xValue, yValue } = data;
-
-    const queryQuestionAnswersService = Api.getQueryQuestionAnswersService(this.props.accessToken.token);
-    const answerData: QueryQuestionLive2dAnswerData = {
-      x: xValue,
-      y: yValue
-    };
-
-    const answerId = `${this.props.pageId}-${this.props.queryReplyId}`;
-
-    const result = await queryQuestionAnswersService.upsertQueryQuestionAnswer({
-      queryReplyId: this.props.queryReplyId,
-      queryPageId: this.props.pageId,
-      data: answerData
-    }, this.props.panelId, answerId);
-
-    const values: { [ answerId: string ]: Answer } = this.state.values;
-
-    values[result.id!] = result.data;
-
-    this.setState({
-      values: values
-    });
-  }
-
-  /**
    * Converts value from range to new range
    * 
    * @param {Number} value value
@@ -135,7 +161,7 @@ class Live2dChart extends React.Component<Props, State> {
    * @param {Number} toHigh to high
    * @return new value
    */
-  private convertToRange(value: any, fromLow: any, fromHigh: any, toLow: any, toHigh: any) {
+  private convertToRange(value: number, fromLow: number, fromHigh: number, toLow: number, toHigh: number): number {
     const fromLength = fromHigh - fromLow;
     const toRange = toHigh - toLow;
     const newValue = toRange / (fromLength / value);
@@ -163,38 +189,69 @@ class Live2dChart extends React.Component<Props, State> {
     return `rgb(${r}, ${g}, ${b})`;
   }
 
-  /** 
-   * Component render method
+  /**
+   * Event handler for handling scatter mouse down events
    */
-  public render() {
-    const answers: Answer[] = Object.values(this.state.values);
+  private onScatterMouseDown = async (data: any) => {
+    if (!this.props.accessToken) {
+      return;
+    }
 
-    const data: ChartValue[] = answers.map((answer) => {
-      return {
-        x: answer.x,
-        y: answer.y,
-        z: 500
-      };
+    const { xValue, yValue } = data;
+
+    const queryQuestionAnswersService = Api.getQueryQuestionAnswersService(this.props.accessToken.token);
+    const answerData: QueryQuestionLive2dAnswerData = {
+      x: xValue,
+      y: yValue
+    };
+
+    const answerId = `${this.props.pageId}-${this.props.queryReplyId}`;
+
+    const result = await queryQuestionAnswersService.upsertQueryQuestionAnswer({
+      queryReplyId: this.props.queryReplyId,
+      queryPageId: this.props.pageId,
+      data: answerData
+    }, this.props.panelId, answerId);
+
+    this.updateAnswer(result.id!, result.data.x, result.data.y);
+  }
+
+  /**
+   * Handles query question comment notification MQTT message
+   * 
+   * @param notification notification
+   */
+  private async onQueryQuestionAnswerNotification(notification: QueryQuestionAnswerNotification) {
+    switch (notification.type) {
+      case "UPDATED":
+        if (!this.props.accessToken) {
+          return;
+        }
+        
+        const queryQuestionAnswersService = Api.getQueryQuestionAnswersService(this.props.accessToken.token); 
+        const answer = await queryQuestionAnswersService.findQueryQuestionAnswer(this.props.panelId, notification.answerId);
+        this.updateAnswer(answer.id!, answer.data.x, answer.data.y);
+      break;
+    }
+  }
+
+  /**
+   * Updates single answer
+   * 
+   * @param id answer id
+   * @param x x
+   * @param y y
+   */
+  private updateAnswer(id: string, x: number, y: number) {
+    const values: { [ answerId: string ]: Answer } = this.state.values || {};
+
+    values[id] = {
+      x, y
+    };
+
+    this.setState({
+      values: values
     });
-    
-    console.log("data", data);
-
-    return (
-      <div style={{margin:"auto"}}>
-        <ScatterChart onMouseDown={(data: RechartsFunction) => { this.addUserScatter(data) }} width={400} height={400} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-          <XAxis type="number" domain={[0, 100]} dataKey={'x'} unit='%' />
-          <YAxis type="number" domain={[0, 100]} dataKey={'y'} unit='%' />
-          <CartesianGrid />
-          <Scatter isAnimationActive={false} name='A school' data={data} fill={'#fff'}>
-            {
-              data.map((entry, index) => {
-                return <Cell key={`cell-${index}`} fill={this.getColor('GREEN', 'RED', entry.x || 0, entry.y || 0, 100, 100)} />
-              })
-            }
-          </Scatter>
-        </ScatterChart>
-      </div>
-    );
   }
 }
 
