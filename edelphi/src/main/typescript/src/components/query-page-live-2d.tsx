@@ -2,7 +2,7 @@ import * as React from "react";
 import * as actions from "../actions";
 import { StoreState, AccessToken, QueryQuestionAnswerNotification } from "../types";
 import { connect } from "react-redux";
-import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Cell, RechartsFunction, AxisDomain, ZAxis } from 'recharts';
+import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Cell, RechartsFunction, AxisDomain, ZAxis, Label } from 'recharts';
 import Api, { QueryQuestionLive2dAnswerData, QueryPageLive2DColor, QueryPage, QueryPageLive2DOptions } from "edelphi-client";
 import { mqttConnection, OnMessageCallback } from "../mqtt";
 import { Loader } from "semantic-ui-react";
@@ -39,6 +39,10 @@ interface State {
   values: Answer[],
   page?: QueryPage
 }
+
+const LABEL_BOX_WIDTH = 20;
+const LABEL_BOX_HEIGHT = 20;
+const LABEL_MARGIN = 17;
 
 /**
  * React component for live 2d chart
@@ -124,16 +128,18 @@ class Live2dChart extends React.Component<Props, State> {
     const minY = pageOptions.min || 0;
     const maxY = pageOptions.max || 100;
     const domain: [ AxisDomain, AxisDomain ] = [ pageOptions.min || 0, pageOptions.max || 100 ];
-    const colorX = ( pageOptions.axisX ? pageOptions.axisX.color : undefined ) || "GREEN";
     const colorY = ( pageOptions.axisY ? pageOptions.axisY.color : undefined ) || "RED";
-    const labelX = pageOptions.axisX ? pageOptions.axisX.label : undefined;
-    const labelY = pageOptions.axisY ? pageOptions.axisY.label : undefined;
     const size = this.wrapperDiv.offsetWidth;
+    const colorX = ( pageOptions.axisX ? pageOptions.axisX.color : undefined ) || "GREEN";
 
     return (
       <ScatterChart onMouseDown={(data: RechartsFunction) => { this.onScatterMouseDown(data) }} width={ size } height={ size } margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-        <XAxis type="number" domain={ domain } dataKey={'x'} label={ labelX }/>
-        <YAxis type="number" domain={ domain } dataKey={'y'} label={ labelY }/>
+        <XAxis type="number" domain={ domain } dataKey={'x'}>
+          <Label content={ this.renderAxisXLabelContents }/>
+        </XAxis>
+        <YAxis type="number" domain={ domain } dataKey={'y'}>
+          <Label content={ this.renderAxisYLabelContents }/>
+        </YAxis>
         <ZAxis type="number" range={[500, 1000]} dataKey={'z'} />
         <CartesianGrid />
         <Scatter data={ this.state.values } fill={'#fff'}>
@@ -147,6 +153,57 @@ class Live2dChart extends React.Component<Props, State> {
     );
   }
 
+  /**
+   * Renders x-axis label contents
+   */
+  private renderAxisXLabelContents = (props: any) => {
+    if (!this.state.page) {
+      return null;
+    }
+
+    const pageOptions = this.state.page.options as QueryPageLive2DOptions;
+    const colorX = ( pageOptions.axisX ? pageOptions.axisX.color : undefined ) || "GREEN";
+    const labelX = pageOptions.axisX ? pageOptions.axisX.label : undefined;
+
+    const { viewBox } = props;
+
+    const offsetTop = LABEL_BOX_HEIGHT * 1.5;
+    const x = ((viewBox.width / 2) + viewBox.x) - (LABEL_BOX_WIDTH / 2);
+
+    return (
+      <g transform={ `translate(${x} ${ viewBox.y + offsetTop })` }>
+        <rect height={ LABEL_BOX_HEIGHT } width={ LABEL_BOX_WIDTH } style={{ fill: colorX }} />
+        <text className="recharts-text recharts-label" text-anchor="start"><tspan dx={ LABEL_BOX_WIDTH + LABEL_MARGIN } dy={ offsetTop / 2 }>{ labelX }</tspan></text>
+      </g>
+    );
+  }
+
+  /**
+   * Renders y-axis label contents
+   */
+  private renderAxisYLabelContents = (props: any) => {
+    if (!this.state.page) {
+      return null;
+    }
+
+    const pageOptions = this.state.page.options as QueryPageLive2DOptions;
+    const colorY = ( pageOptions.axisY ? pageOptions.axisY.color : undefined ) || "RED";
+    const label = pageOptions.axisY ? pageOptions.axisY.label : undefined;
+
+    const { viewBox } = props;
+
+    const offsetTop = LABEL_BOX_HEIGHT * 1.5;
+    const x = viewBox.x;
+    const y = ((viewBox.height / 2) + viewBox.y) - (LABEL_BOX_HEIGHT / 2);
+
+    return (
+      <g transform={ `translate(${x} ${y})` }>
+        <rect height={ LABEL_BOX_HEIGHT } width={ LABEL_BOX_WIDTH } style={{ fill: colorY }} />
+        <text transform={ "rotate(-90, 0, 0)" } className="recharts-text recharts-label" text-anchor="start"><tspan dx={ LABEL_MARGIN } dy={ offsetTop / 2 }>{ label }</tspan></text>
+      </g>
+    );
+  }
+  
   /**
    * Ref callback for wrapper div
    */
@@ -307,16 +364,12 @@ class Live2dChart extends React.Component<Props, State> {
   }
 
   private pulse = () => {
-    console.log("pulsing");
-
     const values = this.state.values;
     const id = `${this.props.pageId}-${this.props.queryReplyId}`;
     
     for (let i = 0; i < values.length; i++) {
       if (values[i].id == id) {
         values[i].z = values[i].z > 500 ? 500 : 1000;
-
-        console.log("pulse", values[i].z);
 
         this.setState({
           values: values
