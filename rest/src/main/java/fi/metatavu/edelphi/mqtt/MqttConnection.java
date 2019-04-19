@@ -64,6 +64,8 @@ public class MqttConnection {
       options.setAutomaticReconnect(true);
       options.setCleanSession(true);
       options.setConnectionTimeout(10);
+      options.setUserName(settings.getUsername());
+      options.setPassword(settings.getPassword() != null ? settings.getPassword().toCharArray() : null);
       CLIENT.connect(options);
     }
     

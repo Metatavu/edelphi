@@ -33,6 +33,8 @@ public class SettingsController {
     settings.setClientUrl(getSettingValue("mqtt.clientUrl"));    
     settings.setTopic(getSettingValue("mqtt.topic"));
     settings.setWildcard(getSettingValue("mqtt.wildcard"));
+    settings.setUsername(getSettingValue("mqtt.username"));
+    settings.setPassword(getSettingValue("mqtt.password"));
     return settings;
   }
   
