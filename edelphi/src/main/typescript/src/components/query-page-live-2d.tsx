@@ -330,7 +330,7 @@ class Live2dChart extends React.Component<Props, State> {
    * Event handler for handling scatter mouse down events
    */
   private onScatterMouseDown = async (data: any) => {
-    if (!this.props.accessToken) {
+    if (!this.props.accessToken || !data) {
       return;
     }
 
@@ -349,8 +349,6 @@ class Live2dChart extends React.Component<Props, State> {
       queryPageId: this.props.pageId,
       data: answerData
     }, this.props.panelId, answerId);
-
-    // this.updateAnswer(result.id!, result.data.x, result.data.y);
   }
 
   /**
@@ -372,6 +370,9 @@ class Live2dChart extends React.Component<Props, State> {
     }
   }
 
+  /**
+   * Pulsates own answer
+   */
   private pulse = () => {
     const values = this.state.values;
     const id = `${this.props.pageId}-${this.props.queryReplyId}`;
