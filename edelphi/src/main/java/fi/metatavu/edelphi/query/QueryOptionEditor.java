@@ -3,7 +3,7 @@ package fi.metatavu.edelphi.query;
 public enum QueryOptionEditor {
   
   TEXT            (QueryOptionDataType.TEXT),
-  COLOR           (QueryOptionDataType.TEXT),
+  COLOR           (QueryOptionDataType.TEXT), 
   MEMO            (QueryOptionDataType.TEXT),
   INTEGER         (QueryOptionDataType.INTEGER),
   FLOAT           (QueryOptionDataType.FLOAT),

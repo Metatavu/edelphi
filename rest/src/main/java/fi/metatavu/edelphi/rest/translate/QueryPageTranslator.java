@@ -18,11 +18,9 @@ import fi.metatavu.edelphi.rest.model.QueryPageType;
 @ApplicationScoped
 public class QueryPageTranslator extends AbstractTranslator<fi.metatavu.edelphi.domainmodel.querylayout.QueryPage, fi.metatavu.edelphi.rest.model.QueryPage> {
   
-  private static final String LIVE2D_LABEL_OPTION = "live2d.label%s";
-  private static final String LIVE2D_COLOR_OPTION = "live2d.color%s";
-  private static final String LIVE2D_MIN_OPTION = "live2d.min";
-  private static final String LIVE2D_MAX_OPTION = "live2d.max";
-  private static final String LIVE2D_PRECISION_OPTION = "live2d.precision";
+  private static final String LIVE2D_LABEL_OPTION = "live2d.label.%s";
+  private static final String LIVE2D_COLOR_OPTION = "live2d.color.%s";
+  private static final String OPTIONS_OPTION = "live2d.options.%s";
   
   @Inject
   private QueryPageController queryPageController;
@@ -58,9 +56,6 @@ public class QueryPageTranslator extends AbstractTranslator<fi.metatavu.edelphi.
     QueryPageLive2DOptions result = new QueryPageLive2DOptions();
     result.setAxisX(createLive2dAxisOptions(queryPage, "x"));
     result.setAxisY(createLive2dAxisOptions(queryPage, "y"));
-    result.setMin(queryPageController.getDoubleSetting(queryPage, LIVE2D_MIN_OPTION));
-    result.setMax(queryPageController.getDoubleSetting(queryPage, LIVE2D_MAX_OPTION));
-    result.setPrecision(queryPageController.getDoubleSetting(queryPage, LIVE2D_PRECISION_OPTION));
     return result;
   }
 
@@ -70,6 +65,7 @@ public class QueryPageTranslator extends AbstractTranslator<fi.metatavu.edelphi.
     
     result.setColor(color);
     result.setLabel(queryPageController.getSetting(queryPage, String.format(LIVE2D_LABEL_OPTION, axis)));
+    result.setOptions(queryPageController.getListSetting(queryPage, String.format(OPTIONS_OPTION, axis)));
     
     return result;
   }

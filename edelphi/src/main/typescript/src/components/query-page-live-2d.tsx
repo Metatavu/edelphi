@@ -123,21 +123,25 @@ class Live2dChart extends React.Component<Props, State> {
     }
 
     const pageOptions = this.state.page.options as QueryPageLive2DOptions;
-    const minX = pageOptions.min || 0;
-    const maxX = pageOptions.max || 100;
-    const minY = pageOptions.min || 0;
-    const maxY = pageOptions.max || 100;
-    const domain: [ AxisDomain, AxisDomain ] = [ pageOptions.min || 0, pageOptions.max || 100 ];
+    if (!pageOptions.axisX || !pageOptions.axisY) {
+      return <Loader/>;
+    }
+
+    const optionsX = pageOptions.axisX.options || [];
+    const optionsY = pageOptions.axisY.options || [];
+
+    const domainX: [ AxisDomain, AxisDomain ] = [ 0, optionsX.length - 1 ];
+    const domainY: [ AxisDomain, AxisDomain ] = [ 0, optionsY.length - 1 ];
     const colorY = ( pageOptions.axisY ? pageOptions.axisY.color : undefined ) || "RED";
     const size = this.wrapperDiv.offsetWidth;
     const colorX = ( pageOptions.axisX ? pageOptions.axisX.color : undefined ) || "GREEN";
 
     return (
       <ScatterChart onMouseDown={(data: RechartsFunction) => { this.onScatterMouseDown(data) }} width={ size } height={ size } margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-        <XAxis type="number" domain={ domain } dataKey={'x'}>
+        <XAxis type="number" domain={ domainX } dataKey={'x'} tickCount={ optionsX.length } tickFormatter={ (value) => this.formatTick(value, optionsX) }>
           <Label content={ this.renderAxisXLabelContents }/>
         </XAxis>
-        <YAxis type="number" domain={ domain } dataKey={'y'}>
+        <YAxis type="number" domain={ domainY } dataKey={'y'} tickCount={ optionsY.length } tickFormatter={ (value) => this.formatTick(value, optionsY) }>
           <Label content={ this.renderAxisYLabelContents }/>
         </YAxis>
         <ZAxis type="number" range={[500, 1000]} dataKey={'z'} />
@@ -145,12 +149,17 @@ class Live2dChart extends React.Component<Props, State> {
         <Scatter data={ this.state.values } fill={'#fff'}>
           {
             this.state.values.map((entry, index) => {
-              return <Cell key={`cell-${index}`} fill={this.getColor(colorX, colorY, entry.x || minX, entry.y || minY, maxX, maxY)} />
+              return <Cell key={`cell-${index}`} fill={this.getColor(colorX, colorY, entry.x || 0, entry.y || 0, optionsX.length, optionsY.length)} />
             })
           }
         </Scatter>
       </ScatterChart>
     );
+  }
+
+  private formatTick = (value: any, options: string[]) => {
+    const index: number = value;
+    return options[index];
   }
 
   /**
@@ -173,7 +182,7 @@ class Live2dChart extends React.Component<Props, State> {
     return (
       <g transform={ `translate(${x} ${ viewBox.y + offsetTop })` }>
         <rect height={ LABEL_BOX_HEIGHT } width={ LABEL_BOX_WIDTH } style={{ fill: colorX }} />
-        <text className="recharts-text recharts-label" text-anchor="start"><tspan dx={ LABEL_BOX_WIDTH + LABEL_MARGIN } dy={ offsetTop / 2 }>{ labelX }</tspan></text>
+        <text className="recharts-text recharts-label" textAnchor="start"><tspan dx={ LABEL_BOX_WIDTH + LABEL_MARGIN } dy={ offsetTop / 2 }>{ labelX }</tspan></text>
       </g>
     );
   }
@@ -199,7 +208,7 @@ class Live2dChart extends React.Component<Props, State> {
     return (
       <g transform={ `translate(${x} ${y})` }>
         <rect height={ LABEL_BOX_HEIGHT } width={ LABEL_BOX_WIDTH } style={{ fill: colorY }} />
-        <text transform={ "rotate(-90, 0, 0)" } className="recharts-text recharts-label" text-anchor="start"><tspan dx={ LABEL_MARGIN } dy={ offsetTop / 2 }>{ label }</tspan></text>
+        <text transform={ "rotate(-90, 0, 0)" } className="recharts-text recharts-label" textAnchor="start"><tspan dx={ LABEL_MARGIN } dy={ offsetTop / 2 }>{ label }</tspan></text>
       </g>
     );
   }

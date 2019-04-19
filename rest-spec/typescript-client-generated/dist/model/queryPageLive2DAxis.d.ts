@@ -13,8 +13,10 @@ import { QueryPageLive2DColor } from './queryPageLive2DColor';
 export interface QueryPageLive2DAxis {
     label?: string;
     color?: QueryPageLive2DColor;
+    options?: Array<string>;
 }
 export interface QueryPageLive2DAxisOpt {
     label?: string;
     color?: QueryPageLive2DColor;
+    options?: Array<string>;
 }

@@ -13,14 +13,8 @@ import { QueryPageLive2DAxis } from './queryPageLive2DAxis';
 export interface QueryPageLive2DOptions {
     axisX?: QueryPageLive2DAxis;
     axisY?: QueryPageLive2DAxis;
-    min?: number;
-    max?: number;
-    precision?: number;
 }
 export interface QueryPageLive2DOptionsOpt {
     axisX?: QueryPageLive2DAxis;
     axisY?: QueryPageLive2DAxis;
-    min?: number;
-    max?: number;
-    precision?: number;
 }

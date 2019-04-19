@@ -555,6 +555,10 @@ components:
           type: string
         color:
           $ref: '#/components/schemas/QueryPageLive2DColor'
+        options:
+          type: array
+          items:
+            type: string
           
     QueryPageLive2DOptions:
       properties:
@@ -562,15 +566,6 @@ components:
           $ref: '#/components/schemas/QueryPageLive2DAxis'
         axisY:
           $ref: '#/components/schemas/QueryPageLive2DAxis'
-        min:
-          type: number
-          format: double
-        max:
-          type: number
-          format: double
-        precision:
-          type: number
-          format: double
 
     QueryReply:
       properties:
