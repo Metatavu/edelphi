@@ -13,6 +13,7 @@ var QueryOptionOptionSetEditor;
 var QueryOptionScale1DEditor;
 var QueryOptionTimelineTypeEditor;
 var QueryOptionScale2DEditor;
+var QueryOptionColorEditor;
 var QueryOptionHiddenEditor;
 var QueryEditorQuestionPreview;
 var QueryEditorTimeSerieQuestionPreview;
@@ -1770,6 +1771,61 @@ QueryOptionScale2DEditor = Class.create(QueryOptionEditor, {
       radioOption.setAttribute("selected", "selected");
     }
     
+    this._editorContainer.appendChild(this._editor);
+  },
+  setup: function ($super) {
+    $super();
+    
+    Event.observe(this._editor, "change", function (event) {
+      var editorElement = Event.element(event);
+      this.fire("valueChange", {
+        value: editorElement.value,
+        name: this.getName(),
+        editorElement: editorElement
+      });
+    }.bind(this));
+  },
+  deinitialize: function ($super) {
+    $super();
+    this._editor.purge();
+  },
+  disable: function ($super) {
+    this._editor.disable();
+  }
+});
+
+QueryOptionColorEditor = Class.create(QueryOptionEditor, {
+  initialize: function ($super, pageEditor, caption, name, value) {
+    $super(pageEditor, caption, name, value);
+
+    this._editor = new Element("select", {
+      className: "panelAdminQueryEditorOptionEditorOptionEditor",
+      name: name
+    });
+    
+    var colors = [{
+      value: "RED",
+      label: "redLabel"
+    }, {
+      value: "GREEN",
+      label: "greenLabel"
+    }, {
+      value: "BLUE",
+      label: "blueLabel"
+    }];
+    
+    for (var i = 0; i < colors.length; i++) {
+	    var option = new Element("option", {
+        value: colors[i].value      
+      }).update(getLocale().getText('panelAdmin.block.query.colorOptionEditor.' + colors[i].label));	    
+
+      this._editor.appendChild(option);
+
+      if (colors[i].value == value) {
+        option.setAttribute("selected", "selected");		  
+      }
+    }
+
     this._editorContainer.appendChild(this._editor);
   },
   setup: function ($super) {
@@ -4148,6 +4204,9 @@ QueryEditorQuestionEditor = Class.create(QueryEditorPageEditor, {
             break;
             case 'SCALE2D_TYPE':
               editor = new QueryOptionScale2DEditor(this, pageData.options[optionIndex].caption, pageData.options[optionIndex].name, pageData.options[optionIndex].value);
+            break;
+            case 'COLOR':
+              editor = new QueryOptionColorEditor(this, pageData.options[optionIndex].caption, pageData.options[optionIndex].name, pageData.options[optionIndex].value);
             break;
             case 'HIDDEN':
               editor = new QueryOptionHiddenEditor(this, pageData.options[optionIndex].caption, pageData.options[optionIndex].name, pageData.options[optionIndex].value);
