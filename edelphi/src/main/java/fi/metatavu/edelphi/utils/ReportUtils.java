@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Document;
@@ -376,7 +378,7 @@ public class ReportUtils {
     return targetFolder.getId();
   }
   
-  public static String uploadReportToGoogleDrive(Locale locale, Drive drive, URL url, String queryName, int retryCount) throws IOException, TransformerException, ParserConfigurationException, SAXException {
+  public static String uploadReportToGoogleDrive(URI baseUri, Locale locale, Drive drive, URL url, String queryName, int retryCount) throws IOException, TransformerException, ParserConfigurationException, SAXException {
     Logging.logInfo("Exporting report into Google Drive from " + url);
 
     // Resolve host URL to help with embedding of styles and images
@@ -409,6 +411,17 @@ public class ReportUtils {
         parent.replaceChild(styleElement, linkElement);
       }
     }
+    
+    NodeList images = XPathAPI.selectNodeList(reportDocument, "//img");
+    for (int i = 0, l = images.getLength(); i < l; i++) {
+      Element image = (Element) images.item(i);
+      String imageSrc = image.getAttribute("src");
+      URI imageUri = URI.create(imageSrc);
+      if (!StringUtils.equals("data", imageUri.getScheme())) {
+        imageUri = baseUri.resolve(imageUri);
+        image.setAttribute("src", downloadAsDataUrl(imageUri));
+      }
+    }
 
     // After document has been altered to fit the purpose, we just serialize
     // it back to html
@@ -435,7 +448,7 @@ public class ReportUtils {
 
     return fileId;
   }
-  
+
   private static Document readReportDocument(Locale locale, URL url) throws SAXException, IOException, ParserConfigurationException {
     // First we need to fetch report as html
 
@@ -493,6 +506,30 @@ public class ReportUtils {
     return builder.parse(inputStream);
   }
 
+  /**
+   * Downloads binary and returns it as data URL
+   * 
+   * @param uri URI
+   * @return download result as data URL
+   */
+  private static String downloadAsDataUrl(URI uri) {
+    try {
+      URL url = uri.toURL();
+      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+      connection.connect();
+      
+      try (InputStream stream = connection.getInputStream()) {
+        byte[] data = IOUtils.toByteArray(stream);
+        return String.format("data:%s;base64,%s", connection.getContentType(), Base64.encodeBase64URLSafeString(data));
+      }
+      
+    } catch (IOException e) {
+      Logging.logException("Failed to download image as base64 data", e);
+    }
+    
+    return "about:blank";
+  }
+  
   private static byte[] downloadUrlAsByteArray(String urlString) throws IOException {
     if (StringUtils.startsWith(urlString,  "data:")) {
       int base64Index = urlString.indexOf("base64,");
