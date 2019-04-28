@@ -1,5 +1,8 @@
 package fi.metatavu.edelphi.rest.model;
 
+import java.time.*;
+import java.util.*;
+
 import javax.validation.constraints.*;
 import javax.validation.Valid;
 

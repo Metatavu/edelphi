@@ -11,6 +11,8 @@ public class MqttSettings {
   private String clientUrl;
   private String topic;
   private String wildcard;
+  private String username;
+  private String password;
   
   public String getServerUrl() {
     return serverUrl;
@@ -42,6 +44,22 @@ public class MqttSettings {
   
   public void setWildcard(String wildcard) {
     this.wildcard = wildcard;
+  }
+  
+  public String getUsername() {
+    return username;
+  }
+  
+  public void setUsername(String username) {
+    this.username = username;
+  }
+  
+  public String getPassword() {
+    return password;
+  }
+  
+  public void setPassword(String password) {
+    this.password = password;
   }
 
 }
