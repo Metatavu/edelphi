@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -101,7 +102,7 @@ public class ExportReportBinaryController extends BinaryController {
           String fileId = ReportUtils.uploadReportImagesToGoogleDrive(locale, drive, url, query.getName(), 3);
           requestContext.setRedirectURL(GoogleDriveUtils.getWebViewLink(drive, fileId));
         } else {
-          String fileId = ReportUtils.uploadReportToGoogleDrive(locale, drive, url, query.getName(), 3);
+          String fileId = ReportUtils.uploadReportToGoogleDrive(URI.create(baseUrl), locale, drive, url, query.getName(), 3);
           requestContext.setRedirectURL(GoogleDriveUtils.getWebViewLink(drive, fileId));
         }
         
