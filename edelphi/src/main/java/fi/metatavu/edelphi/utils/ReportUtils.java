@@ -419,7 +419,7 @@ public class ReportUtils {
       URI imageUri = URI.create(imageSrc);
       if (!StringUtils.equals("data", imageUri.getScheme())) {
         imageUri = baseUri.resolve(imageUri);
-        image.setAttribute("src", downloadAsDataUrl(imageUri));
+        image.setAttribute("src", imageUri.toString());
       }
     }
 
