@@ -104,7 +104,7 @@ public class ExportReportPageBinaryController extends BinaryController {
           String fileId = ReportUtils.uploadReportImagesToGoogleDrive(locale, drive, url, title, 3);
           requestContext.setRedirectURL(GoogleDriveUtils.getWebViewLink(drive, fileId));
         } else {
-          String fileId = ReportUtils.uploadReportToGoogleDrive(locale, drive, url, title, 3);
+          String fileId = ReportUtils.uploadReportToGoogleDrive(URI.create(baseUrl), locale, drive, url, title, 3);
           requestContext.setRedirectURL(GoogleDriveUtils.getWebViewLink(drive, fileId));
         }
         
