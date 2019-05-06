@@ -3299,4 +3299,33 @@
     <customChange class="fi.metatavu.edelphi.liquibase.changes.FixInvitations"/>
   </changeSet>
 
+  <changeSet author="antti.leppa" id="live2d">
+    <sql>
+      SET @NAMEID = (SELECT max(id) + 1 FROM LocalizedEntry);
+      INSERT INTO LocalizedEntry (id) VALUES (@NAMEID);
+      SET @DESCID = (SELECT max(id) + 1 FROM LocalizedEntry);
+      INSERT INTO LocalizedEntry (id) VALUES (@DESCID);
+      SET @LOCVALSTART = (SELECT max(id) FROM LocalizedValue);
+      SET @TEMPLATEID = (SELECT max(id) + 1 FROM QueryPageTemplate);
+
+      INSERT INTO
+        LocalizedValue (id, entry_id, locale, text)
+      VALUES 
+        (@LOCVALSTART + 1, @NAMEID, 'fi', 'Live 2D'),
+        (@LOCVALSTART + 2, @NAMEID, 'en', 'Live 2D'),
+        (@LOCVALSTART + 3, @DESCID, 'fi', 'Tällä sivulla panelistit valitsevat vastauksen kahdesta eri akselista. Sivun vastaukset näkyvät reaaliaikaisena kaikille panelisteille'),
+        (@LOCVALSTART + 4, @DESCID, 'en', 'This page allows panelists to choose their answer from two questions. Panelists answers are visible to other users in realtime');
+
+      INSERT INTO 
+        QueryPageTemplate (id, iconName, pageType, name_id, description_id, creator_id, created, lastModifier_id, lastModified, archived)
+      VALUES 
+        (@TEMPLATEID, 'live2d', 'LIVE_2D', @NAMEID, @DESCID, 1, NOW(), 1, NOW(), false);
+    </sql>
+  </changeSet>
+  
+  <changeSet id="query-live2d-template-settings" author="antti.leppa">
+    <addUniqueConstraint columnNames="name" tableName="QueryPageSettingKey"/>
+    <sqlFile path="fi/metatavu/edelphi/liquibase/query-template-live2d.sql"/>
+  </changeSet>
+
 </databaseChangeLog>

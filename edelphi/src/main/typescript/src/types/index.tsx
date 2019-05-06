@@ -27,3 +27,14 @@ export interface QueryQuestionCommentNotification {
   commentId: number,
   parentCommentId: number | null,
 }
+
+/**
+ * Interface describing an query question comment notification MQTT message
+ */
+export interface QueryQuestionAnswerNotification {
+  type: "UPDATED";
+  panelId: number,
+  queryId: number,
+  pageId: number,
+  answerId: string,
+}

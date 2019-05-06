@@ -14,7 +14,9 @@ export interface MqttConfig {
   clientUrl: string,
   serverUrl: string,
   topic: string,
-  wildcard: string
+  wildcard: string,
+  username: string,
+  password: string
 }
 
 /**
@@ -52,7 +54,9 @@ export class MqttConnection {
     this.config = config;
     const url = config.clientUrl;
     const options: IClientOptions = { 
-      keepalive: 30 
+      keepalive: 30,
+      username: config.username,
+      password: config.password
     };
 
     this.client = mqtt.connect(url, options);

@@ -123,6 +123,21 @@ public abstract class AbstractApi {
       .build();
   }
   
+  /**
+   * Constructs not implemented response
+   * 
+   * @param message message
+   * @return response
+   */
+  protected Response createNotImplemented(String message) {
+    ErrorResponse entity = new ErrorResponse();
+    entity.setMessage(message);
+    return Response
+      .status(501)
+      .entity(entity)
+      .build();
+  }
+  
   
   /**
    * Constructs ok response

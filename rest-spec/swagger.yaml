@@ -7,6 +7,7 @@ security:
   - bearer:
       []
 paths:
+    
   /panels/{panelId}/queryQuestionAnswers:
     get:
       operationId: listQueryQuestionAnswers
@@ -440,6 +441,53 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /panels/{panelId}/queryPages/{queryPageId}:
+    get:
+      operationId: findQueryPage
+      summary: Find query page.
+      description: Finds query page by id
+      tags:
+        - QueryPages
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: queryPageId
+          required: true
+          in: path
+          description: query page id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: A queryPage
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryPage"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
 components:
   securitySchemes:
@@ -463,6 +511,23 @@ components:
           type: integer
           format: int64
           readOnly: true
+
+    QueryPageType:
+      type: string
+      enum:
+        - TEXT
+        - FORM
+        - EXPERTISE
+        - THESIS_SCALE_1D
+        - THESIS_SCALE_2D
+        - THESIS_ORDER
+        - THESIS_TIME_SERIE
+        - THESIS_MULTI_SELECT
+        - THESIS_TIMELINE
+        - THESIS_GROUPING
+        - THESIS_MULTIPLE_2D_SCALES
+        - LIVE_2D
+        - COLLAGE_2D
           
     QueryPage:
       type: object
@@ -471,7 +536,37 @@ components:
           type: integer
           format: int64
           readOnly: true
+        type:
+          $ref: '#/components/schemas/QueryPageType'
+        options:
+          oneOf:
+            - $ref: '#/components/schemas/QueryPageLive2DOptions'
+
+    QueryPageLive2DColor:
+      type: string
+      enum:
+        - RED
+        - GREEN
+        - BLUE
+
+    QueryPageLive2DAxis:
+      properties:
+        label: 
+          type: string
+        color:
+          $ref: '#/components/schemas/QueryPageLive2DColor'
+        options:
+          type: array
+          items:
+            type: string
           
+    QueryPageLive2DOptions:
+      properties:
+        axisX:
+          $ref: '#/components/schemas/QueryPageLive2DAxis'
+        axisY:
+          $ref: '#/components/schemas/QueryPageLive2DAxis'
+
     QueryReply:
       properties:
         id:
@@ -487,7 +582,7 @@ components:
       properties:
         id:
           type: string
-          description: Id of the query answer. Id is a composed from queryReplyId and queryReplyId by joining them with minus sign (e.g. 123-456)
+          description: Id of the query answer. Id is a composed from queryPageId and queryReplyId by joining them with minus sign (e.g. 123-456)
           readOnly: true
         queryPageId:
           type: integer
@@ -497,9 +592,8 @@ components:
           format: int64
         data:
           oneOf:
-            - $ref: '#/components/schemas/QueryQuestionAnswerDataLive2d'
-          
-    QueryQuestionAnswerDataLive2d:
+            - $ref: '#/components/schemas/QueryQuestionLive2dAnswerData'          
+    QueryQuestionLive2dAnswerData:
       required: 
         - x
         - y

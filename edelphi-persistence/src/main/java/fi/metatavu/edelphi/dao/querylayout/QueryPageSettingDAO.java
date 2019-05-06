@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.dao.querylayout;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -13,6 +14,7 @@ import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageSetting;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageSettingKey;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageSetting_;
 
+@ApplicationScoped
 public class QueryPageSettingDAO extends GenericDAO<QueryPageSetting> {
   
   public QueryPageSetting create(QueryPageSettingKey key, QueryPage queryPage, String value) {

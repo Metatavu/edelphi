@@ -5,7 +5,7 @@ var QueryEditorBlockController;
 var QueryOptionEditor;
 var QueryOptionTextEditor;
 var QueryOptionMemoEditor;
-var QueryOptionFloatEdito;
+var QueryOptionFloatEditor;
 var QueryOptionIntegerEditor;
 var QueryOptionBooleanEditor;
 var QueryOptionTimeSerieDataEditor;
@@ -13,6 +13,7 @@ var QueryOptionOptionSetEditor;
 var QueryOptionScale1DEditor;
 var QueryOptionTimelineTypeEditor;
 var QueryOptionScale2DEditor;
+var QueryOptionColorEditor;
 var QueryOptionHiddenEditor;
 var QueryEditorQuestionPreview;
 var QueryEditorTimeSerieQuestionPreview;
@@ -46,6 +47,9 @@ var QueryEditorMultiselectPageEditor;
 var QueryEditorOrderingPageEditor;
 var QueryEditorGroupingPageEditor;
 var QueryEditorCollage2DPageEditor;
+
+var QueryEditorLiveQuestionPreview;
+var QueryEditorLive2DThesisPageEditor;
 
 QueryEditorUtils = {
   parseSerializedList: function (serializedValue) {
@@ -516,6 +520,9 @@ QueryEditorBlockController = Class.create(BlockController, {
             break;
             case 'THESIS_MULTIPLE_2D_SCALES':
               this._elementEditor = new QueryEditorMultipleScale2DThesisPageEditor(this);
+            break;
+            case 'LIVE_2D':
+              this._elementEditor = new QueryEditorLive2DThesisPageEditor(this);
             break;
             case 'COLLAGE_2D':
               this._elementEditor = new QueryEditorCollage2DPageEditor(this);
@@ -1764,6 +1771,61 @@ QueryOptionScale2DEditor = Class.create(QueryOptionEditor, {
       radioOption.setAttribute("selected", "selected");
     }
     
+    this._editorContainer.appendChild(this._editor);
+  },
+  setup: function ($super) {
+    $super();
+    
+    Event.observe(this._editor, "change", function (event) {
+      var editorElement = Event.element(event);
+      this.fire("valueChange", {
+        value: editorElement.value,
+        name: this.getName(),
+        editorElement: editorElement
+      });
+    }.bind(this));
+  },
+  deinitialize: function ($super) {
+    $super();
+    this._editor.purge();
+  },
+  disable: function ($super) {
+    this._editor.disable();
+  }
+});
+
+QueryOptionColorEditor = Class.create(QueryOptionEditor, {
+  initialize: function ($super, pageEditor, caption, name, value) {
+    $super(pageEditor, caption, name, value);
+
+    this._editor = new Element("select", {
+      className: "panelAdminQueryEditorOptionEditorOptionEditor",
+      name: name
+    });
+    
+    var colors = [{
+      value: "RED",
+      label: "redLabel"
+    }, {
+      value: "GREEN",
+      label: "greenLabel"
+    }, {
+      value: "BLUE",
+      label: "blueLabel"
+    }];
+    
+    for (var i = 0; i < colors.length; i++) {
+	    var option = new Element("option", {
+        value: colors[i].value      
+      }).update(getLocale().getText('panelAdmin.block.query.colorOptionEditor.' + colors[i].label));	    
+
+      this._editor.appendChild(option);
+
+      if (colors[i].value == value) {
+        option.setAttribute("selected", "selected");		  
+      }
+    }
+
     this._editorContainer.appendChild(this._editor);
   },
   setup: function ($super) {
@@ -4143,6 +4205,9 @@ QueryEditorQuestionEditor = Class.create(QueryEditorPageEditor, {
             case 'SCALE2D_TYPE':
               editor = new QueryOptionScale2DEditor(this, pageData.options[optionIndex].caption, pageData.options[optionIndex].name, pageData.options[optionIndex].value);
             break;
+            case 'COLOR':
+              editor = new QueryOptionColorEditor(this, pageData.options[optionIndex].caption, pageData.options[optionIndex].name, pageData.options[optionIndex].value);
+            break;
             case 'HIDDEN':
               editor = new QueryOptionHiddenEditor(this, pageData.options[optionIndex].caption, pageData.options[optionIndex].name, pageData.options[optionIndex].value);
             break;
@@ -4374,6 +4439,71 @@ QueryEditorMultipleScale2DThesisPageEditor = Class.create(QueryEditorThesisPageE
     
     this._thesisTextContainer = null;
     this._showLiveReportContainer = null;
+  }
+});
+
+/**
+ * Query editor for live 2D questions
+ */
+QueryEditorLive2DThesisPageEditor = Class.create(QueryEditorThesisPageEditor, {
+  initialize: function ($super,blockController) {
+    $super(blockController);
+  },
+  deinitialize: function($super) {
+    $super();
+  },
+  setup: function ($super) {
+    $super();
+    this._showLiveReportContainer.remove();
+    this._showLiveReportContainer = null;
+    this._preview = new QueryEditorLive2DQuestionPreview(this, this._previewContainer);
+    this._preview.setup();
+  }
+});
+
+/**
+ * Preview component for live 2D questions
+ */
+QueryEditorLive2DQuestionPreview = Class.create(QueryEditorQuestionPreview, {
+  initialize: function ($super, pageEditor, container) {
+    $super(pageEditor, container);
+    
+    this.getBlockController().addListener("tabChange", this, this._onBlockControllerTabChange);
+    
+    this._flotrContainer = new Element("div", {
+      className: "queryEditorQuestionTimeSerieContainer"
+    });
+    
+    pageEditor.addListener("optionEditorValueChange", this, this._onPageEditorOptionValueChange);
+  },
+  deinitialize: function ($super) {
+    $super();
+    
+    this.getBlockController().removeListener("tabChange", this);
+    this.getPageEditor().removeListener("optionEditorValueChange", this);
+  },
+  setup: function ($super) {
+    $super();
+    
+    this._render();
+  },
+  _render: function() {
+  },
+  
+  _onPageEditorOptionValueChange: function (event) {
+    var render = false;
+    
+    if (render) {
+      this._render();
+    }
+  },
+  
+  _onBlockControllerTabChange: function (event) {
+    if (event.to == 'PAGES') {
+      event.toPanel.removeClassName('ui-tabs-hide');
+      
+      this._render();
+    }
   }
 });
 

@@ -20,7 +20,7 @@ import fi.metatavu.edelphi.resources.ResourceController;
  */
 @ApplicationScoped
 public class QueryController {
-
+  
   @Inject
   private QueryDAO queryDAO;
 
@@ -111,5 +111,4 @@ public class QueryController {
     
     return queryPanel.getId().equals(panel.getId());
   }
-
 }
