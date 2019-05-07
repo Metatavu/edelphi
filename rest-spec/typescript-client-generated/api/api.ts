@@ -2,8 +2,8 @@ export * from './queryPages.service';
 import { QueryPagesService } from './queryPages.service';
 export * from './queryQuestionAnswers.service';
 import { QueryQuestionAnswersService } from './queryQuestionAnswers.service';
-export * from './queryQuestionCategories.service';
-import { QueryQuestionCategoriesService } from './queryQuestionCategories.service';
+export * from './queryQuestionCommentCategories.service';
+import { QueryQuestionCommentCategoriesService } from './queryQuestionCommentCategories.service';
 export * from './queryQuestionComments.service';
 import { QueryQuestionCommentsService } from './queryQuestionComments.service';
 
@@ -44,8 +44,8 @@ export default new class Api {
     return new QueryQuestionAnswersService(this.apiUrl, token);
   }
   
-  public getQueryQuestionCategoriesService(token: string): QueryQuestionCategoriesService {
-    return new QueryQuestionCategoriesService(this.apiUrl, token);
+  public getQueryQuestionCommentCategoriesService(token: string): QueryQuestionCommentCategoriesService {
+    return new QueryQuestionCommentCategoriesService(this.apiUrl, token);
   }
   
   public getQueryQuestionCommentsService(token: string): QueryQuestionCommentsService {
