@@ -1,4 +1,4 @@
-## edelphi-client@1.0.13
+## edelphi-client@1.0.14
 
 ### Building
 
@@ -19,7 +19,7 @@ Navigate to the folder of your consuming project and run one of next commands.
 _published:_
 
 ```
-npm install edelphi-client@1.0.13 --save
+npm install edelphi-client@1.0.14 --save
 ```
 
 _without publishing (not recommended):_

@@ -15,7 +15,11 @@ export interface QueryQuestionComment {
      */
     readonly id?: number;
     /**
-     * PArent comment's id
+     * Comment's category id
+     */
+    categoryId?: number;
+    /**
+     * Parent comment's id
      */
     parentId?: number;
     /**
@@ -57,7 +61,11 @@ export interface QueryQuestionCommentOpt {
      */
     readonly id?: number;
     /**
-     * PArent comment's id
+     * Comment's category id
+     */
+    categoryId?: number;
+    /**
+     * Parent comment's id
      */
     parentId?: number;
     /**
