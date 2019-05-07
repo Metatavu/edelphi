@@ -24,9 +24,10 @@ module.exports = function(grunt) {
     const modelFiles = {};
     const postfix = this.data.postfix;
     const field = this.data.field;
+    const ignore = this.data.ignore || [];
 
     const objectFiles = fs.readdirSync(`${this.data.folder}/model`).filter((objectFile) => {
-      return objectFile.endsWith(`${postfix}.ts`);
+      return ignore.indexOf(objectFile) == -1  && objectFile.endsWith(`${postfix}.ts`);
     });
 
     objectFiles.forEach((objectFile) => {
@@ -83,8 +84,9 @@ module.exports = function(grunt) {
       "query-options": {
         "folder": "typescript-client-generated",
         "postfix": "Options",
+        "ignore": ["queryPageCommentOptions.ts"],
         "file": "model/queryPage.ts",
-        "field": "options"
+        "field": "queryOptions"
       }
     },
     "shell": {
