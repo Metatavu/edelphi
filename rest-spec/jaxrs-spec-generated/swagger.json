@@ -684,6 +684,372 @@
         }
       }
     },
+    "/panels/{panelId}/queryQuestionCommentCategories" : {
+      "get" : {
+        "tags" : [ "QueryQuestionCommentCategories" ],
+        "summary" : "Lists query question categories",
+        "description" : "Lists query question categories",
+        "operationId" : "listQueryQuestionCommentCategories",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "pageId",
+          "in" : "query",
+          "description" : "Filter by query page id",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of query question categories",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/QueryQuestionCommentCategory"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "QueryQuestionCommentCategories" ],
+        "summary" : "Create query question category",
+        "description" : "Creates query question category",
+        "operationId" : "createQueryQuestionCommentCategory",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "Payload",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/QueryQuestionCommentCategory"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Created query question category",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/QueryQuestionCommentCategory"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panels/{panelId}/queryQuestionCommentCategories/{categoryId}" : {
+      "get" : {
+        "tags" : [ "QueryQuestionCommentCategories" ],
+        "summary" : "Find query question category",
+        "description" : "Finds query question category by id",
+        "operationId" : "findQueryQuestionCommentCategory",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "categoryId",
+          "in" : "path",
+          "description" : "query question category id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A queryQuestionCommentCategory",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/QueryQuestionCommentCategory"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "QueryQuestionCommentCategories" ],
+        "summary" : "Update query question category",
+        "description" : "Updates query question category",
+        "operationId" : "updateQueryQuestionCommentCategory",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "categoryId",
+          "in" : "path",
+          "description" : "query question category id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "Payload",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/QueryQuestionCommentCategory"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Updated query question category",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/QueryQuestionCommentCategory"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "QueryQuestionCommentCategories" ],
+        "summary" : "Delete query question category",
+        "description" : "Deletes query question category",
+        "operationId" : "deleteQueryQuestionCommentCategory",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "categoryId",
+          "in" : "path",
+          "description" : "query question category id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No content to indicate successful delete"
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/panels/{panelId}/queryPages/{queryPageId}" : {
       "get" : {
         "tags" : [ "QueryPages" ],
@@ -785,6 +1151,7 @@
         "enum" : [ "TEXT", "FORM", "EXPERTISE", "THESIS_SCALE_1D", "THESIS_SCALE_2D", "THESIS_ORDER", "THESIS_TIME_SERIE", "THESIS_MULTI_SELECT", "THESIS_TIMELINE", "THESIS_GROUPING", "THESIS_MULTIPLE_2D_SCALES", "LIVE_2D", "COLLAGE_2D" ]
       },
       "QueryPage" : {
+        "required" : [ "commentOptions", "queryOptions", "type" ],
         "type" : "object",
         "properties" : {
           "id" : {
@@ -795,10 +1162,31 @@
           "type" : {
             "$ref" : "#/components/schemas/QueryPageType"
           },
-          "options" : {
+          "commentOptions" : {
+            "$ref" : "#/components/schemas/QueryPageCommentOptions"
+          },
+          "queryOptions" : {
             "oneOf" : [ {
               "$ref" : "#/components/schemas/QueryPageLive2DOptions"
             } ]
+          }
+        }
+      },
+      "QueryPageCommentOptions" : {
+        "required" : [ "commentable", "discussionVisible" ],
+        "type" : "object",
+        "properties" : {
+          "commentable" : {
+            "type" : "boolean"
+          },
+          "discussionVisible" : {
+            "type" : "boolean"
+          },
+          "categories" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
           }
         }
       },
@@ -877,6 +1265,27 @@
           }
         }
       },
+      "QueryQuestionCommentCategory" : {
+        "required" : [ "name" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "description" : "Comment category's id",
+            "format" : "int64",
+            "readOnly" : true
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "Comment category's name"
+          },
+          "queryPageId" : {
+            "type" : "integer",
+            "description" : "Page's id where the comment is",
+            "format" : "int64"
+          }
+        }
+      },
       "QueryQuestionComment" : {
         "required" : [ "comment", "queryPageId", "queryReplyId" ],
         "type" : "object",
@@ -887,9 +1296,14 @@
             "format" : "int64",
             "readOnly" : true
           },
+          "categoryId" : {
+            "type" : "integer",
+            "description" : "Comment's category id",
+            "format" : "int64"
+          },
           "parentId" : {
             "type" : "integer",
-            "description" : "PArent comment's id",
+            "description" : "Parent comment's id",
             "format" : "int64"
           },
           "hidden" : {

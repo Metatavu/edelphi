@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class QueryQuestionComment   {
-  private @Valid Long id = null;  private @Valid Long parentId = null;  private @Valid Boolean hidden = null;  private @Valid Long queryPageId = null;  private @Valid Long queryReplyId = null;  private @Valid String contents = null;  private @Valid UUID creatorId = null;  private @Valid UUID lastModifierId = null;  private @Valid OffsetDateTime created = null;  private @Valid OffsetDateTime lastModified = null;
+  private @Valid Long id = null;  private @Valid Long categoryId = null;  private @Valid Long parentId = null;  private @Valid Boolean hidden = null;  private @Valid Long queryPageId = null;  private @Valid Long queryReplyId = null;  private @Valid String contents = null;  private @Valid UUID creatorId = null;  private @Valid UUID lastModifierId = null;  private @Valid OffsetDateTime created = null;  private @Valid OffsetDateTime lastModified = null;
 
   /**
    * Comment&#x27;s id
@@ -34,7 +34,25 @@ public class QueryQuestionComment   {
   }
 
   /**
-   * PArent comment&#x27;s id
+   * Comment&#x27;s category id
+   **/
+  public QueryQuestionComment categoryId(Long categoryId) {
+    this.categoryId = categoryId;
+    return this;
+  }
+
+  
+  @ApiModelProperty(value = "Comment's category id")
+  @JsonProperty("categoryId")
+  public Long getCategoryId() {
+    return categoryId;
+  }
+  public void setCategoryId(Long categoryId) {
+    this.categoryId = categoryId;
+  }
+
+  /**
+   * Parent comment&#x27;s id
    **/
   public QueryQuestionComment parentId(Long parentId) {
     this.parentId = parentId;
@@ -42,7 +60,7 @@ public class QueryQuestionComment   {
   }
 
   
-  @ApiModelProperty(value = "PArent comment's id")
+  @ApiModelProperty(value = "Parent comment's id")
   @JsonProperty("parentId")
   public Long getParentId() {
     return parentId;
@@ -208,6 +226,7 @@ public class QueryQuestionComment   {
     }
     QueryQuestionComment queryQuestionComment = (QueryQuestionComment) o;
     return Objects.equals(id, queryQuestionComment.id) &&
+        Objects.equals(categoryId, queryQuestionComment.categoryId) &&
         Objects.equals(parentId, queryQuestionComment.parentId) &&
         Objects.equals(hidden, queryQuestionComment.hidden) &&
         Objects.equals(queryPageId, queryQuestionComment.queryPageId) &&
@@ -221,7 +240,7 @@ public class QueryQuestionComment   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, parentId, hidden, queryPageId, queryReplyId, contents, creatorId, lastModifierId, created, lastModified);
+    return Objects.hash(id, categoryId, parentId, hidden, queryPageId, queryReplyId, contents, creatorId, lastModifierId, created, lastModified);
   }
 
   @Override
@@ -230,6 +249,7 @@ public class QueryQuestionComment   {
     sb.append("class QueryQuestionComment {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    categoryId: ").append(toIndentedString(categoryId)).append("\n");
     sb.append("    parentId: ").append(toIndentedString(parentId)).append("\n");
     sb.append("    hidden: ").append(toIndentedString(hidden)).append("\n");
     sb.append("    queryPageId: ").append(toIndentedString(queryPageId)).append("\n");

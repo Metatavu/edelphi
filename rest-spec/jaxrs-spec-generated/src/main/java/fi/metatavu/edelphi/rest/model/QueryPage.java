@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class QueryPage   {
-  private @Valid Long id = null;  private @Valid QueryPageType type = null;  private @Valid Object options = null;
+  private @Valid Long id = null;  private @Valid QueryPageType type = null;  private @Valid QueryPageCommentOptions commentOptions = null;  private @Valid Object queryOptions = null;
 
   /**
    **/
@@ -40,8 +40,9 @@ public class QueryPage   {
   }
 
   
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty("type")
+  @NotNull
   public QueryPageType getType() {
     return type;
   }
@@ -51,19 +52,38 @@ public class QueryPage   {
 
   /**
    **/
-  public QueryPage options(Object options) {
-    this.options = options;
+  public QueryPage commentOptions(QueryPageCommentOptions commentOptions) {
+    this.commentOptions = commentOptions;
     return this;
   }
 
   
-  @ApiModelProperty(value = "")
-  @JsonProperty("options")
-  public Object getOptions() {
-    return options;
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty("commentOptions")
+  @NotNull
+  public QueryPageCommentOptions getCommentOptions() {
+    return commentOptions;
   }
-  public void setOptions(Object options) {
-    this.options = options;
+  public void setCommentOptions(QueryPageCommentOptions commentOptions) {
+    this.commentOptions = commentOptions;
+  }
+
+  /**
+   **/
+  public QueryPage queryOptions(Object queryOptions) {
+    this.queryOptions = queryOptions;
+    return this;
+  }
+
+  
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty("queryOptions")
+  @NotNull
+  public Object getQueryOptions() {
+    return queryOptions;
+  }
+  public void setQueryOptions(Object queryOptions) {
+    this.queryOptions = queryOptions;
   }
 
 
@@ -78,12 +98,13 @@ public class QueryPage   {
     QueryPage queryPage = (QueryPage) o;
     return Objects.equals(id, queryPage.id) &&
         Objects.equals(type, queryPage.type) &&
-        Objects.equals(options, queryPage.options);
+        Objects.equals(commentOptions, queryPage.commentOptions) &&
+        Objects.equals(queryOptions, queryPage.queryOptions);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, type, options);
+    return Objects.hash(id, type, commentOptions, queryOptions);
   }
 
   @Override
@@ -93,7 +114,8 @@ public class QueryPage   {
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
-    sb.append("    options: ").append(toIndentedString(options)).append("\n");
+    sb.append("    commentOptions: ").append(toIndentedString(commentOptions)).append("\n");
+    sb.append("    queryOptions: ").append(toIndentedString(queryOptions)).append("\n");
     sb.append("}");
     return sb.toString();
   }
