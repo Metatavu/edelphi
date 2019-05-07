@@ -9,17 +9,21 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { QueryPageCommentOptions } from './queryPageCommentOptions';
 import { QueryPageLive2DOptions } from './queryPageLive2DOptions';
+import { QueryPageCommentOptions } from './queryPageCommentOptions';
 import { QueryPageType } from './queryPageType';
 
 
 export interface QueryPage { 
     readonly id?: number;
     type?: QueryPageType;
-    options?: QueryPageLive2DOptions;
+    commentOptions?: QueryPageCommentOptions;
+    queryOptions?: ModelObject;
 }
 export interface QueryPageOpt { 
     readonly id?: number;
     type?: QueryPageType;
-    options?: QueryPageLive2DOptions;
+    commentOptions?: QueryPageCommentOptions;
+    queryOptions?: ModelObject;
 }
