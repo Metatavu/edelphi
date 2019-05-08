@@ -97,6 +97,7 @@ public class QueryCommentCloner {
           newReply,
           queryPage,
           parentComment,
+          queryComment.getCategory(),
           queryComment.getComment(),
           queryComment.getHidden(),
           queryComment.getCreator(),

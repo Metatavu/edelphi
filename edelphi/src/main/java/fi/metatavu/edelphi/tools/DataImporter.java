@@ -252,7 +252,7 @@ public class DataImporter {
             if (comment == null) {
               if (sb.length() > 0) {
                 Logging.logInfo("Creating comment of " + user.getDefaultEmailAsString());
-                queryQuestionCommentDAO.create(queryReply, queryPage, null, sb.toString(), false, user, creationDate, user, modifiedDate);
+                queryQuestionCommentDAO.create(queryReply, queryPage, null, null, sb.toString(), false, user, creationDate, user, modifiedDate);
               }
             }
             else {

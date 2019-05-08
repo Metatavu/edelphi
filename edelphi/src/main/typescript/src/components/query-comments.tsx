@@ -86,7 +86,7 @@ class QueryComments extends React.Component<Props, State> {
    */
   private renderCategory = (category: QueryQuestionCommentCategory | null) => {
     return (
-      <div>
+      <div key={ category ? category.id : "ROOT" }>
         { this.renderCategoryName(category) }
         {this.props.commentable ? <QueryCommentEditor category={ category } pageId={this.props.pageId} panelId={this.props.panelId} queryId={this.props.queryId} queryReplyId={this.props.queryReplyId} /> : null}
         {this.props.viewDiscussion ? <QueryCommentList category={ category } canManageComments={this.props.canManageComments} panelId={this.props.panelId} queryId={this.props.queryId} pageId={this.props.pageId} queryReplyId={this.props.queryReplyId} /> : null}

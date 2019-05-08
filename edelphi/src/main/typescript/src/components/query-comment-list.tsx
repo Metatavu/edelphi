@@ -49,7 +49,7 @@ class QueryCommentList extends React.Component<Props, State> {
     return (
       <div className="queryCommentList">
         <h2 className="querySubTitle queryCommentListSubTitle">{ strings.panel.query.comments.title }</h2>
-        <QueryCommentContainer className="queryCommentsContainer" canManageComments={ this.props.canManageComments } queryReplyId={ this.props.queryReplyId } parentId={ 0 } pageId={ this.props.pageId } panelId={ this.props.panelId } queryId={ this.props.queryId }/>
+        <QueryCommentContainer category={ this.props.category } className="queryCommentsContainer" canManageComments={ this.props.canManageComments } queryReplyId={ this.props.queryReplyId } parentId={ 0 } pageId={ this.props.pageId } panelId={ this.props.panelId } queryId={ this.props.queryId }/>
       </div>
     );
   }

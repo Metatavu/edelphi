@@ -3353,5 +3353,13 @@
       </column>      
     </createTable>
   </changeSet>
+  
+  <changeSet id="query-comment-category" author="antti.leppa">
+    <addColumn tableName="queryquestioncomment">
+      <column name="category_id" type="BIGINT">
+        <constraints foreignKeyName="FK_QUERY_QUESTION_COMMENT_CATEGORY" referencedColumnNames="id" referencedTableName="QueryQuestionCommentCategory" nullable="true"/>
+      </column>
+    </addColumn>
+  </changeSet>
 
 </databaseChangeLog>

@@ -17,6 +17,7 @@ import javax.persistence.criteria.Root;
 import fi.metatavu.edelphi.dao.GenericDAO;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment_;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply_;
@@ -35,11 +36,11 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
 
   public QueryQuestionComment create(QueryReply queryReply, QueryPage queryPage, QueryQuestionComment parentComment, String comment, Boolean hidden, User creator) {
     Date now = new Date();
-    return create(queryReply, queryPage, parentComment, comment, hidden, creator, now, creator, now);
+    return create(queryReply, queryPage, parentComment, null, comment, hidden, creator, now, creator, now);
   }
 
   @SuppressWarnings ("squid:S00107")
-  public QueryQuestionComment create(QueryReply queryReply, QueryPage queryPage, QueryQuestionComment parentComment, String comment, Boolean hidden, User creator, Date created, User modifier, Date modified) {
+  public QueryQuestionComment create(QueryReply queryReply, QueryPage queryPage, QueryQuestionComment parentComment, QueryQuestionCommentCategory category, String comment, Boolean hidden, User creator, Date created, User modifier, Date modified) {
     QueryQuestionComment questionComment = new QueryQuestionComment();
 
     questionComment.setComment(comment);
@@ -48,6 +49,7 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
     questionComment.setParentComment(parentComment);
     questionComment.setCreator(creator);
     questionComment.setHidden(hidden);
+    questionComment.setCategory(category);
     questionComment.setCreated(created);
     questionComment.setLastModifier(modifier);
     questionComment.setLastModified(modified);
@@ -130,11 +132,13 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
    * @param parentComment filter by parent comment. Ignored if null
    * @param onlyRootComments return only root comments. 
    * @param user filter by user
+   * @param category return only comments of specified category. Ignored if null
+   * @param onlyNullCategories return only comments without category. Ignored if null
    * @param archived filter by archived
    * 
    * @return a list of comments
    */
-  public List<QueryQuestionComment> list(QueryPage queryPage, PanelStamp stamp, Query query, Folder queryParentFolder, QueryQuestionComment parentComment, boolean onlyRootComments, User user, Boolean archived) {
+  public List<QueryQuestionComment> list(QueryPage queryPage, PanelStamp stamp, Query query, Folder queryParentFolder, QueryQuestionComment parentComment, boolean onlyRootComments, User user, fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category, boolean onlyNullCategories, Boolean archived) {
     EntityManager entityManager = getEntityManager();
 
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -170,6 +174,12 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
       criterias.add(criteriaBuilder.equal(root.get(QueryQuestionComment_.parentComment), parentComment)); 
     }
     
+    if (onlyNullCategories) {
+      criterias.add(criteriaBuilder.isNull(root.get(QueryQuestionComment_.category)));      
+    } else if (category != null) {
+      criterias.add(criteriaBuilder.equal(root.get(QueryQuestionComment_.category), category)); 
+    }
+    
     if (user != null) {
       criterias.add(criteriaBuilder.equal(queryReplyJoin.get(QueryReply_.user), user));
     }
@@ -186,7 +196,7 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
     criteria.select(root);
     criteria.where(criteriaBuilder.and(criterias.toArray(new Predicate[0])));
 
-    return entityManager.createQuery(criteria).getResultList(); 
+    return entityManager.createQuery(criteria).getResultList();
   }  
 
   /**
@@ -346,6 +356,13 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
     
     getEntityManager().persist(comment);
     return comment;
+  }
+
+  public QueryQuestionComment updateCategory(QueryQuestionComment comment, QueryQuestionCommentCategory category, User modifier, Date modified) {
+    comment.setLastModified(modified);
+    comment.setLastModifier(modifier);
+    comment.setCategory(category);    
+    return persist(comment);
   }
 
   public QueryQuestionComment updateHidden(QueryQuestionComment comment, Boolean hidden, User modifier) {

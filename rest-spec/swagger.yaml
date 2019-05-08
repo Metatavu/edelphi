@@ -272,6 +272,13 @@ paths:
           schema:
             type: integer
             format: int64
+        - name: categoryId
+          required: false
+          in: query
+          description: category id. If zero is specified only non categorized comments are returned
+          schema:
+            type: integer
+            format: int64
       responses:
         "200":
           description: List of query question comments
