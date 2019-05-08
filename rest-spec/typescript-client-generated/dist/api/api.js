@@ -7,8 +7,8 @@ __export(require("./queryPages.service"));
 var queryPages_service_1 = require("./queryPages.service");
 __export(require("./queryQuestionAnswers.service"));
 var queryQuestionAnswers_service_1 = require("./queryQuestionAnswers.service");
-__export(require("./queryQuestionCategories.service"));
-var queryQuestionCategories_service_1 = require("./queryQuestionCategories.service");
+__export(require("./queryQuestionCommentCategories.service"));
+var queryQuestionCommentCategories_service_1 = require("./queryQuestionCommentCategories.service");
 __export(require("./queryQuestionComments.service"));
 var queryQuestionComments_service_1 = require("./queryQuestionComments.service");
 var ApiUtils = /** @class */ (function () {
@@ -47,8 +47,8 @@ exports.default = new /** @class */ (function () {
     Api.prototype.getQueryQuestionAnswersService = function (token) {
         return new queryQuestionAnswers_service_1.QueryQuestionAnswersService(this.apiUrl, token);
     };
-    Api.prototype.getQueryQuestionCategoriesService = function (token) {
-        return new queryQuestionCategories_service_1.QueryQuestionCategoriesService(this.apiUrl, token);
+    Api.prototype.getQueryQuestionCommentCategoriesService = function (token) {
+        return new queryQuestionCommentCategories_service_1.QueryQuestionCommentCategoriesService(this.apiUrl, token);
     };
     Api.prototype.getQueryQuestionCommentsService = function (token) {
         return new queryQuestionComments_service_1.QueryQuestionCommentsService(this.apiUrl, token);

@@ -51,6 +51,11 @@ var QueryEditorCollage2DPageEditor;
 var QueryEditorLiveQuestionPreview;
 var QueryEditorLive2DThesisPageEditor;
 
+function triggerReactCommand(command, data) {
+  $("panel-admin-query-editor-" + command).setAttribute('data-data', JSON.stringify(data));
+  $("panel-admin-query-editor-" + command).click();
+}
+
 QueryEditorUtils = {
   parseSerializedList: function (serializedValue) {
     var list = new Array();
@@ -4088,6 +4093,17 @@ QueryEditorQuestionEditor = Class.create(QueryEditorPageEditor, {
       href: "javascript:void(null);",
       className: "queryEditorPreviewShowOptionsLink"
     }).update(getLocale().getText("panelAdmin.block.query.showOptions"));
+
+    this._commentOptionsLink = new Element("a", {
+      href: "javascript:void(null);",
+      className: "queryEditorPreviewShowCommentOptionsLink"
+    }).update(getLocale().getText("panelAdmin.block.query.showCommentOptions"));
+
+    this._commentOptionsLink.on("click", function () {
+      triggerReactCommand("edit-page-comment-options", {
+        pageData: this.getBlockController().getCurrentPageData()
+      });
+    }.bindAsEventListener(this));
     
     this._optionsContainer = new Element("div", {
       className: "queryEditorQuestionOptions",
@@ -4099,6 +4115,7 @@ QueryEditorQuestionEditor = Class.create(QueryEditorPageEditor, {
       });
     
     this._questionContainer.appendChild(this._questionOptionsLink);
+    this._questionContainer.appendChild(this._commentOptionsLink);
     this._questionContainer.appendChild(this._optionsContainer);
     this._optionsContainer.appendChild(this._optionsArrowUpContainer);
     

@@ -6,7 +6,7 @@
         "save": "Tallenna"
       },
       "comments": {
-        "title": "Kommentoi",
+        "title": "Kommentit",
         "reply": "Vastaa",
         "hide": "Piilota",
         "edit": "Muokkaa",
@@ -19,6 +19,16 @@
         "confirmRemoveConfirm": "Poista", 
         "confirmRemoveCancel": "Peruuta",
         "confirmRemoveText": "Oletko varma, että haluat poistaa kommentin \"{0}\" sekä kaikki siihen liittyvät vastaukset?"
+      }
+    }
+  },
+
+  "panelAdmin": {
+    "queryEditor": {
+      "pageCommentOptions": {
+        "title": "Kommenttiasetukset",
+        "addCategory": "Lisää kategoria",
+        "save": "Tallenna"
       }
     }
   }

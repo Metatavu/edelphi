@@ -1,8 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import AccessTokenRefresh from "../components/access-token-refresh";
-import QueryCommentEditor from "../components/query-comment-editor";
-import QueryCommentList from "../components/query-comment-list";
 import MqttConnector from "../components/mqtt-connector";
 import { createStore } from 'redux';
 import { StoreState } from "../types";
@@ -13,6 +11,7 @@ import Api from "edelphi-client";
 import strings from "../localization/strings";
 import "semantic-ui-less/semantic.less";
 import QueryPageLive2d from "../components/query-page-live-2d";
+import QueryComments from "../components/query-comments";
 
 const location = window.location;
 
@@ -70,8 +69,7 @@ window.addEventListener('load', () => {
         <Provider store={store}>
           <AccessTokenRefresh />
           <MqttConnector>
-            {commentable ? <QueryCommentEditor pageId={pageId} panelId={panelId} queryId={queryId} queryReplyId={queryReplyId} /> : null}
-            {viewDiscussion ? <QueryCommentList canManageComments={canManageComments} panelId={panelId} queryId={queryId} pageId={pageId} queryReplyId={queryReplyId} /> : null}
+            <QueryComments panelId={ panelId } canManageComments={ canManageComments }  viewDiscussion={ viewDiscussion } commentable={ commentable } pageId={ pageId } queryId={ queryId } queryReplyId={ queryReplyId }/>
           </MqttConnector>
         </Provider>;
 

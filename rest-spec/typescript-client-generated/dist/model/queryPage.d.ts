@@ -10,14 +10,17 @@
  * Do not edit the class manually.
  */
 import { QueryPageLive2DOptions } from './queryPageLive2DOptions';
+import { QueryPageCommentOptions } from './queryPageCommentOptions';
 import { QueryPageType } from './queryPageType';
 export interface QueryPage {
     readonly id?: number;
-    type?: QueryPageType;
-    options?: QueryPageLive2DOptions;
+    type: QueryPageType;
+    commentOptions: QueryPageCommentOptions;
+    queryOptions: QueryPageLive2DOptions;
 }
 export interface QueryPageOpt {
     readonly id?: number;
     type?: QueryPageType;
-    options?: QueryPageLive2DOptions;
+    commentOptions?: QueryPageCommentOptions;
+    queryOptions?: QueryPageLive2DOptions;
 }

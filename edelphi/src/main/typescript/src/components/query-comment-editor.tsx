@@ -4,7 +4,7 @@ import * as actions from "../actions";
 import { StoreState, AccessToken } from "../types";
 import { connect } from "react-redux";
 import { QueryQuestionCommentsService } from "edelphi-client/dist/api/api";
-import Api from "edelphi-client";
+import Api, { QueryQuestionCommentCategory } from "edelphi-client";
 import strings from "../localization/strings";
 
 /**
@@ -15,7 +15,8 @@ interface Props {
   accessToken?: AccessToken,
   pageId: number,
   panelId: number,
-  queryId: number
+  queryId: number,
+  category: QueryQuestionCommentCategory | null
 }
 
 /**

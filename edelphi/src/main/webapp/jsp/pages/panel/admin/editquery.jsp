@@ -18,6 +18,8 @@
     <jsp:include page="/jsp/supports/flotr_support.jsp"></jsp:include>
     <jsp:include page="/jsp/supports/dragdrop_support.jsp"></jsp:include>
     <jsp:include page="/jsp/supports/modalpopup_support.jsp"></jsp:include>
+    <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/buttoninputcomponent.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/mathutils.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/panel_blocks/querylistingblockcontroller.js"></script>
@@ -25,6 +27,7 @@
       <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/locktoucher.js"></script>
       <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/panel_admin/queryeditorblockcontroller.js"></script>
     </c:if>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/dist/bundle.min.js"></script>
   </head>
   <body class="panel_admin index">
     <c:set var="pageBreadcrumbTitle"><fmt:message key="breadcrumb.panelAdmin.editQuery"/></c:set>
