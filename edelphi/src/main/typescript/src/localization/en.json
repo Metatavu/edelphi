@@ -28,7 +28,8 @@
       "pageCommentOptions": {
         "title": "Comment options",
         "addCategory": "Add a category",
-        "save": "Save"
+        "save": "Save",
+        "close": "Close"
       }
     }
   }

@@ -28,7 +28,8 @@
       "pageCommentOptions": {
         "title": "Kommenttiasetukset",
         "addCategory": "Lisää kategoria",
-        "save": "Tallenna"
+        "save": "Tallenna",
+        "close": "Sulje"
       }
     }
   }

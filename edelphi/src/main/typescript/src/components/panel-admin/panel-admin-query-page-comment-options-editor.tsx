@@ -3,7 +3,7 @@ import * as actions from "../../actions";
 import * as _ from "lodash";
 import { StoreState, AccessToken } from "../../types";
 import { connect } from "react-redux";
-import { Modal, List, Button, Input, InputOnChangeData, Grid, Loader } from "semantic-ui-react";
+import { Modal, List, Button, Input, InputOnChangeData, Grid, Loader, Dimmer } from "semantic-ui-react";
 import Api, { QueryQuestionCommentCategory } from "edelphi-client";
 import { QueryQuestionCommentCategoriesService } from "edelphi-client/dist/api/api";
 import strings from "../../localization/strings";
@@ -16,7 +16,8 @@ interface Props {
   pageId: number,
   panelId: number,
   queryId: number,
-  open: boolean
+  open: boolean,
+  onClose: () => void
 }
 
 /**
@@ -60,7 +61,7 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
    * @param oldProps old props
    */
   public async componentDidUpdate(oldProps: Props) {
-    if ((this.props.accessToken != oldProps.accessToken) || (this.props.panelId != oldProps.panelId) || (this.props.pageId != oldProps.pageId)) {
+    if ((!oldProps.accessToken && !!this.props.accessToken) || (this.props.panelId != oldProps.panelId) || (this.props.pageId != oldProps.pageId)) {
       await this.loadData();
     }
   }
@@ -69,32 +70,47 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
    * Component render method
    */
   public render() {
+    return (
+      <Modal open={this.props.open} onClose={this.onModalClose}>
+        <Modal.Header>{ strings.panelAdmin.queryEditor.pageCommentOptions.title }</Modal.Header>
+        <Modal.Content>  { this.renderModalContent() } </Modal.Content>
+        <Modal.Actions>
+          <Button onClick={ this.onSaveClick } positive> { strings.panelAdmin.queryEditor.pageCommentOptions.save } </Button>
+          <Button onClick={ this.onCloseClick }> { strings.panelAdmin.queryEditor.pageCommentOptions.close } </Button>
+        </Modal.Actions>
+      </Modal>
+    );
+  }
+
+  /**
+   * Renders modal's content
+   */
+  private renderModalContent = () => {
     if (this.state.updating || this.state.loading) {
-      return <Loader/>
+      return (
+        <div style={{ minHeight: "200px" }}>
+          <Dimmer active inverted>
+            <Loader inverted/>
+          </Dimmer>
+        </div>
+      );
     }
 
     return (
-      <Modal open={this.props.open}>
-        <Modal.Header>{ strings.panelAdmin.queryEditor.pageCommentOptions.title }</Modal.Header>
-        <Modal.Content> 
-          <Grid>
-            <Grid.Row>
-              <Grid.Column width={ 10 }>
-                { this.renderCategoryList() }
-              </Grid.Column>
-              <Grid.Column width={ 6 } style={{ textAlign: "right" }}>
-                <Button onClick={ this.onCategoryAddButtonClick }>{ strings.panelAdmin.queryEditor.pageCommentOptions.addCategory }</Button>
-              </Grid.Column>
-            </Grid.Row>
-            <Grid.Row>
-              <Grid.Column>
-                <Button onClick={ this.onSaveClick }> { strings.panelAdmin.queryEditor.pageCommentOptions.save } </Button>
-              </Grid.Column>
-            </Grid.Row>
-          </Grid>          
-          
-        </Modal.Content>
-      </Modal>
+      <Grid>
+        <Grid.Row>
+          <Grid.Column width={ 10 }>
+            { this.renderCategoryList() }
+          </Grid.Column>
+          <Grid.Column width={ 6 } style={{ textAlign: "right" }}>
+            <Button onClick={ this.onCategoryAddButtonClick }>{ strings.panelAdmin.queryEditor.pageCommentOptions.addCategory }</Button>
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row>
+          <Grid.Column>
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>        
     );
   }
 
@@ -102,8 +118,6 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
    * Renders category list
    */
   private renderCategoryList = () => {
-    console.log("s", this.state.categories);
-
     return (
       <List>
         {
@@ -150,6 +164,13 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
   }
 
   /**
+   * Event handler for modal close
+   */
+  private onModalClose = () => {
+    this.props.onClose();
+  }
+
+  /**
    * Event handler for save click
    */
   private onSaveClick = async () => {
@@ -178,6 +199,15 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
       updating: false,
       categories: categories
     });
+
+    this.props.onClose();
+  }
+  
+  /**
+   * Event handler for close click
+   */
+  private onCloseClick = async () => {
+    this.props.onClose();
   }
 
   /**

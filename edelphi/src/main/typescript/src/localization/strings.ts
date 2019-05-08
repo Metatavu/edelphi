@@ -33,7 +33,8 @@ export interface IStrings extends LocalizedStringsMethods {
       pageCommentOptions: {
         title: string,
         addCategory: string,
-        save: string
+        save: string,
+        close: string
       }
     }
   }

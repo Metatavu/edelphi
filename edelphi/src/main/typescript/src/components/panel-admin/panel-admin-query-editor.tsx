@@ -53,7 +53,7 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
   public render() {
     return (
       <div>
-        <PanelAdminQueryPageCommentOptionsEditor open={ this.state.pageCommentOptionsOpen } pageId={ this.state.pageId } panelId={ this.props.panelId} queryId={ this.props.queryId }/>
+        <PanelAdminQueryPageCommentOptionsEditor open={ this.state.pageCommentOptionsOpen } pageId={ this.state.pageId } panelId={ this.props.panelId} queryId={ this.props.queryId } onClose={ this.onCommentOptionsEditorClose }/>
         { this.renderCommandLinks() }
       </div>
     );
@@ -70,6 +70,15 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
         })
       }
     </div>);
+  }
+
+  /**
+   * Event handler for comment option close event
+   */
+  private onCommentOptionsEditorClose = () => {
+    this.setState({
+      pageCommentOptionsOpen: false
+    });
   }
 
   /**
