@@ -332,6 +332,7 @@ public class QueryUtils {
                 newReply,
                 newQueryPage,
                 copiedParentComment,
+                queryComment.getCategory(),
                 queryComment.getComment(),
                 queryComment.getHidden(),
                 queryComment.getCreator(),

@@ -4,7 +4,7 @@ import * as actions from "../actions";
 import { StoreState, AccessToken } from "../types";
 import { connect } from "react-redux";
 import { QueryQuestionCommentsService } from "edelphi-client/dist/api/api";
-import Api from "edelphi-client";
+import Api, { QueryQuestionCommentCategory } from "edelphi-client";
 import strings from "../localization/strings";
 
 /**
@@ -15,7 +15,8 @@ interface Props {
   accessToken?: AccessToken,
   pageId: number,
   panelId: number,
-  queryId: number
+  queryId: number,
+  category: QueryQuestionCommentCategory | null
 }
 
 /**
@@ -85,8 +86,9 @@ class QueryCommentEditor extends React.Component<Props, State> {
       return;
     }
 
+    const categoryId = this.props.category ? this.props.category.id : 0;
     const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken.token);
-    const comments = await queryQuestionCommentsService.listQueryQuestionComments(this.props.panelId, 0, this.props.queryId, this.props.pageId, this.props.accessToken.userId, undefined);
+    const comments = await queryQuestionCommentsService.listQueryQuestionComments(this.props.panelId, 0, this.props.queryId, this.props.pageId, this.props.accessToken.userId, undefined, categoryId);
     
     if (comments.length === 1) {
       this.setState({
@@ -131,6 +133,7 @@ class QueryCommentEditor extends React.Component<Props, State> {
     const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken.token);
 
     let comment = null;
+    const categoryId = this.props.category ? this.props.category.id : 0;
 
     if (!this.state.commentId) {
       comment = await queryQuestionCommentsService.createQueryQuestionComment({
@@ -138,6 +141,7 @@ class QueryCommentEditor extends React.Component<Props, State> {
         hidden: false,
         queryPageId: this.props.pageId,
         queryReplyId: this.props.queryReplyId,
+        categoryId: categoryId
       }, this.props.panelId);
     } else {
       comment = await queryQuestionCommentsService.updateQueryQuestionComment({
@@ -145,6 +149,7 @@ class QueryCommentEditor extends React.Component<Props, State> {
         hidden: false,
         queryPageId: this.props.pageId,
         queryReplyId: this.props.queryReplyId,
+        categoryId: categoryId
       }, this.props.panelId, this.state.commentId);
     }
 

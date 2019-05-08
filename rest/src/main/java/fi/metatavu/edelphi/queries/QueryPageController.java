@@ -18,10 +18,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 
+import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentCategoryDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingKeyDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageSetting;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageSettingKey;
@@ -54,6 +56,9 @@ public class QueryPageController {
   
   @Inject
   private ResourceController resourceController;
+
+  @Inject
+  private QueryQuestionCommentCategoryDAO queryQuestionCommentCategoryDAO;
 
   /**
    * Finds a query page by id
@@ -248,6 +253,74 @@ public class QueryPageController {
     Panel queryPanel = resourceController.getResourcePanel(queryPage.getQuerySection().getQuery());
     return panel.getId().equals(queryPanel.getId());
   }
+
+  /**
+   * Returns whether comment is from given panel
+   * 
+   * @param category category
+   * @param panel panel
+   * @return whether page is from given panel
+   */
+  public boolean isPanelsCommentCategory(QueryQuestionCommentCategory category, Panel panel) {
+    if (category == null || category.getQueryPage() == null) {
+      return false;
+    }
+    
+    return isPanelsPage(panel, category.getQueryPage());
+  }
+  
+  /**
+   * Creates new comment category
+   * 
+   * @param queryPage query page
+   * @param name name
+   * @param creator creator
+   * @return created comment category
+   */
+  public QueryQuestionCommentCategory createCommentCategory(QueryPage queryPage, String name, User creator) {
+    return queryQuestionCommentCategoryDAO.create(queryPage, name, creator, creator, new Date(), new Date());
+  }
+  
+  /**
+   * Lists page comment categories
+   * 
+   * @param queryPage query page
+   * @return comment categories
+   */
+  public List<QueryQuestionCommentCategory> listCommentCategories(QueryPage queryPage) {
+    return queryQuestionCommentCategoryDAO.listByQueryPage(queryPage);
+  }
+  
+  /**
+   * Creates new comment category
+   * 
+   * @param queryQuestionCommentCategory category
+   * @param name name
+   * @param lastModifier last modifier
+   * @return updated comment category
+   */
+  public QueryQuestionCommentCategory updateCommentCategory(QueryQuestionCommentCategory queryQuestionCommentCategory, String name, User lastModifier) {
+    return queryQuestionCommentCategoryDAO.updateName(queryQuestionCommentCategory, name, lastModifier);
+  }
+  
+  /**
+   * Find comment category
+   * 
+   * @param id id
+   * @return comment category
+   */
+  public QueryQuestionCommentCategory findCommentCategory(Long id) {
+    return queryQuestionCommentCategoryDAO.findById(id);
+  }
+  
+  /**
+   * Deletes a comment category
+   * 
+   * @param queryQuestionCommentCategory category
+   */
+  public void deleteCommentCategory(QueryQuestionCommentCategory queryQuestionCommentCategory) {
+    queryQuestionCommentCategoryDAO.delete(queryQuestionCommentCategory);
+  }
   
   /**
    * Parses serialized string into a map
@@ -375,4 +448,5 @@ public class QueryPageController {
     else
       return null;
   }
+
 }

@@ -8,7 +8,7 @@ export * from './queryPageLive2DColor';
 export * from './queryPageLive2DOptions';
 export * from './queryPageType';
 export * from './queryQuestionAnswer';
-export * from './queryQuestionCategory';
 export * from './queryQuestionComment';
+export * from './queryQuestionCommentCategory';
 export * from './queryQuestionLive2dAnswerData';
 export * from './queryReply';

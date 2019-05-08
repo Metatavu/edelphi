@@ -6,7 +6,7 @@
         "save": "Save"
       },
       "comments": {
-        "title": "Elaborate on this topic (add a comment)",
+        "title": "Comments",
         "reply": "Reply",
         "hide": "Hide",
         "edit": "Edit",
@@ -19,6 +19,20 @@
         "confirmRemoveConfirm": "Delete", 
         "confirmRemoveCancel": "Cancel",
         "confirmRemoveText": "Are you sure that you want to delete comment \"{0}\" including all its replies?"
+      }
+    }
+  },
+
+  "panelAdmin": {
+    "queryEditor": {
+      "pageCommentOptions": {
+        "title": "Comment options",
+        "categories": "Categories",
+        "addCategory": "Add a category",
+        "save": "Save",
+        "close": "Close",
+        "deleteCategory": "Delete",
+        "deleteCategoryConfirm": "Are you sure?"
       }
     }
   }

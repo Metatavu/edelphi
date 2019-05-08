@@ -4142,6 +4142,7 @@ label.queryScaleSliderItemLabel {
   margin-top:20px;
 }
 
+.queryEditorPreviewShowCommentOptionsLink,
 .queryEditorPreviewShowOptionsLink {
   background:#0099ff;
   color:#fff;
@@ -4150,6 +4151,7 @@ label.queryScaleSliderItemLabel {
   padding:2px 6px;
   text-transform:uppercase;
   font-size:0.8em;
+  margin-right: 10px;
 }
  
 .queryEditorQuestionOptions {

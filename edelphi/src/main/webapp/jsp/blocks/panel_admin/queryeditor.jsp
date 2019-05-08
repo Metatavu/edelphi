@@ -5,6 +5,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <div id="panelAdminQueryEditorBlock" class="block">
+  <div id="panel-admin-query-editor" data-query-id="${param.queryId}"></div>
 
   <div id="panelAdminQueryEditorBlockContent" class="blockContent">
 

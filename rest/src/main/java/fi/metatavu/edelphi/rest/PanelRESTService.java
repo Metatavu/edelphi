@@ -39,12 +39,14 @@ import fi.metatavu.edelphi.queries.QueryQuestionLive2dAnswerData;
 import fi.metatavu.edelphi.queries.QueryReplyController;
 import fi.metatavu.edelphi.rest.api.PanelsApi;
 import fi.metatavu.edelphi.rest.model.QueryQuestionComment;
+import fi.metatavu.edelphi.rest.model.QueryQuestionCommentCategory;
 import fi.metatavu.edelphi.rest.mqtt.QueryQuestionAnswerNotification;
 import fi.metatavu.edelphi.rest.mqtt.QueryQuestionCommentNotification;
 import fi.metatavu.edelphi.rest.translate.QueryPageTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryQuestionAnswerTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryQuestionCommentTranslator;
 import fi.metatavu.edelphi.users.UserController;
+import fi.metatavu.edelphi.rest.translate.QueryQuestionCommentCategoryTranslator;
 
 /**
  * Panel REST Services
@@ -94,6 +96,9 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   
   @Inject
   private PermissionController permissionController;
+
+  @Inject
+  private QueryQuestionCommentCategoryTranslator queryQuestionCommentCategoryTranslator;
   
   @Override
   @RolesAllowed("user")
@@ -141,7 +146,24 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     Boolean hidden = body.isisHidden();
     Date created = new Date(System.currentTimeMillis());
     User creator = getLoggedUser();
-    fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment comment = queryQuestionCommentController.createQueryQuestionComment(queryReply, queryPage, parentComment, contents, hidden, creator, created);
+    Long categoryId = body.getCategoryId();
+    fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category = null;
+
+    if (categoryId != null && categoryId > 0) {
+      category = queryPageController.findCommentCategory(categoryId);
+      if (category == null) {
+        return createBadRequest(String.format("Invalid categoryId", categoryId));
+      }
+    }
+    
+    fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment comment = queryQuestionCommentController.createQueryQuestionComment(queryReply, 
+        queryPage, 
+        parentComment, 
+        category,
+        contents, 
+        hidden, 
+        creator, 
+        created);
 
     publishCommentMqttNotification(QueryQuestionCommentNotification.Type.CREATED, panel, comment);
     
@@ -205,10 +227,10 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     
     return createOk(queryQuestionCommentTranslator.translate(comment));
   }
-  
+
   @Override
   @RolesAllowed("user")
-  public Response listQueryQuestionComments(Long panelId, Long parentId, Long queryId, Long pageId, UUID userId, Long stampId) {
+  public Response listQueryQuestionComments(Long panelId, Long parentId, Long queryId, Long pageId, UUID userId, Long stampId, Long categoryId) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
@@ -237,6 +259,20 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     if (userId != null && user == null) {
       return createBadRequest(String.format("Invalid user id %s", userId));
     }
+
+    boolean onlyNullCategories = false;
+    fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category = null;
+
+    if (categoryId != null) {
+      if (categoryId > 0) {
+        category = queryPageController.findCommentCategory(categoryId);
+        if (category == null) {
+          return createBadRequest(String.format("Invalid categoryId", categoryId));
+        }
+      } else {
+        onlyNullCategories = true;
+      }
+    }
     
     fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment parentComment = null; 
     boolean onlyRootComments = false;
@@ -252,7 +288,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       }
     }
     
-    return createOk(queryQuestionCommentController.listQueryQuestionComments(panel, stamp, queryPage, query, parentComment, user, onlyRootComments).stream()
+    return createOk(queryQuestionCommentController.listQueryQuestionComments(panel, stamp, queryPage, query, parentComment, user, onlyRootComments, category, onlyNullCategories).stream()
       .map(queryQuestionCommentTranslator::translate)
       .collect(Collectors.toList()));
   }
@@ -284,7 +320,22 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     Boolean hidden = body.isisHidden();
     Date modified = new Date(System.currentTimeMillis());
     User modifier = getLoggedUser();
-    fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment updatedComment = queryQuestionCommentController.updateQueryQuestionComment(comment, contents, hidden, modifier, modified);
+    Long categoryId = body.getCategoryId();
+    fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category = null;
+    
+    if (categoryId != null && categoryId > 0) {
+      category = queryPageController.findCommentCategory(categoryId);
+      if (category == null) {
+        return createBadRequest(String.format("Invalid categoryId", categoryId));
+      }
+    }
+    
+    fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment updatedComment = queryQuestionCommentController.updateQueryQuestionComment(comment, 
+        category,
+        contents, 
+        hidden, 
+        modifier, 
+        modified);
 
     publishCommentMqttNotification(QueryQuestionCommentNotification.Type.UPDATED, panel, comment);
     
@@ -421,6 +472,121 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     }
     
     return createOk(queryPageTranslator.translate(queryPage));
+  }
+
+  @Override
+  @RolesAllowed("user")  
+  public Response createQueryQuestionCommentCategory(QueryQuestionCommentCategory body, Long panelId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    Long queryPageId = body.getQueryPageId();
+    String name = body.getName();
+    User loggedUser = getLoggedUser();
+    
+    QueryPage queryPage = queryPageController.findQueryPage(queryPageId);
+    if (queryPage == null) {
+      return createNotFound();
+    }
+    
+    return createOk(queryQuestionCommentCategoryTranslator.translate(queryPageController.createCommentCategory(queryPage, name, loggedUser)));
+  }
+
+  @Override
+  @RolesAllowed("user") 
+  public Response deleteQueryQuestionCommentCategory(Long panelId, Long categoryId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category = queryPageController.findCommentCategory(categoryId);
+    if (!queryPageController.isPanelsCommentCategory(category, panel)) {
+      return createBadRequest("Panel and comment mismatch");
+    }
+    
+    queryPageController.deleteCommentCategory(category);
+    
+    return createNoContent();
+  }
+
+  @Override
+  @RolesAllowed("user") 
+  public Response findQueryQuestionCommentCategory(Long panelId, Long categoryId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.ACCESS_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category = queryPageController.findCommentCategory(categoryId);
+    if (!queryPageController.isPanelsCommentCategory(category, panel)) {
+      return createBadRequest("Panel and comment mismatch");
+    }
+    
+    return createOk(queryQuestionCommentCategoryTranslator.translate(category));
+  }
+
+  @Override
+  @RolesAllowed("user") 
+  public Response listQueryQuestionCommentCategories(Long panelId, Long pageId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.ACCESS_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    QueryPage queryPage = queryPageController.findQueryPage(pageId);
+    if (queryPage == null) {
+      return createNotFound();
+    }
+
+    if (!queryPageController.isPanelsPage(panel, queryPage)) {
+      return createBadRequest("Panel and page mismatch");
+    }
+
+    return createOk(queryPageController.listCommentCategories(queryPage).stream().map(queryQuestionCommentCategoryTranslator::translate).collect(Collectors.toList()));
+  }
+
+  @Override
+  @RolesAllowed("user") 
+  public Response updateQueryQuestionCommentCategory(QueryQuestionCommentCategory body, Long panelId, Long categoryId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category = queryPageController.findCommentCategory(categoryId);
+    if (category == null) {
+      return createNotFound(String.format("Category %d not found", categoryId));
+    }
+
+    if (!queryPageController.isPanelsCommentCategory(category, panel)) {
+      return createBadRequest("Panel and comment mismatch");
+    }
+
+    return createOk(queryQuestionCommentCategoryTranslator.translate(queryPageController.updateCommentCategory(category, body.getName(), loggedUser)));
   }
   
   /**

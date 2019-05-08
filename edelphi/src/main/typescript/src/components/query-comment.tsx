@@ -6,7 +6,7 @@ import QueryCommentContainer from "./query-comment-container";
 import strings from "../localization/strings";
 import { StoreState, QueryQuestionCommentNotification } from "../types";
 import { connect } from "react-redux";
-import Api, { QueryQuestionComment } from "edelphi-client";
+import Api, { QueryQuestionComment, QueryQuestionCommentCategory } from "edelphi-client";
 import { QueryQuestionCommentsService } from "edelphi-client/dist/api/api";
 import { mqttConnection, OnMessageCallback } from "../mqtt";
 import styles from "../constants/styles";
@@ -23,7 +23,8 @@ interface Props {
   queryId: number,
   pageId: number,
   queryReplyId: number,
-  canManageComments: boolean
+  canManageComments: boolean,
+  category: QueryQuestionCommentCategory | null
 }
 
 /**
@@ -192,7 +193,7 @@ class QueryCommentClass extends React.Component<Props, State> {
    * Renders child comments
    */
   private renderChildComments() {
-    return <QueryCommentContainer className="queryCommentChildren" canManageComments={ this.props.canManageComments } parentId={ this.props.comment.id! } queryReplyId={this.props.queryReplyId} pageId={ this.props.pageId } panelId={ this.props.panelId } queryId={ this.props.queryId }/>
+    return <QueryCommentContainer category={ this.props.category } className="queryCommentChildren" canManageComments={ this.props.canManageComments } parentId={ this.props.comment.id! } queryReplyId={this.props.queryReplyId} pageId={ this.props.pageId } panelId={ this.props.panelId } queryId={ this.props.queryId }/>
   }
 
   /**

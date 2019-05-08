@@ -15,7 +15,7 @@ import javax.validation.Valid;
 
 @Path("/panels")
 @Api(description = "the panels API")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-05-07T10:17:35.171+03:00[Europe/Helsinki]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-05-08T09:28:22.941+03:00[Europe/Helsinki]")
 public interface PanelsApi {
 
     @POST
@@ -140,7 +140,7 @@ public interface PanelsApi {
         @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class, responseContainer = "List"),
         @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class, responseContainer = "List"),
         @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class, responseContainer = "List") })
-    Response listQueryQuestionComments(@PathParam("panelId")  Long panelId,@QueryParam("parentId") @NotNull     Long parentId,@QueryParam("queryId")     Long queryId,@QueryParam("pageId")     Long pageId,@QueryParam("userId")     UUID userId,@QueryParam("stampId")     Long stampId);
+    Response listQueryQuestionComments(@PathParam("panelId")  Long panelId,@QueryParam("parentId") @NotNull     Long parentId,@QueryParam("queryId")     Long queryId,@QueryParam("pageId")     Long pageId,@QueryParam("userId")     UUID userId,@QueryParam("stampId")     Long stampId,@QueryParam("categoryId")     Long categoryId);
     @PUT
     @Path("/{panelId}/queryQuestionComments/{commentId}")
     @Consumes({ "application/json" })

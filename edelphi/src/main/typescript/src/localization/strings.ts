@@ -26,6 +26,20 @@ export interface IStrings extends LocalizedStringsMethods {
         confirmRemoveText: string
       }
     }
+  },
+
+  panelAdmin: {
+    queryEditor: {
+      pageCommentOptions: {
+        title: string,
+        categories: string,
+        addCategory: string,
+        save: string,
+        close: string,
+        deleteCategory: string,
+        deleteCategoryConfirm: string
+      }
+    }
   }
   
 }

@@ -3327,5 +3327,39 @@
     <addUniqueConstraint columnNames="name" tableName="QueryPageSettingKey"/>
     <sqlFile path="fi/metatavu/edelphi/liquibase/query-template-live2d.sql"/>
   </changeSet>
+  
+  <changeSet id="query-question-comment-category" author="antti.leppa">
+   <createTable tableName="QueryQuestionCommentCategory">
+      <column name="id" type="BIGINT(20)" autoIncrement="true">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column name="queryPage_id" type="BIGINT">
+        <constraints foreignKeyName="FK_QUERY_QUESTION_COMMENT_CATEGORY_QUERY_PAGE" referencedColumnNames="id" referencedTableName="QueryPage" nullable="false"/>
+      </column>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="creator_id" type="BIGINT">
+        <constraints foreignKeyName="FK_QUERY_QUESTION_COMMENT_CREATOR" referencedColumnNames="id" referencedTableName="User" nullable="false"/>
+      </column>
+      <column name="created" type="datetime(6)">
+        <constraints nullable="false" />
+      </column>
+      <column name="lastModifier_id" type="BIGINT">
+        <constraints foreignKeyName="FK_QUERY_QUESTION_COMMENT_LAST_MODIFIER" referencedColumnNames="id" referencedTableName="User" nullable="false"/>
+      </column>
+      <column name="lastModified" type="datetime(6)">
+        <constraints nullable="false" />
+      </column>      
+    </createTable>
+  </changeSet>
+  
+  <changeSet id="query-comment-category" author="antti.leppa">
+    <addColumn tableName="queryquestioncomment">
+      <column name="category_id" type="BIGINT">
+        <constraints foreignKeyName="FK_QUERY_QUESTION_COMMENT_CATEGORY" referencedColumnNames="id" referencedTableName="QueryQuestionCommentCategory" nullable="true"/>
+      </column>
+    </addColumn>
+  </changeSet>
 
 </databaseChangeLog>

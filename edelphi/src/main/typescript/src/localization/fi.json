@@ -6,7 +6,7 @@
         "save": "Tallenna"
       },
       "comments": {
-        "title": "Kommentoi",
+        "title": "Kommentit",
         "reply": "Vastaa",
         "hide": "Piilota",
         "edit": "Muokkaa",
@@ -19,6 +19,20 @@
         "confirmRemoveConfirm": "Poista", 
         "confirmRemoveCancel": "Peruuta",
         "confirmRemoveText": "Oletko varma, että haluat poistaa kommentin \"{0}\" sekä kaikki siihen liittyvät vastaukset?"
+      }
+    }
+  },
+
+  "panelAdmin": {
+    "queryEditor": {
+      "pageCommentOptions": {
+        "title": "Kommenttiasetukset",
+        "categories": "Kategoriat",
+        "addCategory": "Lisää kategoria",
+        "save": "Tallenna",
+        "close": "Sulje",
+        "deleteCategory": "Poista",
+        "deleteCategoryConfirm": "Oletko varma?"
       }
     }
   }

@@ -346,6 +346,17 @@
             "type" : "integer",
             "format" : "int64"
           }
+        }, {
+          "name" : "categoryId",
+          "in" : "query",
+          "description" : "category id. If zero is specified only non categorized comments are returned",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
         } ],
         "responses" : {
           "200" : {

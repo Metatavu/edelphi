@@ -122,7 +122,7 @@ class Live2dChart extends React.Component<Props, State> {
       return <Loader/>;
     }
 
-    const pageOptions = this.state.page.options as QueryPageLive2DOptions;
+    const pageOptions = this.state.page.queryOptions as QueryPageLive2DOptions;
     if (!pageOptions.axisX || !pageOptions.axisY) {
       return <Loader/>;
     }
@@ -170,7 +170,7 @@ class Live2dChart extends React.Component<Props, State> {
       return null;
     }
 
-    const pageOptions = this.state.page.options as QueryPageLive2DOptions;
+    const pageOptions = this.state.page.queryOptions as QueryPageLive2DOptions;
     const colorX = ( pageOptions.axisX ? pageOptions.axisX.color : undefined ) || "GREEN";
     const labelX = pageOptions.axisX ? pageOptions.axisX.label : undefined;
 
@@ -195,7 +195,7 @@ class Live2dChart extends React.Component<Props, State> {
       return null;
     }
 
-    const pageOptions = this.state.page.options as QueryPageLive2DOptions;
+    const pageOptions = this.state.page.queryOptions as QueryPageLive2DOptions;
     const colorY = ( pageOptions.axisY ? pageOptions.axisY.color : undefined ) || "RED";
     const label = pageOptions.axisY ? pageOptions.axisY.label : undefined;
 

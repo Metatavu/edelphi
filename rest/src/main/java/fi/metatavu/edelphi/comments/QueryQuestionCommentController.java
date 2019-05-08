@@ -10,6 +10,7 @@ import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
@@ -40,14 +41,15 @@ public class QueryQuestionCommentController {
    * @param queryReply query reply
    * @param queryPage query page
    * @param parentComment parent comment
+   * @param category category
    * @param comment comment contents
    * @param hidden whether comment should be hidden
    * @param creator creator
    * @param created create time
    * @return created comment
    */
-  public QueryQuestionComment createQueryQuestionComment(QueryReply queryReply, QueryPage queryPage, QueryQuestionComment parentComment, String comment, Boolean hidden, User creator, Date created) {
-    return queryQuestionCommentDAO.create(queryReply, queryPage, parentComment, comment, hidden, creator, created, creator, created);
+  public QueryQuestionComment createQueryQuestionComment(QueryReply queryReply, QueryPage queryPage, QueryQuestionComment parentComment, QueryQuestionCommentCategory category, String comment, Boolean hidden, User creator, Date created) {
+    return queryQuestionCommentDAO.create(queryReply, queryPage, parentComment, category, comment, hidden, creator, created, creator, created);
   }
   
   /**
@@ -70,14 +72,16 @@ public class QueryQuestionCommentController {
    * @param parentComment filter by parent comment. Ignored if null
    * @param user filter by user. Ignored if null.
    * @param onlyRootComments return only root comments. 
+   * @param category return only comments of specified category. Ignored if null
+   * @param onlyNullCategories return only comments without category. Ignored if null
    * @return a list of comments
    */
-  public List<QueryQuestionComment> listQueryQuestionComments(Panel panel, PanelStamp stamp, QueryPage queryPage, Query query, QueryQuestionComment parentComment, User user, boolean onlyRootComments) {
+  public List<QueryQuestionComment> listQueryQuestionComments(Panel panel, PanelStamp stamp, QueryPage queryPage, Query query, QueryQuestionComment parentComment, User user, boolean onlyRootComments, fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category, boolean onlyNullCategories) {
     if (stamp == null) {
       stamp = panel.getCurrentStamp();
     }
     
-    return queryQuestionCommentDAO.list(queryPage, stamp, query, panel.getRootFolder(), parentComment, onlyRootComments, user, Boolean.FALSE);
+    return queryQuestionCommentDAO.list(queryPage, stamp, query, panel.getRootFolder(), parentComment, onlyRootComments, user, category, onlyNullCategories, Boolean.FALSE);
   }
 
   /**
@@ -90,8 +94,9 @@ public class QueryQuestionCommentController {
    * @param modified modification time 
    * @return
    */
-  public QueryQuestionComment updateQueryQuestionComment(QueryQuestionComment queryQuestionComment, String comment, Boolean hidden, User modifier, Date modified) {
+  public QueryQuestionComment updateQueryQuestionComment(QueryQuestionComment queryQuestionComment, QueryQuestionCommentCategory category, String comment, Boolean hidden, User modifier, Date modified) {
     queryQuestionCommentDAO.updateHidden(queryQuestionComment, hidden, modifier);
+    queryQuestionCommentDAO.updateCategory(queryQuestionComment, category, modifier, modified);
     return queryQuestionCommentDAO.updateComment(queryQuestionComment, comment, modifier, modified);
   }
   

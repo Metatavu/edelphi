@@ -38,3 +38,21 @@ export interface QueryQuestionAnswerNotification {
   pageId: number,
   answerId: string,
 }
+
+export type Command = "edit-page-comment-options";
+
+export interface EditPageCommentOptionsCommand {
+  type: "edit-page-comment-options",
+  pageData: {
+    hasAnswers: "true" | "false",
+    id: number,
+    number: number,
+    options: {
+      caption: string,
+      name: string,
+      editor: string
+    }[],
+    title: string,
+    type: string
+  }
+}
