@@ -90,8 +90,9 @@ export class QueryQuestionCommentsService {
    * @param pageId Filter by query page id
    * @param userId Filter by user id
    * @param stampId Filter by stamp id. Defaults to current stamp
+   * @param categoryId category id. If zero is specified only non categorized comments are returned
   */
-  public listQueryQuestionComments(panelId: number, parentId: number, queryId?: number, pageId?: number, userId?: string, stampId?: number, ):Promise<Array<QueryQuestionComment>> {
+  public listQueryQuestionComments(panelId: number, parentId: number, queryId?: number, pageId?: number, userId?: string, stampId?: number, categoryId?: number, ):Promise<Array<QueryQuestionComment>> {
     const uri = new URI(`${this.basePath}/panels/${encodeURIComponent(String(panelId))}/queryQuestionComments`);
     if (queryId !== undefined && queryId !== null) {
         uri.addQuery('queryId', <any>queryId);
@@ -107,6 +108,9 @@ export class QueryQuestionCommentsService {
     }
     if (parentId !== undefined && parentId !== null) {
         uri.addQuery('parentId', <any>parentId);
+    }
+    if (categoryId !== undefined && categoryId !== null) {
+        uri.addQuery('categoryId', <any>categoryId);
     }
     const options = {
       method: "get",
