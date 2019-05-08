@@ -39,12 +39,14 @@ import fi.metatavu.edelphi.queries.QueryQuestionLive2dAnswerData;
 import fi.metatavu.edelphi.queries.QueryReplyController;
 import fi.metatavu.edelphi.rest.api.PanelsApi;
 import fi.metatavu.edelphi.rest.model.QueryQuestionComment;
+import fi.metatavu.edelphi.rest.model.QueryQuestionCommentCategory;
 import fi.metatavu.edelphi.rest.mqtt.QueryQuestionAnswerNotification;
 import fi.metatavu.edelphi.rest.mqtt.QueryQuestionCommentNotification;
 import fi.metatavu.edelphi.rest.translate.QueryPageTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryQuestionAnswerTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryQuestionCommentTranslator;
 import fi.metatavu.edelphi.users.UserController;
+import fi.metatavu.edelphi.rest.translate.QueryQuestionCommentCategoryTranslator;
 
 /**
  * Panel REST Services
@@ -94,6 +96,9 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   
   @Inject
   private PermissionController permissionController;
+
+  @Inject
+  private QueryQuestionCommentCategoryTranslator queryQuestionCommentCategoryTranslator;
   
   @Override
   @RolesAllowed("user")
@@ -421,6 +426,116 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     }
     
     return createOk(queryPageTranslator.translate(queryPage));
+  }
+
+  @Override
+  @RolesAllowed("user")  
+  public Response createQueryQuestionCommentCategory(QueryQuestionCommentCategory body, Long panelId) {
+    // TODO: Permissions, validation.
+    
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    Long queryPageId = body.getQueryPageId();
+    String name = body.getName();
+    User loggedUser = getLoggedUser();
+    
+    QueryPage queryPage = queryPageController.findQueryPage(queryPageId);
+    if (queryPage == null) {
+      return createNotFound();
+    }
+    
+    return createOk(queryQuestionCommentCategoryTranslator.translate(queryPageController.createCommentCategory(queryPage, name, loggedUser)));
+  }
+
+  @Override
+  @RolesAllowed("user") 
+  public Response deleteQueryQuestionCommentCategory(Long panelId, Long categoryId) {
+    // TODO: Permissions, validation.
+    
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category = queryPageController.findCommentCategory(categoryId);
+    queryPageController.deleteCommentCategory(category);
+    
+    return createNoContent();
+  }
+
+  @Override
+  @RolesAllowed("user") 
+  public Response findQueryQuestionCommentCategory(Long panelId, Long categoryId) {
+    // TODO: Permissions, validation.
+    
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.ACCESS_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category = queryPageController.findCommentCategory(categoryId);
+    
+    return createOk(queryQuestionCommentCategoryTranslator.translate(category));
+  }
+
+  @Override
+  @RolesAllowed("user") 
+  public Response listQueryQuestionCommentCategories(Long panelId, Long pageId) {
+    // TODO: Permissions, validation.
+    
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.ACCESS_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    QueryPage queryPage = queryPageController.findQueryPage(pageId);
+    if (queryPage == null) {
+      return createNotFound();
+    }
+    
+    return createOk(queryPageController.listCommentCategories(queryPage).stream().map(queryQuestionCommentCategoryTranslator::translate).collect(Collectors.toList()));
+  }
+
+  @Override
+  @RolesAllowed("user") 
+  public Response updateQueryQuestionCommentCategory(QueryQuestionCommentCategory body, Long panelId, Long categoryId) {
+    // TODO: Permissions, validation.
+    
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category = queryPageController.findCommentCategory(categoryId);
+    if (category == null) {
+      return createNotFound(String.format("Category %d not found", categoryId));
+    }
+    
+    return createOk(queryQuestionCommentCategoryTranslator.translate(queryPageController.updateCommentCategory(category, body.getName(), loggedUser)));
   }
   
   /**
