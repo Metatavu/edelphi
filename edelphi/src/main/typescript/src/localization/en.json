@@ -27,9 +27,12 @@
     "queryEditor": {
       "pageCommentOptions": {
         "title": "Comment options",
+        "categories": "Categories",
         "addCategory": "Add a category",
         "save": "Save",
-        "close": "Close"
+        "close": "Close",
+        "deleteCategory": "Delete",
+        "deleteCategoryConfirm": "Are you sure?"
       }
     }
   }

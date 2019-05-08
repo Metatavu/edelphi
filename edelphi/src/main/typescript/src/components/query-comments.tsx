@@ -64,6 +64,10 @@ class QueryComments extends React.Component<Props, State> {
    * Component render method
    */
   public render() {
+    if (!this.props.commentable && !this.props.viewDiscussion) {
+      return null;
+    }
+
     if (this.state.categories.length == 0) {
       return this.renderCategory(null);
     }

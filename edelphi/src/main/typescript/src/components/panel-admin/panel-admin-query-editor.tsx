@@ -18,6 +18,7 @@ interface Props {
  */
 interface State {
   pageCommentOptionsOpen: boolean,
+  pageCommentOptionsEditable: boolean,
   pageId: number
 }
 
@@ -37,6 +38,7 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
     super(props);
     this.state = {
       pageCommentOptionsOpen: false,
+      pageCommentOptionsEditable: false,
       pageId: 0
     };
   }
@@ -53,7 +55,7 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
   public render() {
     return (
       <div>
-        <PanelAdminQueryPageCommentOptionsEditor open={ this.state.pageCommentOptionsOpen } pageId={ this.state.pageId } panelId={ this.props.panelId} queryId={ this.props.queryId } onClose={ this.onCommentOptionsEditorClose }/>
+        <PanelAdminQueryPageCommentOptionsEditor editable={ this.state.pageCommentOptionsEditable } open={ this.state.pageCommentOptionsOpen } pageId={ this.state.pageId } panelId={ this.props.panelId} queryId={ this.props.queryId } onClose={ this.onCommentOptionsEditorClose }/>
         { this.renderCommandLinks() }
       </div>
     );
@@ -110,8 +112,11 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
    * @param command command
    */
   private onPageCommentOptionsCommandTrigger(command: EditPageCommentOptionsCommand) {
+    const editable = command.pageData.hasAnswers == "false";
+
     this.setState({
       pageId: command.pageData.id,
+      pageCommentOptionsEditable: editable, 
       pageCommentOptionsOpen: true
     });
   }

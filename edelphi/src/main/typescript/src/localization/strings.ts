@@ -32,9 +32,12 @@ export interface IStrings extends LocalizedStringsMethods {
     queryEditor: {
       pageCommentOptions: {
         title: string,
+        categories: string,
         addCategory: string,
         save: string,
-        close: string
+        close: string,
+        deleteCategory: string,
+        deleteCategoryConfirm: string
       }
     }
   }

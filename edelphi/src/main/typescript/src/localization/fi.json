@@ -27,9 +27,12 @@
     "queryEditor": {
       "pageCommentOptions": {
         "title": "Kommenttiasetukset",
+        "categories": "Kategoriat",
         "addCategory": "Lisää kategoria",
         "save": "Tallenna",
-        "close": "Sulje"
+        "close": "Sulje",
+        "deleteCategory": "Poista",
+        "deleteCategoryConfirm": "Oletko varma?"
       }
     }
   }

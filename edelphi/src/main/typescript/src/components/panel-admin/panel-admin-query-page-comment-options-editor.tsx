@@ -3,7 +3,7 @@ import * as actions from "../../actions";
 import * as _ from "lodash";
 import { StoreState, AccessToken } from "../../types";
 import { connect } from "react-redux";
-import { Modal, List, Button, Input, InputOnChangeData, Grid, Loader, Dimmer } from "semantic-ui-react";
+import { Modal, Button, Input, InputOnChangeData, Grid, Loader, Dimmer, Confirm } from "semantic-ui-react";
 import Api, { QueryQuestionCommentCategory } from "edelphi-client";
 import { QueryQuestionCommentCategoriesService } from "edelphi-client/dist/api/api";
 import strings from "../../localization/strings";
@@ -17,6 +17,7 @@ interface Props {
   panelId: number,
   queryId: number,
   open: boolean,
+  editable: boolean,
   onClose: () => void
 }
 
@@ -99,11 +100,16 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
     return (
       <Grid>
         <Grid.Row>
+          <Grid.Column>
+             <h2> { strings.panelAdmin.queryEditor.pageCommentOptions.categories } </h2>
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row>
           <Grid.Column width={ 10 }>
             { this.renderCategoryList() }
           </Grid.Column>
           <Grid.Column width={ 6 } style={{ textAlign: "right" }}>
-            <Button onClick={ this.onCategoryAddButtonClick }>{ strings.panelAdmin.queryEditor.pageCommentOptions.addCategory }</Button>
+            <Button disabled={ !this.props.editable } onClick={ this.onCategoryAddButtonClick }>{ strings.panelAdmin.queryEditor.pageCommentOptions.addCategory }</Button>
           </Grid.Column>
         </Grid.Row>
         <Grid.Row>
@@ -119,17 +125,22 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
    */
   private renderCategoryList = () => {
     return (
-      <List>
+      <Grid>
         {
           this.state.categories.map((category, index) => {
             return (
-            <List.Item>
-              <Input key={ category.id } value={ category.name } onChange={ (event: React.ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => this.onCategoryListNameChange(index, data.value) }/>
-            </List.Item>
+              <Grid.Row key={ category.id }>
+                <Grid.Column width={ 12 }>
+                  <Input style={{ width: "100%" }} value={ category.name } onChange={ (event: React.ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => this.onCategoryListNameChange(index, data.value) }/>
+                </Grid.Column>
+                <Grid.Column width={ 4 }>
+                  <Confirm content={ strings.panelAdmin.queryEditor.pageCommentOptions.deleteCategoryConfirm } trigger={ <Button disabled={ !this.props.editable } negative> { strings.panelAdmin.queryEditor.pageCommentOptions.deleteCategory } </Button> } onConfirm={ () => this.deleteCategory(index) } />
+                </Grid.Column>
+              </Grid.Row>
             )
           })
         }
-      </List>  
+      </Grid>
     );
   }
 
@@ -161,6 +172,30 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
    */
   private getQueryQuestionCommentCategoriesService(accessToken: string): QueryQuestionCommentCategoriesService {
     return Api.getQueryQuestionCommentCategoriesService(accessToken);
+  }
+
+  /**
+   * Deletes a category
+   * 
+   * @param category category
+   */
+  private deleteCategory = async (index: number) => {
+    if (!this.props.accessToken) {
+      return;
+    }
+
+    const category: QueryQuestionCommentCategory = this.state.categories[index];
+    const categories = _.clone(this.state.categories);
+    categories.splice(index, 1); 
+
+    if (category.id) {
+      const queryQuestionCommentCategoriesService = await this.getQueryQuestionCommentCategoriesService(this.props.accessToken.token);
+      await queryQuestionCommentCategoriesService.deleteQueryQuestionCommentCategory(this.props.panelId, category.id);
+    } 
+
+    this.setState({
+      categories: categories
+    });
   }
 
   /**

@@ -44,7 +44,7 @@ export type Command = "edit-page-comment-options";
 export interface EditPageCommentOptionsCommand {
   type: "edit-page-comment-options",
   pageData: {
-    hasAnswers: boolean,
+    hasAnswers: "true" | "false",
     id: number,
     number: number,
     options: {
