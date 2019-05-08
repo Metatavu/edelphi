@@ -350,7 +350,7 @@
           "name" : "categoryId",
           "in" : "query",
           "description" : "category id. If zero is specified only non categorized comments are returned",
-          "required" : true,
+          "required" : false,
           "style" : "form",
           "explode" : true,
           "schema" : {
