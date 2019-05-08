@@ -253,6 +253,21 @@ public class QueryPageController {
     Panel queryPanel = resourceController.getResourcePanel(queryPage.getQuerySection().getQuery());
     return panel.getId().equals(queryPanel.getId());
   }
+
+  /**
+   * Returns whether comment is from given panel
+   * 
+   * @param category category
+   * @param panel panel
+   * @return whether page is from given panel
+   */
+  public boolean isPanelsCommentCategory(QueryQuestionCommentCategory category, Panel panel) {
+    if (category == null || category.getQueryPage() == null) {
+      return false;
+    }
+    
+    return isPanelsPage(panel, category.getQueryPage());
+  }
   
   /**
    * Creates new comment category
@@ -433,4 +448,5 @@ public class QueryPageController {
     else
       return null;
   }
+
 }

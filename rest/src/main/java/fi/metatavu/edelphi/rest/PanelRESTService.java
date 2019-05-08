@@ -477,8 +477,6 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   @Override
   @RolesAllowed("user")  
   public Response createQueryQuestionCommentCategory(QueryQuestionCommentCategory body, Long panelId) {
-    // TODO: Permissions, validation.
-    
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
@@ -503,8 +501,6 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   @Override
   @RolesAllowed("user") 
   public Response deleteQueryQuestionCommentCategory(Long panelId, Long categoryId) {
-    // TODO: Permissions, validation.
-    
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
@@ -515,6 +511,10 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     }
     
     fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category = queryPageController.findCommentCategory(categoryId);
+    if (!queryPageController.isPanelsCommentCategory(category, panel)) {
+      return createBadRequest("Panel and comment mismatch");
+    }
+    
     queryPageController.deleteCommentCategory(category);
     
     return createNoContent();
@@ -523,8 +523,6 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   @Override
   @RolesAllowed("user") 
   public Response findQueryQuestionCommentCategory(Long panelId, Long categoryId) {
-    // TODO: Permissions, validation.
-    
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
@@ -535,6 +533,9 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     }
     
     fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category = queryPageController.findCommentCategory(categoryId);
+    if (!queryPageController.isPanelsCommentCategory(category, panel)) {
+      return createBadRequest("Panel and comment mismatch");
+    }
     
     return createOk(queryQuestionCommentCategoryTranslator.translate(category));
   }
@@ -542,8 +543,6 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   @Override
   @RolesAllowed("user") 
   public Response listQueryQuestionCommentCategories(Long panelId, Long pageId) {
-    // TODO: Permissions, validation.
-    
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
@@ -557,15 +556,17 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     if (queryPage == null) {
       return createNotFound();
     }
-    
+
+    if (!queryPageController.isPanelsPage(panel, queryPage)) {
+      return createBadRequest("Panel and page mismatch");
+    }
+
     return createOk(queryPageController.listCommentCategories(queryPage).stream().map(queryQuestionCommentCategoryTranslator::translate).collect(Collectors.toList()));
   }
 
   @Override
   @RolesAllowed("user") 
   public Response updateQueryQuestionCommentCategory(QueryQuestionCommentCategory body, Long panelId, Long categoryId) {
-    // TODO: Permissions, validation.
-    
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
@@ -580,7 +581,11 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     if (category == null) {
       return createNotFound(String.format("Category %d not found", categoryId));
     }
-    
+
+    if (!queryPageController.isPanelsCommentCategory(category, panel)) {
+      return createBadRequest("Panel and comment mismatch");
+    }
+
     return createOk(queryQuestionCommentCategoryTranslator.translate(queryPageController.updateCommentCategory(category, body.getName(), loggedUser)));
   }
   
