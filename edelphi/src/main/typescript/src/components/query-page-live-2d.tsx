@@ -135,6 +135,7 @@ class Live2dChart extends React.Component<Props, State> {
     const colorY = ( pageOptions.axisY ? pageOptions.axisY.color : undefined ) || "RED";
     const size = this.wrapperDiv.offsetWidth;
     const colorX = ( pageOptions.axisX ? pageOptions.axisX.color : undefined ) || "GREEN";
+    const data = this.getValuesVisible() ? this.state.values : [];
 
     return (
       <ScatterChart onMouseDown={(data: RechartsFunction) => { this.onScatterMouseDown(data) }} width={ size } height={ size } margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
@@ -146,9 +147,9 @@ class Live2dChart extends React.Component<Props, State> {
         </YAxis>
         <ZAxis type="number" range={[500, 1000]} dataKey={'z'} />
         <CartesianGrid />
-        <Scatter data={ this.state.values } fill={'#fff'}>
+        <Scatter data={ data } fill={'#fff'}>
           {
-            this.state.values.map((entry, index) => {
+            data.map((entry, index) => {
               return <Cell key={`cell-${index}`} fill={this.getColor(colorX, colorY, entry.x || 0, entry.y || 0, optionsX.length, optionsY.length)} />
             })
           }
@@ -349,6 +350,41 @@ class Live2dChart extends React.Component<Props, State> {
       queryPageId: this.props.pageId,
       data: answerData
     }, this.props.panelId, answerId);
+  }
+
+  /**
+   * Returns whether values should be visible or not
+   * 
+   * @returns whether values should be visible or not
+   */
+  private getValuesVisible = () => {
+    if (!this.state.page) {
+      return false;
+    }
+
+    if (this.state.page.queryOptions.answersVisible == "AFTER_OWN_ANSWER") {
+      return this.getHasOwnAnswer();
+    }
+
+    return true;
+  }
+
+  /**
+   * Returns whether user has already answered or not
+   * 
+   * @return whether user has already answered or not
+   */
+  private getHasOwnAnswer = () => {
+    const values = this.state.values;
+    const id = `${this.props.pageId}-${this.props.queryReplyId}`;
+
+    for (let i = 0; i < values.length; i++) {
+      if (values[i].id == id) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /**
