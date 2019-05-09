@@ -4094,6 +4094,11 @@ QueryEditorQuestionEditor = Class.create(QueryEditorPageEditor, {
       className: "queryEditorPreviewShowOptionsLink"
     }).update(getLocale().getText("panelAdmin.block.query.showOptions"));
 
+    this._queryOptionsLink = new Element("a", {
+      href: "javascript:void(null);",
+      className: "queryEditorPreviewShowQueryOptionsLink"
+    }).update(getLocale().getText("panelAdmin.block.query.showQueryOptions"));
+
     this._commentOptionsLink = new Element("a", {
       href: "javascript:void(null);",
       className: "queryEditorPreviewShowCommentOptionsLink"
@@ -4104,7 +4109,13 @@ QueryEditorQuestionEditor = Class.create(QueryEditorPageEditor, {
         pageData: this.getBlockController().getCurrentPageData()
       });
     }.bindAsEventListener(this));
-    
+
+    this._queryOptionsLink.on("click", function () {
+      triggerReactCommand("edit-page-live2d-options", {
+        pageData: this.getBlockController().getCurrentPageData()
+      });
+    }.bindAsEventListener(this));
+
     this._optionsContainer = new Element("div", {
       className: "queryEditorQuestionOptions",
       style: "display:none"
@@ -4115,6 +4126,7 @@ QueryEditorQuestionEditor = Class.create(QueryEditorPageEditor, {
       });
     
     this._questionContainer.appendChild(this._questionOptionsLink);
+    this._questionContainer.appendChild(this._queryOptionsLink);
     this._questionContainer.appendChild(this._commentOptionsLink);
     this._questionContainer.appendChild(this._optionsContainer);
     this._optionsContainer.appendChild(this._optionsArrowUpContainer);

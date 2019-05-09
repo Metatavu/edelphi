@@ -1,8 +1,9 @@
 import * as React from "react";
 import * as actions from "../../actions";
-import { StoreState, AccessToken, Command, EditPageCommentOptionsCommand } from "../../types";
+import { StoreState, AccessToken, Command, EditPageCommentOptionsCommand, EditPageLegacyCommandPageData, EditPageLive2dOptionsCommand } from "../../types";
 import { connect } from "react-redux";
 import PanelAdminQueryPageCommentOptionsEditor from "./panel-admin-query-page-comment-options-editor";
+import PanelAdminQueryPageLive2dOptionsEditor from "./panel-admin-query-page-live2d-options-editor";
 
 /**
  * Interface representing component properties
@@ -18,11 +19,12 @@ interface Props {
  */
 interface State {
   pageCommentOptionsOpen: boolean,
-  pageCommentOptionsEditable: boolean,
+  pageLive2dOptionsOpen: boolean,
+  pageData?: EditPageLegacyCommandPageData,
   pageId: number
 }
 
-const COMMANDS: Command[] = [ "edit-page-comment-options" ];
+const COMMANDS: Command[] = [ "edit-page-comment-options", "edit-page-live2d-options" ];
 
 /**
  * React component for comment editor
@@ -38,7 +40,7 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
     super(props);
     this.state = {
       pageCommentOptionsOpen: false,
-      pageCommentOptionsEditable: false,
+      pageLive2dOptionsOpen: false,
       pageId: 0
     };
   }
@@ -55,10 +57,33 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
   public render() {
     return (
       <div>
-        <PanelAdminQueryPageCommentOptionsEditor editable={ this.state.pageCommentOptionsEditable } open={ this.state.pageCommentOptionsOpen } pageId={ this.state.pageId } panelId={ this.props.panelId} queryId={ this.props.queryId } onClose={ this.onCommentOptionsEditorClose }/>
+        { this.renderCommentOptionsEditor() }
+        { this.renderLive2dOptionsEditor() }
         { this.renderCommandLinks() }
       </div>
     );
+  }
+
+  /**
+   * Renders comment options editor
+   */
+  private renderCommentOptionsEditor() {
+    if (!this.state.pageData) {
+      return null;
+    }
+
+    return <PanelAdminQueryPageCommentOptionsEditor pageData={ this.state.pageData } open={ this.state.pageCommentOptionsOpen } pageId={ this.state.pageId } panelId={ this.props.panelId} queryId={ this.props.queryId } onClose={ this.onCommentOptionsEditorClose }/>
+  }
+
+  /**
+   * Renders Live2d options editor
+   */
+  private renderLive2dOptionsEditor() {
+    if (!this.state.pageData) {
+      return null;
+    }
+
+    return <PanelAdminQueryPageLive2dOptionsEditor pageData={ this.state.pageData } open={ this.state.pageLive2dOptionsOpen } pageId={ this.state.pageId } panelId={ this.props.panelId} queryId={ this.props.queryId } onClose={ this.onLive2dOptionsEditorClose }/>
   }
 
   /**
@@ -84,6 +109,15 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
   }
 
   /**
+   * Event handler for live2d option close event
+   */
+  private onLive2dOptionsEditorClose = () => {
+    this.setState({
+      pageLive2dOptionsOpen: false
+    });
+  }
+
+  /**
    * Event handler for handling "commands" triggered from legacy UI
    * 
    * @param event
@@ -95,10 +129,22 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
     this.onCommandTrigger(command, data ? JSON.parse(data) : {});
   }
 
+  /**
+   * Event handler for handling command trigger
+   * 
+   * @param command command
+   * @param data data
+   */
   private onCommandTrigger(command: Command, data: any) {
     switch (command) {
       case "edit-page-comment-options":
         this.onPageCommentOptionsCommandTrigger({
+          type: command,
+          pageData: data.pageData
+        });
+      break;
+      case "edit-page-live2d-options":
+        this.onPageLive2dOptionsCommandTrigger({
           type: command,
           pageData: data.pageData
         });
@@ -112,12 +158,23 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
    * @param command command
    */
   private onPageCommentOptionsCommandTrigger(command: EditPageCommentOptionsCommand) {
-    const editable = command.pageData.hasAnswers == "false";
-
     this.setState({
       pageId: command.pageData.id,
-      pageCommentOptionsEditable: editable, 
+      pageData: command.pageData,
       pageCommentOptionsOpen: true
+    });
+  }
+
+  /**
+   * Event handler for handling EditPageLive2dOptionsCommand -command
+   * 
+   * @param command command
+   */
+  private onPageLive2dOptionsCommandTrigger(command: EditPageLive2dOptionsCommand) {
+    this.setState({
+      pageId: command.pageData.id,
+      pageData: command.pageData,
+      pageLive2dOptionsOpen: true
     });
   }
 

@@ -38,6 +38,7 @@ import fi.metatavu.edelphi.queries.QueryQuestionAnswerData;
 import fi.metatavu.edelphi.queries.QueryQuestionLive2dAnswerData;
 import fi.metatavu.edelphi.queries.QueryReplyController;
 import fi.metatavu.edelphi.rest.api.PanelsApi;
+import fi.metatavu.edelphi.rest.model.QueryPageLive2DAnswersVisibleOption;
 import fi.metatavu.edelphi.rest.model.QueryQuestionComment;
 import fi.metatavu.edelphi.rest.model.QueryQuestionCommentCategory;
 import fi.metatavu.edelphi.rest.mqtt.QueryQuestionAnswerNotification;
@@ -470,6 +471,38 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     if (!queryPageController.isPanelsPage(panel, queryPage)) {
       return createNotFound(String.format("Page %d is not from panel %d", queryPage.getId(), panel.getId()));
     }
+    
+    return createOk(queryPageTranslator.translate(queryPage));
+  }
+  
+  @Override
+  @RolesAllowed("user")  
+  public Response updateQueryPage(fi.metatavu.edelphi.rest.model.QueryPage body, Long panelId, Long queryPageId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    QueryPage queryPage = queryPageController.findQueryPage(queryPageId);
+    if (queryPage == null) {
+      return createNotFound();
+    }
+    
+    if (!queryPageController.isPanelsPage(panel, queryPage)) {
+      return createNotFound(String.format("Page %d is not from panel %d", queryPage.getId(), panel.getId()));
+    }
+    
+    QueryPageLive2DAnswersVisibleOption answersVisible = queryPageController.getEnumSetting(queryPage, QueryPageController.LIVE2D_VISIBLE_OPTION, QueryPageLive2DAnswersVisibleOption.class);
+    if (answersVisible == null) {
+      answersVisible = QueryPageLive2DAnswersVisibleOption.IMMEDIATELY;
+    }
+    
+    queryPageController.setSetting(queryPage, QueryPageController.LIVE2D_VISIBLE_OPTION, answersVisible.toString(), loggedUser);
     
     return createOk(queryPageTranslator.translate(queryPage));
   }

@@ -33,6 +33,16 @@
         "close": "Close",
         "deleteCategory": "Delete",
         "deleteCategoryConfirm": "Are you sure?"
+      },
+      "pageLive2dOptions": {
+        "title": "Live 2d options",
+        "save": "Save",
+        "close": "Close",
+        "visible": "View others answers",
+        "visibleOptions": {
+          "AFTEROWNANSWER": "After own answer",
+          "IMMEDIATELY": "Immediately"
+        }
       }
     }
   }

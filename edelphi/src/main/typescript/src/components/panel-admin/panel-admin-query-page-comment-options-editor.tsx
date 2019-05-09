@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as actions from "../../actions";
 import * as _ from "lodash";
-import { StoreState, AccessToken } from "../../types";
+import { StoreState, AccessToken, EditPageLegacyCommandPageData } from "../../types";
 import { connect } from "react-redux";
 import { Modal, Button, Input, InputOnChangeData, Grid, Loader, Dimmer, Confirm } from "semantic-ui-react";
 import Api, { QueryQuestionCommentCategory } from "edelphi-client";
@@ -17,7 +17,7 @@ interface Props {
   panelId: number,
   queryId: number,
   open: boolean,
-  editable: boolean,
+  pageData: EditPageLegacyCommandPageData,
   onClose: () => void
 }
 
@@ -109,7 +109,7 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
             { this.renderCategoryList() }
           </Grid.Column>
           <Grid.Column width={ 6 } style={{ textAlign: "right" }}>
-            <Button disabled={ !this.props.editable } onClick={ this.onCategoryAddButtonClick }>{ strings.panelAdmin.queryEditor.pageCommentOptions.addCategory }</Button>
+            <Button disabled={ this.props.pageData.hasAnswers == "true" } onClick={ this.onCategoryAddButtonClick }>{ strings.panelAdmin.queryEditor.pageCommentOptions.addCategory }</Button>
           </Grid.Column>
         </Grid.Row>
         <Grid.Row>
@@ -134,7 +134,7 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
                   <Input style={{ width: "100%" }} value={ category.name } onChange={ (event: React.ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => this.onCategoryListNameChange(index, data.value) }/>
                 </Grid.Column>
                 <Grid.Column width={ 4 }>
-                  <Confirm content={ strings.panelAdmin.queryEditor.pageCommentOptions.deleteCategoryConfirm } trigger={ <Button disabled={ !this.props.editable } negative> { strings.panelAdmin.queryEditor.pageCommentOptions.deleteCategory } </Button> } onConfirm={ () => this.deleteCategory(index) } />
+                  <Confirm content={ strings.panelAdmin.queryEditor.pageCommentOptions.deleteCategoryConfirm } trigger={ <Button disabled={ this.props.pageData.hasAnswers == "true" } negative> { strings.panelAdmin.queryEditor.pageCommentOptions.deleteCategory } </Button> } onConfirm={ () => this.deleteCategory(index) } />
                 </Grid.Column>
               </Grid.Row>
             )
