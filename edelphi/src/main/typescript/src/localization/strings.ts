@@ -38,6 +38,16 @@ export interface IStrings extends LocalizedStringsMethods {
         close: string,
         deleteCategory: string,
         deleteCategoryConfirm: string
+      },
+      pageLive2dOptions: {
+        title: string,
+        save: string,
+        close: string,
+        visible: string,
+        visibleOptions: {
+          AFTEROWNANSWER: string
+          IMMEDIATELY: string
+        }
       }
     }
   }

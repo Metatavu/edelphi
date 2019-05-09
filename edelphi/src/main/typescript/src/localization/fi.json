@@ -33,6 +33,16 @@
         "close": "Sulje",
         "deleteCategory": "Poista",
         "deleteCategoryConfirm": "Oletko varma?"
+      },
+      "pageLive2dOptions": {
+        "title": "Live 2d asetukset",
+        "save": "Tallenna",
+        "close": "Sulje",
+        "visible": "Näytä muiden vastaukset",
+        "visibleOptions": {
+          "AFTEROWNANSWER": "Oman vastauksen jälkeen",
+          "IMMEDIATELY": "Heti"
+        }
       }
     }
   }

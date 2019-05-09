@@ -15,7 +15,7 @@ import javax.validation.Valid;
 
 @Path("/panels")
 @Api(description = "the panels API")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-05-08T09:28:22.941+03:00[Europe/Helsinki]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-05-09T06:53:59.597+03:00[Europe/Helsinki]")
 public interface PanelsApi {
 
     @POST
@@ -141,6 +141,18 @@ public interface PanelsApi {
         @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class, responseContainer = "List"),
         @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class, responseContainer = "List") })
     Response listQueryQuestionComments(@PathParam("panelId")  Long panelId,@QueryParam("parentId") @NotNull     Long parentId,@QueryParam("queryId")     Long queryId,@QueryParam("pageId")     Long pageId,@QueryParam("userId")     UUID userId,@QueryParam("stampId")     Long stampId,@QueryParam("categoryId")     Long categoryId);
+    @PUT
+    @Path("/{panelId}/queryPages/{queryPageId}")
+    @Consumes({ "application/json" })
+    @Produces({ "application/json" })
+    @ApiOperation(value = "Update query page", notes = "Updates query page", authorizations = {
+        @Authorization(value = "bearer")    }, tags={ "QueryPages" })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "Updated query page", response = QueryPage.class),
+        @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class),
+        @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class),
+        @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class) })
+    Response updateQueryPage(@Valid QueryPage body,@PathParam("panelId")  Long panelId,@PathParam("queryPageId")  Long queryPageId);
     @PUT
     @Path("/{panelId}/queryQuestionComments/{commentId}")
     @Consumes({ "application/json" })

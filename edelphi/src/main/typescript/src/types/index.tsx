@@ -39,20 +39,39 @@ export interface QueryQuestionAnswerNotification {
   answerId: string,
 }
 
-export type Command = "edit-page-comment-options";
+/**
+ * Command
+ */
+export type Command = "edit-page-comment-options" | "edit-page-live2d-options";
 
+/**
+ * Command page data for legacy command
+ */
+export interface EditPageLegacyCommandPageData {
+  hasAnswers: "true" | "false",
+  id: number,
+  number: number,
+  options: {
+    caption: string,
+    name: string,
+    editor: string
+  }[],
+  title: string,
+  type: string
+}
+
+/**
+ * Command payload for comment options command
+ */
 export interface EditPageCommentOptionsCommand {
   type: "edit-page-comment-options",
-  pageData: {
-    hasAnswers: "true" | "false",
-    id: number,
-    number: number,
-    options: {
-      caption: string,
-      name: string,
-      editor: string
-    }[],
-    title: string,
-    type: string
-  }
+  pageData: EditPageLegacyCommandPageData
+}
+
+/**
+ * Command payload for live2d options command
+ */
+export interface EditPageLive2dOptionsCommand {
+  type: "edit-page-live2d-options",
+  pageData: EditPageLegacyCommandPageData
 }

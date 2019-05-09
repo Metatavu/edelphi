@@ -38,6 +38,8 @@ import fi.metatavu.edelphi.queries.QueryQuestionAnswerData;
 import fi.metatavu.edelphi.queries.QueryQuestionLive2dAnswerData;
 import fi.metatavu.edelphi.queries.QueryReplyController;
 import fi.metatavu.edelphi.rest.api.PanelsApi;
+import fi.metatavu.edelphi.rest.model.QueryPageLive2DAnswersVisibleOption;
+import fi.metatavu.edelphi.rest.model.QueryPageLive2DOptions;
 import fi.metatavu.edelphi.rest.model.QueryQuestionComment;
 import fi.metatavu.edelphi.rest.model.QueryQuestionCommentCategory;
 import fi.metatavu.edelphi.rest.mqtt.QueryQuestionAnswerNotification;
@@ -473,6 +475,51 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     
     return createOk(queryPageTranslator.translate(queryPage));
   }
+  
+  @Override
+  @RolesAllowed("user")  
+  public Response updateQueryPage(fi.metatavu.edelphi.rest.model.QueryPage body, Long panelId, Long queryPageId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    QueryPage queryPage = queryPageController.findQueryPage(queryPageId);
+    if (queryPage == null) {
+      return createNotFound();
+    }
+    
+    if (!queryPageController.isPanelsPage(panel, queryPage)) {
+      return createNotFound(String.format("Page %d is not from panel %d", queryPage.getId(), panel.getId()));
+    }
+    
+    switch (queryPage.getPageType()) {
+      case LIVE_2D:
+        QueryPageLive2DOptions pageLive2DOptions;
+        try {
+          pageLive2DOptions = readQueryPageOptions(body, QueryPageLive2DOptions.class);
+        } catch (IOException e) {
+          return createInternalServerError("Failed to read page options");
+        }
+      
+        QueryPageLive2DAnswersVisibleOption answersVisible = pageLive2DOptions.getAnswersVisible();
+        if (answersVisible == null) {
+          answersVisible = QueryPageLive2DAnswersVisibleOption.IMMEDIATELY;
+        }
+        
+        queryPageController.setSetting(queryPage, QueryPageController.LIVE2D_VISIBLE_OPTION, answersVisible.toString(), loggedUser);        
+      break;
+      default:
+      break;
+    }
+    
+    return createOk(queryPageTranslator.translate(queryPage));
+  }
 
   @Override
   @RolesAllowed("user")  
@@ -601,6 +648,20 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   private <T> T readQueryQuestionAnswerData(fi.metatavu.edelphi.rest.model.QueryQuestionAnswer payload, Class<T> targetClass) throws IOException {
     ObjectMapper objectMapper = new ObjectMapper();
     return objectMapper.readValue(objectMapper.writeValueAsBytes(payload.getData()), targetClass);
+  }
+
+  /**
+   * Reads query page options
+   * 
+   * @param payload payload
+   * @param targetClass target class
+   * @param <T> return type
+   * @return read query page options
+   * @throws IOException thrown when reading fails
+   */
+  private <T> T readQueryPageOptions(fi.metatavu.edelphi.rest.model.QueryPage payload, Class<T> targetClass) throws IOException {
+    ObjectMapper objectMapper = new ObjectMapper();
+    return objectMapper.readValue(objectMapper.writeValueAsBytes(payload.getQueryOptions()), targetClass);
   }
 
   /**

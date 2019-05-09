@@ -10,4 +10,12 @@ export declare class QueryPagesService {
      * @param queryPageId query page id
     */
     findQueryPage(panelId: number, queryPageId: number): Promise<QueryPage>;
+    /**
+     * Updates query page
+     * @summary Update query page
+     * @param body Payload
+     * @param panelId panel id
+     * @param queryPageId query page id
+    */
+    updateQueryPage(body: QueryPage, panelId: number, queryPageId: number): Promise<QueryPage>;
 }

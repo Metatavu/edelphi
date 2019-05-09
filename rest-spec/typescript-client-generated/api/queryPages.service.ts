@@ -35,4 +35,28 @@ export class QueryPagesService {
     });
   }
 
+
+  /**
+   * Updates query page
+   * @summary Update query page
+   * @param body Payload
+   * @param panelId panel id
+   * @param queryPageId query page id
+  */
+  public updateQueryPage(body: QueryPage, panelId: number, queryPageId: number, ):Promise<QueryPage> {
+    const uri = new URI(`${this.basePath}/panels/${encodeURIComponent(String(panelId))}/queryPages/${encodeURIComponent(String(queryPageId))}`);
+    const options = {
+      method: "put",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${this.token}`
+      },
+      body: JSON.stringify(body)
+    };
+
+    return fetch(uri.toString(), options).then((response) => {
+      return ApiUtils.handleResponse(response);
+    });
+  }
+
 }

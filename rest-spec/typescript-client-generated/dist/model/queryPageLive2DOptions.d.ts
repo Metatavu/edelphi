@@ -9,12 +9,15 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { QueryPageLive2DAnswersVisibleOption } from './queryPageLive2DAnswersVisibleOption';
 import { QueryPageLive2DAxis } from './queryPageLive2DAxis';
 export interface QueryPageLive2DOptions {
+    answersVisible?: QueryPageLive2DAnswersVisibleOption;
     axisX?: QueryPageLive2DAxis;
     axisY?: QueryPageLive2DAxis;
 }
 export interface QueryPageLive2DOptionsOpt {
+    answersVisible?: QueryPageLive2DAnswersVisibleOption;
     axisX?: QueryPageLive2DAxis;
     axisY?: QueryPageLive2DAxis;
 }
