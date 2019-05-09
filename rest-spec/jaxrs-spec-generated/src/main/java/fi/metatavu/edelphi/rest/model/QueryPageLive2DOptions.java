@@ -13,7 +13,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class QueryPageLive2DOptions   {
-  private @Valid QueryPageLive2DAxis axisX = null;  private @Valid QueryPageLive2DAxis axisY = null;
+  private @Valid QueryPageLive2DAnswersVisibleOption answersVisible = null;  private @Valid QueryPageLive2DAxis axisX = null;  private @Valid QueryPageLive2DAxis axisY = null;
+
+  /**
+   **/
+  public QueryPageLive2DOptions answersVisible(QueryPageLive2DAnswersVisibleOption answersVisible) {
+    this.answersVisible = answersVisible;
+    return this;
+  }
+
+  
+  @ApiModelProperty(value = "")
+  @JsonProperty("answersVisible")
+  public QueryPageLive2DAnswersVisibleOption getAnswersVisible() {
+    return answersVisible;
+  }
+  public void setAnswersVisible(QueryPageLive2DAnswersVisibleOption answersVisible) {
+    this.answersVisible = answersVisible;
+  }
 
   /**
    **/
@@ -59,13 +76,14 @@ public class QueryPageLive2DOptions   {
       return false;
     }
     QueryPageLive2DOptions queryPageLive2DOptions = (QueryPageLive2DOptions) o;
-    return Objects.equals(axisX, queryPageLive2DOptions.axisX) &&
+    return Objects.equals(answersVisible, queryPageLive2DOptions.answersVisible) &&
+        Objects.equals(axisX, queryPageLive2DOptions.axisX) &&
         Objects.equals(axisY, queryPageLive2DOptions.axisY);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(axisX, axisY);
+    return Objects.hash(answersVisible, axisX, axisY);
   }
 
   @Override
@@ -73,6 +91,7 @@ public class QueryPageLive2DOptions   {
     StringBuilder sb = new StringBuilder();
     sb.append("class QueryPageLive2DOptions {\n");
     
+    sb.append("    answersVisible: ").append(toIndentedString(answersVisible)).append("\n");
     sb.append("    axisX: ").append(toIndentedString(axisX)).append("\n");
     sb.append("    axisY: ").append(toIndentedString(axisY)).append("\n");
     sb.append("}");
