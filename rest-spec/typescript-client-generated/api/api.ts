@@ -1,3 +1,7 @@
+export * from './panels.service';
+import { PanelsService } from './panels.service';
+export * from './queries.service';
+import { QueriesService } from './queries.service';
 export * from './queryPages.service';
 import { QueryPagesService } from './queryPages.service';
 export * from './queryQuestionAnswers.service';
@@ -35,6 +39,14 @@ export default new class Api {
     this.apiUrl = baseUrl;
   }
 
+  
+  public getPanelsService(token: string): PanelsService {
+    return new PanelsService(this.apiUrl, token);
+  }
+  
+  public getQueriesService(token: string): QueriesService {
+    return new QueriesService(this.apiUrl, token);
+  }
   
   public getQueryPagesService(token: string): QueryPagesService {
     return new QueryPagesService(this.apiUrl, token);

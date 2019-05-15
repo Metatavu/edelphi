@@ -37,6 +37,31 @@ export class QueryPagesService {
 
 
   /**
+   * Lists query pages
+   * @summary Lists query pages.
+   * @param panelId panel id
+   * @param queryId query id
+  */
+  public listQueryPages(panelId: number, queryId?: number, ):Promise<QueryPage> {
+    const uri = new URI(`${this.basePath}/panels/${encodeURIComponent(String(panelId))}/queryPages`);
+    if (queryId !== undefined && queryId !== null) {
+        uri.addQuery('queryId', <any>queryId);
+    }
+    const options = {
+      method: "get",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${this.token}`
+      }
+    };
+
+    return fetch(uri.toString(), options).then((response) => {
+      return ApiUtils.handleResponse(response);
+    });
+  }
+
+
+  /**
    * Updates query page
    * @summary Update query page
    * @param body Payload

@@ -69,14 +69,14 @@ var QueryQuestionCommentsService = /** @class */ (function () {
      * Lists query question comments
      * @summary Lists query question comments
      * @param panelId panel id
-     * @param parentId parent comment id. With zero only root comments are returned
      * @param queryId Filter by query id
      * @param pageId Filter by query page id
      * @param userId Filter by user id
      * @param stampId Filter by stamp id. Defaults to current stamp
+     * @param parentId parent comment id. With zero only root comments are returned
      * @param categoryId category id. If zero is specified only non categorized comments are returned
     */
-    QueryQuestionCommentsService.prototype.listQueryQuestionComments = function (panelId, parentId, queryId, pageId, userId, stampId, categoryId) {
+    QueryQuestionCommentsService.prototype.listQueryQuestionComments = function (panelId, queryId, pageId, userId, stampId, parentId, categoryId) {
         var uri = new URI(this.basePath + "/panels/" + encodeURIComponent(String(panelId)) + "/queryQuestionComments");
         if (queryId !== undefined && queryId !== null) {
             uri.addQuery('queryId', queryId);
