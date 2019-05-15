@@ -12,6 +12,133 @@
     "bearer" : [ ]
   } ],
   "paths" : {
+    "/panels/{panelId}" : {
+      "get" : {
+        "tags" : [ "Panels" ],
+        "summary" : "Find a panel.",
+        "description" : "Finds a panel by id",
+        "operationId" : "findPanel",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A panel",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Panel"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panels/{panelId}/queries" : {
+      "get" : {
+        "tags" : [ "Queries" ],
+        "summary" : "Lists queries in a panel.",
+        "description" : "Lists queries in a panel",
+        "operationId" : "listQueries",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of panel queries",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/Query"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/panels/{panelId}/queryQuestionAnswers" : {
       "get" : {
         "tags" : [ "QueryQuestionAnswers" ],
@@ -339,7 +466,7 @@
           "name" : "parentId",
           "in" : "query",
           "description" : "parent comment id. With zero only root comments are returned",
-          "required" : true,
+          "required" : false,
           "style" : "form",
           "explode" : true,
           "schema" : {
@@ -1061,6 +1188,79 @@
         }
       }
     },
+    "/panels/{panelId}/queryPages" : {
+      "get" : {
+        "tags" : [ "QueryPages" ],
+        "summary" : "Lists query pages.",
+        "description" : "Lists query pages",
+        "operationId" : "listQueryPages",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "queryId",
+          "in" : "query",
+          "description" : "query id",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A queryPage",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/QueryPage"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/panels/{panelId}/queryPages/{queryPageId}" : {
       "get" : {
         "tags" : [ "QueryPages" ],
@@ -1220,14 +1420,43 @@
   "components" : {
     "schemas" : {
       "Panel" : {
+        "required" : [ "accessLevel", "name", "state" ],
         "type" : "object",
         "properties" : {
           "id" : {
             "type" : "integer",
             "format" : "int64",
             "readOnly" : true
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "path" : {
+            "type" : "string",
+            "readOnly" : true
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "accessLevel" : {
+            "$ref" : "#/components/schemas/PanelAccessLevel"
+          },
+          "state" : {
+            "$ref" : "#/components/schemas/PanelState"
           }
         }
+      },
+      "PanelAccessLevel" : {
+        "type" : "string",
+        "enum" : [ "OPEN", "CLOSED" ]
+      },
+      "PanelState" : {
+        "type" : "string",
+        "enum" : [ "DESIGN", "IN_PROGRESS", "ENDED" ]
+      },
+      "QueryState" : {
+        "type" : "string",
+        "enum" : [ "EDIT", "ACTIVE", "CLOSED" ]
       },
       "Query" : {
         "type" : "object",
@@ -1235,6 +1464,52 @@
           "id" : {
             "type" : "integer",
             "format" : "int64",
+            "readOnly" : true
+          },
+          "allowEditReply" : {
+            "type" : "boolean"
+          },
+          "closes" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "state" : {
+            "$ref" : "#/components/schemas/QueryState"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "urlName" : {
+            "type" : "string"
+          },
+          "visible" : {
+            "type" : "boolean"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "creatorId" : {
+            "type" : "string",
+            "description" : "Comment's creator id",
+            "format" : "uuid",
+            "readOnly" : true
+          },
+          "lastModifierId" : {
+            "type" : "string",
+            "description" : "Comment's last modifier id",
+            "format" : "uuid",
+            "readOnly" : true
+          },
+          "created" : {
+            "type" : "string",
+            "description" : "Comment's creation time",
+            "format" : "date-time",
+            "readOnly" : true
+          },
+          "lastModified" : {
+            "type" : "string",
+            "description" : "Comment's last modification time",
+            "format" : "date-time",
             "readOnly" : true
           }
         }
