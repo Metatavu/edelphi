@@ -11,7 +11,28 @@
  */
 export interface Panel {
     readonly id?: number;
+    name?: string;
+    description?: string;
+    accessLevel?: Panel.AccessLevelEnum;
+    state?: Panel.StateEnum;
 }
 export interface PanelOpt {
     readonly id?: number;
+    name?: string;
+    description?: string;
+    accessLevel?: Panel.AccessLevelEnum;
+    state?: Panel.StateEnum;
+}
+export declare namespace Panel {
+    type AccessLevelEnum = 'OPEN' | 'CLOSED';
+    const AccessLevelEnum: {
+        OPEN: AccessLevelEnum;
+        CLOSED: AccessLevelEnum;
+    };
+    type StateEnum = 'DESIGN' | 'IN_PROGRESS' | 'ENDED';
+    const StateEnum: {
+        DESIGN: StateEnum;
+        INPROGRESS: StateEnum;
+        ENDED: StateEnum;
+    };
 }

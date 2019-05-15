@@ -11,3 +11,15 @@
  * Do not edit the class manually.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+var Panel;
+(function (Panel) {
+    Panel.AccessLevelEnum = {
+        OPEN: 'OPEN',
+        CLOSED: 'CLOSED'
+    };
+    Panel.StateEnum = {
+        DESIGN: 'DESIGN',
+        INPROGRESS: 'IN_PROGRESS',
+        ENDED: 'ENDED'
+    };
+})(Panel = exports.Panel || (exports.Panel = {}));
