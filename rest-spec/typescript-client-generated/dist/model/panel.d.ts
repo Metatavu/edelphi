@@ -11,14 +11,16 @@
  */
 export interface Panel {
     readonly id?: number;
-    name?: string;
+    name: string;
+    readonly path?: string;
     description?: string;
-    accessLevel?: Panel.AccessLevelEnum;
-    state?: Panel.StateEnum;
+    accessLevel: Panel.AccessLevelEnum;
+    state: Panel.StateEnum;
 }
 export interface PanelOpt {
     readonly id?: number;
     name?: string;
+    readonly path?: string;
     description?: string;
     accessLevel?: Panel.AccessLevelEnum;
     state?: Panel.StateEnum;
