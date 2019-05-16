@@ -1223,7 +1223,10 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/QueryPage"
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/QueryPage"
+                  }
                 }
               }
             }
@@ -1519,13 +1522,16 @@
         "enum" : [ "TEXT", "FORM", "EXPERTISE", "THESIS_SCALE_1D", "THESIS_SCALE_2D", "THESIS_ORDER", "THESIS_TIME_SERIE", "THESIS_MULTI_SELECT", "THESIS_TIMELINE", "THESIS_GROUPING", "THESIS_MULTIPLE_2D_SCALES", "LIVE_2D", "COLLAGE_2D" ]
       },
       "QueryPage" : {
-        "required" : [ "commentOptions", "queryOptions", "type" ],
+        "required" : [ "commentOptions", "queryOptions", "title", "type" ],
         "type" : "object",
         "properties" : {
           "id" : {
             "type" : "integer",
             "format" : "int64",
             "readOnly" : true
+          },
+          "title" : {
+            "type" : "string"
           },
           "type" : {
             "$ref" : "#/components/schemas/QueryPageType"

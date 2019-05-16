@@ -15,7 +15,7 @@ import javax.validation.Valid;
 
 @Path("/panels")
 @Api(description = "the panels API")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-05-16T07:01:16.630+03:00[Europe/Helsinki]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-05-16T08:21:40.455+03:00[Europe/Helsinki]")
 public interface PanelsApi {
 
     @POST
@@ -136,10 +136,10 @@ public interface PanelsApi {
     @ApiOperation(value = "Lists query pages.", notes = "Lists query pages", authorizations = {
         @Authorization(value = "bearer")    }, tags={ "QueryPages" })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "A queryPage", response = QueryPage.class),
-        @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class),
-        @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class),
-        @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class) })
+        @ApiResponse(code = 200, message = "A queryPage", response = QueryPage.class, responseContainer = "List"),
+        @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class, responseContainer = "List"),
+        @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class, responseContainer = "List"),
+        @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class, responseContainer = "List") })
     Response listQueryPages(@PathParam("panelId")  Long panelId,@QueryParam("queryId")     Long queryId);
     @GET
     @Path("/{panelId}/queryQuestionAnswers")
