@@ -1,5 +1,7 @@
 package fi.metatavu.edelphi.queries;
 
+import java.util.List;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -111,4 +113,25 @@ public class QueryController {
     
     return queryPanel.getId().equals(panel.getId());
   }
+
+  /**
+   * Lists queries in a panel
+   * 
+   * @param panel panel
+   * @return list of panel queries
+   */
+  public List<Query> listPanelQueries(Panel panel) {
+    return queryDAO.listByFolderAndArchived(panel.getRootFolder(), Boolean.FALSE);
+  }
+
+  /**
+   * Lists query pages by query
+   * 
+   * @param query query
+   * @return query pages
+   */
+  public List<QueryPage> listQueryPages(Query query) {
+    return queryPageDAO.listByQuery(query);
+  }
+  
 }

@@ -7,6 +7,8 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.EnumUtils;
+
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.users.UserController;
 
@@ -57,6 +59,22 @@ public abstract class AbstractTranslator<J, R> {
     }
     
     return userController.getUserKeycloakId(user);
+  }
+
+  /**
+   * Translates enum from on to another
+   * 
+   * @param <E> target enum
+   * @param enumClass target enum class
+   * @param original original enum
+   * @return translated enum
+   */
+  protected <E extends Enum<E>> E translateEnum(final Class<E> enumClass, Enum<?> original) {
+    if (original == null) {
+      return null;
+    }
+    
+    return EnumUtils.getEnum(enumClass, original.name());
   }
   
 }

@@ -25,6 +25,7 @@ import fi.metatavu.edelphi.users.UserController;
 public abstract class AbstractApi {
   
   protected static final String NOT_FOUND_MESSAGE = "Not found";
+  protected static final String GONE_MESSAGE = "Gone";
 
   @Inject
   private Logger logger;
@@ -74,6 +75,30 @@ public abstract class AbstractApi {
     entity.setMessage(message);
     return Response
       .status(Response.Status.NOT_FOUND)
+      .entity(entity)
+      .build();
+  }
+  
+  /**
+   * Constructs not found response
+   * 
+   * @return response
+   */
+  protected Response createGone() {
+    return createNotFound(NOT_FOUND_MESSAGE);
+  }
+  
+  /**
+   * Constructs not found response
+   * 
+   * @param message message
+   * @return response
+   */
+  protected Response createGone(String message) {
+    ErrorResponse entity = new ErrorResponse();
+    entity.setMessage(message);
+    return Response
+      .status(Response.Status.GONE)
       .entity(entity)
       .build();
   }
