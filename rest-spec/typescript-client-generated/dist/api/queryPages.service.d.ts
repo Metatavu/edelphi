@@ -16,7 +16,7 @@ export declare class QueryPagesService {
      * @param panelId panel id
      * @param queryId query id
     */
-    listQueryPages(panelId: number, queryId?: number): Promise<QueryPage>;
+    listQueryPages(panelId: number, queryId?: number): Promise<Array<QueryPage>>;
     /**
      * Updates query page
      * @summary Update query page
