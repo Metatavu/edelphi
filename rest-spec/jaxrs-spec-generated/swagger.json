@@ -1431,7 +1431,7 @@
           "name" : {
             "type" : "string"
           },
-          "path" : {
+          "urlName" : {
             "type" : "string",
             "readOnly" : true
           },

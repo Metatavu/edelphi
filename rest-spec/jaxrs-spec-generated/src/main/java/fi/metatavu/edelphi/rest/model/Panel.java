@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class Panel   {
-  private @Valid Long id = null;  private @Valid String name = null;  private @Valid String path = null;  private @Valid String description = null;  private @Valid PanelAccessLevel accessLevel = null;  private @Valid PanelState state = null;
+  private @Valid Long id = null;  private @Valid String name = null;  private @Valid String urlName = null;  private @Valid String description = null;  private @Valid PanelAccessLevel accessLevel = null;  private @Valid PanelState state = null;
 
   /**
    **/
@@ -52,19 +52,19 @@ public class Panel   {
 
   /**
    **/
-  public Panel path(String path) {
-    this.path = path;
+  public Panel urlName(String urlName) {
+    this.urlName = urlName;
     return this;
   }
 
   
   @ApiModelProperty(value = "")
-  @JsonProperty("path")
-  public String getPath() {
-    return path;
+  @JsonProperty("urlName")
+  public String getUrlName() {
+    return urlName;
   }
-  public void setPath(String path) {
-    this.path = path;
+  public void setUrlName(String urlName) {
+    this.urlName = urlName;
   }
 
   /**
@@ -132,7 +132,7 @@ public class Panel   {
     Panel panel = (Panel) o;
     return Objects.equals(id, panel.id) &&
         Objects.equals(name, panel.name) &&
-        Objects.equals(path, panel.path) &&
+        Objects.equals(urlName, panel.urlName) &&
         Objects.equals(description, panel.description) &&
         Objects.equals(accessLevel, panel.accessLevel) &&
         Objects.equals(state, panel.state);
@@ -140,7 +140,7 @@ public class Panel   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, path, description, accessLevel, state);
+    return Objects.hash(id, name, urlName, description, accessLevel, state);
   }
 
   @Override
@@ -150,7 +150,7 @@ public class Panel   {
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    path: ").append(toIndentedString(path)).append("\n");
+    sb.append("    urlName: ").append(toIndentedString(urlName)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    accessLevel: ").append(toIndentedString(accessLevel)).append("\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
