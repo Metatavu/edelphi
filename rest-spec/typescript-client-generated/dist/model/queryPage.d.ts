@@ -14,12 +14,14 @@ import { QueryPageCommentOptions } from './queryPageCommentOptions';
 import { QueryPageType } from './queryPageType';
 export interface QueryPage {
     readonly id?: number;
+    title: string;
     type: QueryPageType;
     commentOptions: QueryPageCommentOptions;
     queryOptions: QueryPageLive2DOptions;
 }
 export interface QueryPageOpt {
     readonly id?: number;
+    title?: string;
     type?: QueryPageType;
     commentOptions?: QueryPageCommentOptions;
     queryOptions?: QueryPageLive2DOptions;
