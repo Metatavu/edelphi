@@ -9,32 +9,21 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { PanelAccessLevel } from './panelAccessLevel';
+import { PanelState } from './panelState';
 export interface Panel {
     readonly id?: number;
     name: string;
     readonly path?: string;
     description?: string;
-    accessLevel: Panel.AccessLevelEnum;
-    state: Panel.StateEnum;
+    accessLevel: PanelAccessLevel;
+    state: PanelState;
 }
 export interface PanelOpt {
     readonly id?: number;
     name?: string;
     readonly path?: string;
     description?: string;
-    accessLevel?: Panel.AccessLevelEnum;
-    state?: Panel.StateEnum;
-}
-export declare namespace Panel {
-    type AccessLevelEnum = 'OPEN' | 'CLOSED';
-    const AccessLevelEnum: {
-        OPEN: AccessLevelEnum;
-        CLOSED: AccessLevelEnum;
-    };
-    type StateEnum = 'DESIGN' | 'IN_PROGRESS' | 'ENDED';
-    const StateEnum: {
-        DESIGN: StateEnum;
-        INPROGRESS: StateEnum;
-        ENDED: StateEnum;
-    };
+    accessLevel?: PanelAccessLevel;
+    state?: PanelState;
 }

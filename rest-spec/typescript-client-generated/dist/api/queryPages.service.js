@@ -27,6 +27,28 @@ var QueryPagesService = /** @class */ (function () {
         });
     };
     /**
+     * Lists query pages
+     * @summary Lists query pages.
+     * @param panelId panel id
+     * @param queryId query id
+    */
+    QueryPagesService.prototype.listQueryPages = function (panelId, queryId) {
+        var uri = new URI(this.basePath + "/panels/" + encodeURIComponent(String(panelId)) + "/queryPages");
+        if (queryId !== undefined && queryId !== null) {
+            uri.addQuery('queryId', queryId);
+        }
+        var options = {
+            method: "get",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + this.token
+            }
+        };
+        return fetch(uri.toString(), options).then(function (response) {
+            return api_1.ApiUtils.handleResponse(response);
+        });
+    };
+    /**
      * Updates query page
      * @summary Update query page
      * @param body Payload

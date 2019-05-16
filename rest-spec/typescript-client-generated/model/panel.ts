@@ -16,7 +16,7 @@ import { PanelState } from './panelState';
 export interface Panel { 
     readonly id?: number;
     name: string;
-    readonly path?: string;
+    readonly urlName?: string;
     description?: string;
     accessLevel: PanelAccessLevel;
     state: PanelState;
@@ -24,7 +24,7 @@ export interface Panel {
 export interface PanelOpt { 
     readonly id?: number;
     name?: string;
-    readonly path?: string;
+    readonly urlName?: string;
     description?: string;
     accessLevel?: PanelAccessLevel;
     state?: PanelState;
