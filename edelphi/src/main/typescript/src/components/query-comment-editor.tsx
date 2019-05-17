@@ -88,7 +88,7 @@ class QueryCommentEditor extends React.Component<Props, State> {
 
     const categoryId = this.props.category ? this.props.category.id : 0;
     const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken.token);
-    const comments = await queryQuestionCommentsService.listQueryQuestionComments(this.props.panelId, 0, this.props.queryId, this.props.pageId, this.props.accessToken.userId, undefined, categoryId);
+    const comments = await queryQuestionCommentsService.listQueryQuestionComments(this.props.panelId, this.props.queryId, this.props.pageId, this.props.accessToken.userId, undefined, 0, categoryId);
     
     if (comments.length === 1) {
       this.setState({
