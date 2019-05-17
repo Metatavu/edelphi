@@ -1,4 +1,8 @@
 {
+  "generic": {
+    "loading": "Loading...",
+    "back": "Back"
+  },
   "panel": {
     "query": {
       "commentEditor": {
@@ -44,6 +48,10 @@
           "IMMEDIATELY": "Immediately"
         }
       }
-    }
+    },
+    "commentView": {
+      "querySelectLabel": "Kysely",
+      "pageSelectLabel": "Sivu"
+    } 
   }
 }
