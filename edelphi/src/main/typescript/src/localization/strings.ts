@@ -68,6 +68,4 @@ const strings: IStrings = new LocalizedStrings({
   fi: require("./fi.json")
 });
 
-console.log("export ", strings);
-
 export default strings;
