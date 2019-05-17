@@ -28,7 +28,15 @@ module.exports = {
         use: ['style-loader', 'css-loader', 'less-loader']
       },
       {
-        test: /\.jpe?g$|\.gif$|\.png$|\.ttf$|\.eot$|\.svg$/,
+        test: /\.scss$/,
+        use: [ "style-loader", "css-loader", "sass-loader"]
+      },
+      {
+        test: /\.png$/,
+        loader: "url-loader?mimetype=image/png" 
+      },
+      {
+        test: /\.jpe?g$|\.gif$|\.ttf$|\.eot$|\.svg$/,
         use: 'file-loader?name=[name].[ext]?[hash]'
       },
       {
