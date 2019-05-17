@@ -4,6 +4,11 @@ import LocalizedStrings, {
 
 export interface IStrings extends LocalizedStringsMethods {
 
+  generic: {
+    loading: string,
+    back: string
+  },
+
   panel: {
     query: {
       commentEditor: {
@@ -49,6 +54,10 @@ export interface IStrings extends LocalizedStringsMethods {
           IMMEDIATELY: string
         }
       }
+    },
+    commentView: {
+      querySelectLabel: string,
+      pageSelectLabel: string
     }
   }
   
@@ -58,5 +67,7 @@ const strings: IStrings = new LocalizedStrings({
   en: require("./en.json"),
   fi: require("./fi.json")
 });
+
+console.log("export ", strings);
 
 export default strings;

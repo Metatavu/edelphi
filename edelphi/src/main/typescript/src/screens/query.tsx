@@ -7,16 +7,12 @@ import { StoreState } from "../types";
 import { AppAction } from "../actions";
 import { reducer } from "../reducers";
 import { Provider } from "react-redux";
-import Api from "edelphi-client";
 import strings from "../localization/strings";
 import "semantic-ui-less/semantic.less";
 import QueryPageLive2d from "../components/query-page-live-2d";
 import QueryComments from "../components/query-comments";
+import getLanguage from "../localization/language";
 
-const location = window.location;
-
-Api.configure(`${location.protocol}//${location.hostname}:${location.port}/api/v1`);
-declare function getLocale(): any;
 declare const JSDATA: any;
 
 const getAttribute = (element: Element, attributeName: string): string | null => {
@@ -43,7 +39,7 @@ const getBoolAttribute = (element: Element, attributeName: string): boolean => {
 }
 
 window.addEventListener('load', () => {
-  const locale: string = getLocale().getLanguage();
+  const locale: string = getLanguage();
   strings.setLanguage(locale);
 
   const queryComments = document.getElementById("query-comments");
