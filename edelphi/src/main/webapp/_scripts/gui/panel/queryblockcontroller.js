@@ -22,6 +22,24 @@ var QueryBarChartLiveReportController;
 var QueryPageController;
 var QueryLiveReportController;
 
+/**
+ * Trigger event from legacy code into ReactJs
+ * 
+ * @param string command
+ * @param object event data 
+ */
+function triggerReactCommand(command, data) {
+  var event = new CustomEvent('react-command', { 
+    bubbles: true,
+    detail: {
+      command: command,
+      data: data
+    }
+  });
+
+  document.dispatchEvent(event);
+}
+
 var QueryBlockController = Class.create(BlockController, {
   initialize : function($super) {
      $super();
@@ -203,6 +221,18 @@ var QueryBlockController = Class.create(BlockController, {
             $(button).writeAttribute('title', originalTitle);
             $(button).removeAttribute('disabled');
           },
+
+          /**
+           * Triggers event to the React side that query answers are going to be saved.  
+           */
+          _triggerPageSave: function () {
+            triggerReactCommand("save-query-answers", {
+              pageType: this._pageType,
+              currentPageNumber: this._currentPage,
+              nextPageNumber: parseInt(this._nextPageNumber),
+              previousPageNumber: parseInt(this._previousPageNumber)
+            });
+          },
           
           _disablePreviousButton: function () {
             $(this._previousButton).writeAttribute('disabled', 'disabled');
@@ -216,6 +246,7 @@ var QueryBlockController = Class.create(BlockController, {
           _onNextButtonClick : function(event) {
             Event.stop(event);
             this._disableNextButton();
+            this._triggerPageSave();
             
             var button = Event.element(event);
             var form = button.form;
@@ -236,7 +267,8 @@ var QueryBlockController = Class.create(BlockController, {
           _onFinishButtonClick : function(event) {
             Event.stop(event);
             this._disableNextButton();
-            
+            this._triggerPageSave();
+
             var button = Event.element(event);
             var form = button.form;
             var _this = this;
@@ -268,6 +300,7 @@ var QueryBlockController = Class.create(BlockController, {
           _onPreviousButtonClick : function(event) {
             Event.stop(event);
             this._disablePreviousButton();
+            this._triggerPageSave();
 
             var button = Event.element(event);
             var form = button.form;

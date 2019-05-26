@@ -1,7 +1,7 @@
 import * as React from "react";
 import { TextArea, TextAreaProps } from "semantic-ui-react";
 import * as actions from "../actions";
-import { StoreState, AccessToken } from "../types";
+import { StoreState, AccessToken, SaveQueryAnswersCommandEvent } from "../types";
 import { connect } from "react-redux";
 import { QueryQuestionCommentsService } from "edelphi-client/dist/api/api";
 import Api, { QueryQuestionCommentCategory } from "edelphi-client";
@@ -48,11 +48,20 @@ class QueryCommentEditor extends React.Component<Props, State> {
   }
   
   /**
-   * Component did update life-cycle event
+   * Component did mount life-cycle event
    */
   public async componentDidMount() {
+    document.addEventListener("react-command", this.onReactCommand);
     this.loadComment();
   }
+  
+  /**
+   * Component will unmount life-cycle event
+   */
+  public async componentWillUnmount() {
+    document.removeEventListener("react-command", this.onReactCommand);
+  }
+  
   
   /**
    * Component did update life-cycle event
@@ -69,7 +78,7 @@ class QueryCommentEditor extends React.Component<Props, State> {
       <div className="queryCommentEditor">
         <h2 className="querySubTitle">{ strings.panel.query.commentEditor.title }</h2>
         <div className="formFieldContainer formMemoFieldContainer">
-          <TextArea name="comment" className="formField formMemoField queryComment" value={ this.state.contents } disabled={ this.state.updating } onChange={ this.onContentChange } />
+          <TextArea className="formField formMemoField queryComment" value={ this.state.contents } disabled={ this.state.updating } onChange={ this.onContentChange } />
         </div>
         <div className="formFieldContainer formSubmitContainer">
           <input type="submit" className="formField formSubmit" value={ strings.panel.query.commentEditor.save } onClick={ this.onSaveButtonClick } disabled={ !this.state.contents || this.state.updating }/>
@@ -108,20 +117,18 @@ class QueryCommentEditor extends React.Component<Props, State> {
   }
 
   /**
-   * Event handler for contents change
+   * Returns query question comments API
+   * 
+   * @returns query question comments API
    */
-  private onContentChange = (event: React.FormEvent<HTMLTextAreaElement>, data: TextAreaProps) => {
-    this.setState({
-      contents: data.value as string
-    });
+  private getQueryQuestionCommentsService(accessToken: string): QueryQuestionCommentsService {
+    return Api.getQueryQuestionCommentsService(accessToken);
   }
 
   /**
-   * Handler for save button click
+   * Saves editor contents
    */
-  private onSaveButtonClick = async (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
-    event.preventDefault();
-
+  private save = async () => {
     if (!this.state.contents || this.state.updating || !this.props.accessToken) {
       return;
     }
@@ -161,12 +168,29 @@ class QueryCommentEditor extends React.Component<Props, State> {
   }
 
   /**
-   * Returns query question comments API
-   * 
-   * @returns query question comments API
+   * Event handler for contents change
    */
-  private getQueryQuestionCommentsService(accessToken: string): QueryQuestionCommentsService {
-    return Api.getQueryQuestionCommentsService(accessToken);
+  private onContentChange = (event: React.FormEvent<HTMLTextAreaElement>, data: TextAreaProps) => {
+    this.setState({
+      contents: data.value as string
+    });
+  }
+
+  /**
+   * Handler for save button click
+   */
+  private onSaveButtonClick = async (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
+    event.preventDefault();
+    this.save();
+  }
+
+  /**
+   * Event handler for react command events
+   */
+  private onReactCommand = async (event: SaveQueryAnswersCommandEvent) => {
+    if (event.detail.command == "save-query-answers" && this.state.contents) {
+      await this.save();
+    }
   }
 }
 
