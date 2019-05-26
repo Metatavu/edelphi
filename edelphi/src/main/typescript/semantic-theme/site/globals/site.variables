@@ -26,3 +26,5 @@
 @linkUnderline: 'underline';
 @linkHoverColor: #0099ff;
 @linkHoverUnderline: 'underline';
+
+@orange         : #ff6600;

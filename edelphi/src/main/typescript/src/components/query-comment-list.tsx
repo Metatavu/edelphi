@@ -4,7 +4,7 @@ import strings from "../localization/strings";
 import QueryCommentContainer from "./query-comment-container";
 import { StoreState } from "../types";
 import { connect } from "react-redux";
-import { QueryQuestionComment, QueryQuestionCommentCategory } from "edelphi-client";
+import { QueryQuestionCommentCategory } from "edelphi-client";
 
 /**
  * Interface representing component properties
@@ -24,7 +24,6 @@ interface Props {
  * Interface representing component state
  */
 interface State {
-  comments?: QueryQuestionComment[]
 }
 
 /**
