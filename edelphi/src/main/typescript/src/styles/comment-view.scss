@@ -1,0 +1,53 @@
+@import "vars";
+
+$controls-height: 80px;
+$label-height: 50px;
+
+.controls {
+  margin-top: 10px;
+}
+
+.comments-list {
+  height: calc(50vh - #{($header-height + $controls-height + $label-height) / 2});
+  overflow-y: auto;
+}
+
+.comments-list-axis-x {
+  text-align: center;
+  font-weight: bold;
+}
+
+.comments-list-axis-y {
+  text-align: center;
+  font-weight: bold;
+  transform: rotate(-90deg) translate(calc(-50vh + (#{($header-height + $controls-height + $label-height) / 2})),-50vh);
+  margin-left: 20px;
+  width: 100vh;
+}
+
+.comment {
+  background: #eee;
+  border-radius: 20px;
+  padding: 10px 20px; 
+  margin: 10px;
+
+  .comment-created {
+    font-weight: bold;
+    font-size: 12px;
+  }
+}
+
+.comment-list-row {
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+}
+
+.comment-list-cell {
+  padding-left: 5px !important;
+  padding-right: 5px !important;
+
+  .comments-list {
+    border: 1px solid #ddd; 
+    border-radius: 2px;
+  }
+}

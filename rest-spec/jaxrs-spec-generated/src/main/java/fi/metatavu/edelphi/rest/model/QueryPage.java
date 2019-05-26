@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class QueryPage   {
-  private @Valid Long id = null;  private @Valid QueryPageType type = null;  private @Valid QueryPageCommentOptions commentOptions = null;  private @Valid Object queryOptions = null;
+  private @Valid Long id = null;  private @Valid String title = null;  private @Valid QueryPageType type = null;  private @Valid QueryPageCommentOptions commentOptions = null;  private @Valid Object queryOptions = null;
 
   /**
    **/
@@ -30,6 +30,24 @@ public class QueryPage   {
   }
   public void setId(Long id) {
     this.id = id;
+  }
+
+  /**
+   **/
+  public QueryPage title(String title) {
+    this.title = title;
+    return this;
+  }
+
+  
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty("title")
+  @NotNull
+  public String getTitle() {
+    return title;
+  }
+  public void setTitle(String title) {
+    this.title = title;
   }
 
   /**
@@ -97,6 +115,7 @@ public class QueryPage   {
     }
     QueryPage queryPage = (QueryPage) o;
     return Objects.equals(id, queryPage.id) &&
+        Objects.equals(title, queryPage.title) &&
         Objects.equals(type, queryPage.type) &&
         Objects.equals(commentOptions, queryPage.commentOptions) &&
         Objects.equals(queryOptions, queryPage.queryOptions);
@@ -104,7 +123,7 @@ public class QueryPage   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, type, commentOptions, queryOptions);
+    return Objects.hash(id, title, type, commentOptions, queryOptions);
   }
 
   @Override
@@ -113,6 +132,7 @@ public class QueryPage   {
     sb.append("class QueryPage {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    commentOptions: ").append(toIndentedString(commentOptions)).append("\n");
     sb.append("    queryOptions: ").append(toIndentedString(queryOptions)).append("\n");

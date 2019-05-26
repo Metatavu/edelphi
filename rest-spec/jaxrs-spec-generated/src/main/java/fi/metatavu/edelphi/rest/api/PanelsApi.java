@@ -15,7 +15,7 @@ import javax.validation.Valid;
 
 @Path("/panels")
 @Api(description = "the panels API")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-05-09T06:53:59.597+03:00[Europe/Helsinki]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-05-16T08:21:40.455+03:00[Europe/Helsinki]")
 public interface PanelsApi {
 
     @POST
@@ -65,6 +65,17 @@ public interface PanelsApi {
         @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class) })
     Response deleteQueryQuestionCommentCategory(@PathParam("panelId")  Long panelId,@PathParam("categoryId")  Long categoryId);
     @GET
+    @Path("/{panelId}")
+    @Produces({ "application/json" })
+    @ApiOperation(value = "Find a panel.", notes = "Finds a panel by id", authorizations = {
+        @Authorization(value = "bearer")    }, tags={ "Panels" })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "A panel", response = Panel.class),
+        @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class),
+        @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class),
+        @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class) })
+    Response findPanel(@PathParam("panelId")  Long panelId);
+    @GET
     @Path("/{panelId}/queryPages/{queryPageId}")
     @Produces({ "application/json" })
     @ApiOperation(value = "Find query page.", notes = "Finds query page by id", authorizations = {
@@ -109,6 +120,28 @@ public interface PanelsApi {
         @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class) })
     Response findQueryQuestionCommentCategory(@PathParam("panelId")  Long panelId,@PathParam("categoryId")  Long categoryId);
     @GET
+    @Path("/{panelId}/queries")
+    @Produces({ "application/json" })
+    @ApiOperation(value = "Lists queries in a panel.", notes = "Lists queries in a panel", authorizations = {
+        @Authorization(value = "bearer")    }, tags={ "Queries" })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "List of panel queries", response = Query.class, responseContainer = "List"),
+        @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class, responseContainer = "List"),
+        @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class, responseContainer = "List"),
+        @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class, responseContainer = "List") })
+    Response listQueries(@PathParam("panelId")  Long panelId);
+    @GET
+    @Path("/{panelId}/queryPages")
+    @Produces({ "application/json" })
+    @ApiOperation(value = "Lists query pages.", notes = "Lists query pages", authorizations = {
+        @Authorization(value = "bearer")    }, tags={ "QueryPages" })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "A queryPage", response = QueryPage.class, responseContainer = "List"),
+        @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class, responseContainer = "List"),
+        @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class, responseContainer = "List"),
+        @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class, responseContainer = "List") })
+    Response listQueryPages(@PathParam("panelId")  Long panelId,@QueryParam("queryId")     Long queryId);
+    @GET
     @Path("/{panelId}/queryQuestionAnswers")
     @Produces({ "application/json" })
     @ApiOperation(value = "Lists query question answers", notes = "Lists query question answers", authorizations = {
@@ -140,7 +173,7 @@ public interface PanelsApi {
         @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class, responseContainer = "List"),
         @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class, responseContainer = "List"),
         @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class, responseContainer = "List") })
-    Response listQueryQuestionComments(@PathParam("panelId")  Long panelId,@QueryParam("parentId") @NotNull     Long parentId,@QueryParam("queryId")     Long queryId,@QueryParam("pageId")     Long pageId,@QueryParam("userId")     UUID userId,@QueryParam("stampId")     Long stampId,@QueryParam("categoryId")     Long categoryId);
+    Response listQueryQuestionComments(@PathParam("panelId")  Long panelId,@QueryParam("queryId")     Long queryId,@QueryParam("pageId")     Long pageId,@QueryParam("userId")     UUID userId,@QueryParam("stampId")     Long stampId,@QueryParam("parentId")     Long parentId,@QueryParam("categoryId")     Long categoryId);
     @PUT
     @Path("/{panelId}/queryPages/{queryPageId}")
     @Consumes({ "application/json" })

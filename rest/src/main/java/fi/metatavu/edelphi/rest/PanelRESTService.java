@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.rest;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -44,11 +45,13 @@ import fi.metatavu.edelphi.rest.model.QueryQuestionComment;
 import fi.metatavu.edelphi.rest.model.QueryQuestionCommentCategory;
 import fi.metatavu.edelphi.rest.mqtt.QueryQuestionAnswerNotification;
 import fi.metatavu.edelphi.rest.mqtt.QueryQuestionCommentNotification;
+import fi.metatavu.edelphi.rest.translate.PanelTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryPageTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryQuestionAnswerTranslator;
-import fi.metatavu.edelphi.rest.translate.QueryQuestionCommentTranslator;
-import fi.metatavu.edelphi.users.UserController;
 import fi.metatavu.edelphi.rest.translate.QueryQuestionCommentCategoryTranslator;
+import fi.metatavu.edelphi.rest.translate.QueryQuestionCommentTranslator;
+import fi.metatavu.edelphi.rest.translate.QueryTranslator;
+import fi.metatavu.edelphi.users.UserController;
 
 /**
  * Panel REST Services
@@ -101,6 +104,12 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Inject
   private QueryQuestionCommentCategoryTranslator queryQuestionCommentCategoryTranslator;
+
+  @Inject
+  private PanelTranslator panelTranslator;
+
+  @Inject
+  private QueryTranslator queryTranslator;
   
   @Override
   @RolesAllowed("user")
@@ -232,7 +241,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Override
   @RolesAllowed("user")
-  public Response listQueryQuestionComments(Long panelId, Long parentId, Long queryId, Long pageId, UUID userId, Long stampId, Long categoryId) {
+  public Response listQueryQuestionComments(Long panelId, Long queryId, Long pageId, UUID userId, Long stampId, Long parentId, Long categoryId) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
@@ -634,6 +643,71 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     }
 
     return createOk(queryQuestionCommentCategoryTranslator.translate(queryPageController.updateCommentCategory(category, body.getName(), loggedUser)));
+  }
+
+  @Override
+  @RolesAllowed("user") 
+  public Response findPanel(Long panelId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.ACCESS_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    return createOk(panelTranslator.translate(panel));
+  }
+
+  @Override
+  @RolesAllowed("user") 
+  public Response listQueries(Long panelId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.ACCESS_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    List<Query> queries = queryController.listPanelQueries(panel);
+    
+    return createOk(queries.stream().map(queryTranslator::translate).collect(Collectors.toList()));
+  }
+
+  @Override
+  @RolesAllowed("user") 
+  public Response listQueryPages(Long panelId, Long queryId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.ACCESS_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    Query query = queryController.findQueryById(queryId);
+    if (query == null) {
+      return createNotFound();
+    }
+    
+    if (!queryController.isPanelsQuery(query, panel)) {
+      return createNotFound();
+    }
+    
+    if (queryController.isQueryArchived(query)) {
+      return createGone();
+    }
+    
+    List<QueryPage> queryPages = queryController.listQueryPages(query);
+
+    return createOk(queryPages.stream().map(queryPageTranslator::translate).collect(Collectors.toList()));
   }
   
   /**

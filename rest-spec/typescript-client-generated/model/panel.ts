@@ -9,11 +9,23 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
+import { PanelAccessLevel } from './panelAccessLevel';
+import { PanelState } from './panelState';
 
 
 export interface Panel { 
     readonly id?: number;
+    name: string;
+    readonly urlName?: string;
+    description?: string;
+    accessLevel: PanelAccessLevel;
+    state: PanelState;
 }
 export interface PanelOpt { 
     readonly id?: number;
+    name?: string;
+    readonly urlName?: string;
+    description?: string;
+    accessLevel?: PanelAccessLevel;
+    state?: PanelState;
 }

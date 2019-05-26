@@ -5,15 +5,12 @@ import { AppAction } from "../../actions";
 import { reducer } from "../../reducers";
 import { Provider } from "react-redux";
 import AccessTokenRefresh from "../../components/access-token-refresh";
-import Api from "edelphi-client";
 import PanelAdminQueryEditor from "../../components/panel-admin/panel-admin-query-editor";
 
 import strings from "../../localization/strings";
 import { StoreState } from "src/types";
+import getLanguage from "../../localization/language";
 
-const location = window.location;
-
-Api.configure(`${location.protocol}//${location.hostname}:${location.port}/api/v1`);
 declare const JSDATA: any;
 
 const getAttribute = (element: Element, attributeName: string): string | null => {
@@ -34,10 +31,8 @@ const getIntAttribute = (element: Element, attributeName: string): number | null
   return value ? parseInt(value) : null;
 }
 
-declare function getLocale(): any;
-
 window.addEventListener('load', () => {
-  const locale: string = getLocale().getLanguage();
+  const locale: string = getLanguage();
   strings.setLanguage(locale);
 
   const panelAdminQueryEditor = document.getElementById("panel-admin-query-editor");

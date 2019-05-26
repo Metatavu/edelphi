@@ -7,6 +7,90 @@ security:
   - bearer:
       []
 paths:
+                                            
+  /panels/{panelId}:
+    get:
+      operationId: findPanel
+      summary: Find a panel.
+      description: Finds a panel by id
+      tags:
+        - Panels
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: A panel
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Panel"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+                                            
+  /panels/{panelId}/queries:
+    get:
+      operationId: listQueries
+      summary: Lists queries in a panel.
+      description: Lists queries in a panel
+      tags:
+        - Queries
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: List of panel queries
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/Query"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
     
   /panels/{panelId}/queryQuestionAnswers:
     get:
@@ -78,6 +162,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+
   /panels/{panelId}/queryQuestionAnswers/{answerId}:
     get:
       operationId: findQueryQuestionAnswer
@@ -266,7 +351,7 @@ paths:
             type: integer
             format: int64
         - name: parentId
-          required: true
+          required: false
           in: query
           description: parent comment id. With zero only root comments are returned
           schema:
@@ -686,7 +771,56 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-                                            
+
+  /panels/{panelId}/queryPages:
+    get:
+      operationId: listQueryPages
+      summary: Lists query pages.
+      description: Lists query pages
+      tags:
+        - QueryPages
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: queryId
+          in: query
+          description: query id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: A queryPage
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/QueryPage"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /panels/{panelId}/queryPages/{queryPageId}:
     get:
       operationId: findQueryPage
@@ -788,6 +922,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+    
+
 components:
   securitySchemes:
     bearer:
@@ -795,14 +931,50 @@ components:
       name: Authorization
       in: header
   schemas:
+
     Panel:
       type: object
+      required:
+        - name
+        - accessLevel
+        - state
       properties:
         id:
           type: integer
           format: int64
           readOnly: true
-          
+        name:
+          type: string
+        urlName:
+          type: string
+          readOnly: true
+        description:
+          type: string
+        accessLevel:
+          $ref: "#/components/schemas/PanelAccessLevel"
+        state:
+          $ref: "#/components/schemas/PanelState"
+    
+    PanelAccessLevel:
+      type: string
+      enum:
+        - OPEN
+        - CLOSED
+    
+    PanelState:
+      type: string
+      enum:
+        - DESIGN
+        - IN_PROGRESS
+        - ENDED
+
+    QueryState:
+      type: string
+      enum:
+        - EDIT
+        - ACTIVE
+        - CLOSED
+
     Query:
       type: object
       properties:
@@ -810,6 +982,42 @@ components:
           type: integer
           format: int64
           readOnly: true
+        allowEditReply:
+          type: boolean
+        closes:
+          type: string
+          format: date-time
+        state:
+          $ref: "#/components/schemas/QueryState"
+        name:
+          type: string
+        urlName:
+          type: string
+        visible:
+          type: boolean
+        description:
+          type: string
+        creatorId:
+          description: Comment's creator id
+          type: string
+          format: uuid
+          readOnly: true
+        lastModifierId:
+          description: Comment's last modifier id
+          type: string
+          format: uuid
+          readOnly: true
+        created:
+          description: Comment's creation time
+          type: string
+          format: date-time
+          readOnly: true
+        lastModified:
+          description: Comment's last modification time
+          type: string
+          format: date-time
+          readOnly: true   
+
 
     QueryPageType:
       type: string
@@ -832,6 +1040,7 @@ components:
       type: object
       required:
         - type
+        - title
         - commentOptions
         - queryOptions
       properties:
@@ -839,6 +1048,8 @@ components:
           type: integer
           format: int64
           readOnly: true
+        title:
+          type: string
         type:
           $ref: '#/components/schemas/QueryPageType'
         commentOptions:

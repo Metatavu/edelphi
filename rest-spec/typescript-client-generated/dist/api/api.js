@@ -3,6 +3,10 @@ function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
+__export(require("./panels.service"));
+var panels_service_1 = require("./panels.service");
+__export(require("./queries.service"));
+var queries_service_1 = require("./queries.service");
 __export(require("./queryPages.service"));
 var queryPages_service_1 = require("./queryPages.service");
 __export(require("./queryQuestionAnswers.service"));
@@ -40,6 +44,12 @@ exports.default = new /** @class */ (function () {
      */
     Api.prototype.configure = function (baseUrl) {
         this.apiUrl = baseUrl;
+    };
+    Api.prototype.getPanelsService = function (token) {
+        return new panels_service_1.PanelsService(this.apiUrl, token);
+    };
+    Api.prototype.getQueriesService = function (token) {
+        return new queries_service_1.QueriesService(this.apiUrl, token);
     };
     Api.prototype.getQueryPagesService = function (token) {
         return new queryPages_service_1.QueryPagesService(this.apiUrl, token);

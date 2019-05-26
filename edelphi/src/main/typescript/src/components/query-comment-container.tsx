@@ -137,7 +137,7 @@ class QueryCommentContainer extends React.Component<Props, State> {
       const categoryId = this.props.category ? this.props.category.id : 0;
 
       this.setState({
-        comments: await (this.getQueryQuestionCommentsService(this.props.accessToken)).listQueryQuestionComments(this.props.panelId, this.props.parentId, this.props.queryId, this.props.pageId, undefined, undefined, categoryId)
+        comments: await (this.getQueryQuestionCommentsService(this.props.accessToken)).listQueryQuestionComments(this.props.panelId, this.props.queryId, this.props.pageId, undefined, undefined, this.props.parentId, categoryId)
       });
     }
   } 

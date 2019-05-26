@@ -72,6 +72,12 @@ public enum Feature {
    */
 
   MANAGE_PANEL_TIMESTAMPS,
+
+  /**
+   * Comment view
+   */
+
+  ACCESS_COMMENT_VIEW,
   
   /**
    * Access to Live-Delphi

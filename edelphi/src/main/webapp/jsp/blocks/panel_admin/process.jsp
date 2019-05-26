@@ -41,7 +41,13 @@
           <div class="panelAdminGenericDescription"><fmt:message key="panel.admin.dashboard.panelProcessCompareReportsDescription" /></div>
         </div>
       </ed:feature>
-      
+
+      <ed:feature featurePage="panel/admin/commentview.page">
+        <div class="panelAdminProcessRow">
+          <div class="panelAdminGenericTitle"><a href="commentview.page?panelId=${panel.id}"><fmt:message key="panel.admin.dashboard.panelProcessCommentViewAction" /></a></div>
+          <div class="panelAdminGenericDescription"><fmt:message key="panel.admin.dashboard.panelProcessCommentViewDescription" /></div>
+        </div>
+      </ed:feature>
     </div>
     
     <div id="panelAdminDashboardProcessRightBlock">
