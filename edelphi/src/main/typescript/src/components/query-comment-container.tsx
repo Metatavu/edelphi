@@ -1,3 +1,4 @@
+import * as _ from "lodash";
 import * as React from "react";
 import * as actions from "../actions";
 import QueryComment from "./query-comment";
@@ -21,7 +22,8 @@ interface Props {
   locale: string,
   className: string,
   canManageComments: boolean,
-  category: QueryQuestionCommentCategory | null
+  category: QueryQuestionCommentCategory | null,
+  onCommentsChanged?: (comments: QueryQuestionComment[]) => void
 }
 
 /**
@@ -67,8 +69,12 @@ class QueryCommentContainer extends React.Component<Props, State> {
   /**
    * Component did update life-cycle event
   */
-  public async componentDidUpdate() {
-    this.loadChildComments();
+  public async componentDidUpdate(prevProps: Props, prevState: State) {
+    await this.loadChildComments();
+
+    if (this.props.onCommentsChanged && this.state.comments && !_.isEqual(this.state.comments, prevState.comments)) {
+      this.props.onCommentsChanged(this.state.comments);
+    }
   }
 
   /** 
@@ -102,7 +108,9 @@ class QueryCommentContainer extends React.Component<Props, State> {
       return;
     }
 
-    if (message.type == "CREATED" && message.parentCommentId == this.props.parentId) {
+    const parentCommentId = message.parentCommentId || 0;
+
+    if (message.type == "CREATED" && parentCommentId == this.props.parentId) {
       const comment = await this.getQueryQuestionCommentsService(this.props.accessToken).findQueryQuestionComment(this.props.panelId, message.commentId);
       this.setState({
         comments: this.state.comments.concat([comment])
@@ -135,9 +143,10 @@ class QueryCommentContainer extends React.Component<Props, State> {
   private async loadChildComments() {
     if (!this.state.comments && this.props.accessToken) {
       const categoryId = this.props.category ? this.props.category.id : 0;
+      const comments = await (this.getQueryQuestionCommentsService(this.props.accessToken)).listQueryQuestionComments(this.props.panelId, this.props.queryId, this.props.pageId, undefined, undefined, this.props.parentId, categoryId);
 
       this.setState({
-        comments: await (this.getQueryQuestionCommentsService(this.props.accessToken)).listQueryQuestionComments(this.props.panelId, this.props.queryId, this.props.pageId, undefined, undefined, this.props.parentId, categoryId)
+        comments: comments
       });
     }
   } 

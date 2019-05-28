@@ -34,7 +34,8 @@ export interface IStrings extends LocalizedStringsMethods {
         saveEdit: string,
         confirmRemoveConfirm: string,
         confirmRemoveCancel: string,
-        confirmRemoveText: string
+        confirmRemoveText: string,
+        noComments: string
       }
     }
   },

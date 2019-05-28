@@ -29,7 +29,8 @@
         "saveEdit": "Save",
         "confirmRemoveConfirm": "Delete", 
         "confirmRemoveCancel": "Cancel",
-        "confirmRemoveText": "Are you sure that you want to delete comment \"{0}\" including all its replies?"
+        "confirmRemoveText": "Are you sure that you want to delete comment \"{0}\" including all its replies?",
+        "noComments": "There are no comments yet"
       }
     }
   },

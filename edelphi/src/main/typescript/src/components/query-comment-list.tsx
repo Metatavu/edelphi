@@ -4,7 +4,7 @@ import strings from "../localization/strings";
 import QueryCommentContainer from "./query-comment-container";
 import { StoreState } from "../types";
 import { connect } from "react-redux";
-import { QueryQuestionCommentCategory } from "edelphi-client";
+import { QueryQuestionCommentCategory, QueryQuestionComment } from "edelphi-client";
 
 /**
  * Interface representing component properties
@@ -24,6 +24,7 @@ interface Props {
  * Interface representing component state
  */
 interface State {
+  empty: boolean
 }
 
 /**
@@ -38,7 +39,9 @@ class QueryCommentList extends React.Component<Props, State> {
    */
   constructor(props: Props) {
     super(props);
-    this.state = { };
+    this.state = {
+      empty: false
+    };
   }
 
   /** 
@@ -48,9 +51,21 @@ class QueryCommentList extends React.Component<Props, State> {
     return (
       <div className="queryCommentList">
         <h2 className="querySubTitle queryCommentListSubTitle">{ strings.panel.query.comments.title }</h2>
-        <QueryCommentContainer category={ this.props.category } className="queryCommentsContainer" canManageComments={ this.props.canManageComments } queryReplyId={ this.props.queryReplyId } parentId={ 0 } pageId={ this.props.pageId } panelId={ this.props.panelId } queryId={ this.props.queryId }/>
+        { this.state.empty ? <p> { strings.panel.query.comments.noComments } </p> : null }
+        <QueryCommentContainer onCommentsChanged={ this.onCommentsChanged } category={ this.props.category } className="queryCommentsContainer" canManageComments={ this.props.canManageComments } queryReplyId={ this.props.queryReplyId } parentId={ 0 } pageId={ this.props.pageId } panelId={ this.props.panelId } queryId={ this.props.queryId }/>
       </div>
     );
+  }
+
+  /**
+   * Event called when container comments array have changed
+   * 
+   * @param comments comments
+   */
+  private onCommentsChanged = (comments: QueryQuestionComment[]) => {
+    this.setState({
+      empty: comments.length == 0
+    });
   }
   
 }

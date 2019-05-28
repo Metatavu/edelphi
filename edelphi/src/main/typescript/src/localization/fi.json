@@ -29,7 +29,8 @@
         "saveEdit": "Tallenna",
         "confirmRemoveConfirm": "Poista", 
         "confirmRemoveCancel": "Peruuta",
-        "confirmRemoveText": "Oletko varma, että haluat poistaa kommentin \"{0}\" sekä kaikki siihen liittyvät vastaukset?"
+        "confirmRemoveText": "Oletko varma, että haluat poistaa kommentin \"{0}\" sekä kaikki siihen liittyvät vastaukset?",
+        "noComments": "Kysymykseen ei ole vielä jätetty kommentteja"
       }
     }
   },
