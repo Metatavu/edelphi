@@ -2,6 +2,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { StoreState, AccessToken } from "../types";
 import * as actions from "../actions";
+import ErrorDialog from "./error-dialog";
 
 /**
  * Component props
@@ -15,7 +16,7 @@ interface Props {
  * Component state
  */
 interface State {
-
+  error?: Error
 }
 
 /**
@@ -60,6 +61,10 @@ class AccessTokenRefresh extends React.Component<Props, State> {
    * Component render method
    */
   public render() {
+    if (this.state.error) {
+      return <ErrorDialog error={ this.state.error } onClose={ () => this.setState({ error: undefined }) } /> 
+    }
+
     return null;
   }
 
@@ -67,9 +72,20 @@ class AccessTokenRefresh extends React.Component<Props, State> {
    * Refreshes access token
    */
   private async refreshAccessToken() {
-    const response: AccessToken = await (await fetch("/system/accesstoken.json")).json();
-    if (response && response.expires && response.token && response.userId) {
-      this.props.onAccessTokenUpdate(response);
+    try {
+      const init: RequestInit = {
+        credentials: "same-origin"
+      };
+      
+      const response: AccessToken = await (await fetch("/system/accesstoken.json", init)).json();
+
+      if (response && response.expires && response.token && response.userId) {
+        this.props.onAccessTokenUpdate(response);
+      } 
+    } catch (e) {
+      this.setState({
+        error: e
+      });
     }
   }
 

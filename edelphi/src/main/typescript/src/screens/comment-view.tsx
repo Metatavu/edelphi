@@ -497,7 +497,12 @@ class CommentView extends React.Component<Props, State> {
     await this.loadData();
   }
 
-  private setStateAsync(state: any) {
+  /**
+   * Sets state and returns a promise for the change
+   * 
+   * @param state state
+   */
+  private setStateAsync<K extends keyof State>(state: (Pick<State, K>)): Promise<void> {
     return new Promise((resolve) => {
       this.setState(state, resolve);  
     });

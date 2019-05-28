@@ -3,6 +3,13 @@
     "loading": "Loading...",
     "back": "Back"
   },
+
+  "errorDialog": {
+    "header": "Error",
+    "errorOccurred": "Error occurred:",
+    "close": "Close"
+  },
+
   "panel": {
     "query": {
       "commentEditor": {

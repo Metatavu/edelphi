@@ -3,6 +3,13 @@
     "loading": "Lataa...",
     "back": "Takaisin"
   },
+
+  "errorDialog": {
+    "header": "Virhe",
+    "errorOccurred": "Seuraava virhe tapahtui: ",
+    "close": "Sulje"
+  },
+  
   "panel": {
     "query": {
       "commentEditor": {

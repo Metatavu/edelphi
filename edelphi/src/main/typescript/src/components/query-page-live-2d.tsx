@@ -2,10 +2,12 @@ import * as React from "react";
 import * as actions from "../actions";
 import { StoreState, AccessToken, QueryQuestionAnswerNotification } from "../types";
 import { connect } from "react-redux";
-import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Cell, RechartsFunction, AxisDomain, ZAxis, Label } from 'recharts';
+import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Cell, AxisDomain, ZAxis, Label } from 'recharts';
 import Api, { QueryQuestionLive2dAnswerData, QueryPageLive2DColor, QueryPage, QueryPageLive2DOptions } from "edelphi-client";
 import { mqttConnection, OnMessageCallback } from "../mqtt";
-import { Loader } from "semantic-ui-react";
+import { Loader, Dimmer, Segment } from "semantic-ui-react";
+import strings from "../localization/strings";
+import ErrorDialog from "./error-dialog";
 
 /**
  * Interface representing component properties
@@ -33,11 +35,11 @@ interface Answer {
  */
 interface State {
   contents?: string,
-  updating: boolean,
   loaded: boolean,
   commentId?: number
   values: Answer[],
-  page?: QueryPage
+  page?: QueryPage,
+  error?: Error
 }
 
 const LABEL_BOX_WIDTH = 20;
@@ -51,6 +53,8 @@ class Live2dChart extends React.Component<Props, State> {
 
   private wrapperDiv: HTMLDivElement | null;
   private queryQuestionAnswersListener: OnMessageCallback;
+  private savedAt: number = 0;
+  private saving: boolean = false;
 
   /**
    * Constructor
@@ -60,7 +64,6 @@ class Live2dChart extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      updating: true,
       loaded: false,
       values: []
     };
@@ -87,19 +90,31 @@ class Live2dChart extends React.Component<Props, State> {
    * Component did update life-cycle event
    */
   public async componentDidMount() {
-    await this.load();
+    try {
+      await this.load();
 
-    setInterval(() => {
-      this.pulse();
-    }, 500);
+      setInterval(() => {
+        this.pulse();
+      }, 500);
+    } catch (e) {
+      this.setState({
+        error: e
+      });
+    }
   }
 
   /**
    * Component did update life-cycle event
    */
   public async componentDidUpdate(prevProps: Props) {
-    if (!this.state.loaded) {
-      this.load();
+    try {
+      if (!this.state.loaded) {
+        this.load();
+      }
+    } catch (e) {
+      this.setState({
+        error: e
+      });
     }
   }
 
@@ -107,6 +122,20 @@ class Live2dChart extends React.Component<Props, State> {
    * Component render method
    */
   public render() {
+    if (this.state.error) {
+      return <ErrorDialog error={ this.state.error } onClose={ () => this.setState({ error: undefined }) } /> 
+    }
+
+    if (!this.state.loaded) {
+      return (
+        <Segment style={{ minHeight: "400px" }}>
+          <Dimmer inverted active>
+            <Loader>{ strings.generic.loading }</Loader>
+          </Dimmer>
+        </Segment>
+      );
+    }
+
     return (
       <div style={{margin:"auto"}} ref={ (element) => this.setWrapperDiv(element) }>
         { this.renderChart() }
@@ -115,16 +144,25 @@ class Live2dChart extends React.Component<Props, State> {
   }
 
   /**
+   * Component did catch method
+   */
+  public componentDidCatch = (error: Error) => {
+    this.setState({
+      error: error
+    });
+  }
+
+  /**
    * Renders chart component
    */
   private renderChart() {
     if (!this.state.loaded || !this.state.page || !this.wrapperDiv) {
-      return <Loader/>;
+      return null;
     }
 
     const pageOptions = this.state.page.queryOptions as QueryPageLive2DOptions;
     if (!pageOptions.axisX || !pageOptions.axisY) {
-      return <Loader/>;
+      return null;
     }
 
     const optionsX = pageOptions.axisX.options || [];
@@ -138,7 +176,7 @@ class Live2dChart extends React.Component<Props, State> {
     const data = this.getValuesVisible() ? this.state.values : [];
 
     return (
-      <ScatterChart onMouseDown={(data: RechartsFunction) => { this.onScatterMouseDown(data) }} width={ size } height={ size } margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+      <ScatterChart onClick={ this.onScatterChartClick } onMouseDown={ this.onScatterChartMouseDown } width={ size } height={ size } margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
         <XAxis type="number" domain={ domainX } dataKey={'x'} tickCount={ optionsX.length } tickFormatter={ (value) => this.formatTick(value, optionsX) }>
           <Label content={ this.renderAxisXLabelContents }/>
         </XAxis>
@@ -158,6 +196,13 @@ class Live2dChart extends React.Component<Props, State> {
     );
   }
 
+  /**
+   * Formats tick value
+   * 
+   * @param value value
+   * @param options options
+   * @return formatted tick
+   */
   private formatTick = (value: any, options: string[]) => {
     const index: number = value;
     return options[index];
@@ -328,31 +373,6 @@ class Live2dChart extends React.Component<Props, State> {
   }
 
   /**
-   * Event handler for handling scatter mouse down events
-   */
-  private onScatterMouseDown = async (data: any) => {
-    if (!this.props.accessToken || !data) {
-      return;
-    }
-
-    const { xValue, yValue } = data;
-
-    const queryQuestionAnswersService = Api.getQueryQuestionAnswersService(this.props.accessToken.token);
-    const answerData: QueryQuestionLive2dAnswerData = {
-      x: xValue,
-      y: yValue
-    };
-
-    const answerId = `${this.props.pageId}-${this.props.queryReplyId}`;
-
-    await queryQuestionAnswersService.upsertQueryQuestionAnswer({
-      queryReplyId: this.props.queryReplyId,
-      queryPageId: this.props.pageId,
-      data: answerData
-    }, this.props.panelId, answerId);
-  }
-
-  /**
    * Returns whether values should be visible or not
    * 
    * @returns whether values should be visible or not
@@ -376,7 +396,7 @@ class Live2dChart extends React.Component<Props, State> {
    */
   private getHasOwnAnswer = () => {
     const values = this.state.values;
-    const id = `${this.props.pageId}-${this.props.queryReplyId}`;
+    const id = this.getLoggedUserAnswerId();
 
     for (let i = 0; i < values.length; i++) {
       if (values[i].id == id) {
@@ -388,22 +408,12 @@ class Live2dChart extends React.Component<Props, State> {
   }
 
   /**
-   * Handles query question comment notification MQTT message
+   * Returns logged user answer id
    * 
-   * @param notification notification
+   * @return logged user answer id
    */
-  private async onQueryQuestionAnswerNotification(notification: QueryQuestionAnswerNotification) {
-    switch (notification.type) {
-      case "UPDATED":
-        if (!this.props.accessToken) {
-          return;
-        }
-        
-        const queryQuestionAnswersService = Api.getQueryQuestionAnswersService(this.props.accessToken.token); 
-        const answer = await queryQuestionAnswersService.findQueryQuestionAnswer(this.props.panelId, notification.answerId);
-        this.updateAnswer(answer.id!, answer.data.x, answer.data.y);
-      break;
-    }
+  private getLoggedUserAnswerId = () => {
+    return `${this.props.pageId}-${this.props.queryReplyId}`;
   }
 
   /**
@@ -411,7 +421,7 @@ class Live2dChart extends React.Component<Props, State> {
    */
   private pulse = () => {
     const values = this.state.values;
-    const id = `${this.props.pageId}-${this.props.queryReplyId}`;
+    const id = this.getLoggedUserAnswerId();
     
     for (let i = 0; i < values.length; i++) {
       if (values[i].id == id) {
@@ -420,6 +430,7 @@ class Live2dChart extends React.Component<Props, State> {
         this.setState({
           values: values
         });
+
         return;
       }
     }
@@ -445,7 +456,7 @@ class Live2dChart extends React.Component<Props, State> {
         break;
       }
     }
-    
+
     if (!updated) {
       values.push({
         x: x,
@@ -458,6 +469,95 @@ class Live2dChart extends React.Component<Props, State> {
     this.setState({
       values: values
     });
+  }
+
+  /**
+   * Saves user answer
+   * 
+   * @param x answer x
+   * @param y answer y
+   */
+  private saveAnswer = async (x: number, y: number) => {
+    if (!this.props.accessToken || this.saving) {
+      return;
+    }
+
+    this.saving = true;
+
+    const queryQuestionAnswersService = Api.getQueryQuestionAnswersService(this.props.accessToken.token);
+    const answerData: QueryQuestionLive2dAnswerData = {
+      x: x,
+      y: y
+    };
+
+    const answerId = this.getLoggedUserAnswerId();
+
+    const updatedAnswer = await queryQuestionAnswersService.upsertQueryQuestionAnswer({
+      queryReplyId: this.props.queryReplyId,
+      queryPageId: this.props.pageId,
+      data: answerData
+    }, this.props.panelId, answerId);
+
+    if (updatedAnswer && updatedAnswer.id) {
+      this.updateAnswer(updatedAnswer.id, updatedAnswer.data.x, updatedAnswer.data.y);
+    }
+
+    this.saving = false;
+    this.savedAt = new Date().getTime();
+  }
+
+  /**
+   * Event handler for handling scatter click events
+   * 
+   * @param data event data
+   */
+  private onScatterChartClick = async (data: any) => {
+    if (!data) {
+      return;
+    }
+
+    const { xValue, yValue } = data;
+    await this.saveAnswer(xValue, yValue);
+  }
+
+  /**
+   * Event handler for handling scatter mouse down events
+   * 
+   * @param data event data
+   */
+  private onScatterChartMouseDown = async (data: any) => {
+    if (!data) {
+      return;
+    }
+
+    const { xValue, yValue } = data;
+    await this.saveAnswer(xValue, yValue);
+  }
+
+  /**
+   * Handles query question comment notification MQTT message
+   * 
+   * @param notification notification
+   */
+  private async onQueryQuestionAnswerNotification(notification: QueryQuestionAnswerNotification) {
+    switch (notification.type) {
+      case "UPDATED":
+        if (!this.props.accessToken) {
+          return;
+        }
+
+        const loggedUserAnswerId = this.getLoggedUserAnswerId();
+        const now = new Date().getTime();
+
+        if (loggedUserAnswerId == notification.answerId && (now - this.savedAt < 10000)) {
+          return;
+        }
+
+        const queryQuestionAnswersService = Api.getQueryQuestionAnswersService(this.props.accessToken.token); 
+        const answer = await queryQuestionAnswersService.findQueryQuestionAnswer(this.props.panelId, notification.answerId);
+        this.updateAnswer(answer.id!, answer.data.x, answer.data.y);
+      break;
+    }
   }
 }
 

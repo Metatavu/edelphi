@@ -9,6 +9,12 @@ export interface IStrings extends LocalizedStringsMethods {
     back: string
   },
 
+  errorDialog: {
+    header: string,
+    errorOccurred: string,
+    close: string
+  },
+
   panel: {
     query: {
       commentEditor: {
