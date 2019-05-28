@@ -64,7 +64,9 @@ export interface IStrings extends LocalizedStringsMethods {
     },
     commentView: {
       querySelectLabel: string,
-      pageSelectLabel: string
+      pageSelectLabel: string,
+      categorySelectLabel: string,
+      defaultCategory: string
     }
   }
   

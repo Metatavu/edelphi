@@ -59,7 +59,9 @@
     },
     "commentView": {
       "querySelectLabel": "Query",
-      "pageSelectLabel": "Page"
+      "pageSelectLabel": "Page",
+      "categorySelectLabel": "Category",
+      "defaultCategory": "Default"
     }
   }
 }

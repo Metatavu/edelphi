@@ -5,10 +5,10 @@ import { StoreState, AccessToken, QueryQuestionCommentNotification, QueryQuestio
 import { connect } from "react-redux";
 import { Grid, DropdownItemProps, DropdownProps, Form, Container } from "semantic-ui-react";
 import PanelAdminLayout from "../components/generic/panel-admin-layout";
-import Api, { Panel, QueryQuestionComment, Query, QueryPage, QueryQuestionAnswer } from "edelphi-client";
+import Api, { Panel, QueryQuestionComment, Query, QueryPage, QueryQuestionAnswer, QueryQuestionCommentCategory } from "edelphi-client";
 import "../styles/comment-view.scss";
 import { mqttConnection, OnMessageCallback } from "../mqtt";
-import { QueryQuestionCommentsService, QueriesService, PanelsService, QueryPagesService, QueryQuestionAnswersService } from "edelphi-client/dist/api/api";
+import { QueryQuestionCommentsService, QueriesService, PanelsService, QueryPagesService, QueryQuestionAnswersService, QueryQuestionCommentCategoriesService } from "edelphi-client/dist/api/api";
 import * as queryString from "query-string";
 import * as moment from "moment";
 import getLanguage from "../localization/language";
@@ -29,10 +29,12 @@ interface State {
   panel?: Panel,
   answers: QueryQuestionAnswer[],
   comments: QueryQuestionComment[],
+  categories: QueryQuestionCommentCategory[],
   pages: QueryPage[],
   queries: Query[],
   queryId?: number,
   pageId?: number,
+  categoryId?: number,
   loading: boolean,
   pageMaxX?: number,
   pageMaxY?: number,
@@ -64,6 +66,7 @@ class CommentView extends React.Component<Props, State> {
       comments: [],
       queries: [],
       pages: [],
+      categories: [],
       loading: false,
       pageMaxX: 6, // TODO
       pageMaxY: 6
@@ -104,6 +107,17 @@ class CommentView extends React.Component<Props, State> {
   public componentWillUnmount() {
     mqttConnection.unsubscribe("queryquestionanswers", this.queryQuestionAnswersListener);
     mqttConnection.unsubscribe("queryquestioncomments", this.queryQuestionCommentsListener);
+  }
+
+  /**
+   * Component did update life-cycle event
+  */
+  public async componentDidUpdate(prevProps: Props, prevState: State) {
+    if (this.state.categoryId === undefined || !_.isEqual(this.state.categories, prevState.categories)) {
+      this.setState({
+        categoryId: this.state.categories.length ? this.state.categories[0].id : 0
+      });
+    }
   }
 
   /** 
@@ -170,6 +184,18 @@ class CommentView extends React.Component<Props, State> {
         text: page.title
       };
     });
+
+    const categoryOptions: DropdownItemProps[] = !this.state.categories.length ? [{
+      key: "default",
+      value: 0,
+      text: strings.panelAdmin.commentView.defaultCategory
+    }] : this.state.categories.map((category) => {
+      return {
+        key: category.id,
+        value: category.id,
+        text: category.name
+      };
+    });
     
     return (
       <Grid.Row>
@@ -179,6 +205,7 @@ class CommentView extends React.Component<Props, State> {
               <Form.Group widths='equal'>
                 <Form.Select fluid label={ strings.panelAdmin.commentView.querySelectLabel } value={ this.state.queryId } onChange={ this.onQueryChange } options={ queryOptions }/>
                 <Form.Select fluid disabled={ !this.state.queryId } label={ strings.panelAdmin.commentView.pageSelectLabel } value={ this.state.pageId } onChange={ this.onPageChange } options={ pageOptions }/>
+                <Form.Select fluid disabled={ !this.state.pageId } label={ strings.panelAdmin.commentView.categorySelectLabel } value={ this.state.categoryId } onChange={ this.onCategoryChange } options={ categoryOptions }/>
               </Form.Group>
             </Form>
           </Container>
@@ -303,7 +330,17 @@ class CommentView extends React.Component<Props, State> {
     }
 
     if (this.state.pageId && this.state.queryId && this.state.panel && this.state.panel.id) {
-      const comments = await (this.getQueryQuestionCommentsService()).listQueryQuestionComments(this.state.panel.id, this.state.queryId, this.state.pageId, undefined, undefined, 0, 0);
+      await this.setStateAsync({
+        categories: await this.getQueryQuestionCommentCategoriesService(this.props.accessToken.token).listQueryQuestionCommentCategories(this.state.panel.id, this.state.pageId)
+      });
+    } else {
+      await this.setStateAsync({
+        categories: []
+      });
+    }
+
+    if (this.state.pageId && this.state.queryId && this.state.panel && this.state.panel.id && this.state.categoryId !== undefined) {
+      const comments = await this.getQueryQuestionCommentsService().listQueryQuestionComments(this.state.panel.id, this.state.queryId, this.state.pageId, undefined, undefined, 0, this.state.categoryId);
       const answers = await this.getQueryQuestionAnswersService().listQueryQuestionAnswers(this.state.panel.id, this.state.queryId, this.state.pageId, undefined, undefined);
 
       await this.setStateAsync({
@@ -374,6 +411,15 @@ class CommentView extends React.Component<Props, State> {
   }
 
   /**
+   * Returns query question comments API
+   * 
+   * @returns query question comments API
+   */
+  private getQueryQuestionCommentCategoriesService(accessToken: string): QueryQuestionCommentCategoriesService {
+    return Api.getQueryQuestionCommentCategoriesService(accessToken);
+  }
+
+  /**
    * 
    * @param date 
    */
@@ -391,6 +437,10 @@ class CommentView extends React.Component<Props, State> {
    * @param answer 
    */
   private updateAnswer(answer: QueryQuestionAnswer) {
+    if (this.state.pageId != answer.queryPageId) {
+      return;
+    }
+
     const answers = _.clone(this.state.answers);
     let updated = false;
     
@@ -417,6 +467,11 @@ class CommentView extends React.Component<Props, State> {
    * @param comment comment
    */
   private updateComment(comment: QueryQuestionComment) {
+    const categoryId = comment.categoryId || 0;
+    if (this.state.categoryId != categoryId || this.state.pageId != comment.queryPageId) {
+      return;
+    }
+
     const comments = _.clone(this.state.comments);
     let updated = false;
     
@@ -517,6 +572,20 @@ class CommentView extends React.Component<Props, State> {
   private onPageChange = async (event: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
     await this.setStateAsync({
       pageId: data.value as number
+    });
+
+    await this.loadData();
+  }
+
+  /**
+   * Event handler for category change event
+   * 
+   * @param event event
+   * @param data event data
+   */
+  private onCategoryChange = async (event: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
+    await this.setStateAsync({
+      categoryId: data.value as number
     });
 
     await this.loadData();

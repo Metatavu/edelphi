@@ -59,7 +59,9 @@
     },
     "commentView": {
       "querySelectLabel": "Kysely",
-      "pageSelectLabel": "Sivu"
+      "pageSelectLabel": "Sivu",
+      "categorySelectLabel": "Kategoria",
+      "defaultCategory": "Oletus"
     } 
   }
 }
