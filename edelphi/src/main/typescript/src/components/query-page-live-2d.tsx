@@ -239,7 +239,7 @@ class Live2dChart extends React.Component<Props, State> {
    */
   private getStatisticsY(values: Answer[]): Statistics {
     return this.getStatistics(values.map((value: Answer) => {
-      return value.x;
+      return value.y;
     }));
   }
 
