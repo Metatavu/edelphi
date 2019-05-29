@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Cell, AxisDomain, ZAxis, Label } from 'recharts';
 import Api, { QueryQuestionLive2dAnswerData, QueryPageLive2DColor, QueryPage, QueryPageLive2DOptions } from "edelphi-client";
 import { mqttConnection, OnMessageCallback } from "../mqtt";
-import { Loader, Dimmer, Segment } from "semantic-ui-react";
+import { Loader, Dimmer, Segment, Grid } from "semantic-ui-react";
 import strings from "../localization/strings";
 import ErrorDialog from "./error-dialog";
 
@@ -30,6 +30,13 @@ interface Answer {
   id: string
 }
 
+interface Statistics {
+  answerCount: number,
+  q1: number | null,
+  q2: number | null,
+  q3: number | null
+}
+
 /**
  * Interface representing component state
  */
@@ -39,7 +46,9 @@ interface State {
   commentId?: number
   values: Answer[],
   page?: QueryPage,
-  error?: Error
+  error?: Error,
+  statisticsX: Statistics,
+  statisticsY: Statistics
 }
 
 const LABEL_BOX_WIDTH = 20;
@@ -65,7 +74,19 @@ class Live2dChart extends React.Component<Props, State> {
     super(props);
     this.state = {
       loaded: false,
-      values: []
+      values: [],
+      statisticsX: {
+        answerCount: 0,
+        q1: null,
+        q2: null,
+        q3: null
+      },
+      statisticsY: {
+        answerCount: 0,
+        q1: null,
+        q2: null,
+        q3: null
+      }
     };
 
     this.wrapperDiv = null;
@@ -137,10 +158,19 @@ class Live2dChart extends React.Component<Props, State> {
     }
 
     return (
-      <div style={{margin:"auto"}} ref={ (element) => this.setWrapperDiv(element) }>
-        { this.renderChart() }
-      </div>
-    );
+      <Grid>
+        <Grid.Row>
+          <Grid.Column width={ 10 }>
+            <div style={{margin:"auto"}} ref={ (element) => this.setWrapperDiv(element) }>
+              { this.renderChart() }
+            </div>
+          </Grid.Column>          
+          <Grid.Column  width={ 6 }>
+            { this.renderStatistics() }
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>
+      );
   }
 
   /**
@@ -150,6 +180,114 @@ class Live2dChart extends React.Component<Props, State> {
     this.setState({
       error: error
     });
+  }
+
+  /**
+   * Renders statistics
+   */
+  private renderStatistics = () => {
+    return (
+      <Grid>
+        <Grid.Row>
+          <Grid.Column>
+            <h3> { strings.panel.query.live2d.statistics.title } </h3>
+          </Grid.Column>
+        </Grid.Row>
+
+        <Grid.Row>
+          <Grid.Column>
+            <h4> { strings.panel.query.live2d.statistics.axisX } </h4>
+          </Grid.Column>
+        </Grid.Row>
+
+        { this.renderStatistic(strings.panel.query.live2d.statistics.answerCount, this.state.statisticsX.answerCount ) }
+        { this.renderStatistic(strings.panel.query.live2d.statistics.lowerQuartile, this.state.statisticsX.q1 ) }
+        { this.renderStatistic(strings.panel.query.live2d.statistics.median, this.state.statisticsX.q2 ) }
+        { this.renderStatistic(strings.panel.query.live2d.statistics.upperQuartile, this.state.statisticsX.q3 ) }
+
+        <Grid.Row>
+          <Grid.Column>
+            <h4> { strings.panel.query.live2d.statistics.axisY } </h4>
+          </Grid.Column>
+        </Grid.Row>
+
+        { this.renderStatistic(strings.panel.query.live2d.statistics.answerCount, this.state.statisticsY.answerCount ) }
+        { this.renderStatistic(strings.panel.query.live2d.statistics.lowerQuartile, this.state.statisticsY.q1 ) }
+        { this.renderStatistic(strings.panel.query.live2d.statistics.median, this.state.statisticsY.q2 ) }
+        { this.renderStatistic(strings.panel.query.live2d.statistics.upperQuartile, this.state.statisticsY.q3 ) }
+      </Grid>
+    );
+  }
+
+  /**
+   * Calculates statistics for x-axis
+   * 
+   * @param values answers
+   * @returns statistics for x-axis
+   */
+  private getStatisticsX(values: Answer[]): Statistics {
+    return this.getStatistics(values.map((value: Answer) => {
+      return value.x;
+    }));
+  }
+
+  /**
+   * Calculates statistics for y-axis
+   * 
+   * @param values answers
+   * @returns statistics for y-axis
+   */
+  private getStatisticsY(values: Answer[]): Statistics {
+    return this.getStatistics(values.map((value: Answer) => {
+      return value.x;
+    }));
+  }
+
+  /**
+   * Calculates statistics for array of values
+   * 
+   * @param values values
+   * @returns statistics
+   */
+  private getStatistics(values: number[]): Statistics {
+    return {
+      answerCount: values.length,
+      q1: this.getQuantile(values, 1),
+      q2: this.getQuantile(values, 2),
+      q3: this.getQuantile(values, 3)
+    };
+  }
+
+  /**
+   * Returns quantile over base value.
+   * 
+   * @param quantile quantile index
+   * @param base quantile base
+   * @return quantile over base value.
+   */
+  private getQuantile(values: number[], quantile: number) {
+    if (!values || values.length == 0) {
+      return null;
+    }
+
+    const index = Math.round((quantile / 4) * (values.length - 1));
+    return values[index];
+  }
+
+  /**
+   * Renders a statistics row
+   */
+  private renderStatistic = (label: string, value: number | null) => {
+    return (
+      <Grid.Row>
+        <Grid.Column width={ 8 }>
+          <label> { label } </label>
+        </Grid.Column>
+        <Grid.Column width={ 8 }>
+          <b> { value === null ? "NA" : value.toFixed(2) } </b>
+        </Grid.Column>
+      </Grid.Row>
+    );
   }
 
   /**
@@ -320,7 +458,9 @@ class Live2dChart extends React.Component<Props, State> {
     });
     
     this.setState({
-      values: values
+      values: values,
+      statisticsX: this.getStatisticsX(values),
+      statisticsY: this.getStatisticsY(values)
     });
   }
 
@@ -467,7 +607,9 @@ class Live2dChart extends React.Component<Props, State> {
     }
     
     this.setState({
-      values: values
+      values: values,
+      statisticsX: this.getStatisticsX(values),
+      statisticsY: this.getStatisticsY(values)
     });
   }
 

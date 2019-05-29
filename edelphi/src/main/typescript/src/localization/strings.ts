@@ -17,6 +17,17 @@ export interface IStrings extends LocalizedStringsMethods {
 
   panel: {
     query: {
+      live2d: {
+        statistics: {
+          title: string,
+          axisX: string,
+          axisY: string,
+          answerCount: string,
+          lowerQuartile: string,
+          median: string,
+          upperQuartile: string 
+        }
+      },
       commentEditor: {
         title: string,
         save: string

@@ -12,6 +12,17 @@
 
   "panel": {
     "query": {
+      "live2d": {
+        "statistics": {
+          "title": "Statistics",
+          "axisX": "X-axis",
+          "axisY": "Y-axis",
+          "answerCount": "Answer count",
+          "lowerQuartile": "Lower quartile (Q1)",
+          "median": "Median (Q2)",
+          "upperQuartile": "Upper quartile (Q3)"
+        }
+      },
       "commentEditor": {
         "title": "Elaborate on this topic (add a comment)",
         "save": "Save"

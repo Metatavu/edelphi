@@ -12,6 +12,17 @@
   
   "panel": {
     "query": {
+      "live2d": {
+        "statistics": {
+          "title": "Tilastotietoja",
+          "axisX": "X-akseli",
+          "axisY": "Y-akseli",
+          "answerCount": "Vastausmäärä",
+          "lowerQuartile": "Alakvartiili (Q1)",
+          "median": "Mediaani (Q2)",
+          "upperQuartile": "yläkvartiili (Q3)"
+        }
+      },
       "commentEditor": {
         "title": "Kommentoi",
         "save": "Tallenna"
