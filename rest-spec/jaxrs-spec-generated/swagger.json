@@ -1216,6 +1216,17 @@
             "type" : "integer",
             "format" : "int64"
           }
+        }, {
+          "name" : "includeHidden",
+          "in" : "query",
+          "description" : "Whether to include hidden pages. Defaults to false",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
         } ],
         "responses" : {
           "200" : {
