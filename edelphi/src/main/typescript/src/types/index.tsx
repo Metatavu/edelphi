@@ -8,8 +8,11 @@ export interface StoreState {
   queryValidationMessage: string | null
 }
 
+/**
+ * Interface for page change event 
+ */
 export interface PageChangeEvent {
-  
+
 }
 
 /**

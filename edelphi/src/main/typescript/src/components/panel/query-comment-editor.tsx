@@ -27,7 +27,8 @@ interface State {
   contents?: string,
   updating: boolean,
   loaded: boolean,
-  commentId?: number
+  commentId?: number,
+  changed: boolean
 }
 
 /**
@@ -44,7 +45,8 @@ class QueryCommentEditor extends React.Component<Props, State> {
     super(props);
     this.state = {
       updating: true,
-      loaded: false
+      loaded: false,
+      changed: false
     };
 
     this.props.setPageChangeListener(this.onPageChange);
@@ -74,18 +76,11 @@ class QueryCommentEditor extends React.Component<Props, State> {
     );
   }
 
-  private onPageChange = async () => {
-    console.log("I'm gonna change Da PAGE!!");
-    await this.waitAsync(2000); 
-    console.log("I'm gonna change Da PAGE!! ooooh");
-  }
-
-  private waitAsync(timeout: number) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve();
-      }, timeout);
-    });
+  /**
+   * Event handler for a page change
+   */
+  private onPageChange = async (event: PageChangeEvent) => {
+    await this.save();
   }
 
   /**
@@ -130,7 +125,7 @@ class QueryCommentEditor extends React.Component<Props, State> {
    * Saves editor contents
    */
   private save = async () => {
-    if (!this.state.contents || this.state.updating || !this.props.accessToken) {
+    if (!this.state.changed || !this.state.contents || this.state.updating || !this.props.accessToken) {
       return;
     }
 
@@ -173,7 +168,8 @@ class QueryCommentEditor extends React.Component<Props, State> {
    */
   private onContentChange = (event: React.FormEvent<HTMLTextAreaElement>, data: TextAreaProps) => {
     this.setState({
-      contents: data.value as string
+      contents: data.value as string,
+      changed: true
     });
   }
 
@@ -182,7 +178,11 @@ class QueryCommentEditor extends React.Component<Props, State> {
    */
   private onSaveButtonClick = async (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
     event.preventDefault();
-    this.save();
+    await this.save();
+
+    this.setState({
+      changed: false
+    });
   }
   
 }

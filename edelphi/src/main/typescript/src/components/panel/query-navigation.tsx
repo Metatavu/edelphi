@@ -110,6 +110,7 @@ class QueryNavigation extends React.Component<Props, State> {
 
     const nextDisabled = !!this.props.queryValidationMessage || this.state.previousSaving || this.state.nextSaving;
     const previousDisabled = !previousPage || this.state.previousSaving || this.state.nextSaving;
+    const skipDisabled = !nextPage || this.state.previousSaving || this.state.nextSaving;
     
     return (
       <Grid style={{ marginTop: "10px", borderTop: "1px solid #000" }}>
@@ -140,7 +141,7 @@ class QueryNavigation extends React.Component<Props, State> {
               </Grid.Row>
               <Grid.Row>
                 <Grid.Column width={ 16 } style={{ textAlign: "center" }}> 
-                  <Button color={ nextPage ? "blue" : undefined } onClick={ this.onSkipClick }>{ strings.panel.query.skip }</Button>
+                  <Button disabled={ skipDisabled } color={ "blue" } onClick={ this.onSkipClick }>{ strings.panel.query.skip }</Button>
                 </Grid.Column>
               </Grid.Row>
             </Grid>
@@ -175,12 +176,12 @@ class QueryNavigation extends React.Component<Props, State> {
    */
   private renderPages = () => {
     return (
-      <List as='ol'>
+      <List as='ol' style={{ marginBottom: "10px" }}>
         {
           this.state.pages.map((page: QueryPage) => {
             return (
-              <List.Item as='li' style={{ marginBottom: "20px" }}>
-                <a style={{ minWidth: "400px", display: "inline-block", marginLeft: "10px" }} href={ `?page=${page.pageNumber}` }>{ page.title }</a>
+              <List.Item as='li' key={ `list-${page.id}` }>
+                <a  key={ `link-${page.id}` } style={{ minWidth: "400px", display: "inline-block", marginLeft: "10px" }} href={ `?page=${page.pageNumber}` }>{ page.title }</a>
               </List.Item>
             )
           })
@@ -357,10 +358,6 @@ class QueryNavigation extends React.Component<Props, State> {
     const previousPage = this.getPreviousPage();
 
     await this.changePage(previousPage, true, false);
-
-    this.setState({
-      previousSaving: false
-    });
   }
 
   /**
@@ -379,10 +376,6 @@ class QueryNavigation extends React.Component<Props, State> {
     const nextPage = this.getNextPage();
 
     await this.changePage(nextPage, true, !nextPage);
-
-    this.setState({
-      nextSaving: false
-    });
   }
 
   /**
