@@ -31,11 +31,15 @@ var QueryPagesService = /** @class */ (function () {
      * @summary Lists query pages.
      * @param panelId panel id
      * @param queryId query id
+     * @param includeHidden Whether to include hidden pages. Defaults to false
     */
-    QueryPagesService.prototype.listQueryPages = function (panelId, queryId) {
+    QueryPagesService.prototype.listQueryPages = function (panelId, queryId, includeHidden) {
         var uri = new URI(this.basePath + "/panels/" + encodeURIComponent(String(panelId)) + "/queryPages");
         if (queryId !== undefined && queryId !== null) {
             uri.addQuery('queryId', queryId);
+        }
+        if (includeHidden !== undefined && includeHidden !== null) {
+            uri.addQuery('includeHidden', includeHidden);
         }
         var options = {
             method: "get",

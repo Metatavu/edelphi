@@ -128,10 +128,11 @@ public class QueryController {
    * Lists query pages by query
    * 
    * @param query query
+   * @param visible filter by page visibility
    * @return query pages
    */
-  public List<QueryPage> listQueryPages(Query query) {
-    return queryPageDAO.listByQuery(query);
+  public List<QueryPage> listQueryPages(Query query, Boolean visible) {
+    return queryPageDAO.list(query, visible, Boolean.FALSE);
   }
   
 }

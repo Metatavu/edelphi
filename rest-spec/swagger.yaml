@@ -793,6 +793,13 @@ paths:
           schema:
             type: integer
             format: int64
+        - name: includeHidden
+          in: query
+          description: Whether to include hidden pages. Defaults to false
+          schema:
+            type: boolean
+            default: false
+
       responses:
         "200":
           description: A queryPage
