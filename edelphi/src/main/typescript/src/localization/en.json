@@ -31,11 +31,13 @@
       },
       "commentEditor": {
         "title": "Elaborate on this topic (add a comment)",
-        "save": "Save"
+        "save": "Save",
+        "modify": "Modify your comment"
       },
       "comments": {
         "title": "Comments",
         "reply": "Reply",
+        "ellaborate": "Ellaborate comment",
         "hide": "Hide",
         "edit": "Edit",
         "remove": "Remove",
@@ -47,7 +49,8 @@
         "confirmRemoveConfirm": "Delete", 
         "confirmRemoveCancel": "Cancel",
         "confirmRemoveText": "Are you sure that you want to delete comment \"{0}\" including all its replies?",
-        "noComments": "There are no comments yet"
+        "noComments": "There are no comments yet",
+        "yourComment": "This is your own comment"
       }
     }
   },

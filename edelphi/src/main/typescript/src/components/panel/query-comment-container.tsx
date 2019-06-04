@@ -19,6 +19,7 @@ interface Props {
   parentId: number,
   queryReplyId: number,
   accessToken?: string,
+  loggedUserId?: string,
   locale: string,
   className: string,
   canManageComments: boolean,
@@ -113,7 +114,7 @@ class QueryCommentContainer extends React.Component<Props, State> {
     if (message.type == "CREATED" && parentCommentId == this.props.parentId) {
       const comment = await this.getQueryQuestionCommentsService(this.props.accessToken).findQueryQuestionComment(this.props.panelId, message.commentId);
       this.setState({
-        comments: this.state.comments.concat([comment])
+        comments: this.state.comments.concat([comment]).sort(this.compareComments)
       });      
     } else {
       const comments = [];
@@ -132,21 +133,45 @@ class QueryCommentContainer extends React.Component<Props, State> {
       }
 
       this.setState({
-        comments: comments
+        comments: comments.sort(this.compareComments)
       });
     }
   }
+
+  /**
+   * Compares two comments. Prefers logged user's comment
+   * 
+   * @param a comment a
+   * @param b comment b
+   * @return compare result
+   */
+  private compareComments = (a: QueryQuestionComment, b: QueryQuestionComment): number => {
+    if (!this.props.loggedUserId || a.creatorId == b.creatorId) {
+      return 0;
+    }
+    
+    const loggedUserId = this.props.loggedUserId;
+    if (a.creatorId == loggedUserId) {
+      return -1;
+    }
+
+    if (b.creatorId == loggedUserId) {
+      return 1;
+    }
+
+    return 0;
+  }
+
   /**
    * Loads child comments
    */
-  
   private async loadChildComments() {
     if (!this.state.comments && this.props.accessToken) {
       const categoryId = this.props.category ? this.props.category.id : 0;
       const comments = await (this.getQueryQuestionCommentsService(this.props.accessToken)).listQueryQuestionComments(this.props.panelId, this.props.queryId, this.props.pageId, undefined, undefined, this.props.parentId, categoryId);
 
       this.setState({
-        comments: comments
+        comments: comments.sort(this.compareComments)
       });
     }
   } 
@@ -170,6 +195,7 @@ class QueryCommentContainer extends React.Component<Props, State> {
 function mapStateToProps(state: StoreState) {
   return {
     accessToken: state.accessToken ? state.accessToken.token : null,
+    loggedUserId: state.accessToken ? state.accessToken.userId : null,
     locale: state.locale
   };
 }

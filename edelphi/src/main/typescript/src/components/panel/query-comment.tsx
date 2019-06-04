@@ -16,7 +16,8 @@ import { Confirm } from "semantic-ui-react";
  * Interface representing component properties
  */
 interface Props {
-  accessToken: string,
+  accessToken?: string,
+  logggedUserId?: string,
   locale: string,
   comment: QueryQuestionComment,
   panelId: number,
@@ -90,6 +91,7 @@ class QueryCommentClass extends React.Component<Props, State> {
         <div className={ this.state.folded ? "queryCommentShowHideButton hideIcon" : "queryCommentShowHideButton showIcon" } onClick={ () => this.onHoldClick() }></div>
         <div className="queryCommentHeader">
           <div className="queryCommentDate">{ strings.formatString(strings.panel.query.comments.commentDate, this.formatDateTime(this.props.comment.created)) } </div>
+          { this.props.comment.creatorId == this.props.logggedUserId ? <p style={{ fontStyle: "italic", fontWeight: "bold" }}> { strings.panel.query.comments.yourComment } </p> : null }
         </div>
         {
           this.renderFoldableContent()
@@ -202,7 +204,7 @@ class QueryCommentClass extends React.Component<Props, State> {
   private renderLinks() {
     return (
       <div className="queryCommentMeta">
-        <div className="queryCommentNewComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onNewCommentClick(event) }  className="queryCommentNewCommentLink">{ strings.panel.query.comments.reply }</a></div>
+        <div className="queryCommentNewComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onNewCommentClick(event) }  className="queryCommentNewCommentLink">{ this.props.comment.creatorId == this.props.logggedUserId ? strings.panel.query.comments.ellaborate : strings.panel.query.comments.reply }</a></div>
         {
           this.renderShowHideComment()
         }
@@ -462,6 +464,7 @@ class QueryCommentClass extends React.Component<Props, State> {
 function mapStateToProps(state: StoreState) {
   return {
     accessToken: state.accessToken ? state.accessToken.token : null,
+    logggedUserId: state.accessToken ? state.accessToken.userId : null,
     locale: state.locale
   };
 }

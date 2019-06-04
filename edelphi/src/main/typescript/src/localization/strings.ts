@@ -36,11 +36,13 @@ export interface IStrings extends LocalizedStringsMethods {
       },
       commentEditor: {
         title: string,
-        save: string
+        save: string,
+        modify: string
       },
       comments: {
         title: string,
         reply: string,
+        ellaborate: string,
         hide: string,
         show: string,
         edit: string,
@@ -52,7 +54,8 @@ export interface IStrings extends LocalizedStringsMethods {
         confirmRemoveConfirm: string,
         confirmRemoveCancel: string,
         confirmRemoveText: string,
-        noComments: string
+        noComments: string,
+        yourComment: string
       }
     }
   },

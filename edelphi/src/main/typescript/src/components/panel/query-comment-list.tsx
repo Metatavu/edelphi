@@ -78,6 +78,7 @@ class QueryCommentList extends React.Component<Props, State> {
 function mapStateToProps(state: StoreState) {
   return {
     accessToken: state.accessToken ? state.accessToken.token : null,
+    loggedUserId: state.accessToken ? state.accessToken.userId : null,
     locale: state.locale
   };
 }

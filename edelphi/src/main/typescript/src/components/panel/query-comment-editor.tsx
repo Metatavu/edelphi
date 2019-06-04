@@ -70,7 +70,7 @@ class QueryCommentEditor extends React.Component<Props, State> {
           <TextArea className="formField formMemoField queryComment" value={ this.state.contents } disabled={ this.state.updating } onChange={ this.onContentChange } />
         </div>
         <div className="formFieldContainer formSubmitContainer">
-          <input type="submit" className="formField formSubmit" value={ strings.panel.query.commentEditor.save } onClick={ this.onSaveButtonClick } disabled={ !this.state.contents || this.state.updating }/>
+          <input type="submit" className="formField formSubmit" value={ this.state.commentId ? strings.panel.query.commentEditor.modify : strings.panel.query.commentEditor.save } onClick={ this.onSaveButtonClick } disabled={ !this.state.contents || this.state.updating }/>
         </div>
       </div>
     );
