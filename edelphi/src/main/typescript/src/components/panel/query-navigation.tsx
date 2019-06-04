@@ -140,7 +140,7 @@ class QueryNavigation extends React.Component<Props, State> {
               </Grid.Row>
               <Grid.Row>
                 <Grid.Column width={ 16 } style={{ textAlign: "center" }}> 
-                  <Button color={ nextPage ? "blue" : undefined } onClick={ this.onSkipClick }>{ strings.panel.query.next }</Button>
+                  <Button color={ nextPage ? "blue" : undefined } onClick={ this.onSkipClick }>{ strings.panel.query.skip }</Button>
                 </Grid.Column>
               </Grid.Row>
             </Grid>
@@ -179,8 +179,8 @@ class QueryNavigation extends React.Component<Props, State> {
         {
           this.state.pages.map((page: QueryPage) => {
             return (
-              <List.Item as='li'>
-                <a  style={{ minWidth: "400px", display: "inline-block" }} href={ `?page=${page.pageNumber}` }>{ page.title }</a>
+              <List.Item as='li' style={{ marginBottom: "20px" }}>
+                <a style={{ minWidth: "400px", display: "inline-block", marginLeft: "10px" }} href={ `?page=${page.pageNumber}` }>{ page.title }</a>
               </List.Item>
             )
           })

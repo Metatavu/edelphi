@@ -320,7 +320,7 @@ class CommentView extends React.Component<Props, State> {
     });
 
     if (this.state.queryId) {
-      const pages = await this.getQueryPagesService().listQueryPages(panelId, this.state.queryId);
+      const pages = await this.getQueryPagesService().listQueryPages(panelId, this.state.queryId, false);
 
       await this.setStateAsync({
         pages: pages.filter((page) => {
