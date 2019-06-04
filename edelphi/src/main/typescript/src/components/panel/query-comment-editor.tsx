@@ -1,11 +1,11 @@
 import * as React from "react";
 import { TextArea, TextAreaProps } from "semantic-ui-react";
-import * as actions from "../actions";
-import { StoreState, AccessToken, SaveQueryAnswersCommandEvent } from "../types";
+import * as actions from "../../actions";
+import { StoreState, AccessToken, PageChangeEvent } from "../../types";
 import { connect } from "react-redux";
 import { QueryQuestionCommentsService } from "edelphi-client/dist/api/api";
 import Api, { QueryQuestionCommentCategory } from "edelphi-client";
-import strings from "../localization/strings";
+import strings from "../../localization/strings";
 
 /**
  * Interface representing component properties
@@ -16,7 +16,8 @@ interface Props {
   pageId: number,
   panelId: number,
   queryId: number,
-  category: QueryQuestionCommentCategory | null
+  category: QueryQuestionCommentCategory | null,
+  setPageChangeListener: (listener: (event: PageChangeEvent) => void) => void
 }
 
 /**
@@ -45,23 +46,9 @@ class QueryCommentEditor extends React.Component<Props, State> {
       updating: true,
       loaded: false
     };
+
+    this.props.setPageChangeListener(this.onPageChange);
   }
-  
-  /**
-   * Component did mount life-cycle event
-   */
-  public async componentDidMount() {
-    document.addEventListener("react-command", this.onReactCommand);
-    this.loadComment();
-  }
-  
-  /**
-   * Component will unmount life-cycle event
-   */
-  public async componentWillUnmount() {
-    document.removeEventListener("react-command", this.onReactCommand);
-  }
-  
   
   /**
    * Component did update life-cycle event
@@ -85,6 +72,20 @@ class QueryCommentEditor extends React.Component<Props, State> {
         </div>
       </div>
     );
+  }
+
+  private onPageChange = async () => {
+    console.log("I'm gonna change Da PAGE!!");
+    await this.waitAsync(2000); 
+    console.log("I'm gonna change Da PAGE!! ooooh");
+  }
+
+  private waitAsync(timeout: number) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, timeout);
+    });
   }
 
   /**
@@ -183,15 +184,7 @@ class QueryCommentEditor extends React.Component<Props, State> {
     event.preventDefault();
     this.save();
   }
-
-  /**
-   * Event handler for react command events
-   */
-  private onReactCommand = async (event: SaveQueryAnswersCommandEvent) => {
-    if (event.detail.command == "save-query-answers" && this.state.contents) {
-      await this.save();
-    }
-  }
+  
 }
 
 /**

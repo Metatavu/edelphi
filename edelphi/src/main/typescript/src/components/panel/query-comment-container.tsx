@@ -1,13 +1,13 @@
 import * as _ from "lodash";
 import * as React from "react";
-import * as actions from "../actions";
+import * as actions from "../../actions";
 import QueryComment from "./query-comment";
-import { StoreState, QueryQuestionCommentNotification } from "../types";
+import { StoreState, QueryQuestionCommentNotification } from "../../types";
 import { connect } from "react-redux";
 import Api, { QueryQuestionComment, QueryQuestionCommentCategory } from "edelphi-client";
 import { QueryQuestionCommentsService } from "edelphi-client/dist/api/api";
 import { Loader } from "semantic-ui-react";
-import { mqttConnection, OnMessageCallback } from "../mqtt";
+import { mqttConnection, OnMessageCallback } from "../../mqtt";
 
 /**
  * Interface representing component properties

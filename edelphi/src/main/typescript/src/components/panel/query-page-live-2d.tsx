@@ -1,13 +1,13 @@
 import * as React from "react";
-import * as actions from "../actions";
-import { StoreState, AccessToken, QueryQuestionAnswerNotification } from "../types";
+import * as actions from "../../actions";
+import { StoreState, AccessToken, QueryQuestionAnswerNotification } from "../../types";
 import { connect } from "react-redux";
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Cell, AxisDomain, ZAxis, Label } from 'recharts';
 import Api, { QueryQuestionLive2dAnswerData, QueryPageLive2DColor, QueryPage, QueryPageLive2DOptions } from "edelphi-client";
-import { mqttConnection, OnMessageCallback } from "../mqtt";
+import { mqttConnection, OnMessageCallback } from "../../mqtt";
 import { Loader, Dimmer, Segment, Grid } from "semantic-ui-react";
-import strings from "../localization/strings";
-import ErrorDialog from "./error-dialog";
+import strings from "../../localization/strings";
+import ErrorDialog from "../error-dialog";
 
 /**
  * Interface representing component properties

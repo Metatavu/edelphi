@@ -1,15 +1,15 @@
 import * as React from "react";
 import * as moment from "moment";
-import * as actions from "../actions";
+import * as actions from "../../actions";
 import * as _ from "lodash";
 import QueryCommentContainer from "./query-comment-container";
-import strings from "../localization/strings";
-import { StoreState, QueryQuestionCommentNotification } from "../types";
+import strings from "../../localization/strings";
+import { StoreState, QueryQuestionCommentNotification } from "../../types";
 import { connect } from "react-redux";
 import Api, { QueryQuestionComment, QueryQuestionCommentCategory } from "edelphi-client";
 import { QueryQuestionCommentsService } from "edelphi-client/dist/api/api";
-import { mqttConnection, OnMessageCallback } from "../mqtt";
-import styles from "../constants/styles";
+import { mqttConnection, OnMessageCallback } from "../../mqtt";
+import styles from "../../constants/styles";
 import { Confirm } from "semantic-ui-react";
 
 /**

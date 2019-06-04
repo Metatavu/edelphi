@@ -1,8 +1,8 @@
 import * as React from "react";
-import * as actions from "../actions";
-import strings from "../localization/strings";
+import * as actions from "../../actions";
+import strings from "../../localization/strings";
 import QueryCommentContainer from "./query-comment-container";
-import { StoreState } from "../types";
+import { StoreState } from "../../types";
 import { connect } from "react-redux";
 import { QueryQuestionCommentCategory, QueryQuestionComment } from "edelphi-client";
 
