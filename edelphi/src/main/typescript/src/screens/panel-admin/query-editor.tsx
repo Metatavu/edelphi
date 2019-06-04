@@ -37,7 +37,8 @@ window.addEventListener('load', () => {
 
   const panelAdminQueryEditor = document.getElementById("panel-admin-query-editor");
   const initalStoreState: StoreState = {
-    locale: locale
+    locale: locale,
+    queryValidationMessage: null
   };
 
   const store = createStore<StoreState, AppAction, any, any>(reducer as any, initalStoreState);

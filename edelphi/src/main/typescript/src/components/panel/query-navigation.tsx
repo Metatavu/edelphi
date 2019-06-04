@@ -3,7 +3,7 @@ import * as actions from "../../actions";
 import * as _ from "lodash";
 import { StoreState, CommandEvent, PageChangeEvent } from "../../types";
 import { connect } from "react-redux";
-import { Grid, Button, Popup, List, Segment, Dimmer, Loader, Icon, Label } from "semantic-ui-react";
+import { Grid, Button, Popup, List, Segment, Dimmer, Loader, Icon } from "semantic-ui-react";
 import Api, { QueryPage, Panel } from "edelphi-client";
 import { QueryPagesService, PanelsService } from "edelphi-client/dist/api/api";
 import strings from "../../localization/strings";
@@ -136,11 +136,6 @@ class QueryNavigation extends React.Component<Props, State> {
                     { nextPage ? strings.panel.query.next : strings.panel.query.save }
                     { this.state.nextSaving && <Loader style={{ marginLeft: "10px" }} active={ true } inline size="mini" inverted/> }
                   </Button>
-                  { 
-                    this.props.queryValidationMessage
-                      ? <Label basic color='red' pointing='left' floating horizontal style={{ whiteSpace: "nowrap" }}> { this.props.queryValidationMessage } </Label>
-                      : null
-                  }
                 </Grid.Column>
               </Grid.Row>
               <Grid.Row>
@@ -167,7 +162,7 @@ class QueryNavigation extends React.Component<Props, State> {
     return (
       <Grid.Row>
         <Grid.Column width={ 16 }>
-          <p style={{ color: "red" }}>
+          <p style={{ color: "red", textAlign: "center", fontSize: "16px", fontWeight: "bold" }}>
             { this.props.queryValidationMessage }
           </p>
         </Grid.Column>

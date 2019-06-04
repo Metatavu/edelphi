@@ -33,7 +33,7 @@ function triggerReactCommand(command, data) {
     bubbles: true,
     detail: {
       command: command,
-      data: data
+      data: data || {}
     }
   });
 
@@ -200,7 +200,9 @@ var QueryBlockController = Class.create(BlockController, {
                   this._sortCommentsDescendingTimeClickListener);
           },
 
-          disableNext : function() {
+          disableNext : function() { 
+            triggerReactCommand("disable-query-next");
+
             this._disableNextButton();
             
             var button = this._nextButton || this._finishButton;
@@ -216,6 +218,8 @@ var QueryBlockController = Class.create(BlockController, {
           },
 
           enableNext : function() {
+            triggerReactCommand("enable-query-next");
+
             var button = this._nextButton || this._finishButton;
             var originalTitle = $(button).readAttribute('data-original-title');
             $(button).writeAttribute('title', originalTitle);

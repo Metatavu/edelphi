@@ -12,6 +12,12 @@
 
   "panel": {
     "query": {
+      "previous": "Previous",
+      "next": "Next",
+      "save": "Save",
+      "skip": "Skip Question",
+      "quickNavigationTitle": "Skip question without saving and move to page:",
+      "noAnswer": "You have not answered the question",
       "live2d": {
         "statistics": {
           "title": "Statistics",

@@ -4,7 +4,12 @@
  */
 export interface StoreState {
   accessToken?: AccessToken,
-  locale: string
+  locale: string,
+  queryValidationMessage: string | null
+}
+
+export interface PageChangeEvent {
+  
 }
 
 /**
@@ -42,7 +47,7 @@ export interface QueryQuestionAnswerNotification {
 /**
  * Command
  */
-export type Command = "edit-page-comment-options" | "edit-page-live2d-options" | "save-query-answers";
+export type Command = "edit-page-comment-options" | "edit-page-live2d-options" | "enable-query-next" | "disable-query-next";
 
 /**
  * Command data for save query answers event
@@ -54,19 +59,35 @@ export interface SaveQueryAnswersCommandData {
   previousPageNumber: number
 }
 
+export interface DisableQueryNextCommandEventData {
+  reason?: string
+} 
+
+export interface EnableQueryNextCommandEventData {
+  
+} 
+
 /**
- * Command detail for save query answers event
+ * Command detail for enable query event
  */
-export interface SaveQueryAnswersCommandEventDetail {
-  command: "save-query-answers",
-  data: SaveQueryAnswersCommandData
+export interface DisableQueryNextCommandEventDetail {
+  command: "disable-query-next",
+  data: DisableQueryNextCommandEventData
+}
+
+/**
+ * Command detail for enable query event
+ */
+export interface EnableQueryNextCommandEventDetail {
+  command: "enable-query-next",
+  data: EnableQueryNextCommandEventData
 }
 
 /**
  * Command event for save query answers event
  */
-export interface SaveQueryAnswersCommandEvent extends CustomEvent {
-  detail: SaveQueryAnswersCommandEventDetail
+export interface CommandEvent extends CustomEvent {
+  detail: DisableQueryNextCommandEventDetail |EnableQueryNextCommandEventDetail
 } 
 
 /**

@@ -12,6 +12,12 @@
   
   "panel": {
     "query": {
+      "previous": "Edellinen",
+      "next": "Seuraava",
+      "save": "Tallenna",
+      "skip": "Ohita kysymys",
+      "quickNavigationTitle": "Siirry tallentamatta sivulle:",
+      "noAnswer": "Et ole vielä vastannut kysymykseen",
       "live2d": {
         "statistics": {
           "title": "Tilastotietoja",

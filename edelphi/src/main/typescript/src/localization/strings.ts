@@ -17,6 +17,12 @@ export interface IStrings extends LocalizedStringsMethods {
 
   panel: {
     query: {
+      previous: string,
+      next: string,
+      save: string,
+      skip: string,
+      noAnswer: string,
+      quickNavigationTitle: string,
       live2d: {
         statistics: {
           title: string,
