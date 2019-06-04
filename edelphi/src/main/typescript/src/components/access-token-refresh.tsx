@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { StoreState, AccessToken } from "../types";
 import * as actions from "../actions";
 import ErrorDialog from "./error-dialog";
+import * as moment from "moment";
 
 /**
  * Component props
@@ -17,6 +18,15 @@ interface Props {
  */
 interface State {
   error?: Error
+}
+
+const EXPIRE_SLACK = 60 * 1000;
+
+interface AccessTokenResponse {
+  token?: string
+  expires?: Date,
+  userId?: string
+  unauthorized?: "true"
 }
 
 /**
@@ -73,20 +83,51 @@ class AccessTokenRefresh extends React.Component<Props, State> {
    */
   private async refreshAccessToken() {
     try {
+      if (!this.getNeedsRefresh()) {
+        return;
+      }
+
       const init: RequestInit = {
         credentials: "same-origin"
       };
       
-      const response: AccessToken = await (await fetch("/system/accesstoken.json", init)).json();
-
+      const response: AccessTokenResponse = await (await fetch("/system/accesstoken.json", init)).json();
       if (response && response.expires && response.token && response.userId) {
-        this.props.onAccessTokenUpdate(response);
-      } 
+        this.props.onAccessTokenUpdate({
+          expires: response.expires,
+          token: response.token,
+          userId: response.userId
+        });
+      } else if (response.unauthorized == "true" && this.isLegacyUILoggedIn()) {
+        window.location.href = "/logout.page";
+      }
     } catch (e) {
       this.setState({
         error: e
       });
     }
+  }
+
+  /**
+   * Returns whether the legacy UI is logged in or not
+   * 
+   * @returns whether the legacy UI is logged in or not
+   */
+  private isLegacyUILoggedIn = () => {
+    return true === (window as any).isLoggedIn;
+  }
+
+  /**
+   * Returns true if access token needs refreshing
+   * 
+   * @returns true if access token needs refreshing
+   */
+  private getNeedsRefresh = (): boolean => { 
+    if (!this.props.accessToken || !this.props.accessToken.token) {
+      return true;
+    } 
+
+    return moment(this.props.accessToken.expires).isAfter(moment().subtract(EXPIRE_SLACK, "seconds"));
   }
 
 }
