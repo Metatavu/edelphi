@@ -160,7 +160,24 @@ class QueryCommentClass extends React.Component<Props, State> {
       );
     }
 
-    return (<div className="queryCommentText">{ this.props.comment.contents }</div>);
+    return (<div className="queryCommentText">{ this.renderCommentContents() }</div>);
+  }
+
+  /**
+   * Renders comment's contents
+   * 
+   * @returns rendered contents
+   */
+  private renderCommentContents() {
+    const comment = this.props.comment;
+
+    if (!comment || !comment.contents) {
+      return "";
+    }
+
+    return comment.contents.split("\n").map((item, index) => {
+      return <span key={index}>{item}<br/></span>;
+    });
   }
 
   /**
