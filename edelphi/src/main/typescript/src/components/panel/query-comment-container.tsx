@@ -168,7 +168,7 @@ class QueryCommentContainer extends React.Component<Props, State> {
   private async loadChildComments() {
     if (!this.state.comments && this.props.accessToken) {
       const categoryId = this.props.category ? this.props.category.id : 0;
-      const comments = await (this.getQueryQuestionCommentsService(this.props.accessToken)).listQueryQuestionComments(this.props.panelId, this.props.queryId, this.props.pageId, undefined, undefined, this.props.parentId, categoryId);
+      const comments = await (this.getQueryQuestionCommentsService(this.props.accessToken)).listQueryQuestionComments(this.props.panelId, this.props.queryId, this.props.pageId, undefined, undefined, this.props.parentId, this.props.parentId == 0 ? categoryId : undefined);
 
       this.setState({
         comments: comments.sort(this.compareComments)
