@@ -139,14 +139,14 @@ class QueryCommentContainer extends React.Component<Props, State> {
   }
 
   /**
-   * Compares two comments. Prefers logged user's comment
+   * Compares two comments. Prefers logged user's comment if comment is a root comment
    * 
    * @param a comment a
    * @param b comment b
    * @return compare result
    */
   private compareComments = (a: QueryQuestionComment, b: QueryQuestionComment): number => {
-    if (!this.props.loggedUserId || a.creatorId == b.creatorId) {
+    if (a.parentId || b.parentId || !this.props.loggedUserId || a.creatorId == b.creatorId) {
       return 0;
     }
     

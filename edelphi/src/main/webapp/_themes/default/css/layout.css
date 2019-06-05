@@ -3540,6 +3540,7 @@ div.queryCommentChildren div.queryComment {
 .queryCommentText,
 .queryCommentMeta {
   padding:0px 0px 6px 0px;
+  min-height: 30px;
 }
 
 .queryCommentDate {

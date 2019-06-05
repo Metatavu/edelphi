@@ -37,7 +37,8 @@ interface State {
   commentDeleteOpen: boolean,
   replyEditorOpen: boolean,
   updating: boolean,
-  folded: boolean
+  folded: boolean,
+  hasChildren?: boolean
 }
 
 /**
@@ -207,12 +208,11 @@ class QueryCommentClass extends React.Component<Props, State> {
     );
   }
 
-  
   /**
    * Renders child comments
    */
   private renderChildComments() {
-    return <QueryCommentContainer category={ this.props.category } className="queryCommentChildren" canManageComments={ this.props.canManageComments } parentId={ this.props.comment.id! } queryReplyId={this.props.queryReplyId} pageId={ this.props.pageId } panelId={ this.props.panelId } queryId={ this.props.queryId }/>
+    return <QueryCommentContainer onCommentsChanged={ this.onCommentsChanged } category={ this.props.category } className="queryCommentChildren" canManageComments={ this.props.canManageComments } parentId={ this.props.comment.id! } queryReplyId={this.props.queryReplyId} pageId={ this.props.pageId } panelId={ this.props.panelId } queryId={ this.props.queryId }/>
   }
 
   /**
@@ -252,11 +252,20 @@ class QueryCommentClass extends React.Component<Props, State> {
    * Renders edit comment link
    */
   private renderEditComment() {
-    if (!this.props.canManageComments) {
+    if (!this.canEditComment()) {
       return null
     }
 
     return <div className="queryCommentEditComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onEditCommentClick(event) }   className="queryCommentEditCommentLink">{ strings.panel.query.comments.edit }</a></div>
+  }
+
+  /**
+   * Returns whether user may edit a comment or not
+   * 
+   * @returns whether user may edit a comment or not
+   */
+  private canEditComment = () => {
+    return this.state.hasChildren == false && (this.props.canManageComments || this.props.logggedUserId == this.props.comment.creatorId);
   }
 
   /**
@@ -287,6 +296,17 @@ class QueryCommentClass extends React.Component<Props, State> {
    */
   private getQueryQuestionCommentsService(accessToken: string): QueryQuestionCommentsService {
     return Api.getQueryQuestionCommentsService(accessToken);
+  }
+
+  /**
+   * Event called when container comments array have changed
+   * 
+   * @param comments comments
+   */
+  private onCommentsChanged = (comments: QueryQuestionComment[]) => {
+    this.setState({
+      hasChildren: comments.length > 0
+    });
   }
     
   /**
