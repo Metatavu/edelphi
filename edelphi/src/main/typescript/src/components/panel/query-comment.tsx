@@ -399,6 +399,8 @@ class QueryCommentClass extends React.Component<Props, State> {
       updating: true
     });
 
+    const categoryId = this.props.category ? this.props.category.id : 0;
+
     const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken);
     queryQuestionCommentsService.createQueryQuestionComment({
       contents: contents,
@@ -406,6 +408,7 @@ class QueryCommentClass extends React.Component<Props, State> {
       parentId: this.props.comment.id,
       queryPageId: this.props.pageId,
       queryReplyId: this.props.queryReplyId,
+      categoryId: categoryId
     }, this.props.panelId);
   }
 
