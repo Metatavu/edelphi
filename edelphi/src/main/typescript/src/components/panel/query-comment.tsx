@@ -90,7 +90,7 @@ class QueryCommentClass extends React.Component<Props, State> {
       <div key={ this.props.comment.id } className="queryComment">
         <a id={`comment.${this.props.comment.id}`}></a>
         <div className={ this.state.folded ? "queryCommentShowHideButton hideIcon" : "queryCommentShowHideButton showIcon" } onClick={ () => this.onHoldClick() }></div>
-        <div className="queryCommentHeader">
+        <div className="queryCommentHeader" style={{ clear: "both" }}>
           <div className="queryCommentDate">{ strings.formatString(strings.panel.query.comments.commentDate, this.formatDateTime(this.props.comment.created)) } </div>
           { this.props.comment.creatorId == this.props.logggedUserId ? <p style={{ fontStyle: "italic", fontWeight: "bold" }}> { strings.panel.query.comments.yourComment } </p> : null }
         </div>

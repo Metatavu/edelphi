@@ -169,6 +169,7 @@ public class ThesisGroupingQueryReportPage extends QueryReportPageController {
     
     Map<Long, List<QueryQuestionComment>> childComments = queryQuestionCommentDAO.listTreesByQueryPage(queryPage);
     QueryUtils.appendQueryPageRootComments(requestContext, queryPage.getId(), rootComments);
+    QueryUtils.appendQueryCategories(requestContext, queryPage);
     QueryUtils.appendQueryPageChildComments(requestContext, childComments);
   }
   
