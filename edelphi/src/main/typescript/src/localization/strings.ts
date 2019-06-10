@@ -86,7 +86,8 @@ export interface IStrings extends LocalizedStringsMethods {
       querySelectLabel: string,
       pageSelectLabel: string,
       categorySelectLabel: string,
-      defaultCategory: string
+      defaultCategory: string,
+      replyCount: string
     }
   }
   

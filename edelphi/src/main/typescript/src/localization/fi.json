@@ -81,7 +81,8 @@
       "querySelectLabel": "Query",
       "pageSelectLabel": "Page",
       "categorySelectLabel": "Category",
-      "defaultCategory": "Default"
+      "defaultCategory": "Default",
+      "replyCount": "{0} replies"
     }
   }
 }

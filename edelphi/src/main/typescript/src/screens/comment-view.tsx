@@ -38,7 +38,10 @@ interface State {
   loading: boolean,
   pageMaxX?: number,
   pageMaxY?: number,
-  redirectTo?: string
+  redirectTo?: string,
+  rootMap:  { [ key: number ]: QueryQuestionAnswer[] },
+  parentMap: { [ key: number ]: QueryQuestionAnswer[] },
+  repliesOpen: number[] 
 }
 
 interface CommentAndAnswer {
@@ -68,8 +71,11 @@ class CommentView extends React.Component<Props, State> {
       pages: [],
       categories: [],
       loading: false,
-      pageMaxX: 6, // TODO
-      pageMaxY: 6
+      parentMap: { },
+      rootMap: { },
+      pageMaxX: 6,
+      pageMaxY: 6,
+      repliesOpen: []
     };
 
     this.queryQuestionCommentsListener = this.onQueryQuestionCommentNotification.bind(this);
@@ -117,6 +123,10 @@ class CommentView extends React.Component<Props, State> {
       this.setState({
         categoryId: this.state.categories.length ? this.state.categories[0].id : 0
       });
+    }
+
+    if (this.state.comments.length !== prevState.comments.length) {
+      this.updateCommentMaps();
     }
   }
 
@@ -218,17 +228,21 @@ class CommentView extends React.Component<Props, State> {
    * Renders comment grid
    */
   private renderGrid = () => {
-    const commentAnswers: CommentAndAnswer[] = this.state.comments.map((comment) => {
-      const answer = this.getCommentAnswer(comment);
+    const commentAnswers: CommentAndAnswer[] = this.state.comments
+      .filter((comment) => {
+        return !comment.parentId;
+      })
+      .map((comment) => {
+        const answer = this.getCommentAnswer(comment);
 
-      return {
-        answer: answer,
-        comment: comment 
-      }
-    })
-    .filter((commentAnswer) => {
-      return commentAnswer && commentAnswer.answer && commentAnswer.comment;
-    }) as CommentAndAnswer[];
+        return {
+          answer: answer,
+          comment: comment 
+        }
+      })
+      .filter((commentAnswer) => {
+        return commentAnswer && commentAnswer.answer && commentAnswer.comment;
+      }) as CommentAndAnswer[];
 
     return [1, 0].map((y) => {
       return (
@@ -281,12 +295,34 @@ class CommentView extends React.Component<Props, State> {
   private renderComments(cellCommentAnswers: CommentAndAnswer[]) {
     return cellCommentAnswers.map((cellCommentAnswer) => {
       const comment = cellCommentAnswer.comment;
+
       
-      return (<div className="comment">
-        <div className="comment-contents">{ this.renderCommentContents(comment) }</div>
-        <div className="comment-created">{ this.formatDate(comment.created) }</div>
-      </div>);
+      return (
+        <div className="comment">
+          <div className="comment-contents">{ this.renderCommentContents(comment) }</div>
+          <div className="comment-created">{ this.formatDate(comment.created) }</div>
+          { this.renderReplies(comment) }
+        </div>
+      );
     });
+  }
+
+  /**
+   * Renders comment replies
+   * 
+   * @param comment comment
+   */
+  private renderReplies = (comment: QueryQuestionComment) => {
+    const childComments = this.state.rootMap[comment.id!] || [];
+
+    if (!childComments.length) {
+      return null;
+    }
+
+    return (
+      <div className="comment-replies">{ strings.formatString(strings.panelAdmin.commentView.replyCount, childComments.length) }</div>
+    );
+
   }
 
   /**
@@ -330,8 +366,18 @@ class CommentView extends React.Component<Props, State> {
     }
 
     if (this.state.pageId && this.state.queryId && this.state.panel && this.state.panel.id) {
+      const page = this.state.pages.find((page) => {
+        return page.id == this.state.pageId;
+      });
+
+      if (!page || !page.queryOptions.axisX || !page.queryOptions.axisY || !page.queryOptions.axisX.options || !page.queryOptions.axisY.options) {
+        throw new Error("Could not lookup page axes");
+      }
+
       await this.setStateAsync({
-        categories: await this.getQueryQuestionCommentCategoriesService(this.props.accessToken.token).listQueryQuestionCommentCategories(this.state.panel.id, this.state.pageId)
+        categories: await this.getQueryQuestionCommentCategoriesService(this.props.accessToken.token).listQueryQuestionCommentCategories(this.state.panel.id, this.state.pageId),
+        pageMaxX: page.queryOptions.axisX.options.length,
+        pageMaxY: page.queryOptions.axisY.options.length
       });
     } else {
       await this.setStateAsync({
@@ -340,7 +386,7 @@ class CommentView extends React.Component<Props, State> {
     }
 
     if (this.state.pageId && this.state.queryId && this.state.panel && this.state.panel.id && this.state.categoryId !== undefined) {
-      const comments = await this.getQueryQuestionCommentsService().listQueryQuestionComments(this.state.panel.id, this.state.queryId, this.state.pageId, undefined, undefined, 0, this.state.categoryId);
+      const comments = await this.getQueryQuestionCommentsService().listQueryQuestionComments(this.state.panel.id, this.state.queryId, this.state.pageId, undefined, undefined, undefined, this.state.categoryId);
       const answers = await this.getQueryQuestionAnswersService().listQueryQuestionAnswers(this.state.panel.id, this.state.queryId, this.state.pageId, undefined, undefined);
 
       await this.setStateAsync({
@@ -488,6 +534,72 @@ class CommentView extends React.Component<Props, State> {
     
     this.setState({
       comments: comments
+    });
+  }
+
+  /**
+   * Returns parent comment for given comment
+   * 
+   * @param comment
+   * @return parent comment or null if not found
+   */
+  private getParentComment = (comment: QueryQuestionComment) => {
+    if (!comment.parentId) {
+      return null;
+    }
+
+    return this.state.comments.find((parentComment) => {
+      return parentComment.id == comment.parentId;
+    }) || null;
+  }
+
+  /**
+   * Returns root comment id for a comment
+   * 
+   * @param comment comment
+   * @return root comment id
+   */
+  private getRootCommentId = (comment: QueryQuestionComment): number | null => {
+    let current: QueryQuestionComment | null = comment;
+
+    while (current) {
+      const parent = this.getParentComment(current);
+      if (!parent) {
+        return current.id || null;
+      } else {
+        current = parent;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Updates parent and root comment maps
+   */
+  private updateCommentMaps = () => {
+    const parentMap = {};
+    const rootMap = {};
+
+    this.state.comments.forEach((comment) => {
+      const parentCommentId = comment.parentId;
+
+      if (parentCommentId) {
+        const rootCommentId = this.getRootCommentId(comment);
+        
+        if (rootCommentId) {
+          rootMap[rootCommentId] = rootMap[rootCommentId] || [];
+          rootMap[rootCommentId].push(comment);
+        }
+
+        parentMap[parentCommentId] = parentMap[parentCommentId] || [];
+        parentMap[parentCommentId].push(comment);
+      }
+    });
+
+    this.setState({
+      parentMap: parentMap,
+      rootMap: rootMap
     });
   }
 

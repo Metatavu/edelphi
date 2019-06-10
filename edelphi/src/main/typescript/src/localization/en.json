@@ -81,7 +81,8 @@
       "querySelectLabel": "Kysely",
       "pageSelectLabel": "Sivu",
       "categorySelectLabel": "Kategoria",
-      "defaultCategory": "Oletus"
+      "defaultCategory": "Oletus",
+      "replyCount": "{0} vastausta"
     } 
   }
 }
