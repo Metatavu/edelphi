@@ -3,7 +3,7 @@ import * as actions from "../actions";
 import * as _ from "lodash";
 import { StoreState, AccessToken, QueryQuestionCommentNotification, QueryQuestionAnswerNotification } from "../types";
 import { connect } from "react-redux";
-import { Grid, DropdownItemProps, DropdownProps, Form, Container, Icon } from "semantic-ui-react";
+import { Grid, DropdownItemProps, DropdownProps, Form, Container, Icon, Transition } from "semantic-ui-react";
 import PanelAdminLayout from "../components/generic/panel-admin-layout";
 import Api, { Panel, QueryQuestionComment, Query, QueryPage, QueryQuestionAnswer, QueryQuestionCommentCategory } from "edelphi-client";
 import "../styles/comment-view.scss";
@@ -158,20 +158,15 @@ class CommentView extends React.Component<Props, State> {
     const yLabel = page && page.queryOptions.axisY ? page.queryOptions.axisY.label : "";
 
     return (
-      <Grid.Row>
-        <Grid.Column>
-          <Grid>
-            <Grid.Row>
-              <Grid.Column><div className="comments-list-axis-x"> { xLabel } </div></Grid.Column>
-            </Grid.Row>
-
-            <Grid.Row>
-              <Grid.Column width={ 1 }><div className="comments-list-axis-y"> { yLabel } </div></Grid.Column>
-              <Grid.Column width={ 15 }> <Grid> { this.renderGrid() } </Grid> </Grid.Column>
-            </Grid.Row>
-          </Grid>
-        </Grid.Column>
-      </Grid.Row>
+      <Container className="comments-container">
+        <div className="comments-list-axis-x-container">
+          <div className="comments-list-axis-x"> { xLabel } </div>
+        </div>
+        <div className="comments-list-axis-y-container">
+          <div className="comments-list-axis-y"> { yLabel } </div>
+        </div>
+        { this.renderGrid() }
+      </Container>
     );
   }
 
@@ -244,15 +239,21 @@ class CommentView extends React.Component<Props, State> {
         return commentAnswer && commentAnswer.answer && commentAnswer.comment;
       }) as CommentAndAnswer[];
 
-    return [1, 0].map((y) => {
-      return (
-        <Grid.Row className="comment-list-row" key={y}> 
-          { [0, 1].map((x) => {
-            return this.renderCell(commentAnswers, x, y);
-          }) }
-        </Grid.Row>
-      );
-    });
+    return (
+      <Grid className="comments-grid">  
+        {
+          [1, 0].map((y) => {
+            return (
+              <Grid.Row className="comment-list-row" key={y}> 
+                { [0, 1].map((x) => {
+                  return this.renderCell(commentAnswers, x, y);
+                }) }
+              </Grid.Row>
+            );
+          })
+        }
+      </Grid>
+    );
   }
 
   /**
@@ -280,11 +281,13 @@ class CommentView extends React.Component<Props, State> {
 
     });
 
-    return (<Grid.Column key={`cell-${x}-${y}`} className="comment-list-cell" width={ 8 }>
-      <div className="comments-list">
-        { this.renderComments(cellCommentAnswers, x, y) }
-      </div>
-    </Grid.Column>);
+    return (
+      <Grid.Column key={`cell-${x}-${y}`} className="comment-list-cell" width={ 8 }>
+        <div className="comments-list">
+          { this.renderComments(cellCommentAnswers, x, y) }
+        </div>
+      </Grid.Column>
+    );
   }
 
   /**
@@ -298,8 +301,8 @@ class CommentView extends React.Component<Props, State> {
 
       return (
         <div key={`comment-${x}-${y}-${comment.id}`} className="comment">
-          <div className="comment-contents">{ this.renderCommentContents(comment) }</div>
           <div className="comment-created">{ this.formatDate(comment.created) }</div>
+          <div className="comment-contents">{ this.renderCommentContents(comment) }</div>
           { this.renderReplies(comment, x, y) }
         </div>
       );
@@ -336,10 +339,16 @@ class CommentView extends React.Component<Props, State> {
     }
 
     return (
-      <div key={`replies-${x}-${y}-${comment.id}`} className="comment-replies" onClick={ onClick }>
-        { repliesOpen ? <Icon name="minus" size="small"/> : <Icon name="plus" size="small"/> }
-        { strings.formatString(strings.panelAdmin.commentView.replyCount, childComments.length) }
-        { repliesOpen ? this.renderReplyComments(comment, x, y) : null }
+      <div>
+        <div className="comment-replies-toggle" key={`replies-${x}-${y}-${comment.id}`} onClick={ onClick }>
+          { repliesOpen ? <Icon name="minus" size="small" color="green"/> : <Icon name="plus" size="small" color="green"/> }
+          { strings.formatString(strings.panelAdmin.commentView.replyCount, childComments.length) }
+        </div>
+        <div className="comment-replies">
+          <Transition.Group animation="fade" duration={ 300 }>
+            { repliesOpen && this.renderReplyComments(comment, x, y) }
+          </Transition.Group>
+        </div>
       </div>
     );
   }
@@ -357,8 +366,8 @@ class CommentView extends React.Component<Props, State> {
     return comments.map((comment) => {
       return (
         <div key={`${parent.id}-reply-${x}-${y}-${comment.id}`} >
-          <div className="reply-contents">{ this.renderCommentContents(comment) }</div>
           <div className="reply-created">{ this.formatDate(comment.created) }</div>
+          <div className="reply-contents">{ this.renderCommentContents(comment) }</div>
           <div className="reply-children">{ this.renderReplyComments(comment, x, y) }</div>
         </div>
       );

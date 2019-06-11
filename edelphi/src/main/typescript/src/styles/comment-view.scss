@@ -1,57 +1,75 @@
 @import "vars";
 
-$controls-height: 80px;
-$label-height: 50px;
+$container-width: 75vw;
+
+.container {
+  width: $container-width !important;
+}
 
 .controls {
-  margin-top: 10px;
+  margin-top: 20px;
 }
 
 .comments-list {
-  height: calc(50vh - #{($header-height + $controls-height + $label-height) / 2});
-  overflow-y: auto;
-}
-
-.comments-list-axis-x {
-  text-align: center;
-  font-weight: bold;
-}
-
-.comments-list-axis-y {
-  text-align: center;
-  font-weight: bold;
-  transform: rotate(-90deg) translate(calc(-50vh + (#{($header-height + $controls-height + $label-height) / 2})),-50vh);
-  margin-left: 20px;
-  width: 100vh;
+  border: 1px solid #dde7ed;
+  height: calc(-3px + #{$container-width} / 4);
+  padding: 10px;
+  box-shadow: 0px 0px 8px rgba(0,0,0,0.1);
 }
 
 .comment {
-  background: #eee;
-  border-radius: 20px;
-  padding: 10px 20px; 
-  margin: 10px;
-
-  .comment-created {
-    font-weight: bold;
-    font-size: 12px;
-  }
+  background-color: #f3f9fc;
+  padding: 10px 10px 10px 10px;
+  margin-bottom: 10px;
 }
 
-.comment-list-row {
-  padding-top: 5px !important;
-  padding-bottom: 5px !important;
+.comment-created,
+.reply-created {
+  min-height: 20px;
+  padding: 3px 0 5px 0px;
+  color: #df4d1c;
+  font-size: 17px;
+  margin-right: 10px;
+  font-style: italic;
 }
 
-.comment-list-cell {
-  padding-left: 5px !important;
-  padding-right: 5px !important;
-
-  .comments-list {
-    border: 1px solid #ddd; 
-    border-radius: 2px;
-  }
+.comment-contents,
+.reply-contents {
+  font-size: 14px;
+  line-height: 1.45em;
+  color: #1e1e1e;
 }
 
+.comment-replies,
 .reply-children {
-  padding-left: 10px;
+  padding-left: 20px;
+}
+
+.comments-list-axis-x,
+.comments-list-axis-y {
+  border-bottom: 1px solid #DDE7ED;
+  color: #0099FF;
+  font-size: 19px;
+  padding: 0 0 10px;
+  text-transform: uppercase; 
+  text-align: center;
+}
+
+.comments-list-axis-y-container {
+  transform: rotate(90deg);
+  transform-origin: 0 bottom;
+  margin-left: -50px;
+  width: calc(20px + #{$container-width} / 2);
+}
+
+.comments-list-axis-y {
+  transform: rotate(180deg);
+  transform-origin: center center;
+}
+
+.comment-replies-toggle {
+  float: right;
+  margin-top: -18px;
+  cursor: pointer;
+  color: green;
 }
