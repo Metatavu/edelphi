@@ -42,7 +42,32 @@ export interface QueryQuestionAnswerNotification {
 /**
  * Command
  */
-export type Command = "edit-page-comment-options" | "edit-page-live2d-options";
+export type Command = "edit-page-comment-options" | "edit-page-live2d-options" | "save-query-answers";
+
+/**
+ * Command data for save query answers event
+ */
+export interface SaveQueryAnswersCommandData {
+  pageType: string,
+  currentPageNumber: number,
+  nextPageNumber: number,
+  previousPageNumber: number
+}
+
+/**
+ * Command detail for save query answers event
+ */
+export interface SaveQueryAnswersCommandEventDetail {
+  command: "save-query-answers",
+  data: SaveQueryAnswersCommandData
+}
+
+/**
+ * Command event for save query answers event
+ */
+export interface SaveQueryAnswersCommandEvent extends CustomEvent {
+  detail: SaveQueryAnswersCommandEventDetail
+} 
 
 /**
  * Command page data for legacy command
