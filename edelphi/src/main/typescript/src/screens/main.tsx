@@ -20,7 +20,8 @@ window.addEventListener('load', () => {
 
   strings.setLanguage(locale);
   const initalStoreState: StoreState = {
-    locale: locale
+    locale: locale,
+    queryValidationMessage: null
   };
 
   const store = createStore<StoreState, AppAction, any, any>(reducer as any, initalStoreState);

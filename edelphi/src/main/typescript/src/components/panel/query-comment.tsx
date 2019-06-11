@@ -1,22 +1,23 @@
 import * as React from "react";
 import * as moment from "moment";
-import * as actions from "../actions";
+import * as actions from "../../actions";
 import * as _ from "lodash";
 import QueryCommentContainer from "./query-comment-container";
-import strings from "../localization/strings";
-import { StoreState, QueryQuestionCommentNotification } from "../types";
+import strings from "../../localization/strings";
+import { StoreState, QueryQuestionCommentNotification } from "../../types";
 import { connect } from "react-redux";
 import Api, { QueryQuestionComment, QueryQuestionCommentCategory } from "edelphi-client";
 import { QueryQuestionCommentsService } from "edelphi-client/dist/api/api";
-import { mqttConnection, OnMessageCallback } from "../mqtt";
-import styles from "../constants/styles";
+import { mqttConnection, OnMessageCallback } from "../../mqtt";
+import styles from "../../constants/styles";
 import { Confirm } from "semantic-ui-react";
 
 /**
  * Interface representing component properties
  */
 interface Props {
-  accessToken: string,
+  accessToken?: string,
+  logggedUserId?: string,
   locale: string,
   comment: QueryQuestionComment,
   panelId: number,
@@ -36,7 +37,8 @@ interface State {
   commentDeleteOpen: boolean,
   replyEditorOpen: boolean,
   updating: boolean,
-  folded: boolean
+  folded: boolean,
+  hasChildren?: boolean
 }
 
 /**
@@ -88,8 +90,9 @@ class QueryCommentClass extends React.Component<Props, State> {
       <div key={ this.props.comment.id } className="queryComment">
         <a id={`comment.${this.props.comment.id}`}></a>
         <div className={ this.state.folded ? "queryCommentShowHideButton hideIcon" : "queryCommentShowHideButton showIcon" } onClick={ () => this.onHoldClick() }></div>
-        <div className="queryCommentHeader">
+        <div className="queryCommentHeader" style={{ clear: "both" }}>
           <div className="queryCommentDate">{ strings.formatString(strings.panel.query.comments.commentDate, this.formatDateTime(this.props.comment.created)) } </div>
+          { this.props.comment.creatorId == this.props.logggedUserId ? <p style={{ fontStyle: "italic", fontWeight: "bold" }}> { strings.panel.query.comments.yourComment } </p> : null }
         </div>
         {
           this.renderFoldableContent()
@@ -158,7 +161,24 @@ class QueryCommentClass extends React.Component<Props, State> {
       );
     }
 
-    return (<div className="queryCommentText">{ this.props.comment.contents }</div>);
+    return (<div className="queryCommentText">{ this.renderCommentContents() }</div>);
+  }
+
+  /**
+   * Renders comment's contents
+   * 
+   * @returns rendered contents
+   */
+  private renderCommentContents() {
+    const comment = this.props.comment;
+
+    if (!comment || !comment.contents) {
+      return "";
+    }
+
+    return comment.contents.split("\n").map((item, index) => {
+      return <span key={index}>{item}<br/></span>;
+    });
   }
 
   /**
@@ -188,12 +208,11 @@ class QueryCommentClass extends React.Component<Props, State> {
     );
   }
 
-  
   /**
    * Renders child comments
    */
   private renderChildComments() {
-    return <QueryCommentContainer category={ this.props.category } className="queryCommentChildren" canManageComments={ this.props.canManageComments } parentId={ this.props.comment.id! } queryReplyId={this.props.queryReplyId} pageId={ this.props.pageId } panelId={ this.props.panelId } queryId={ this.props.queryId }/>
+    return <QueryCommentContainer onCommentsChanged={ this.onCommentsChanged } category={ this.props.category } className="queryCommentChildren" canManageComments={ this.props.canManageComments } parentId={ this.props.comment.id! } queryReplyId={this.props.queryReplyId} pageId={ this.props.pageId } panelId={ this.props.panelId } queryId={ this.props.queryId }/>
   }
 
   /**
@@ -202,7 +221,7 @@ class QueryCommentClass extends React.Component<Props, State> {
   private renderLinks() {
     return (
       <div className="queryCommentMeta">
-        <div className="queryCommentNewComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onNewCommentClick(event) }  className="queryCommentNewCommentLink">{ strings.panel.query.comments.reply }</a></div>
+        <div className="queryCommentNewComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onNewCommentClick(event) }  className="queryCommentNewCommentLink">{ this.props.comment.creatorId == this.props.logggedUserId ? strings.panel.query.comments.ellaborate : strings.panel.query.comments.reply }</a></div>
         {
           this.renderShowHideComment()
         }
@@ -233,11 +252,20 @@ class QueryCommentClass extends React.Component<Props, State> {
    * Renders edit comment link
    */
   private renderEditComment() {
-    if (!this.props.canManageComments) {
+    if (!this.canEditComment()) {
       return null
     }
 
     return <div className="queryCommentEditComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onEditCommentClick(event) }   className="queryCommentEditCommentLink">{ strings.panel.query.comments.edit }</a></div>
+  }
+
+  /**
+   * Returns whether user may edit a comment or not
+   * 
+   * @returns whether user may edit a comment or not
+   */
+  private canEditComment = () => {
+    return this.state.hasChildren == false && (this.props.canManageComments || this.props.logggedUserId == this.props.comment.creatorId);
   }
 
   /**
@@ -268,6 +296,17 @@ class QueryCommentClass extends React.Component<Props, State> {
    */
   private getQueryQuestionCommentsService(accessToken: string): QueryQuestionCommentsService {
     return Api.getQueryQuestionCommentsService(accessToken);
+  }
+
+  /**
+   * Event called when container comments array have changed
+   * 
+   * @param comments comments
+   */
+  private onCommentsChanged = (comments: QueryQuestionComment[]) => {
+    this.setState({
+      hasChildren: comments.length > 0
+    });
   }
     
   /**
@@ -360,6 +399,8 @@ class QueryCommentClass extends React.Component<Props, State> {
       updating: true
     });
 
+    const categoryId = this.props.category ? this.props.category.id : 0;
+
     const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken);
     queryQuestionCommentsService.createQueryQuestionComment({
       contents: contents,
@@ -367,6 +408,7 @@ class QueryCommentClass extends React.Component<Props, State> {
       parentId: this.props.comment.id,
       queryPageId: this.props.pageId,
       queryReplyId: this.props.queryReplyId,
+      categoryId: categoryId
     }, this.props.panelId);
   }
 
@@ -462,6 +504,7 @@ class QueryCommentClass extends React.Component<Props, State> {
 function mapStateToProps(state: StoreState) {
   return {
     accessToken: state.accessToken ? state.accessToken.token : null,
+    logggedUserId: state.accessToken ? state.accessToken.userId : null,
     locale: state.locale
   };
 }

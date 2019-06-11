@@ -15,7 +15,7 @@ import javax.validation.Valid;
 
 @Path("/panels")
 @Api(description = "the panels API")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-05-16T08:21:40.455+03:00[Europe/Helsinki]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-06-02T11:48:21.381+03:00[Europe/Helsinki]")
 public interface PanelsApi {
 
     @POST
@@ -140,7 +140,7 @@ public interface PanelsApi {
         @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class, responseContainer = "List"),
         @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class, responseContainer = "List"),
         @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class, responseContainer = "List") })
-    Response listQueryPages(@PathParam("panelId")  Long panelId,@QueryParam("queryId")     Long queryId);
+    Response listQueryPages(@PathParam("panelId")  Long panelId,@QueryParam("queryId")     Long queryId,@QueryParam("includeHidden")     Boolean includeHidden);
     @GET
     @Path("/{panelId}/queryQuestionAnswers")
     @Produces({ "application/json" })

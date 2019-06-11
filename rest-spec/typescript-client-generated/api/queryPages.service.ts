@@ -41,11 +41,15 @@ export class QueryPagesService {
    * @summary Lists query pages.
    * @param panelId panel id
    * @param queryId query id
+   * @param includeHidden Whether to include hidden pages. Defaults to false
   */
-  public listQueryPages(panelId: number, queryId?: number, ):Promise<Array<QueryPage>> {
+  public listQueryPages(panelId: number, queryId?: number, includeHidden?: boolean, ):Promise<Array<QueryPage>> {
     const uri = new URI(`${this.basePath}/panels/${encodeURIComponent(String(panelId))}/queryPages`);
     if (queryId !== undefined && queryId !== null) {
         uri.addQuery('queryId', <any>queryId);
+    }
+    if (includeHidden !== undefined && includeHidden !== null) {
+        uri.addQuery('includeHidden', <any>includeHidden);
     }
     const options = {
       method: "get",

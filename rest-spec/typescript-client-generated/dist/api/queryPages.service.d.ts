@@ -15,8 +15,9 @@ export declare class QueryPagesService {
      * @summary Lists query pages.
      * @param panelId panel id
      * @param queryId query id
+     * @param includeHidden Whether to include hidden pages. Defaults to false
     */
-    listQueryPages(panelId: number, queryId?: number): Promise<Array<QueryPage>>;
+    listQueryPages(panelId: number, queryId?: number, includeHidden?: boolean): Promise<Array<QueryPage>>;
     /**
      * Updates query page
      * @summary Update query page

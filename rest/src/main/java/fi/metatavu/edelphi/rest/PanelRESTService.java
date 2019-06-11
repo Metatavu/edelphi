@@ -681,7 +681,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Override
   @RolesAllowed("user") 
-  public Response listQueryPages(Long panelId, Long queryId) {
+  public Response listQueryPages(Long panelId, Long queryId, Boolean includeHidden) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
@@ -705,7 +705,11 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createGone();
     }
     
-    List<QueryPage> queryPages = queryController.listQueryPages(query);
+    if (includeHidden && !permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    List<QueryPage> queryPages = queryController.listQueryPages(query, Boolean.TRUE.equals(includeHidden) ? null : true);
 
     return createOk(queryPages.stream().map(queryPageTranslator::translate).collect(Collectors.toList()));
   }

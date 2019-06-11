@@ -48,6 +48,7 @@ public abstract class QueryReportPageController {
     List<QueryQuestionComment> rootComments = processor.getRootComments();
     Map<Long, List<QueryQuestionComment>> childComments = queryQuestionCommentDAO.listTreesByQueryPage(queryPage);
     QueryUtils.appendQueryPageRootComments(requestContext, queryPage.getId(), rootComments);
+    QueryUtils.appendQueryCategories(requestContext, queryPage);
     QueryUtils.appendQueryPageChildComments(requestContext, childComments);
   }
 

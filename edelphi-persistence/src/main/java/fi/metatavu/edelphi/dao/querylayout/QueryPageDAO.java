@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.dao.querylayout;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
@@ -73,6 +75,47 @@ public class QueryPageDAO extends GenericDAO<QueryPage> {
 
     return entityManager.createQuery(criteria).getResultList();
   }
+
+  /**
+   * Lists query pages
+   * 
+   * @param query query
+   * @param visible filter by page visibility
+   * @param archived filter by archived
+   * @return query pages
+   */
+  public List<QueryPage> list(Query query, Boolean visible, Boolean archived) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryPage> criteria = criteriaBuilder.createQuery(QueryPage.class);
+
+    Root<QueryPage> root = criteria.from(QueryPage.class);
+    Join<QueryPage, QuerySection> querySectionJoin = root.join(QueryPage_.querySection);
+    
+    List<Predicate> criterias = new ArrayList<>();
+    if (visible != null) {
+      criterias.add(criteriaBuilder.equal(querySectionJoin.get(QuerySection_.visible), visible));
+      criterias.add(criteriaBuilder.equal(root.get(QueryPage_.visible), visible));
+    }
+
+    if (query != null) {
+      criterias.add(criteriaBuilder.and(criteriaBuilder.equal(querySectionJoin.get(QuerySection_.query), query)));
+    }
+    
+    if (archived != null) {
+      criterias.add(criteriaBuilder.equal(root.get(QueryPage_.archived), archived));
+      criterias.add(criteriaBuilder.equal(querySectionJoin.get(QuerySection_.archived), archived));
+    }
+    
+    criteria.select(root);
+    criteria.where(criteriaBuilder.and(criterias.toArray(new Predicate[0])));
+    
+    criteria.orderBy(criteriaBuilder.asc(root.get(QueryPage_.pageNumber)));
+    
+    return entityManager.createQuery(criteria).getResultList();
+  }
+  
 
   public List<QueryPage> listByQuery(Query query) {
     EntityManager entityManager = getEntityManager();

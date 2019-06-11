@@ -1,6 +1,6 @@
 import * as React from "react";
-import * as actions from "../actions";
-import { StoreState, AccessToken } from "../types";
+import * as actions from "../../actions";
+import { StoreState, AccessToken, PageChangeEvent } from "../../types";
 import { connect } from "react-redux";
 import { QueryQuestionCommentCategoriesService } from "edelphi-client/dist/api/api";
 import Api, { QueryQuestionCommentCategory } from "edelphi-client";
@@ -19,7 +19,8 @@ interface Props {
   queryId: number,
   viewDiscussion: boolean,
   commentable: boolean,
-  canManageComments: boolean
+  canManageComments: boolean,
+  setPageChangeListener: (listener: (event: PageChangeEvent) => void) => void
 }
 
 /**
@@ -97,13 +98,17 @@ class QueryComments extends React.Component<Props, State> {
    * 
    * @param category category
    */
-  private renderCategory = (category: QueryQuestionCommentCategory | null) => {
+  private renderCategory = (category: QueryQuestionCommentCategory | null) => {      
     return (
       <div key={ category ? category.id : "ROOT" }>
-        {this.props.commentable ? <QueryCommentEditor category={ category } pageId={this.props.pageId} panelId={this.props.panelId} queryId={this.props.queryId} queryReplyId={this.props.queryReplyId} /> : null}
+        {this.props.commentable ? this.renderCommentEditor(category) : null}
         {this.props.viewDiscussion ? <QueryCommentList category={ category } canManageComments={this.props.canManageComments} panelId={this.props.panelId} queryId={this.props.queryId} pageId={this.props.pageId} queryReplyId={this.props.queryReplyId} /> : null}
       </div>
     );
+  }
+
+  private renderCommentEditor = (category: QueryQuestionCommentCategory | null) => {
+    return <QueryCommentEditor setPageChangeListener={ this.props.setPageChangeListener } category={ category } pageId={this.props.pageId} panelId={this.props.panelId} queryId={this.props.queryId} queryReplyId={this.props.queryReplyId} />;
   }
 
   /**

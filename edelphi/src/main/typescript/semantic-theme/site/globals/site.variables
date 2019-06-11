@@ -28,3 +28,4 @@
 @linkHoverUnderline: 'underline';
 
 @orange         : #ff6600;
+@blue           : #0099FF;

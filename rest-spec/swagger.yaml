@@ -793,6 +793,13 @@ paths:
           schema:
             type: integer
             format: int64
+        - name: includeHidden
+          in: query
+          description: Whether to include hidden pages. Defaults to false
+          schema:
+            type: boolean
+            default: false
+
       responses:
         "200":
           description: A queryPage
@@ -1039,6 +1046,7 @@ components:
     QueryPage:
       type: object
       required:
+        - pageNumber
         - type
         - title
         - commentOptions
@@ -1048,6 +1056,9 @@ components:
           type: integer
           format: int64
           readOnly: true
+        pageNumber:
+          type: integer
+          format: int32
         title:
           type: string
         type:

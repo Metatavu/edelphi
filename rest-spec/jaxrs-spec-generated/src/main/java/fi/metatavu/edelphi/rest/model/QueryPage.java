@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class QueryPage   {
-  private @Valid Long id = null;  private @Valid String title = null;  private @Valid QueryPageType type = null;  private @Valid QueryPageCommentOptions commentOptions = null;  private @Valid Object queryOptions = null;
+  private @Valid Long id = null;  private @Valid Integer pageNumber = null;  private @Valid String title = null;  private @Valid QueryPageType type = null;  private @Valid QueryPageCommentOptions commentOptions = null;  private @Valid Object queryOptions = null;
 
   /**
    **/
@@ -30,6 +30,24 @@ public class QueryPage   {
   }
   public void setId(Long id) {
     this.id = id;
+  }
+
+  /**
+   **/
+  public QueryPage pageNumber(Integer pageNumber) {
+    this.pageNumber = pageNumber;
+    return this;
+  }
+
+  
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty("pageNumber")
+  @NotNull
+  public Integer getPageNumber() {
+    return pageNumber;
+  }
+  public void setPageNumber(Integer pageNumber) {
+    this.pageNumber = pageNumber;
   }
 
   /**
@@ -115,6 +133,7 @@ public class QueryPage   {
     }
     QueryPage queryPage = (QueryPage) o;
     return Objects.equals(id, queryPage.id) &&
+        Objects.equals(pageNumber, queryPage.pageNumber) &&
         Objects.equals(title, queryPage.title) &&
         Objects.equals(type, queryPage.type) &&
         Objects.equals(commentOptions, queryPage.commentOptions) &&
@@ -123,7 +142,7 @@ public class QueryPage   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, title, type, commentOptions, queryOptions);
+    return Objects.hash(id, pageNumber, title, type, commentOptions, queryOptions);
   }
 
   @Override
@@ -132,6 +151,7 @@ public class QueryPage   {
     sb.append("class QueryPage {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    pageNumber: ").append(toIndentedString(pageNumber)).append("\n");
     sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    commentOptions: ").append(toIndentedString(commentOptions)).append("\n");

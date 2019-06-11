@@ -3,15 +3,41 @@
     "loading": "Lataa...",
     "back": "Takaisin"
   },
+
+  "errorDialog": {
+    "header": "Virhe",
+    "errorOccurred": "Seuraava virhe tapahtui: ",
+    "close": "Sulje"
+  },
+  
   "panel": {
     "query": {
+      "previous": "Edellinen",
+      "next": "Seuraava",
+      "save": "Tallenna",
+      "skip": "Ohita kysymys",
+      "quickNavigationTitle": "Siirry tallentamatta sivulle:",
+      "noAnswer": "Et ole vielä vastannut kysymykseen",
+      "live2d": {
+        "statistics": {
+          "title": "Tilastotietoja",
+          "axisX": "X-akseli",
+          "axisY": "Y-akseli",
+          "answerCount": "Vastausmäärä",
+          "lowerQuartile": "Alakvartiili (Q1)",
+          "median": "Mediaani (Q2)",
+          "upperQuartile": "yläkvartiili (Q3)"
+        }
+      },
       "commentEditor": {
         "title": "Kommentoi",
-        "save": "Tallenna"
+        "save": "Tallenna",
+        "modify": "Muokkaa kommenttiasi"
       },
       "comments": {
         "title": "Kommentit",
         "reply": "Vastaa",
+        "ellaborate": "Täsmennä vastausta",
         "hide": "Piilota",
         "edit": "Muokkaa",
         "remove": "Poista",
@@ -22,7 +48,9 @@
         "saveEdit": "Tallenna",
         "confirmRemoveConfirm": "Poista", 
         "confirmRemoveCancel": "Peruuta",
-        "confirmRemoveText": "Oletko varma, että haluat poistaa kommentin \"{0}\" sekä kaikki siihen liittyvät vastaukset?"
+        "confirmRemoveText": "Oletko varma, että haluat poistaa kommentin \"{0}\" sekä kaikki siihen liittyvät vastaukset?",
+        "noComments": "Kysymykseen ei ole vielä jätetty kommentteja",
+        "yourComment": "Tämä on sinun kommenttisi"
       }
     }
   },
@@ -51,7 +79,10 @@
     },
     "commentView": {
       "querySelectLabel": "Query",
-      "pageSelectLabel": "Page"
+      "pageSelectLabel": "Page",
+      "categorySelectLabel": "Category",
+      "defaultCategory": "Default",
+      "replyCount": "{0} replies"
     }
   }
 }

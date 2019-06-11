@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 
 import fi.metatavu.edelphi.EdelfoiStatusCode;
+import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentCategoryDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionMultiOptionAnswerDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionNumericAnswerDAO;
@@ -38,6 +39,7 @@ import fi.metatavu.edelphi.dao.resources.QueryDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionMultiOptionAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionNumericAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionAnswer;
@@ -104,6 +106,28 @@ public class QueryUtils {
     requestPageComments.put(queryPageId, pageComments);
   }
   
+  /**
+   * Appends query categories for reports
+   * 
+   * @param requestContext request context
+   * @param queryPage query page
+   */
+  public static void appendQueryCategories(RequestContext requestContext, QueryPage queryPage) {
+    QueryQuestionCommentCategoryDAO queryQuestionCommentCategoryDAO = new QueryQuestionCommentCategoryDAO();
+    
+    List<QueryQuestionCommentCategory> pageCategories = queryQuestionCommentCategoryDAO.listByQueryPage(queryPage);
+    
+    @SuppressWarnings("unchecked")
+    Map<Long, List<QueryQuestionCommentCategory>> requestPageCommentCategories = (Map<Long, List<QueryQuestionCommentCategory>>) requestContext.getRequest().getAttribute("queryPageCommentCategories");
+    
+    if (requestPageCommentCategories == null) {
+      requestPageCommentCategories = new HashMap<Long, List<QueryQuestionCommentCategory>>();
+      requestContext.getRequest().setAttribute("queryPageCommentCategories", requestPageCommentCategories);
+    }
+    
+    requestPageCommentCategories.put(queryPage.getId(), pageCategories);
+  }
+  
   public static void appendQueryPageChildComments(RequestContext requestContext, Long parentCommentId, List<QueryQuestionComment> pageComments) {
     @SuppressWarnings("unchecked")
     Map<Long, List<QueryQuestionComment>> requestPageComments = (Map<Long, List<QueryQuestionComment>>) requestContext.getRequest().getAttribute("queryPageCommentChildren");
@@ -141,6 +165,7 @@ public class QueryUtils {
     Map<Long, List<QueryQuestionComment>> childComments = queryQuestionCommentDAO.listTreesByQueryPageAndStampOrderByCreated(queryPage, activeStamp);
 
     QueryUtils.appendQueryPageRootComments(requestContext, queryPage.getId(), rootComments);
+    QueryUtils.appendQueryCategories(requestContext, queryPage);
     QueryUtils.appendQueryPageChildComments(requestContext, childComments);
     
     int commentCount = rootComments.size();

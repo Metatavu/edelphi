@@ -3,12 +3,12 @@ import * as actions from "../actions";
 import * as _ from "lodash";
 import { StoreState, AccessToken, QueryQuestionCommentNotification, QueryQuestionAnswerNotification } from "../types";
 import { connect } from "react-redux";
-import { Grid, DropdownItemProps, DropdownProps, Form, Container } from "semantic-ui-react";
+import { Grid, DropdownItemProps, DropdownProps, Form, Container, Icon } from "semantic-ui-react";
 import PanelAdminLayout from "../components/generic/panel-admin-layout";
-import Api, { Panel, QueryQuestionComment, Query, QueryPage, QueryQuestionAnswer } from "edelphi-client";
+import Api, { Panel, QueryQuestionComment, Query, QueryPage, QueryQuestionAnswer, QueryQuestionCommentCategory } from "edelphi-client";
 import "../styles/comment-view.scss";
 import { mqttConnection, OnMessageCallback } from "../mqtt";
-import { QueryQuestionCommentsService, QueriesService, PanelsService, QueryPagesService, QueryQuestionAnswersService } from "edelphi-client/dist/api/api";
+import { QueryQuestionCommentsService, QueriesService, PanelsService, QueryPagesService, QueryQuestionAnswersService, QueryQuestionCommentCategoriesService } from "edelphi-client/dist/api/api";
 import * as queryString from "query-string";
 import * as moment from "moment";
 import getLanguage from "../localization/language";
@@ -29,14 +29,19 @@ interface State {
   panel?: Panel,
   answers: QueryQuestionAnswer[],
   comments: QueryQuestionComment[],
+  categories: QueryQuestionCommentCategory[],
   pages: QueryPage[],
   queries: Query[],
   queryId?: number,
   pageId?: number,
+  categoryId?: number,
   loading: boolean,
   pageMaxX?: number,
   pageMaxY?: number,
-  redirectTo?: string
+  redirectTo?: string,
+  rootMap:  { [ key: number ]: QueryQuestionComment[] },
+  parentMap: { [ key: number ]: QueryQuestionComment[] },
+  repliesOpen: number[] 
 }
 
 interface CommentAndAnswer {
@@ -64,9 +69,13 @@ class CommentView extends React.Component<Props, State> {
       comments: [],
       queries: [],
       pages: [],
+      categories: [],
       loading: false,
-      pageMaxX: 6, // TODO
-      pageMaxY: 6
+      parentMap: { },
+      rootMap: { },
+      pageMaxX: 6,
+      pageMaxY: 6,
+      repliesOpen: []
     };
 
     this.queryQuestionCommentsListener = this.onQueryQuestionCommentNotification.bind(this);
@@ -104,6 +113,21 @@ class CommentView extends React.Component<Props, State> {
   public componentWillUnmount() {
     mqttConnection.unsubscribe("queryquestionanswers", this.queryQuestionAnswersListener);
     mqttConnection.unsubscribe("queryquestioncomments", this.queryQuestionCommentsListener);
+  }
+
+  /**
+   * Component did update life-cycle event
+  */
+  public async componentDidUpdate(prevProps: Props, prevState: State) {
+    if (this.state.categoryId === undefined || !_.isEqual(this.state.categories, prevState.categories)) {
+      this.setState({
+        categoryId: this.state.categories.length ? this.state.categories[0].id : 0
+      });
+    }
+
+    if (this.state.comments.length !== prevState.comments.length) {
+      this.updateCommentMaps();
+    }
   }
 
   /** 
@@ -170,6 +194,18 @@ class CommentView extends React.Component<Props, State> {
         text: page.title
       };
     });
+
+    const categoryOptions: DropdownItemProps[] = !this.state.categories.length ? [{
+      key: "default",
+      value: 0,
+      text: strings.panelAdmin.commentView.defaultCategory
+    }] : this.state.categories.map((category) => {
+      return {
+        key: category.id,
+        value: category.id,
+        text: category.name
+      };
+    });
     
     return (
       <Grid.Row>
@@ -179,6 +215,7 @@ class CommentView extends React.Component<Props, State> {
               <Form.Group widths='equal'>
                 <Form.Select fluid label={ strings.panelAdmin.commentView.querySelectLabel } value={ this.state.queryId } onChange={ this.onQueryChange } options={ queryOptions }/>
                 <Form.Select fluid disabled={ !this.state.queryId } label={ strings.panelAdmin.commentView.pageSelectLabel } value={ this.state.pageId } onChange={ this.onPageChange } options={ pageOptions }/>
+                <Form.Select fluid disabled={ !this.state.pageId } label={ strings.panelAdmin.commentView.categorySelectLabel } value={ this.state.categoryId } onChange={ this.onCategoryChange } options={ categoryOptions }/>
               </Form.Group>
             </Form>
           </Container>
@@ -191,17 +228,21 @@ class CommentView extends React.Component<Props, State> {
    * Renders comment grid
    */
   private renderGrid = () => {
-    const commentAnswers: CommentAndAnswer[] = this.state.comments.map((comment) => {
-      const answer = this.getCommentAnswer(comment);
+    const commentAnswers: CommentAndAnswer[] = this.state.comments
+      .filter((comment) => {
+        return !comment.parentId;
+      })
+      .map((comment) => {
+        const answer = this.getCommentAnswer(comment);
 
-      return {
-        answer: answer,
-        comment: comment 
-      }
-    })
-    .filter((commentAnswer) => {
-      return commentAnswer && commentAnswer.answer && commentAnswer.comment;
-    }) as CommentAndAnswer[];
+        return {
+          answer: answer,
+          comment: comment 
+        }
+      })
+      .filter((commentAnswer) => {
+        return commentAnswer && commentAnswer.answer && commentAnswer.comment;
+      }) as CommentAndAnswer[];
 
     return [1, 0].map((y) => {
       return (
@@ -239,9 +280,9 @@ class CommentView extends React.Component<Props, State> {
 
     });
 
-    return (<Grid.Column key={`${x}-${y}`} className="comment-list-cell" width={ 8 }>
+    return (<Grid.Column key={`cell-${x}-${y}`} className="comment-list-cell" width={ 8 }>
       <div className="comments-list">
-        { this.renderComments(cellCommentAnswers) }
+        { this.renderComments(cellCommentAnswers, x, y) }
       </div>
     </Grid.Column>);
   }
@@ -251,14 +292,76 @@ class CommentView extends React.Component<Props, State> {
    * 
    * @param cellCommentAnswers comments and answers
    */
-  private renderComments(cellCommentAnswers: CommentAndAnswer[]) {
+  private renderComments(cellCommentAnswers: CommentAndAnswer[], x: number, y: number) {
     return cellCommentAnswers.map((cellCommentAnswer) => {
       const comment = cellCommentAnswer.comment;
-      
-      return (<div className="comment">
-        <div className="comment-contents">{ this.renderCommentContents(comment) }</div>
-        <div className="comment-created">{ this.formatDate(comment.created) }</div>
-      </div>);
+
+      return (
+        <div key={`comment-${x}-${y}-${comment.id}`} className="comment">
+          <div className="comment-contents">{ this.renderCommentContents(comment) }</div>
+          <div className="comment-created">{ this.formatDate(comment.created) }</div>
+          { this.renderReplies(comment, x, y) }
+        </div>
+      );
+    });
+  }
+
+  /**
+   * Renders comment replies
+   * 
+   * @param comment comment
+   * @param x cell x index
+   * @param y cell y index
+   */
+  private renderReplies = (comment: QueryQuestionComment, x: number, y: number) => {
+    const childComments = this.state.rootMap[comment.id!] || [];
+
+    if (!childComments.length) {
+      return null;
+    }
+
+    const repliesOpen = this.state.repliesOpen.indexOf(comment.id!) != -1;
+    const onClick = () => {
+      if (repliesOpen) {
+        this.setState({
+          repliesOpen: this.state.repliesOpen.filter((id) => {
+            return id != comment.id;
+          })
+        });
+      } else {
+        this.setState({
+          repliesOpen: [ ... this.state.repliesOpen, comment.id! ]
+        });
+      }
+    }
+
+    return (
+      <div key={`replies-${x}-${y}-${comment.id}`} className="comment-replies" onClick={ onClick }>
+        { repliesOpen ? <Icon name="minus" size="small"/> : <Icon name="plus" size="small"/> }
+        { strings.formatString(strings.panelAdmin.commentView.replyCount, childComments.length) }
+        { repliesOpen ? this.renderReplyComments(comment, x, y) : null }
+      </div>
+    );
+  }
+
+  /**
+   * Renders reply comments
+   * 
+   * @param parent parent comment
+   * @param x cell x index
+   * @param y cell y index
+   */
+  private renderReplyComments = (parent: QueryQuestionComment, x: number, y: number) => {
+    const comments = this.state.parentMap[parent.id!] || [];
+
+    return comments.map((comment) => {
+      return (
+        <div key={`${parent.id}-reply-${x}-${y}-${comment.id}`} >
+          <div className="reply-contents">{ this.renderCommentContents(comment) }</div>
+          <div className="reply-created">{ this.formatDate(comment.created) }</div>
+          <div className="reply-children">{ this.renderReplyComments(comment, x, y) }</div>
+        </div>
+      );
     });
   }
 
@@ -293,7 +396,7 @@ class CommentView extends React.Component<Props, State> {
     });
 
     if (this.state.queryId) {
-      const pages = await this.getQueryPagesService().listQueryPages(panelId, this.state.queryId);
+      const pages = await this.getQueryPagesService().listQueryPages(panelId, this.state.queryId, false);
 
       await this.setStateAsync({
         pages: pages.filter((page) => {
@@ -303,7 +406,27 @@ class CommentView extends React.Component<Props, State> {
     }
 
     if (this.state.pageId && this.state.queryId && this.state.panel && this.state.panel.id) {
-      const comments = await (this.getQueryQuestionCommentsService()).listQueryQuestionComments(this.state.panel.id, this.state.queryId, this.state.pageId, undefined, undefined, 0, 0);
+      const page = this.state.pages.find((page) => {
+        return page.id == this.state.pageId;
+      });
+
+      if (!page || !page.queryOptions.axisX || !page.queryOptions.axisY || !page.queryOptions.axisX.options || !page.queryOptions.axisY.options) {
+        throw new Error("Could not lookup page axes");
+      }
+
+      await this.setStateAsync({
+        categories: await this.getQueryQuestionCommentCategoriesService(this.props.accessToken.token).listQueryQuestionCommentCategories(this.state.panel.id, this.state.pageId),
+        pageMaxX: page.queryOptions.axisX.options.length,
+        pageMaxY: page.queryOptions.axisY.options.length
+      });
+    } else {
+      await this.setStateAsync({
+        categories: []
+      });
+    }
+
+    if (this.state.pageId && this.state.queryId && this.state.panel && this.state.panel.id && this.state.categoryId !== undefined) {
+      const comments = await this.getQueryQuestionCommentsService().listQueryQuestionComments(this.state.panel.id, this.state.queryId, this.state.pageId, undefined, undefined, undefined, this.state.categoryId);
       const answers = await this.getQueryQuestionAnswersService().listQueryQuestionAnswers(this.state.panel.id, this.state.queryId, this.state.pageId, undefined, undefined);
 
       await this.setStateAsync({
@@ -374,6 +497,15 @@ class CommentView extends React.Component<Props, State> {
   }
 
   /**
+   * Returns query question comments API
+   * 
+   * @returns query question comments API
+   */
+  private getQueryQuestionCommentCategoriesService(accessToken: string): QueryQuestionCommentCategoriesService {
+    return Api.getQueryQuestionCommentCategoriesService(accessToken);
+  }
+
+  /**
    * 
    * @param date 
    */
@@ -391,6 +523,10 @@ class CommentView extends React.Component<Props, State> {
    * @param answer 
    */
   private updateAnswer(answer: QueryQuestionAnswer) {
+    if (this.state.pageId != answer.queryPageId) {
+      return;
+    }
+
     const answers = _.clone(this.state.answers);
     let updated = false;
     
@@ -417,6 +553,11 @@ class CommentView extends React.Component<Props, State> {
    * @param comment comment
    */
   private updateComment(comment: QueryQuestionComment) {
+    const categoryId = comment.categoryId || 0;
+    if (this.state.categoryId != categoryId || this.state.pageId != comment.queryPageId) {
+      return;
+    }
+
     const comments = _.clone(this.state.comments);
     let updated = false;
     
@@ -433,6 +574,72 @@ class CommentView extends React.Component<Props, State> {
     
     this.setState({
       comments: comments
+    });
+  }
+
+  /**
+   * Returns parent comment for given comment
+   * 
+   * @param comment
+   * @return parent comment or null if not found
+   */
+  private getParentComment = (comment: QueryQuestionComment) => {
+    if (!comment.parentId) {
+      return null;
+    }
+
+    return this.state.comments.find((parentComment) => {
+      return parentComment.id == comment.parentId;
+    }) || null;
+  }
+
+  /**
+   * Returns root comment id for a comment
+   * 
+   * @param comment comment
+   * @return root comment id
+   */
+  private getRootCommentId = (comment: QueryQuestionComment): number | null => {
+    let current: QueryQuestionComment | null = comment;
+
+    while (current) {
+      const parent = this.getParentComment(current);
+      if (!parent) {
+        return current.id || null;
+      } else {
+        current = parent;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Updates parent and root comment maps
+   */
+  private updateCommentMaps = () => {
+    const parentMap = {};
+    const rootMap = {};
+
+    this.state.comments.forEach((comment) => {
+      const parentCommentId = comment.parentId;
+
+      if (parentCommentId) {
+        const rootCommentId = this.getRootCommentId(comment);
+        
+        if (rootCommentId) {
+          rootMap[rootCommentId] = rootMap[rootCommentId] || [];
+          rootMap[rootCommentId].push(comment);
+        }
+
+        parentMap[parentCommentId] = parentMap[parentCommentId] || [];
+        parentMap[parentCommentId].push(comment);
+      }
+    });
+
+    this.setState({
+      parentMap: parentMap,
+      rootMap: rootMap
     });
   }
 
@@ -497,7 +704,12 @@ class CommentView extends React.Component<Props, State> {
     await this.loadData();
   }
 
-  private setStateAsync(state: any) {
+  /**
+   * Sets state and returns a promise for the change
+   * 
+   * @param state state
+   */
+  private setStateAsync<K extends keyof State>(state: (Pick<State, K>)): Promise<void> {
     return new Promise((resolve) => {
       this.setState(state, resolve);  
     });
@@ -512,6 +724,20 @@ class CommentView extends React.Component<Props, State> {
   private onPageChange = async (event: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
     await this.setStateAsync({
       pageId: data.value as number
+    });
+
+    await this.loadData();
+  }
+
+  /**
+   * Event handler for category change event
+   * 
+   * @param event event
+   * @param data event data
+   */
+  private onCategoryChange = async (event: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
+    await this.setStateAsync({
+      categoryId: data.value as number
     });
 
     await this.loadData();

@@ -36,12 +36,28 @@ module.exports = {
         loader: "url-loader?mimetype=image/png" 
       },
       {
-        test: /\.jpe?g$|\.gif$|\.ttf$|\.eot$|\.svg$/,
+        test: /\.jpe?g$|\.gif$/,
         use: 'file-loader?name=[name].[ext]?[hash]'
       },
       {
-        test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        loader: 'url-loader?limit=10000&mimetype=application/fontwoff'
+        test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,   
+        loader: "url-loader?limit=10000&mimetype=application/font-woff&name=/_scripts/dist/[hash].[ext]"
+      },
+      {
+        test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,  
+        loader: "url-loader?limit=10000&mimetype=application/font-woff&name=/_scripts/dist/[hash].[ext]"
+      },
+      {
+        test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,    
+        loader: "url-loader?limit=10000&mimetype=application/octet-stream&name=/_scripts/dist/[name].[ext]"
+      },
+      {
+        test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,    
+        loader: "file-loader"
+      },
+      {
+        test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,    
+        loader: "url-loader?limit=10000&mimetype=image/svg+xml&name=/_scripts/dist/[name].[ext]"
       }
     ]
   }

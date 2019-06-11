@@ -23,6 +23,7 @@ public class QueryQuestionCommentTranslator extends AbstractTranslator<QueryQues
     result.setHidden(entity.getHidden());
     result.setId(entity.getId());
     result.setParentId(entity.getParentComment() != null ? entity.getParentComment().getId() : null);
+    result.setCategoryId(entity.getCategory() != null ? entity.getCategory().getId() : null);
     result.setQueryPageId(entity.getQueryPage() != null ? entity.getQueryPage().getId() : null);
     result.setQueryReplyId(entity.getQueryReply() != null ? entity.getQueryReply().getId() : null);
     result.setLastModified(translateDate(entity.getLastModified()));

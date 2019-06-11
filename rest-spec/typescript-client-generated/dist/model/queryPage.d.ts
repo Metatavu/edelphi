@@ -14,6 +14,7 @@ import { QueryPageCommentOptions } from './queryPageCommentOptions';
 import { QueryPageType } from './queryPageType';
 export interface QueryPage {
     readonly id?: number;
+    pageNumber: number;
     title: string;
     type: QueryPageType;
     commentOptions: QueryPageCommentOptions;
@@ -21,6 +22,7 @@ export interface QueryPage {
 }
 export interface QueryPageOpt {
     readonly id?: number;
+    pageNumber?: number;
     title?: string;
     type?: QueryPageType;
     commentOptions?: QueryPageCommentOptions;

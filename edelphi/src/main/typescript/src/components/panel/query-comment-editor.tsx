@@ -1,11 +1,11 @@
 import * as React from "react";
 import { TextArea, TextAreaProps } from "semantic-ui-react";
-import * as actions from "../actions";
-import { StoreState, AccessToken, SaveQueryAnswersCommandEvent } from "../types";
+import * as actions from "../../actions";
+import { StoreState, AccessToken, PageChangeEvent } from "../../types";
 import { connect } from "react-redux";
 import { QueryQuestionCommentsService } from "edelphi-client/dist/api/api";
 import Api, { QueryQuestionCommentCategory } from "edelphi-client";
-import strings from "../localization/strings";
+import strings from "../../localization/strings";
 
 /**
  * Interface representing component properties
@@ -16,7 +16,8 @@ interface Props {
   pageId: number,
   panelId: number,
   queryId: number,
-  category: QueryQuestionCommentCategory | null
+  category: QueryQuestionCommentCategory | null,
+  setPageChangeListener: (listener: (event: PageChangeEvent) => void) => void
 }
 
 /**
@@ -26,7 +27,8 @@ interface State {
   contents?: string,
   updating: boolean,
   loaded: boolean,
-  commentId?: number
+  commentId?: number,
+  changed: boolean
 }
 
 /**
@@ -43,25 +45,12 @@ class QueryCommentEditor extends React.Component<Props, State> {
     super(props);
     this.state = {
       updating: true,
-      loaded: false
+      loaded: false,
+      changed: false
     };
+
+    this.props.setPageChangeListener(this.onPageChange);
   }
-  
-  /**
-   * Component did mount life-cycle event
-   */
-  public async componentDidMount() {
-    document.addEventListener("react-command", this.onReactCommand);
-    this.loadComment();
-  }
-  
-  /**
-   * Component will unmount life-cycle event
-   */
-  public async componentWillUnmount() {
-    document.removeEventListener("react-command", this.onReactCommand);
-  }
-  
   
   /**
    * Component did update life-cycle event
@@ -81,10 +70,17 @@ class QueryCommentEditor extends React.Component<Props, State> {
           <TextArea className="formField formMemoField queryComment" value={ this.state.contents } disabled={ this.state.updating } onChange={ this.onContentChange } />
         </div>
         <div className="formFieldContainer formSubmitContainer">
-          <input type="submit" className="formField formSubmit" value={ strings.panel.query.commentEditor.save } onClick={ this.onSaveButtonClick } disabled={ !this.state.contents || this.state.updating }/>
+          <input type="submit" className="formField formSubmit" value={ this.state.commentId ? strings.panel.query.commentEditor.modify : strings.panel.query.commentEditor.save } onClick={ this.onSaveButtonClick } disabled={ !this.state.contents || this.state.updating }/>
         </div>
       </div>
     );
+  }
+
+  /**
+   * Event handler for a page change
+   */
+  private onPageChange = async (event: PageChangeEvent) => {
+    await this.save();
   }
 
   /**
@@ -129,7 +125,7 @@ class QueryCommentEditor extends React.Component<Props, State> {
    * Saves editor contents
    */
   private save = async () => {
-    if (!this.state.contents || this.state.updating || !this.props.accessToken) {
+    if (!this.state.changed || !this.state.contents || this.state.updating || !this.props.accessToken) {
       return;
     }
 
@@ -172,7 +168,8 @@ class QueryCommentEditor extends React.Component<Props, State> {
    */
   private onContentChange = (event: React.FormEvent<HTMLTextAreaElement>, data: TextAreaProps) => {
     this.setState({
-      contents: data.value as string
+      contents: data.value as string,
+      changed: true
     });
   }
 
@@ -181,17 +178,13 @@ class QueryCommentEditor extends React.Component<Props, State> {
    */
   private onSaveButtonClick = async (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
     event.preventDefault();
-    this.save();
-  }
+    await this.save();
 
-  /**
-   * Event handler for react command events
-   */
-  private onReactCommand = async (event: SaveQueryAnswersCommandEvent) => {
-    if (event.detail.command == "save-query-answers" && this.state.contents) {
-      await this.save();
-    }
+    this.setState({
+      changed: false
+    });
   }
+  
 }
 
 /**

@@ -20,10 +20,16 @@ public class AccessTokenJSONRequestController extends JSONController {
   public void process(JSONRequestContext requestContext) {
     OAuthAccessToken keycloakToken = AuthUtils.getOAuthAccessToken(requestContext, "Keycloak");
     if (keycloakToken != null) {
-      String expires = OffsetDateTime.ofInstant(keycloakToken.getExpires().toInstant(), ZoneId.systemDefault()).format(DateTimeFormatter.ISO_DATE_TIME);
-      requestContext.addResponseParameter("expires", expires);
-      requestContext.addResponseParameter("token", keycloakToken.getToken());
-      requestContext.addResponseParameter("userId", keycloakToken.getExternalId());
+      OffsetDateTime expires = OffsetDateTime.ofInstant(keycloakToken.getExpires().toInstant(), ZoneId.systemDefault());
+      if (expires.isBefore(OffsetDateTime.now())) {
+        requestContext.addResponseParameter("unauthorized", "true");
+      } else {
+        requestContext.addResponseParameter("expires", expires.format(DateTimeFormatter.ISO_DATE_TIME));
+        requestContext.addResponseParameter("token", keycloakToken.getToken());
+        requestContext.addResponseParameter("userId", keycloakToken.getExternalId());
+      }
+    } else {
+      requestContext.addResponseParameter("unauthorized", "true");
     }    
   }
 }

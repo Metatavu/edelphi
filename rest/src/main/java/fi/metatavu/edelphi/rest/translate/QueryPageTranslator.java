@@ -38,6 +38,7 @@ public class QueryPageTranslator extends AbstractTranslator<fi.metatavu.edelphi.
     fi.metatavu.edelphi.rest.model.QueryPage result = new QueryPage();
     result.setId(entity.getId());
     result.setTitle(entity.getTitle());
+    result.setPageNumber(entity.getPageNumber());
     result.setQueryOptions(createOptions(entity));
     result.setType(type);
     result.setCommentOptions(createCommentOptions(entity));

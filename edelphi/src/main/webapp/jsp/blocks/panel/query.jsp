@@ -38,78 +38,10 @@
     
     <div class="clearBoth"></div>
 
-    <div class="queryQuestionSubmitContainer">
-
-      <ed:include page="/jsp/fragments/formfield_submit.jsp">
-        <ed:param name="labelLocale" value="panel.block.query.previous"/>
-        <ed:param name="titleLocale" value="panel.block.query.previousTooltip"/>
-        <ed:param name="classes" value="formvalid"/>
-        <ed:param name="name" value="previous"/>
-        <c:choose>
-          <c:when test="${queryPreviousPageNumber eq null}">
-            <ed:param name="disabled" value="true"/>
-          </c:when>
-        </c:choose>
-      </ed:include>
-      
-      <div class="queryCurrentPageIndicator">
-        <fmt:message key="panel.block.query.page">
-          <fmt:param>${currentVisiblePageNumber}</fmt:param>
-          <fmt:param>${queryPageCount}</fmt:param>
-        </fmt:message>
-        
-        <div class="queryPageChangeQuickNavigationWrapper">
-          <div class="queryPageChangeQuickNavigation">
-            <div class="queryPageChangeQuickNavigationTitle"><fmt:message key="panel.block.query.quickNavigationTitle"></fmt:message></div>
-          <c:forEach var="queryPage" items="${queryPages}">
-            <div class="queryQuickNavigationPageLink"><a href="?page=${queryPage.pageNumber}"><span class="queryQuickNavigationPageNumber">${queryPage.uiPageNumber}.</span><span class="queryQuickNavigationPageTitle">${queryPage.title}</span></a></div>
-          </c:forEach>
-        
-          </div>
-          <div class="queryPageChangeQuickNavigationArrow"></div>
-        </div>
-      </div>
-  
-      <c:choose>
-        <c:when test="${queryNextPageNumber eq null}">
-          <ed:include page="/jsp/fragments/formfield_submit.jsp">
-            <ed:param name="labelLocale" value="panel.block.query.finish"/>
-            <ed:param name="titleLocale" value="panel.block.query.finishTooltip"/>
-            <ed:param name="classes" value="formvalid"/>
-            <ed:param name="name" value="finish"/>
-          </ed:include>
-          
-          <div class="querySkipQuestionContainer">
-            
-            <ed:include page="/jsp/fragments/formfield_submit.jsp">
-              <ed:param name="labelLocale" value="panel.block.query.skipLast"/>
-              <ed:param name="titleLocale" value="panel.block.query.skipLastTooltip"/>
-              <ed:param name="classes" value="formvalid"/>
-              <ed:param name="name" value="skipLast"/>
-            </ed:include>
-          
-          </div>
-        </c:when>
-        <c:otherwise>
-          <ed:include page="/jsp/fragments/formfield_submit.jsp">
-            <ed:param name="labelLocale" value="panel.block.query.next"/>
-            <ed:param name="titleLocale" value="panel.block.query.nextTooltip" />
-            <ed:param name="classes" value="formvalid"/>
-            <ed:param name="name" value="next"/>
-          </ed:include>
-          
-          <div class="querySkipQuestionContainer">
-            <ed:include page="/jsp/fragments/formfield_submit.jsp">
-              <ed:param name="labelLocale" value="panel.block.query.skip"/>
-              <ed:param name="titleLocale" value="panel.block.query.skipTooltip"/>
-              <ed:param name="classes" value="formvalid"/>
-              <ed:param name="name" value="skip"/>
-            </ed:include>
-          </div>
-        </c:otherwise>
-      </c:choose>
-    
-    </div>
+    <div id="query-navigation" 
+      data-panel-id="${panel.id}"
+      data-query-id="${queryPage.querySection.query.id}"
+      data-page-id="${queryPage.id}"></div>
     
   </form>
 </div>

@@ -36,37 +36,78 @@
           <div id="commentSortTimeDesc" class="commentsSortActionTitle"><fmt:message key="panel.block.query.commentSortTimeDesc"/></div>
         </div>
       </div>
-      
     </h2>
     
-    <div class="queryCommentsContainer">
-      <c:forEach var="comment" items="${queryPageComments[queryPageId]}">
-        <c:set var="commentFiltered" value="true" />
-        <c:choose>
-          <c:when test="${param.reportMode eq true && !empty queryPageReplys}">
-            <c:forEach var="reply" items="${queryPageReplys[queryPageId]}">
-              <c:if test="${reply.id eq comment.queryReply.id}">
+    <c:choose>
+      <c:when test="${fn:length(queryPageCommentCategories[queryPageId]) gt 0}">
+        <c:forEach var="category" items="${queryPageCommentCategories[queryPageId]}">
+          <h3 class="queryCommentCategoryTitle">${category.name}</h3>
+        
+	        <div class="queryCommentsContainer">
+	          <c:forEach var="comment" items="${queryPageComments[queryPageId]}">
+	            <c:if test="${comment.category.id eq category.id}">
+		            <c:set var="commentFiltered" value="true" />
+		            <c:choose>
+		              <c:when test="${param.reportMode eq true && !empty queryPageReplys}">
+		                <c:forEach var="reply" items="${queryPageReplys[queryPageId]}">
+		                  <c:if test="${reply.id eq comment.queryReply.id}">
+		                    <c:set var="commentFiltered" value="false" />
+		                  </c:if>
+		                </c:forEach>
+		              </c:when>
+		              <c:otherwise>
+		                <c:set var="commentFiltered" value="false" />
+		              </c:otherwise>
+		            </c:choose>
+		            <jsp:include page="/jsp/fragments/query_comment.jsp">
+		              <jsp:param value="${param.reportMode}" name="reportMode"/>
+		              <jsp:param value="${printCommentAnswers}" name="printCommentAnswers"/>
+		              <jsp:param value="${comment.id}" name="commentId"/>
+		              <jsp:param value="${comment.comment}" name="commentText"/>
+		              <jsp:param value="${comment.hidden}" name="commentHidden"/>
+		              <jsp:param value="${commentFiltered}" name="commentFiltered"/>
+		              <jsp:param value="${comment.created.time}" name="commentCreated"/>
+		              <jsp:param value="${comment.lastModified.time}" name="commentModified"/>
+		              <jsp:param value="${queryPageId}" name="queryPageId"/>
+		              <jsp:param value="${queryPageCommentable}" name="queryPageCommentable"/>
+		            </jsp:include>
+		          </c:if>
+	          </c:forEach>
+	        </div>
+	      </c:forEach>
+      </c:when>
+      <c:otherwise>
+        <div class="queryCommentsContainer">
+          <c:forEach var="comment" items="${queryPageComments[queryPageId]}">
+            <c:set var="commentFiltered" value="true" />
+            <c:choose>
+              <c:when test="${param.reportMode eq true && !empty queryPageReplys}">
+                <c:forEach var="reply" items="${queryPageReplys[queryPageId]}">
+                  <c:if test="${reply.id eq comment.queryReply.id}">
+                    <c:set var="commentFiltered" value="false" />
+                  </c:if>
+                </c:forEach>
+              </c:when>
+              <c:otherwise>
                 <c:set var="commentFiltered" value="false" />
-              </c:if>
-            </c:forEach>
-          </c:when>
-          <c:otherwise>
-            <c:set var="commentFiltered" value="false" />
-          </c:otherwise>
-        </c:choose>
-        <jsp:include page="/jsp/fragments/query_comment.jsp">
-          <jsp:param value="${param.reportMode}" name="reportMode"/>
-          <jsp:param value="${printCommentAnswers}" name="printCommentAnswers"/>
-          <jsp:param value="${comment.id}" name="commentId"/>
-          <jsp:param value="${comment.comment}" name="commentText"/>
-          <jsp:param value="${comment.hidden}" name="commentHidden"/>
-          <jsp:param value="${commentFiltered}" name="commentFiltered"/>
-          <jsp:param value="${comment.created.time}" name="commentCreated"/>
-          <jsp:param value="${comment.lastModified.time}" name="commentModified"/>
-          <jsp:param value="${queryPageId}" name="queryPageId"/>
-          <jsp:param value="${queryPageCommentable}" name="queryPageCommentable"/>
-        </jsp:include>
-      </c:forEach>
-    </div>
+              </c:otherwise>
+            </c:choose>
+            <jsp:include page="/jsp/fragments/query_comment.jsp">
+              <jsp:param value="${param.reportMode}" name="reportMode"/>
+              <jsp:param value="${printCommentAnswers}" name="printCommentAnswers"/>
+              <jsp:param value="${comment.id}" name="commentId"/>
+              <jsp:param value="${comment.comment}" name="commentText"/>
+              <jsp:param value="${comment.hidden}" name="commentHidden"/>
+              <jsp:param value="${commentFiltered}" name="commentFiltered"/>
+              <jsp:param value="${comment.created.time}" name="commentCreated"/>
+              <jsp:param value="${comment.lastModified.time}" name="commentModified"/>
+              <jsp:param value="${queryPageId}" name="queryPageId"/>
+              <jsp:param value="${queryPageCommentable}" name="queryPageCommentable"/>
+            </jsp:include>
+          </c:forEach>
+        </div>
+      </c:otherwise>
+    </c:choose>
+
   </div>
 </c:if>

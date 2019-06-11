@@ -9,15 +9,40 @@ export interface IStrings extends LocalizedStringsMethods {
     back: string
   },
 
+  errorDialog: {
+    header: string,
+    errorOccurred: string,
+    close: string
+  },
+
   panel: {
     query: {
+      previous: string,
+      next: string,
+      save: string,
+      skip: string,
+      noAnswer: string,
+      quickNavigationTitle: string,
+      live2d: {
+        statistics: {
+          title: string,
+          axisX: string,
+          axisY: string,
+          answerCount: string,
+          lowerQuartile: string,
+          median: string,
+          upperQuartile: string 
+        }
+      },
       commentEditor: {
         title: string,
-        save: string
+        save: string,
+        modify: string
       },
       comments: {
         title: string,
         reply: string,
+        ellaborate: string,
         hide: string,
         show: string,
         edit: string,
@@ -28,7 +53,9 @@ export interface IStrings extends LocalizedStringsMethods {
         saveEdit: string,
         confirmRemoveConfirm: string,
         confirmRemoveCancel: string,
-        confirmRemoveText: string
+        confirmRemoveText: string,
+        noComments: string,
+        yourComment: string
       }
     }
   },
@@ -57,7 +84,10 @@ export interface IStrings extends LocalizedStringsMethods {
     },
     commentView: {
       querySelectLabel: string,
-      pageSelectLabel: string
+      pageSelectLabel: string,
+      categorySelectLabel: string,
+      defaultCategory: string,
+      replyCount: string
     }
   }
   

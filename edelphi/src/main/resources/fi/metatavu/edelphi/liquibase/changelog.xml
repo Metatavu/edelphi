@@ -3362,4 +3362,12 @@
     </addColumn>
   </changeSet>
 
+  <changeSet author="antti.leppa" id="comment-reply-categories">
+    <sql>UPDATE queryquestioncomment c, queryquestioncomment p SET c.category_id = p.category_id WHERE c.parentComment_id = p.id</sql>
+    <sql>UPDATE queryquestioncomment c, queryquestioncomment p SET c.category_id = p.category_id WHERE c.parentComment_id = p.id</sql>
+    <sql>UPDATE queryquestioncomment c, queryquestioncomment p SET c.category_id = p.category_id WHERE c.parentComment_id = p.id</sql>
+    <sql>UPDATE queryquestioncomment c, queryquestioncomment p SET c.category_id = p.category_id WHERE c.parentComment_id = p.id</sql>
+    <sql>UPDATE queryquestioncomment c, queryquestioncomment p SET c.category_id = p.category_id WHERE c.parentComment_id = p.id</sql>
+  </changeSet>
+  
 </databaseChangeLog>
