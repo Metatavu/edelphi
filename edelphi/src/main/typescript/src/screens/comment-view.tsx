@@ -3,7 +3,7 @@ import * as actions from "../actions";
 import * as _ from "lodash";
 import { StoreState, AccessToken, QueryQuestionCommentNotification, QueryQuestionAnswerNotification } from "../types";
 import { connect } from "react-redux";
-import { Grid, DropdownItemProps, DropdownProps, Form, Container } from "semantic-ui-react";
+import { Grid, DropdownItemProps, DropdownProps, Form, Container, Icon } from "semantic-ui-react";
 import PanelAdminLayout from "../components/generic/panel-admin-layout";
 import Api, { Panel, QueryQuestionComment, Query, QueryPage, QueryQuestionAnswer, QueryQuestionCommentCategory } from "edelphi-client";
 import "../styles/comment-view.scss";
@@ -39,8 +39,8 @@ interface State {
   pageMaxX?: number,
   pageMaxY?: number,
   redirectTo?: string,
-  rootMap:  { [ key: number ]: QueryQuestionAnswer[] },
-  parentMap: { [ key: number ]: QueryQuestionAnswer[] },
+  rootMap:  { [ key: number ]: QueryQuestionComment[] },
+  parentMap: { [ key: number ]: QueryQuestionComment[] },
   repliesOpen: number[] 
 }
 
@@ -280,9 +280,9 @@ class CommentView extends React.Component<Props, State> {
 
     });
 
-    return (<Grid.Column key={`${x}-${y}`} className="comment-list-cell" width={ 8 }>
+    return (<Grid.Column key={`cell-${x}-${y}`} className="comment-list-cell" width={ 8 }>
       <div className="comments-list">
-        { this.renderComments(cellCommentAnswers) }
+        { this.renderComments(cellCommentAnswers, x, y) }
       </div>
     </Grid.Column>);
   }
@@ -292,16 +292,15 @@ class CommentView extends React.Component<Props, State> {
    * 
    * @param cellCommentAnswers comments and answers
    */
-  private renderComments(cellCommentAnswers: CommentAndAnswer[]) {
+  private renderComments(cellCommentAnswers: CommentAndAnswer[], x: number, y: number) {
     return cellCommentAnswers.map((cellCommentAnswer) => {
       const comment = cellCommentAnswer.comment;
 
-      
       return (
-        <div className="comment">
+        <div key={`comment-${x}-${y}-${comment.id}`} className="comment">
           <div className="comment-contents">{ this.renderCommentContents(comment) }</div>
           <div className="comment-created">{ this.formatDate(comment.created) }</div>
-          { this.renderReplies(comment) }
+          { this.renderReplies(comment, x, y) }
         </div>
       );
     });
@@ -311,18 +310,59 @@ class CommentView extends React.Component<Props, State> {
    * Renders comment replies
    * 
    * @param comment comment
+   * @param x cell x index
+   * @param y cell y index
    */
-  private renderReplies = (comment: QueryQuestionComment) => {
+  private renderReplies = (comment: QueryQuestionComment, x: number, y: number) => {
     const childComments = this.state.rootMap[comment.id!] || [];
 
     if (!childComments.length) {
       return null;
     }
 
-    return (
-      <div className="comment-replies">{ strings.formatString(strings.panelAdmin.commentView.replyCount, childComments.length) }</div>
-    );
+    const repliesOpen = this.state.repliesOpen.indexOf(comment.id!) != -1;
+    const onClick = () => {
+      if (repliesOpen) {
+        this.setState({
+          repliesOpen: this.state.repliesOpen.filter((id) => {
+            return id != comment.id;
+          })
+        });
+      } else {
+        this.setState({
+          repliesOpen: [ ... this.state.repliesOpen, comment.id! ]
+        });
+      }
+    }
 
+    return (
+      <div key={`replies-${x}-${y}-${comment.id}`} className="comment-replies" onClick={ onClick }>
+        { repliesOpen ? <Icon name="minus" size="small"/> : <Icon name="plus" size="small"/> }
+        { strings.formatString(strings.panelAdmin.commentView.replyCount, childComments.length) }
+        { repliesOpen ? this.renderReplyComments(comment, x, y) : null }
+      </div>
+    );
+  }
+
+  /**
+   * Renders reply comments
+   * 
+   * @param parent parent comment
+   * @param x cell x index
+   * @param y cell y index
+   */
+  private renderReplyComments = (parent: QueryQuestionComment, x: number, y: number) => {
+    const comments = this.state.parentMap[parent.id!] || [];
+
+    return comments.map((comment) => {
+      return (
+        <div key={`${parent.id}-reply-${x}-${y}-${comment.id}`} >
+          <div className="reply-contents">{ this.renderCommentContents(comment) }</div>
+          <div className="reply-created">{ this.formatDate(comment.created) }</div>
+          <div className="reply-children">{ this.renderReplyComments(comment, x, y) }</div>
+        </div>
+      );
+    });
   }
 
   /**
