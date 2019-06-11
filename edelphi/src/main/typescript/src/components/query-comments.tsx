@@ -6,6 +6,7 @@ import { QueryQuestionCommentCategoriesService } from "edelphi-client/dist/api/a
 import Api, { QueryQuestionCommentCategory } from "edelphi-client";
 import QueryCommentEditor from "./query-comment-editor";
 import QueryCommentList from "./query-comment-list";
+import { Tab } from 'semantic-ui-react'
 
 /**
  * Interface representing component properties
@@ -72,14 +73,22 @@ class QueryComments extends React.Component<Props, State> {
       return this.renderCategory(null);
     }
 
+    return this.renderCategorized();
+  }
+
+  /**
+   * Renders categorized comments
+   */
+  private renderCategorized() {
+    const panes = this.state.categories.map((category) => {
+      return {
+        menuItem: category.name,
+        render: () => <Tab.Pane> { this.renderCategory(category) } </Tab.Pane>
+      }
+    });
+    
     return (
-      <div>
-        {
-          this.state.categories.map((category) => {
-            return this.renderCategory(category);
-          })
-        }
-      </div>
+      <Tab menu={{ color: "orange", pointing: true }} panes={panes}/>
     );
   }
 
@@ -91,23 +100,9 @@ class QueryComments extends React.Component<Props, State> {
   private renderCategory = (category: QueryQuestionCommentCategory | null) => {
     return (
       <div key={ category ? category.id : "ROOT" }>
-        { this.renderCategoryName(category) }
         {this.props.commentable ? <QueryCommentEditor category={ category } pageId={this.props.pageId} panelId={this.props.panelId} queryId={this.props.queryId} queryReplyId={this.props.queryReplyId} /> : null}
         {this.props.viewDiscussion ? <QueryCommentList category={ category } canManageComments={this.props.canManageComments} panelId={this.props.panelId} queryId={this.props.queryId} pageId={this.props.pageId} queryReplyId={this.props.queryReplyId} /> : null}
       </div>
-    );
-  }
-
-  /**
-   * Renders category name
-   */
-  private renderCategoryName = (category: QueryQuestionCommentCategory | null) => {
-    if (!category) {
-      return null;
-    }
-
-    return (
-      <h2> { category.name } </h2>
     );
   }
 
