@@ -15,8 +15,6 @@
     </title>
     <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-    <link rel='stylesheet prefetch' href='//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/components/icon.min.css'></link>
-
     <jsp:include page="/jsp/templates/panel_head.jsp"></jsp:include>
     <jsp:include page="/jsp/supports/flotr_support.jsp"></jsp:include>
     <jsp:include page="/jsp/supports/dragdrop_support.jsp"></jsp:include>
