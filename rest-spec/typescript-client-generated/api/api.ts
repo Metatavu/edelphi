@@ -10,6 +10,8 @@ export * from './queryQuestionCommentCategories.service';
 import { QueryQuestionCommentCategoriesService } from './queryQuestionCommentCategories.service';
 export * from './queryQuestionComments.service';
 import { QueryQuestionCommentsService } from './queryQuestionComments.service';
+export * from './reports.service';
+import { ReportsService } from './reports.service';
 
 export class ApiUtils {
   /**
@@ -62,6 +64,10 @@ export default new class Api {
   
   public getQueryQuestionCommentsService(token: string): QueryQuestionCommentsService {
     return new QueryQuestionCommentsService(this.apiUrl, token);
+  }
+  
+  public getReportsService(token: string): ReportsService {
+    return new ReportsService(this.apiUrl, token);
   }
   
 }
