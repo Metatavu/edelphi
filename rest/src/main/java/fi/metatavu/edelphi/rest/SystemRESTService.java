@@ -1,5 +1,9 @@
 package fi.metatavu.edelphi.rest;
 
+import java.util.Properties;
+
+import javax.batch.operations.JobOperator;
+import javax.batch.runtime.BatchRuntime;
 import javax.ejb.Stateful;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -37,6 +41,15 @@ public class SystemRESTService {
   @Produces (MediaType.TEXT_PLAIN)
   public Response getPing() {
     return Response.ok("pong").build();
+  }
+  
+  @GET
+  @Path ("/s")
+  @Produces (MediaType.TEXT_PLAIN)
+  public Response getS() {
+    JobOperator jobOperator = BatchRuntime.getJobOperator();
+    long jid = jobOperator.start("testJob", new Properties());
+    return Response.ok(jid).build();
   }
 
   /**

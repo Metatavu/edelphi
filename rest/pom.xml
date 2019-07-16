@@ -59,6 +59,14 @@
       <artifactId>edelphi-api-spec</artifactId>
       <version>${edelphi-rest-spec.version}</version>
     </dependency>
+    
+    <!-- Batch -->
+    
+    <dependency>
+      <groupId>org.jboss.spec.javax.batch</groupId>
+      <artifactId>jboss-batch-api_1.0_spec</artifactId>
+      <scope>provided</scope>
+    </dependency>
   
     <!-- Transactions -->
     
