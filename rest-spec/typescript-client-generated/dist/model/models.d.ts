@@ -16,3 +16,6 @@ export * from './queryQuestionCommentCategory';
 export * from './queryQuestionLive2dAnswerData';
 export * from './queryReply';
 export * from './queryState';
+export * from './reportDelivery';
+export * from './reportFormat';
+export * from './reportRequest';

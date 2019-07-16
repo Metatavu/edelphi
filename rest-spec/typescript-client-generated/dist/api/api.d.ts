@@ -10,6 +10,8 @@ export * from './queryQuestionCommentCategories.service';
 import { QueryQuestionCommentCategoriesService } from './queryQuestionCommentCategories.service';
 export * from './queryQuestionComments.service';
 import { QueryQuestionCommentsService } from './queryQuestionComments.service';
+export * from './reports.service';
+import { ReportsService } from './reports.service';
 export declare class ApiUtils {
     /**
      * Handles response from API
@@ -31,5 +33,6 @@ declare const _default: {
     getQueryQuestionAnswersService(token: string): QueryQuestionAnswersService;
     getQueryQuestionCommentCategoriesService(token: string): QueryQuestionCommentCategoriesService;
     getQueryQuestionCommentsService(token: string): QueryQuestionCommentsService;
+    getReportsService(token: string): ReportsService;
 };
 export default _default;

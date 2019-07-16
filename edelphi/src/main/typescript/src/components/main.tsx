@@ -6,6 +6,7 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import { Route } from "react-router";
 import CommentView from "../screens/comment-view";
+import Reports from "../screens/reports";
 
 /**
  * Interface for component props
@@ -47,6 +48,7 @@ class MainPage extends React.Component<Props, State> {
     return (
       <div>
         <Route exact path="/panel/admin/commentview.page" component={CommentView}/>
+        <Route exact path="/panel/admin/reports.page" component={Reports}/>
       </div>
     );
   }

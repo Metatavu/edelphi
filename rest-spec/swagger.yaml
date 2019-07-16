@@ -771,7 +771,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-
+  
   /panels/{panelId}/queryPages:
     get:
       operationId: listQueryPages
@@ -929,7 +929,41 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-    
+  /reportRequests:
+    post:
+      operationId: createReportRequest
+      summary: Creates a report request
+      description: Creates a request to generate a report
+      tags:
+        - Reports
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReportRequest"
+        description: Payload
+        required: true
+      responses:
+        "202":
+          description: Report request has been accepted
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
 components:
   securitySchemes:
@@ -1226,8 +1260,44 @@ components:
           description: Comment's last modification time
           type: string
           format: date-time
-          readOnly: true          
+          readOnly: true    
           
+    ReportFormat:
+      type: string
+      enum:
+        - PDF
+    
+    ReportDelivery:
+      type: object
+      properties:
+       email:
+         type: string
+         format: email
+          
+    ReportRequest:
+      type: object
+      required:
+        - panelId
+        - queryId
+      properties:
+        panelId:
+          type: integer
+          format: int64
+        queryId:
+          type: integer
+          format: int64
+        queryPageId:
+          type: integer
+          format: int64
+        stampId:
+          type: integer
+          format: int64
+          description: Panel stamp id. Defaults to current stamp
+        format:
+          $ref: '#/components/schemas/ReportFormat'
+        delivery:
+          $ref: '#/components/schemas/ReportDelivery'
+        
     ErrorResponse:
       type: object
       properties:

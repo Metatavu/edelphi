@@ -39,6 +39,15 @@ public class SettingsController {
   }
   
   /**
+   * Returns internal authorization hash value
+   * 
+   * @return internal authorization hash value
+   */
+  public String getInternalAuthorizationHash() {
+    return getSettingValue("system.internalAuthorizationHash");
+  }
+  
+  /**
    * Returns a setting value for given key
    * 
    * @param key key

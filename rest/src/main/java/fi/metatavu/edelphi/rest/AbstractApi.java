@@ -266,5 +266,16 @@ public abstract class AbstractApi {
   protected HttpServletRequest getHttpServletRequest() {
     return ResteasyProviderFactory.getContextData(HttpServletRequest.class);
   }
-
+  
+  /**
+   * Returns service base URL 
+   * @return service base URL
+   */
+  protected String getBaseUrl() {
+    HttpServletRequest request = getHttpServletRequest();
+    String currentURL = request.getRequestURL().toString();
+    String pathInfo = request.getRequestURI();
+    return currentURL.substring(0, currentURL.length() - pathInfo.length()) + request.getContextPath();
+  }
+  
 }

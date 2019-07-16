@@ -57,6 +57,8 @@
   
   <modules>
     <module>bom</module>
+    <module>common-cdi</module>
+    <module>reports</module>
     <module>rest</module>
     <module>smvcj</module>
     <module>edelphi-persistence</module>

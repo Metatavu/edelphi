@@ -1,0 +1,22 @@
+<job id="htmlReportJob" xmlns="http://xmlns.jcp.org/xml/ns/javaee" version="1.0">
+  <properties>
+    <property name="pageIds" value="#{jobParameters['pageIds']}" />
+    <property name="stampId" value="#{jobParameters['stampId']}" />
+    <property name="baseUrl" value="#{jobParameters['baseUrl']}" />
+    <property name="locale" value="#{jobParameters['locale']}" />
+    <property name="deliveryEmail" value="#{jobParameters['deliveryEmail']}" />
+  </properties>
+        
+  <step id="pages" next="print">
+    <chunk item-count="2">
+      <reader ref="queryPageReader"/>
+      <processor ref="textReportPageHtmlProcessor"/>
+      <writer ref="textReportPageHtmlWriter"/>
+    </chunk>    
+  </step>
+
+  <step id="print" >
+    <batchlet ref="textReportPdfPrinter" />
+  </step>
+
+</job> 
