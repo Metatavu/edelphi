@@ -1814,13 +1814,18 @@
         }
       },
       "ReportRequest" : {
+        "required" : [ "panelId", "queryId" ],
         "type" : "object",
         "properties" : {
+          "panelId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
           "queryId" : {
             "type" : "integer",
             "format" : "int64"
           },
-          "pageId" : {
+          "queryPageId" : {
             "type" : "integer",
             "format" : "int64"
           },

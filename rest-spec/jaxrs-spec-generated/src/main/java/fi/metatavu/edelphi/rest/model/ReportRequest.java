@@ -13,7 +13,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class ReportRequest   {
-  private @Valid Long queryId = null;  private @Valid Long pageId = null;  private @Valid Long stampId = null;  private @Valid ReportFormat format = null;  private @Valid ReportDelivery delivery = null;
+  private @Valid Long panelId = null;  private @Valid Long queryId = null;  private @Valid Long queryPageId = null;  private @Valid Long stampId = null;  private @Valid ReportFormat format = null;  private @Valid ReportDelivery delivery = null;
+
+  /**
+   **/
+  public ReportRequest panelId(Long panelId) {
+    this.panelId = panelId;
+    return this;
+  }
+
+  
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty("panelId")
+  @NotNull
+  public Long getPanelId() {
+    return panelId;
+  }
+  public void setPanelId(Long panelId) {
+    this.panelId = panelId;
+  }
 
   /**
    **/
@@ -23,8 +41,9 @@ public class ReportRequest   {
   }
 
   
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty("queryId")
+  @NotNull
   public Long getQueryId() {
     return queryId;
   }
@@ -34,19 +53,19 @@ public class ReportRequest   {
 
   /**
    **/
-  public ReportRequest pageId(Long pageId) {
-    this.pageId = pageId;
+  public ReportRequest queryPageId(Long queryPageId) {
+    this.queryPageId = queryPageId;
     return this;
   }
 
   
   @ApiModelProperty(value = "")
-  @JsonProperty("pageId")
-  public Long getPageId() {
-    return pageId;
+  @JsonProperty("queryPageId")
+  public Long getQueryPageId() {
+    return queryPageId;
   }
-  public void setPageId(Long pageId) {
-    this.pageId = pageId;
+  public void setQueryPageId(Long queryPageId) {
+    this.queryPageId = queryPageId;
   }
 
   /**
@@ -111,8 +130,9 @@ public class ReportRequest   {
       return false;
     }
     ReportRequest reportRequest = (ReportRequest) o;
-    return Objects.equals(queryId, reportRequest.queryId) &&
-        Objects.equals(pageId, reportRequest.pageId) &&
+    return Objects.equals(panelId, reportRequest.panelId) &&
+        Objects.equals(queryId, reportRequest.queryId) &&
+        Objects.equals(queryPageId, reportRequest.queryPageId) &&
         Objects.equals(stampId, reportRequest.stampId) &&
         Objects.equals(format, reportRequest.format) &&
         Objects.equals(delivery, reportRequest.delivery);
@@ -120,7 +140,7 @@ public class ReportRequest   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(queryId, pageId, stampId, format, delivery);
+    return Objects.hash(panelId, queryId, queryPageId, stampId, format, delivery);
   }
 
   @Override
@@ -128,8 +148,9 @@ public class ReportRequest   {
     StringBuilder sb = new StringBuilder();
     sb.append("class ReportRequest {\n");
     
+    sb.append("    panelId: ").append(toIndentedString(panelId)).append("\n");
     sb.append("    queryId: ").append(toIndentedString(queryId)).append("\n");
-    sb.append("    pageId: ").append(toIndentedString(pageId)).append("\n");
+    sb.append("    queryPageId: ").append(toIndentedString(queryPageId)).append("\n");
     sb.append("    stampId: ").append(toIndentedString(stampId)).append("\n");
     sb.append("    format: ").append(toIndentedString(format)).append("\n");
     sb.append("    delivery: ").append(toIndentedString(delivery)).append("\n");
