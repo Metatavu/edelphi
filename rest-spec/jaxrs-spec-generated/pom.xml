@@ -4,7 +4,7 @@
   <artifactId>edelphi-api-spec</artifactId>
   <packaging>jar</packaging>
   <name>edelphi-api-spec</name>
-  <version>1.0.20</version>
+  <version>1.0.21-SNAPSHOT</version>
   <description>Specifications for eDelphi API</description>
   <url>https://github.com/Metatavu/edelphi</url>
 
@@ -33,7 +33,7 @@
     <developerConnection>scm:git:git@github.com:Metatavu/edelphi.git</developerConnection>
     <url>git@github.com:Metatavu/edelphi.git</url>
     <connection>scm:git:git@github.com:Metatavu/edelphi.git</connection>
-    <tag>1.0.20</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <organization>
