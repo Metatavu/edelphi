@@ -1305,6 +1305,7 @@ components:
           readOnly: true
         name:
           description: Expertise class name
+          type: string
 
     PanelInterestClass:
       type: object
@@ -1318,6 +1319,7 @@ components:
           readOnly: true
         name:
           description: Interest class name
+          type: string
 
     QueryQuestionComment:
       type: object
