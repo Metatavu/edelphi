@@ -111,8 +111,9 @@ public class ReportRequest   {
   }
 
   
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty("options")
+  @NotNull
   public ReportRequestOptions getOptions() {
     return options;
   }

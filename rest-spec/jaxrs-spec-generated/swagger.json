@@ -2061,7 +2061,7 @@
         }
       },
       "ReportRequest" : {
-        "required" : [ "panelId", "queryId" ],
+        "required" : [ "options", "panelId", "queryId" ],
         "type" : "object",
         "properties" : {
           "panelId" : {
