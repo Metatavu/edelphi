@@ -70,7 +70,7 @@ class PanelAdminLayout extends React.Component<Props, State> {
     }
 
     return (
-      <div className="header" style={{ backgroundImage: `url(${HeaderBackground})` }}>
+      <header style={{ backgroundImage: `url(${HeaderBackground})` }}>
         <Container>
           <Grid>
             <Grid.Row>
@@ -92,7 +92,7 @@ class PanelAdminLayout extends React.Component<Props, State> {
             </Grid.Row>
           </Grid>
         </Container>
-      </div>
+      </header>
     );
   }
 
