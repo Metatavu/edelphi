@@ -1877,6 +1877,7 @@
             "readOnly" : true
           },
           "name" : {
+            "type" : "string",
             "description" : "Expertise class name"
           }
         }
@@ -1892,6 +1893,7 @@
             "readOnly" : true
           },
           "name" : {
+            "type" : "string",
             "description" : "Interest class name"
           }
         }

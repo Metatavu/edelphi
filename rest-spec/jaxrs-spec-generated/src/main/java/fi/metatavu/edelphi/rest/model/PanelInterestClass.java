@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class PanelInterestClass   {
-  private @Valid Long id = null;  private @Valid Object name = null;
+  private @Valid Long id = null;  private @Valid String name = null;
 
   /**
    * Id
@@ -36,7 +36,7 @@ public class PanelInterestClass   {
   /**
    * Interest class name
    **/
-  public PanelInterestClass name(Object name) {
+  public PanelInterestClass name(String name) {
     this.name = name;
     return this;
   }
@@ -45,10 +45,10 @@ public class PanelInterestClass   {
   @ApiModelProperty(required = true, value = "Interest class name")
   @JsonProperty("name")
   @NotNull
-  public Object getName() {
+  public String getName() {
     return name;
   }
-  public void setName(Object name) {
+  public void setName(String name) {
     this.name = name;
   }
 
