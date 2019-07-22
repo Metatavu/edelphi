@@ -972,11 +972,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  /panels/{panelId}/intressClasses:
+  /panels/{panelId}/interestClasses:
     get:
-      operationId: listIntressClass
-      summary: List panel intress classes
-      description: List defined intress classes from a panel
+      operationId: listInterestClass
+      summary: List panel interest classes
+      description: List defined interest classes from a panel
       tags:
         - PanelExpertise
       parameters:
@@ -989,13 +989,13 @@ paths:
             format: int64
       responses:
         "200":
-          description: List of panel intress classes
+          description: List of panel interest classes
           content:
             application/json:
               schema:
                 type: array
                 items: 
-                  $ref: "#/components/schemas/PanelIntressClass"
+                  $ref: "#/components/schemas/PanelInterestClass"
         "400":
           description: Invalid request was sent to the server
           content:
@@ -1306,7 +1306,7 @@ components:
         name:
           description: Expertise class name
 
-    PanelIntressClass:
+    PanelInterestClass:
       type: object
       required:
         - name
