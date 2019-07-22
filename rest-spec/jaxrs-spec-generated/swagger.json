@@ -1495,12 +1495,12 @@
         }
       }
     },
-    "/panels/{panelId}/intressClasses" : {
+    "/panels/{panelId}/interestClasses" : {
       "get" : {
         "tags" : [ "PanelExpertise" ],
-        "summary" : "List panel intress classes",
-        "description" : "List defined intress classes from a panel",
-        "operationId" : "listIntressClass",
+        "summary" : "List panel interest classes",
+        "description" : "List defined interest classes from a panel",
+        "operationId" : "listInterestClass",
         "parameters" : [ {
           "name" : "panelId",
           "in" : "path",
@@ -1515,13 +1515,13 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "List of panel intress classes",
+            "description" : "List of panel interest classes",
             "content" : {
               "application/json" : {
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/PanelIntressClass"
+                    "$ref" : "#/components/schemas/PanelInterestClass"
                   }
                 }
               }
@@ -1881,7 +1881,7 @@
           }
         }
       },
-      "PanelIntressClass" : {
+      "PanelInterestClass" : {
         "required" : [ "name" ],
         "type" : "object",
         "properties" : {

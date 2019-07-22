@@ -12,13 +12,13 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
-public class PanelIntressClass   {
+public class PanelInterestClass   {
   private @Valid Long id = null;  private @Valid Object name = null;
 
   /**
    * Id
    **/
-  public PanelIntressClass id(Long id) {
+  public PanelInterestClass id(Long id) {
     this.id = id;
     return this;
   }
@@ -36,7 +36,7 @@ public class PanelIntressClass   {
   /**
    * Interest class name
    **/
-  public PanelIntressClass name(Object name) {
+  public PanelInterestClass name(Object name) {
     this.name = name;
     return this;
   }
@@ -61,9 +61,9 @@ public class PanelIntressClass   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    PanelIntressClass panelIntressClass = (PanelIntressClass) o;
-    return Objects.equals(id, panelIntressClass.id) &&
-        Objects.equals(name, panelIntressClass.name);
+    PanelInterestClass panelInterestClass = (PanelInterestClass) o;
+    return Objects.equals(id, panelInterestClass.id) &&
+        Objects.equals(name, panelInterestClass.name);
   }
 
   @Override
@@ -74,7 +74,7 @@ public class PanelIntressClass   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class PanelIntressClass {\n");
+    sb.append("class PanelInterestClass {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");

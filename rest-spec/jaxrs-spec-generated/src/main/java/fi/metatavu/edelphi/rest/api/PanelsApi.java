@@ -15,7 +15,7 @@ import javax.validation.Valid;
 
 @Path("/panels")
 @Api(description = "the panels API")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-07-22T12:23:05.995+03:00[Europe/Helsinki]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-07-22T12:31:16.028+03:00[Europe/Helsinki]")
 public interface PanelsApi {
 
     @POST
@@ -131,16 +131,16 @@ public interface PanelsApi {
         @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class, responseContainer = "List") })
     Response listExpertiseClass(@PathParam("panelId")  Long panelId);
     @GET
-    @Path("/{panelId}/intressClasses")
+    @Path("/{panelId}/interestClasses")
     @Produces({ "application/json" })
-    @ApiOperation(value = "List panel intress classes", notes = "List defined intress classes from a panel", authorizations = {
+    @ApiOperation(value = "List panel interest classes", notes = "List defined interest classes from a panel", authorizations = {
         @Authorization(value = "bearer")    }, tags={ "PanelExpertise" })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "List of panel intress classes", response = PanelIntressClass.class, responseContainer = "List"),
+        @ApiResponse(code = 200, message = "List of panel interest classes", response = PanelInterestClass.class, responseContainer = "List"),
         @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class, responseContainer = "List"),
         @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class, responseContainer = "List"),
         @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class, responseContainer = "List") })
-    Response listIntressClass(@PathParam("panelId")  Long panelId);
+    Response listInterestClass(@PathParam("panelId")  Long panelId);
     @GET
     @Path("/{panelId}/queries")
     @Produces({ "application/json" })
