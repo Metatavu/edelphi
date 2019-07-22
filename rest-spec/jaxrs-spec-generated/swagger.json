@@ -2072,10 +2072,6 @@
             "type" : "integer",
             "format" : "int64"
           },
-          "queryPageId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
           "stampId" : {
             "type" : "integer",
             "description" : "Panel stamp id. Defaults to current stamp",
@@ -2086,6 +2082,34 @@
           },
           "delivery" : {
             "$ref" : "#/components/schemas/ReportDelivery"
+          },
+          "options" : {
+            "$ref" : "#/components/schemas/ReportRequestOptions"
+          }
+        }
+      },
+      "ReportRequestOptions" : {
+        "type" : "object",
+        "properties" : {
+          "queryPageIds" : {
+            "type" : "array",
+            "description" : "Include only speficied page ids",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          },
+          "expertiseGroupIds" : {
+            "type" : "array",
+            "description" : "Include only speficied expertise group ids",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          },
+          "show2dAs1d" : {
+            "type" : "boolean",
+            "description" : "Show 2d answers as 1d graphs instead of 2d graphs"
           }
         }
       },
