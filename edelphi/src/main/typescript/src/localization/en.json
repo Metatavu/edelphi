@@ -97,9 +97,9 @@
       "exportReportPDF": "Export as PDF",
       "exportReportGoogleDocument": "Export as Google Document",
       "exportCharts": "Report Charts",
-      "exportChartsPNG": "Download as PNG",
+      "exportChartsPNG": "Export as PNG",
       "exportData": "Report Data",
-      "exportDataCSV": "Download as CSV",
+      "exportDataCSV": "Export as CSV",
       "exportDataGoogleSpreadsheet": "Export into Google Spreadsheet",
       "reportToEmailTitle": "The report will be sent by email",
       "reportToEmailMessage": "The report will be sent to the email you specified in your profile"

@@ -5,9 +5,8 @@ import * as _ from "lodash";
 import strings from "../../localization/strings";
 import { StoreState } from "../../types";
 import { connect } from "react-redux";
-import Api, { Query, QueryPage } from "edelphi-client";
-import { QueryPagesService } from "edelphi-client/dist/api/api";
-import { List } from "semantic-ui-react";
+import { Query } from "edelphi-client";
+import { List, Icon } from "semantic-ui-react";
 
 /**
  * Interface representing component properties
@@ -64,22 +63,14 @@ class PanelAdminReportsQueryListItem extends React.Component<Props, State> {
    */
   public render() {
     return (
-      <List.Item className={ this.getClassNames() } onClick={ this.props.onClick }>
+      <List.Item onClick={ this.props.onClick }>
+        { this.props.selected ? <Icon name='triangle right' /> : null }
         <List.Content>
           <List.Header as='a'>{ this.props.query.name }</List.Header>
           <List.Description as='a'>{ strings.formatString(strings.panelAdmin.reports.queriesListDates, this.formatDate(this.props.query.created), this.formatDate(this.props.query.lastModified)) }</List.Description>
         </List.Content>
       </List.Item>
     );
-  }
-
-  private getClassNames = () => {
-    const result = ["query-admin-reports-query-list-item"];
-    if (this.props.selected) {
-      result.push("selected");
-    }
-
-    return result.join(" ");
   }
 
   /**
