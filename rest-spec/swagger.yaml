@@ -1461,9 +1461,6 @@ components:
         queryId:
           type: integer
           format: int64
-        queryPageId:
-          type: integer
-          format: int64
         stampId:
           type: integer
           format: int64
@@ -1472,7 +1469,28 @@ components:
           $ref: '#/components/schemas/ReportFormat'
         delivery:
           $ref: '#/components/schemas/ReportDelivery'
+        options: 
+          $ref: '#/components/schemas/ReportRequestOptions'         
         
+    ReportRequestOptions:
+      type: object
+      properties:
+        queryPageIds:
+          description: Include only speficied page ids
+          type: array
+          items:
+            type: integer
+            format: int64
+        expertiseGroupIds:
+          description: Include only speficied expertise group ids
+          type: array
+          items:
+            type: integer
+            format: int64
+        show2dAs1d:
+          description: Show 2d answers as 1d graphs instead of 2d graphs
+          type: boolean
+
     ErrorResponse:
       type: object
       properties:
