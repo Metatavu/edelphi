@@ -1,7 +1,8 @@
 {
   "generic": {
     "loading": "Loading...",
-    "back": "Back"
+    "back": "Back",
+    "ok": "Ok"
   },
 
   "errorDialog": {
@@ -78,11 +79,30 @@
       }
     },
     "commentView": {
-      "querySelectLabel": "Kysely",
-      "pageSelectLabel": "Sivu",
-      "categorySelectLabel": "Kategoria",
-      "defaultCategory": "Oletus",
-      "replyCount": "{0} vastausta"
-    } 
+      "querySelectLabel": "Query",
+      "pageSelectLabel": "Page",
+      "categorySelectLabel": "Category",
+      "defaultCategory": "Default",
+      "replyCount": "{0} replies"
+    },
+    "reports": {
+      "title": "Query Results",
+      "queriesListTitle": "Queries",
+      "queriesListDates": "Created: {0}, Modified: {0}",
+      "exportFilter": "Filter",
+      "exportFilterByPage": "Page(s)",
+      "exportFilterByPageAll": "All",
+      "exportReport": "Export Report",
+      "exportReportContents": "Report Contents",
+      "exportReportPDF": "Export as PDF",
+      "exportReportGoogleDocument": "Export as Google Document",
+      "exportCharts": "Report Charts",
+      "exportChartsPNG": "Download as PNG",
+      "exportData": "Report Data",
+      "exportDataCSV": "Download as CSV",
+      "exportDataGoogleSpreadsheet": "Export into Google Spreadsheet",
+      "reportToEmailTitle": "The report will be sent by email",
+      "reportToEmailMessage": "The report will be sent to the email you specified in your profile"
+    }
   }
 }

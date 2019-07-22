@@ -27,6 +27,7 @@ var ApiUtils = /** @class */ (function () {
      */
     ApiUtils.handleResponse = function (response) {
         switch (response.status) {
+            case 202:
             case 204:
                 return {};
             default:

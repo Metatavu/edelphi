@@ -1,7 +1,8 @@
 {
   "generic": {
     "loading": "Lataa...",
-    "back": "Takaisin"
+    "back": "Takaisin",
+    "ok": "Ok"
   },
 
   "errorDialog": {
@@ -78,11 +79,30 @@
       }
     },
     "commentView": {
-      "querySelectLabel": "Query",
-      "pageSelectLabel": "Page",
-      "categorySelectLabel": "Category",
-      "defaultCategory": "Default",
-      "replyCount": "{0} replies"
+      "querySelectLabel": "Kysely",
+      "pageSelectLabel": "Sivu",
+      "categorySelectLabel": "Kategoria",
+      "defaultCategory": "Oletus",
+      "replyCount": "{0} vastausta"
+    },
+    "reports": {
+      "title": "Kyselyn tulokset",
+      "queriesListTitle": "Kyselyt",
+      "queriesListDates": "Luotu: {0}, Muokattu: {0}",
+      "exportFilter": "Suodata",
+      "exportFilterByPage": "Sivu(t)",
+      "exportFilterByPageAll": "Kaikki",
+      "exportReport": "Vie raportti",
+      "exportReportContents": "Raportin sisältö",
+      "exportReportPDF": "Lataa PDF:nä",
+      "exportReportGoogleDocument": "Vie Google-dokumentiksi",
+      "exportCharts": "Raportin kuvat",
+      "exportChartsPNG": "Lataa PNG-muodossa",
+      "exportData": "Raportin data",
+      "exportDataCSV": "Lataa CSV:nä",
+      "exportDataGoogleSpreadsheet": "Vie Google-taulukoksi",
+      "reportToEmailTitle": "Raportti toimitetaan sähköpostiisi",
+      "reportToEmailMessage": "Raportti toimitetaan puolen tunnin kuluessa profiilissasi määrittämäsi sähköpostiosoitteeseen"
     }
   }
 }

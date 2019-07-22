@@ -6,7 +6,8 @@ export interface IStrings extends LocalizedStringsMethods {
 
   generic: {
     loading: string,
-    back: string
+    back: string,
+    ok: string
   },
 
   errorDialog: {
@@ -88,6 +89,25 @@ export interface IStrings extends LocalizedStringsMethods {
       categorySelectLabel: string,
       defaultCategory: string,
       replyCount: string
+    },
+    reports: {
+      title: string,
+      queriesListTitle: string,
+      queriesListDates: string,
+      exportFilter: string,
+      exportFilterByPage: string,
+      exportFilterByPageAll: string,
+      exportReport: string,
+      exportReportContents: string,
+      exportReportPDF: string,
+      exportReportGoogleDocument: string,
+      exportCharts: string,
+      exportChartsPNG: string,
+      exportData: string,
+      exportDataCSV: string,
+      exportDataGoogleSpreadsheet: string,
+      reportToEmailTitle: string,
+      reportToEmailMessage: string
     }
   }
   

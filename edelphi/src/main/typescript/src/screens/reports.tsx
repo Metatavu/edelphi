@@ -4,10 +4,15 @@ import * as _ from "lodash";
 import { StoreState, AccessToken } from "../types";
 import { connect } from "react-redux";
 import PanelAdminLayout from "../components/generic/panel-admin-layout";
-import Api, { Panel, Query } from "edelphi-client";
-import "../styles/comment-view.scss";
-import { PanelsService, ReportsService, QueriesService } from "edelphi-client/dist/api/api";
+import Api, { Panel, Query, QueryPage } from "edelphi-client";
+import "../styles/reports.scss";
+import { PanelsService, QueriesService, ReportsService } from "edelphi-client/dist/api/api";
 import * as queryString from "query-string";
+import { Grid, Container, List, Modal, Button, Icon } from "semantic-ui-react";
+import strings from "../localization/strings";
+import PanelAdminReportsQueryListItem from "../components/panel-admin/panel-admin-reports-query-list-item";
+import PanelAdminReportsOptions from "../components/panel-admin/panel-admin-reports-options";
+import ErrorDialog from "../components/error-dialog";
 
 /**
  * Interface representing component properties
@@ -21,10 +26,15 @@ interface Props {
  * Interface representing component state
  */
 interface State {
+  error?: Error,
   panel?: Panel,
   queries: Query[],
   loading: boolean,
-  redirectTo?: string
+  redirectTo?: string,
+  selectedQueryId?: number
+  queryPages: QueryPage[],
+  reportToEmailDialogVisible: boolean,
+  filterQueryPageId: number | "ALL"
 }
 
 /**
@@ -41,7 +51,10 @@ class Reports extends React.Component<Props, State> {
     super(props);
     this.state = {
       loading: false,
-      queries: []
+      queries: [],
+      reportToEmailDialogVisible: false,
+      queryPages: [],
+      filterQueryPageId: "ALL"
     };
   }
 
@@ -71,54 +84,80 @@ class Reports extends React.Component<Props, State> {
    * Component render method
    */
   public render() {
+    if (this.state.error) {
+      return <ErrorDialog error={ this.state.error } onClose={ () => this.setState({ error: undefined }) } /> 
+    }
+
     return (
       <PanelAdminLayout loading={ this.state.loading } panel={ this.state.panel } onBackLinkClick={ this.onBackLinkClick } redirectTo={ this.state.redirectTo }>
-        { this.renderQueries() }
+        <Modal open={this.state.reportToEmailDialogVisible} >
+          <Modal.Header> { strings.panelAdmin.reports.reportToEmailTitle } </Modal.Header>
+          <Modal.Content> { strings.panelAdmin.reports.reportToEmailMessage } </Modal.Content>
+          <Modal.Actions>
+            <Button color='green' onClick={ () => { this.setState({reportToEmailDialogVisible: false })}} inverted>
+              <Icon name='checkmark' /> 
+              { strings.generic.ok }
+            </Button>
+          </Modal.Actions>
+        </Modal>
+        <Container>
+          <Grid>
+            <Grid.Row>
+              <Grid.Column width={ 6 }>
+                <h1>{ strings.panelAdmin.reports.title }</h1>
+              </Grid.Column>
+            </Grid.Row>
+            <Grid.Row>
+              <Grid.Column width={ 6 } className="query-list-container">
+                { this.renderQueriesList() }
+              </Grid.Column>
+              <Grid.Column width={ 10 } className="report-options-container">
+                { this.renderReportOptions() }
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
+        </Container>
       </PanelAdminLayout>
     );
   }
 
-  private renderQueries = () => {
+  /**
+   * Renders queries list
+   */
+  private renderQueriesList = () => {
+    if (!this.state.panel || !this.state.panel.id) {
+      return null;
+    }
+
+    const panelId: number = this.state.panel.id;
+
     return (
-      <ul>
-        {
-          this.state.queries.map((query) => {
-            return (
-              <div>
-                <a onClick={ () => { this.onQueryClick(query.id!) } }>
-                  { query.name }
-                </a>
-              </div>
-            );
-          })
-        }
-      </ul>
+      <div className="query-list block">
+        <h2>{ strings.panelAdmin.reports.queriesListTitle }</h2>
+        <List divided relaxed>
+          {
+            this.state.queries.map((query) => {
+              return (
+                <PanelAdminReportsQueryListItem key={ query.id} query={ query } panelId={ panelId } selected={ this.state.selectedQueryId == query.id } onClick={ () => { this.setState({ selectedQueryId: query.id }); }}/>
+              );
+            })
+          }
+        </List>
+      </div>
     );
   }
 
-  private onQueryClick = async (id: number) => {
-    if (!this.state.panel || !this.state.panel.id) {
-      throw new Error("Could not load panel");
-    }
-
-    const reportsService = this.getReportsService();
-
-    await reportsService.createReportRequest({
-      format: "PDF",
-      panelId: this.state.panel.id,
-      queryId: id
-    });
-  }
-
   /**
-   * Event handler for back link click
+   * Renders report options
    */
-  private onBackLinkClick = () => {
-    if (!this.state.panel || !this.state.panel.id) {
-      return;
+  private renderReportOptions = () => {
+    if (!this.state.panel || !this.state.panel.id || !this.state.selectedQueryId) {
+      return null;
     }
 
-    window.location.href = `/panel/admin/dashboard.page?panelId=${this.state.panel.id}`;
+    return (
+      <PanelAdminReportsOptions panelId={ this.state.panel.id } queryId={ this.state.selectedQueryId } queryPageId={ this.state.filterQueryPageId } onExportReportContentsPdfClick={ this.onExportReportContentsPdfClick } onQueryPageChange={ this.onQueryPageFilterChange }/>
+    );
   }
 
   /**
@@ -144,11 +183,63 @@ class Reports extends React.Component<Props, State> {
    * 
    * @returns reports API
    */
- 
   private getReportsService(): ReportsService {
     return Api.getReportsService(this.props.accessToken.token);
   } 
 
+  /**
+   * Event handler for query page filter change
+   * 
+   * @param queryPageId query page id or ALL if filter is not applied
+   */
+  private onQueryPageFilterChange = (queryPageId: number | "ALL") => {
+    this.setState({
+      filterQueryPageId: queryPageId
+    });
+  }
+
+  /**
+   * Event handler for export as PDF click
+   */
+  private onExportReportContentsPdfClick = async () => {
+    try {
+      if (!this.state.panel || !this.state.panel.id) {
+        throw new Error("Could not load panel");
+      }
+
+      if (!this.state.selectedQueryId) {
+        throw new Error("Query not selected");
+      }
+
+      const reportsService = this.getReportsService();
+
+      await reportsService.createReportRequest({
+        format: "PDF",
+        panelId: this.state.panel.id,
+        queryId: this.state.selectedQueryId,
+        queryPageId: this.state.filterQueryPageId == "ALL" ? undefined : this.state.filterQueryPageId
+      });
+
+      this.setState({
+        reportToEmailDialogVisible: true
+      });
+    } catch (e) {
+      this.setState({
+        error: e
+      });
+    }
+  }
+
+  /**
+   * Event handler for back link click
+   */
+  private onBackLinkClick = () => {
+    if (!this.state.panel || !this.state.panel.id) {
+      return;
+    }
+
+    window.location.href = `/panel/admin/dashboard.page?panelId=${this.state.panel.id}`;
+  }
 }
 
 /**
