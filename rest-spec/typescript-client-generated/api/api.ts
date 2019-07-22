@@ -21,6 +21,7 @@ export class ApiUtils {
    */
   public static handleResponse(response: any) {
     switch (response.status) {
+      case 202:
       case 204:
         return {};
       default:
