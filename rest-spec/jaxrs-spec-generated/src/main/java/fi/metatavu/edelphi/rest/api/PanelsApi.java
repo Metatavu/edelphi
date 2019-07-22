@@ -15,7 +15,7 @@ import javax.validation.Valid;
 
 @Path("/panels")
 @Api(description = "the panels API")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-07-22T12:36:51.745+03:00[Europe/Helsinki]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-07-22T12:48:17.804+03:00[Europe/Helsinki]")
 public interface PanelsApi {
 
     @POST
@@ -129,7 +129,18 @@ public interface PanelsApi {
         @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class, responseContainer = "List"),
         @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class, responseContainer = "List"),
         @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class, responseContainer = "List") })
-    Response listExpertiseClass(@PathParam("panelId")  Long panelId);
+    Response listExpertiseClasses(@PathParam("panelId")  Long panelId);
+    @GET
+    @Path("/{panelId}/expertiseGroups")
+    @Produces({ "application/json" })
+    @ApiOperation(value = "List panel expertise groups", notes = "List defined expertise groups from a panel", authorizations = {
+        @Authorization(value = "bearer")    }, tags={ "PanelExpertise" })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "List of panel expertise groups", response = PanelExpertiseGroup.class, responseContainer = "List"),
+        @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class, responseContainer = "List"),
+        @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class, responseContainer = "List"),
+        @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class, responseContainer = "List") })
+    Response listExpertiseGroups(@PathParam("panelId")  Long panelId);
     @GET
     @Path("/{panelId}/interestClasses")
     @Produces({ "application/json" })
@@ -140,7 +151,7 @@ public interface PanelsApi {
         @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class, responseContainer = "List"),
         @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class, responseContainer = "List"),
         @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class, responseContainer = "List") })
-    Response listInterestClass(@PathParam("panelId")  Long panelId);
+    Response listInterestClasses(@PathParam("panelId")  Long panelId);
     @GET
     @Path("/{panelId}/queries")
     @Produces({ "application/json" })

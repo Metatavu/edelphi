@@ -1435,7 +1435,7 @@
         "tags" : [ "PanelExpertise" ],
         "summary" : "List panel expertise classes",
         "description" : "List defined expertise classes from a panel",
-        "operationId" : "listExpertiseClass",
+        "operationId" : "listExpertiseClasses",
         "parameters" : [ {
           "name" : "panelId",
           "in" : "path",
@@ -1500,7 +1500,7 @@
         "tags" : [ "PanelExpertise" ],
         "summary" : "List panel interest classes",
         "description" : "List defined interest classes from a panel",
-        "operationId" : "listInterestClass",
+        "operationId" : "listInterestClasses",
         "parameters" : [ {
           "name" : "panelId",
           "in" : "path",
@@ -1522,6 +1522,71 @@
                   "type" : "array",
                   "items" : {
                     "$ref" : "#/components/schemas/PanelInterestClass"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panels/{panelId}/expertiseGroups" : {
+      "get" : {
+        "tags" : [ "PanelExpertise" ],
+        "summary" : "List panel expertise groups",
+        "description" : "List defined expertise groups from a panel",
+        "operationId" : "listExpertiseGroups",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of panel expertise groups",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PanelExpertiseGroup"
                   }
                 }
               }
@@ -1895,6 +1960,26 @@
           "name" : {
             "type" : "string",
             "description" : "Interest class name"
+          }
+        }
+      },
+      "PanelExpertiseGroup" : {
+        "required" : [ "expertiseClassId", "interestClassId" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "description" : "Id",
+            "format" : "int64",
+            "readOnly" : true
+          },
+          "interestClassId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "expertiseClassId" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
