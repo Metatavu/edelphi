@@ -1,3 +1,5 @@
+export * from './panelExpertise.service';
+import { PanelExpertiseService } from './panelExpertise.service';
 export * from './panels.service';
 import { PanelsService } from './panels.service';
 export * from './queries.service';
@@ -27,6 +29,7 @@ declare const _default: {
      *
      */
     configure(baseUrl: string): void;
+    getPanelExpertiseService(token: string): PanelExpertiseService;
     getPanelsService(token: string): PanelsService;
     getQueriesService(token: string): QueriesService;
     getQueryPagesService(token: string): QueryPagesService;

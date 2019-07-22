@@ -22,3 +22,4 @@ export * from './queryState';
 export * from './reportDelivery';
 export * from './reportFormat';
 export * from './reportRequest';
+export * from './reportRequestOptions';

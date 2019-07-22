@@ -3,6 +3,8 @@ function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
+__export(require("./panelExpertise.service"));
+var panelExpertise_service_1 = require("./panelExpertise.service");
 __export(require("./panels.service"));
 var panels_service_1 = require("./panels.service");
 __export(require("./queries.service"));
@@ -47,6 +49,9 @@ exports.default = new /** @class */ (function () {
      */
     Api.prototype.configure = function (baseUrl) {
         this.apiUrl = baseUrl;
+    };
+    Api.prototype.getPanelExpertiseService = function (token) {
+        return new panelExpertise_service_1.PanelExpertiseService(this.apiUrl, token);
     };
     Api.prototype.getPanelsService = function (token) {
         return new panels_service_1.PanelsService(this.apiUrl, token);

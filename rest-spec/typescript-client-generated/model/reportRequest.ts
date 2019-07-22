@@ -11,27 +11,28 @@
  */
 import { ReportDelivery } from './reportDelivery';
 import { ReportFormat } from './reportFormat';
+import { ReportRequestOptions } from './reportRequestOptions';
 
 
 export interface ReportRequest { 
     panelId: number;
     queryId: number;
-    queryPageId?: number;
     /**
      * Panel stamp id. Defaults to current stamp
      */
     stampId?: number;
     format?: ReportFormat;
     delivery?: ReportDelivery;
+    options: ReportRequestOptions;
 }
 export interface ReportRequestOpt { 
     panelId?: number;
     queryId?: number;
-    queryPageId?: number;
     /**
      * Panel stamp id. Defaults to current stamp
      */
     stampId?: number;
     format?: ReportFormat;
     delivery?: ReportDelivery;
+    options?: ReportRequestOptions;
 }
