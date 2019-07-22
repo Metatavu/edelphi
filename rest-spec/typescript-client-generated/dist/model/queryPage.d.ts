@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 import { QueryPageLive2DOptions } from './queryPageLive2DOptions';
+import { ReportRequestOptions } from './reportRequestOptions';
 import { QueryPageCommentOptions } from './queryPageCommentOptions';
 import { QueryPageType } from './queryPageType';
 export interface QueryPage {
@@ -18,7 +19,7 @@ export interface QueryPage {
     title: string;
     type: QueryPageType;
     commentOptions: QueryPageCommentOptions;
-    queryOptions: QueryPageLive2DOptions;
+    queryOptions: QueryPageLive2DOptions | ReportRequestOptions;
 }
 export interface QueryPageOpt {
     readonly id?: number;
@@ -26,5 +27,5 @@ export interface QueryPageOpt {
     title?: string;
     type?: QueryPageType;
     commentOptions?: QueryPageCommentOptions;
-    queryOptions?: QueryPageLive2DOptions;
+    queryOptions?: QueryPageLive2DOptions | ReportRequestOptions;
 }
