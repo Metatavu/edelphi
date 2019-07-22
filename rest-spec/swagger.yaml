@@ -48,7 +48,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-                                            
+
   /panels/{panelId}/queries:
     get:
       operationId: listQueries
@@ -929,6 +929,92 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /panels/{panelId}/expertiseClasses:
+    get:
+      operationId: listExpertiseClass
+      summary: List panel expertise classes
+      description: List defined expertise classes from a panel
+      tags:
+        - PanelExpertise
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: List of panel expertise classes
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/PanelExpertiseClass"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /panels/{panelId}/intressClasses:
+    get:
+      operationId: listIntressClass
+      summary: List panel intress classes
+      description: List defined intress classes from a panel
+      tags:
+        - PanelExpertise
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: List of panel intress classes
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/PanelIntressClass"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /reportRequests:
     post:
       operationId: createReportRequest
@@ -1206,7 +1292,33 @@ components:
           description: Page's id where the comment is
           type: integer
           format: int64
-          
+
+    PanelExpertiseClass:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          description: Id
+          type: integer
+          format: int64
+          readOnly: true
+        name:
+          description: Expertise class name
+
+    PanelIntressClass:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          description: Id
+          type: integer
+          format: int64
+          readOnly: true
+        name:
+          description: Interest class name
+
     QueryQuestionComment:
       type: object
       required:
