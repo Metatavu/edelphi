@@ -1,3 +1,5 @@
+export * from './panelExpertise.service';
+import { PanelExpertiseService } from './panelExpertise.service';
 export * from './panels.service';
 import { PanelsService } from './panels.service';
 export * from './queries.service';
@@ -42,6 +44,10 @@ export default new class Api {
     this.apiUrl = baseUrl;
   }
 
+  
+  public getPanelExpertiseService(token: string): PanelExpertiseService {
+    return new PanelExpertiseService(this.apiUrl, token);
+  }
   
   public getPanelsService(token: string): PanelsService {
     return new PanelsService(this.apiUrl, token);
