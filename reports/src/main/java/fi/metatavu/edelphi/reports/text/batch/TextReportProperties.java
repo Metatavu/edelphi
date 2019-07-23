@@ -7,6 +7,7 @@ package fi.metatavu.edelphi.reports.text.batch;
  */
 public class TextReportProperties {
 
+  public static String QUERY_ID = "queryId";
   public static String PAGE_IDS = "pageIds";
   public static String BASE_URL = "baseUrl";
   public static String LOCALE = "locale";

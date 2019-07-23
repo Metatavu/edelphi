@@ -35,7 +35,10 @@ public class TextReportController {
   public String getHtmlReport(String baseUrl, List<String> bodyContents) throws ReportException {
     try (InputStream htmlStream = getClass().getClassLoader().getResourceAsStream("report.html")) {
       Document document = Jsoup.parse(htmlStream, "UTF-8", baseUrl);
-
+      
+      addStylesheet(document, String.format("%s/_themes/default/css/theme.css", baseUrl));
+      addStylesheet(document, String.format("%s/_themes/default/css/report_overrides.css", baseUrl));
+      
       for (String bodyContent : bodyContents) {
         document.body().append(bodyContent);
       }
@@ -49,6 +52,20 @@ public class TextReportController {
     }
   }
   
+  /**
+   * Adds a StyleSheet into document
+   * 
+   * @param document document
+   * @param href StyleSheet URL
+   */
+  private void addStylesheet(Document document, String href) {
+    document.head().appendElement("link")
+      .attr("type", "text/css")
+      .attr("rel", "stylesheet")
+      .attr("href", href);
+  }
+
+
   /**
    * Generates a report HTML page 
    * 

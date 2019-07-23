@@ -103,7 +103,9 @@
       "exportDataCSV": "Vie CSV:nä",
       "exportDataGoogleSpreadsheet": "Vie Google-taulukoksi",
       "reportToEmailTitle": "Raportti toimitetaan sähköpostiisi",
-      "reportToEmailMessage": "Raportti toimitetaan puolen tunnin kuluessa profiilissasi määrittämäsi sähköpostiosoitteeseen"
+      "reportToEmailMessageDelivery": "Raportti tullaan toimittamaan profiilissa määrittelemääsi sähköpostiin",
+      "reportToEmailMessageDeliveryTime": "Raportti saapuu yleensä 30 minuutin sisään pyynnön lähettämisestä",
+      "reportToEmailMessageLeave": "Raportin luonti tapahtuu taustalla, joten voitte poistua nyt tästä näkymästä"
     }
   }
 }

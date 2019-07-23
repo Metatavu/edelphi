@@ -88,6 +88,7 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
     // TODO: Permissions
     
     Properties properties = new Properties();
+    properties.put(TextReportProperties.QUERY_ID, query.getId().toString());
     properties.put(TextReportProperties.BASE_URL, getBaseUrl());
     properties.put(TextReportProperties.LOCALE, getLocale().toString());
     properties.put(TextReportProperties.PAGE_IDS, StringUtils.join(pageIds, ","));

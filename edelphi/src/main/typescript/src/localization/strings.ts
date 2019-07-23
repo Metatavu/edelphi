@@ -108,7 +108,9 @@ export interface IStrings extends LocalizedStringsMethods {
       exportDataCSV: string,
       exportDataGoogleSpreadsheet: string,
       reportToEmailTitle: string,
-      reportToEmailMessage: string
+      reportToEmailMessageDelivery: string
+      reportToEmailMessageDeliveryTime: string,
+      reportToEmailMessageLeave: string
     }
   }
   

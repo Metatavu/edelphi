@@ -103,7 +103,9 @@
       "exportDataCSV": "Export as CSV",
       "exportDataGoogleSpreadsheet": "Export into Google Spreadsheet",
       "reportToEmailTitle": "The report will be sent by email",
-      "reportToEmailMessage": "The report will be sent to the email you specified in your profile"
+      "reportToEmailMessageDelivery": "The report will be sent to the email you specified in your profile",
+      "reportToEmailMessageDeliveryTime": "The report usually arrives within 30 minutes from request",
+      "reportToEmailMessageLeave": "Report is generated in the background so you are now free to navigate from this view"
     }
   }
 }

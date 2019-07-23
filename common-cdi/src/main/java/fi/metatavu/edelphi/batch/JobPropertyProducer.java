@@ -65,7 +65,12 @@ public class JobPropertyProducer {
   public Long produceJobPropertyLong(InjectionPoint injectionPoint) {
     Member member = injectionPoint.getMember();
     String name = member.getName();
-    return NumberUtils.createLong(getJobProperty(name));
+    String value = getJobProperty(name);
+    if (StringUtils.isEmpty(value)) {
+      return null;
+    }
+    
+    return NumberUtils.createLong(value);
   }
 
   /**

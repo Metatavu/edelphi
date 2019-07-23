@@ -104,17 +104,24 @@ public class PanelController {
   }
 
   /**
+   * Returns panel expertise group
+   * 
+   * @param id id
+   * @return Panel expertise group
+   */
+  public PanelUserExpertiseGroup findPanelUserExpertiseGroup(Long id) {
+    return panelUserExpertiseGroupDAO.findById(id);
+  }
+
+  /**
    * Returns list of panel expertise groups
    * 
    * @param panel panel
-   * @param stamp 
    * @param stamp stamp
    * @return list of panel expertise groups
    */
   public List<PanelUserExpertiseGroup> listPanelUserExpertiseGroups(Panel panel, PanelStamp stamp) {
     return panelUserExpertiseGroupDAO.listByPanelAndStamp(panel, stamp);
   }
-
-  
   
 }

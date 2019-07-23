@@ -94,7 +94,11 @@ class Reports extends React.Component<Props, State> {
       <PanelAdminLayout loading={ this.state.loading } panel={ this.state.panel } onBackLinkClick={ this.onBackLinkClick } redirectTo={ this.state.redirectTo }>
         <Modal open={this.state.reportToEmailDialogVisible} >
           <Modal.Header> { strings.panelAdmin.reports.reportToEmailTitle } </Modal.Header>
-          <Modal.Content> { strings.panelAdmin.reports.reportToEmailMessage } </Modal.Content>
+          <Modal.Content> 
+            <p>{ strings.panelAdmin.reports.reportToEmailMessageDelivery }. { strings.panelAdmin.reports.reportToEmailMessageLeave }</p>
+            <br/>
+            <p><i>{ strings.panelAdmin.reports.reportToEmailMessageDeliveryTime }</i></p>
+          </Modal.Content>
           <Modal.Actions>
             <Button color='green' onClick={ () => { this.setState({reportToEmailDialogVisible: false })}} inverted>
               <Icon name='checkmark' /> 
