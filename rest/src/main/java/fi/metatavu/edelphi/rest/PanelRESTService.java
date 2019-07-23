@@ -45,6 +45,9 @@ import fi.metatavu.edelphi.rest.model.QueryQuestionComment;
 import fi.metatavu.edelphi.rest.model.QueryQuestionCommentCategory;
 import fi.metatavu.edelphi.rest.mqtt.QueryQuestionAnswerNotification;
 import fi.metatavu.edelphi.rest.mqtt.QueryQuestionCommentNotification;
+import fi.metatavu.edelphi.rest.translate.PanelExpertiseClassTranslator;
+import fi.metatavu.edelphi.rest.translate.PanelExpertiseGroupTranslator;
+import fi.metatavu.edelphi.rest.translate.PanelInterestClassTranslator;
 import fi.metatavu.edelphi.rest.translate.PanelTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryPageTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryQuestionAnswerTranslator;
@@ -110,6 +113,15 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Inject
   private QueryTranslator queryTranslator;
+
+  @Inject
+  private PanelExpertiseClassTranslator panelExpertiseClassTranslator;
+
+  @Inject
+  private PanelInterestClassTranslator panelInterestClassTranslator;
+
+  @Inject
+  private PanelExpertiseGroupTranslator panelExpertiseGroupTranslator;
   
   @Override
   @RolesAllowed("user")
@@ -712,6 +724,54 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     List<QueryPage> queryPages = queryController.listQueryPages(query, Boolean.TRUE.equals(includeHidden) ? null : true);
 
     return createOk(queryPages.stream().map(queryPageTranslator::translate).collect(Collectors.toList()));
+  }
+  
+  @Override
+  @RolesAllowed("user") 
+  public Response listExpertiseClasses(Long panelId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    return createOk(panelController.listPanelUserExpertiseClasses(panel).stream().map(this.panelExpertiseClassTranslator::translate).collect(Collectors.toList()));
+  }
+  
+  @Override
+  @RolesAllowed("user") 
+  public Response listInterestClasses(Long panelId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    return createOk(panelController.listPanelUserInterestClasses(panel).stream().map(this.panelInterestClassTranslator::translate).collect(Collectors.toList()));
+  }
+
+  @Override
+  @RolesAllowed("user") 
+  public Response listExpertiseGroups(Long panelId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    return createOk(panelController.listPanelUserExpertiseGroups(panel, panel.getCurrentStamp()).stream().map(this.panelExpertiseGroupTranslator::translate).collect(Collectors.toList()));
   }
   
   /**

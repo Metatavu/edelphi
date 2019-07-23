@@ -83,8 +83,8 @@ module.exports = function(grunt) {
       },
       "query-options": {
         "folder": "typescript-client-generated",
-        "postfix": "Options",
-        "ignore": ["queryPageCommentOptions.ts"],
+        "prefix": "QueryPage",
+        "ignore": ["queryPageCommentOptions.ts", "reportRequestOptions.ts"],
         "file": "model/queryPage.ts",
         "field": "queryOptions"
       }

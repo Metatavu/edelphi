@@ -90,6 +90,7 @@
       "queriesListTitle": "Kyselyt",
       "queriesListDates": "Luotu: {0}, Muokattu: {0}",
       "exportFilter": "Suodata",
+      "exportFilterByExpertise": "Intressit ja asiantuntijuudet",
       "exportFilterByPage": "Sivu(t)",
       "exportFilterByPageAll": "Kaikki",
       "exportReport": "Vie raportti",

@@ -12,5 +12,6 @@ public class TextReportProperties {
   public static String LOCALE = "locale";
   public static String STAMP_ID = "stampId";
   public static String DELIVERY_EMAIL = "deliveryEmail";
+  public static String EXPERTISE_GROUP_IDS = "expertiseGroupIds";
   
 }

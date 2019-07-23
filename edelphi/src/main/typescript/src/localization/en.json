@@ -90,6 +90,7 @@
       "queriesListTitle": "Queries",
       "queriesListDates": "Created: {0}, Modified: {0}",
       "exportFilter": "Filter",
+      "exportFilterByExpertise": "Interest and Expertise Groups",
       "exportFilterByPage": "Page(s)",
       "exportFilterByPageAll": "All",
       "exportReport": "Export Report",

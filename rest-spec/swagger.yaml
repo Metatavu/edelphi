@@ -1454,6 +1454,7 @@ components:
       required:
         - panelId
         - queryId
+        - options
       properties:
         panelId:
           type: integer

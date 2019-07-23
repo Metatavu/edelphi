@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -69,6 +71,12 @@ public class LegacyReportPageHtmlProvider implements ReportPageHtmlProvider {
 
   private String getSerializedContext(TextReportPageContext exportContext) throws JsonProcessingException {
     LegacyReportContext reportContext = new LegacyReportContext(exportContext.getLocale().toString(), exportContext.getStamp().getId());
+    
+    if (exportContext.getExpertiseGroupIds() != null) {
+      String filter = Arrays.stream(exportContext.getExpertiseGroupIds()).map(String::valueOf).collect(Collectors.joining(","));
+      reportContext.addFilter("EXPERTISE", filter);
+    }
+    
     ObjectMapper objectMApper = new ObjectMapper();
     return Base64.encodeBase64URLSafeString(objectMApper.writeValueAsBytes(reportContext)); 
   }

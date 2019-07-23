@@ -1,12 +1,20 @@
 package fi.metatavu.edelphi.panels;
 
+import java.util.List;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import fi.metatavu.edelphi.dao.panels.PanelDAO;
 import fi.metatavu.edelphi.dao.panels.PanelStampDAO;
+import fi.metatavu.edelphi.dao.panels.PanelUserExpertiseClassDAO;
+import fi.metatavu.edelphi.dao.panels.PanelUserExpertiseGroupDAO;
+import fi.metatavu.edelphi.dao.panels.PanelUserIntressClassDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
+import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseClass;
+import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseGroup;
+import fi.metatavu.edelphi.domainmodel.panels.PanelUserIntressClass;
 
 /**
  * Controller for panels
@@ -21,6 +29,15 @@ public class PanelController {
 
   @Inject
   private PanelStampDAO panelStampDAO;
+
+  @Inject
+  private PanelUserExpertiseClassDAO panelUserExpertiseClassDAO; 
+
+  @Inject
+  private PanelUserIntressClassDAO panelUserIntressClassDAO;
+  
+  @Inject
+  private PanelUserExpertiseGroupDAO panelUserExpertiseGroupDAO;
   
   /**
    * Finds a panel by id
@@ -66,4 +83,38 @@ public class PanelController {
     return stamp.getArchived();
   }
 
+  /**
+   * Returns list of panel expertise classes
+   * 
+   * @param panel panel
+   * @return list of panel expertise classes
+   */
+  public List<PanelUserExpertiseClass> listPanelUserExpertiseClasses(Panel panel) {
+    return panelUserExpertiseClassDAO.listByPanel(panel);
+  }
+  
+  /**
+   * Returns list of panel interest classes
+   * 
+   * @param panel panel
+   * @return list of panel interest classes
+   */
+  public List<PanelUserIntressClass> listPanelUserInterestClasses(Panel panel) {
+    return panelUserIntressClassDAO.listByPanel(panel);
+  }
+
+  /**
+   * Returns list of panel expertise groups
+   * 
+   * @param panel panel
+   * @param stamp 
+   * @param stamp stamp
+   * @return list of panel expertise groups
+   */
+  public List<PanelUserExpertiseGroup> listPanelUserExpertiseGroups(Panel panel, PanelStamp stamp) {
+    return panelUserExpertiseGroupDAO.listByPanelAndStamp(panel, stamp);
+  }
+
+  
+  
 }

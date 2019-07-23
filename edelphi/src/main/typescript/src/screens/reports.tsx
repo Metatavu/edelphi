@@ -34,7 +34,8 @@ interface State {
   selectedQueryId?: number
   queryPages: QueryPage[],
   reportToEmailDialogVisible: boolean,
-  filterQueryPageId: number | "ALL"
+  filterQueryPageId: number | "ALL",
+  expertiseGroupIds: number[] | "ALL"
 }
 
 /**
@@ -54,7 +55,8 @@ class Reports extends React.Component<Props, State> {
       queries: [],
       reportToEmailDialogVisible: false,
       queryPages: [],
-      filterQueryPageId: "ALL"
+      filterQueryPageId: "ALL",
+      expertiseGroupIds: "ALL"
     };
   }
 
@@ -156,7 +158,13 @@ class Reports extends React.Component<Props, State> {
     }
 
     return (
-      <PanelAdminReportsOptions panelId={ this.state.panel.id } queryId={ this.state.selectedQueryId } queryPageId={ this.state.filterQueryPageId } onExportReportContentsPdfClick={ this.onExportReportContentsPdfClick } onQueryPageChange={ this.onQueryPageFilterChange }/>
+      <PanelAdminReportsOptions panelId={ this.state.panel.id } 
+        queryId={ this.state.selectedQueryId } 
+        queryPageId={ this.state.filterQueryPageId }
+        expertiseGroupIds={ this.state.expertiseGroupIds } 
+        onQueryPageChange={ this.onQueryPageFilterChange }
+        onExpertiseGroupsChanged={ this.onExpertiseGroupsChanged }
+        onExportReportContentsPdfClick={ this.onExportReportContentsPdfClick } />
     );
   }
 
@@ -199,6 +207,17 @@ class Reports extends React.Component<Props, State> {
   }
 
   /**
+   * Event handler for expertise group ids filter change
+   * 
+   * @param expertiseGroupIds expertise group ids or ALL if filter is not applied
+   */
+  private onExpertiseGroupsChanged = (expertiseGroupIds: number[] | "ALL") => {
+    this.setState({
+      expertiseGroupIds: expertiseGroupIds
+    });
+  }
+
+  /**
    * Event handler for export as PDF click
    */
   private onExportReportContentsPdfClick = async () => {
@@ -217,7 +236,10 @@ class Reports extends React.Component<Props, State> {
         format: "PDF",
         panelId: this.state.panel.id,
         queryId: this.state.selectedQueryId,
-        queryPageId: this.state.filterQueryPageId == "ALL" ? undefined : this.state.filterQueryPageId
+        options: {
+          expertiseGroupIds: this.state.expertiseGroupIds == "ALL" ? undefined : this.state.expertiseGroupIds,
+          queryPageIds: this.state.filterQueryPageId == "ALL" ? undefined : [ this.state.filterQueryPageId ]
+        }
       });
 
       this.setState({

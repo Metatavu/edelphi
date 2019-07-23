@@ -5,6 +5,7 @@
     <property name="baseUrl" value="#{jobParameters['baseUrl']}" />
     <property name="locale" value="#{jobParameters['locale']}" />
     <property name="deliveryEmail" value="#{jobParameters['deliveryEmail']}" />
+    <property name="expertiseGroupIds" value="#{jobParameters['expertiseGroupIds']}" />
   </properties>
         
   <step id="pages" next="print">

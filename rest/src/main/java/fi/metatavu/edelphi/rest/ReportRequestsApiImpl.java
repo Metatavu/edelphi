@@ -1,6 +1,5 @@
 package fi.metatavu.edelphi.rest;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -31,6 +30,7 @@ import fi.metatavu.edelphi.queries.QueryController;
 import fi.metatavu.edelphi.reports.text.batch.TextReportProperties;
 import fi.metatavu.edelphi.rest.api.ReportRequestsApi;
 import fi.metatavu.edelphi.rest.model.ReportRequest;
+import fi.metatavu.edelphi.rest.model.ReportRequestOptions;
 
 /**
  * Report requests API implementation
@@ -70,18 +70,16 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
       return createBadRequest(String.format("Invalid query id %d", body.getQueryId()));
     }
     
-    List<QueryPage> queryPages;
-    if (body.getQueryPageId() != null) {
-      QueryPage queryPage = queryController.findQueryPageById(body.getQueryPageId());
-      if (queryPage == null) {
-        return createBadRequest(String.format("Invalid query page id %d", body.getQueryPageId()));
-      }
-      queryPages = Collections.singletonList(queryPage);
+    ReportRequestOptions options = body.getOptions();
+    List<Long> pageIds;
+    
+    if (options.getQueryPageIds() != null && !options.getQueryPageIds().isEmpty()) {
+      pageIds = options.getQueryPageIds();
     } else {
-      queryPages = queryController.listQueryPages(query, null);
+      List<QueryPage> queryPages = queryController.listQueryPages(query, null);
+      pageIds = queryPages.stream().map(QueryPage::getId).collect(Collectors.toList());
     }
     
-    List<Long> pageIds = queryPages.stream().map(QueryPage::getId).collect(Collectors.toList());
     PanelStamp stamp = body.getStampId() == null ? panel.getCurrentStamp() : panelController.findPanelStampById(body.getStampId());
     if (stamp == null) {
       return createBadRequest(String.format("Invalid panel stamp %d", body.getStampId()));
@@ -94,6 +92,10 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
     properties.put(TextReportProperties.LOCALE, getLocale().toString());
     properties.put(TextReportProperties.PAGE_IDS, StringUtils.join(pageIds, ","));
     properties.put(TextReportProperties.STAMP_ID, stamp.getId().toString());
+    
+    if (options.getExpertiseGroupIds() != null) {
+      properties.put(TextReportProperties.EXPERTISE_GROUP_IDS, StringUtils.join(options.getExpertiseGroupIds(), ","));
+    }
     
     if (body.getDelivery() != null && StringUtils.isNotBlank(body.getDelivery().getEmail())) {
       properties.put(TextReportProperties.DELIVERY_EMAIL, body.getDelivery().getEmail());

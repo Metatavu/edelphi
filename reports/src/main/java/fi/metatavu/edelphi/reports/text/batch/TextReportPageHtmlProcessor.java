@@ -1,9 +1,6 @@
 package fi.metatavu.edelphi.reports.text.batch;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.ejb.AccessTimeout;
@@ -47,6 +44,10 @@ public class TextReportPageHtmlProcessor extends TypedItemProcessor<QueryPage, S
   @Inject
   @JobProperty
   private Long stampId;
+
+  @Inject
+  @JobProperty
+  private Long[] expertiseGroupIds;
   
   @Override
   public String process(QueryPage queryPage) throws Exception {
@@ -55,11 +56,7 @@ public class TextReportPageHtmlProcessor extends TypedItemProcessor<QueryPage, S
       throw new ReportException(String.format("Could not find panel stamp %d", stampId));
     }
 
-    // TODO: filters and parameters...
-    Map<String, List<String>> filters = Collections.emptyMap();
-    Map<String, String> parameters = Collections.emptyMap();
-    
-    return htmlReportController.getPageHtml(new TextReportPageContext(baseUrl, locale, stamp, filters, parameters, queryPage));
+    return htmlReportController.getPageHtml(new TextReportPageContext(baseUrl, locale, stamp, expertiseGroupIds, queryPage));
   }
 
 }
