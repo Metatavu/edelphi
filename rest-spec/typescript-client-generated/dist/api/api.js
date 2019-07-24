@@ -33,6 +33,9 @@ var ApiUtils = /** @class */ (function () {
             case 204:
                 return {};
             default:
+                if (response.status >= 400) {
+                    throw new Error("Request failed with status " + response.status);
+                }
                 return response.json();
         }
     };
