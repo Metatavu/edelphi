@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.slf4j.Logger;
 
@@ -268,14 +269,41 @@ public abstract class AbstractApi {
   }
   
   /**
+   * Returns request scheme
+   * 
+   * @return request scheme
+   */
+  protected String getRequestScheme() {
+    HttpServletRequest request = getHttpServletRequest();
+    String forwardProto = request.getHeader("X-Forwarded-Proto");
+    if (StringUtils.isNotBlank(forwardProto)) {
+      return forwardProto;
+    }
+    
+    return request.getScheme();
+  }
+
+  /**
+   * Returns request host
+   * 
+   * @return request host
+   */
+  protected String getRequestHost() {
+    HttpServletRequest request = getHttpServletRequest();
+    String forwardHost = request.getHeader("X-Forwarded-Host");
+    if (StringUtils.isNotBlank(forwardHost)) {
+      return forwardHost;
+    }
+    
+    return request.getServerName();
+  }
+  
+  /**
    * Returns service base URL 
    * @return service base URL
    */
   protected String getBaseUrl() {
-    HttpServletRequest request = getHttpServletRequest();
-    String currentURL = request.getRequestURL().toString();
-    String pathInfo = request.getRequestURI();
-    return currentURL.substring(0, currentURL.length() - pathInfo.length()) + request.getContextPath();
+    return String.format("%s://%s", getRequestScheme(), getRequestHost());
   }
   
 }
