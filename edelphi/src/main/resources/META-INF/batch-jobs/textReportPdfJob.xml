@@ -1,4 +1,4 @@
-<job id="htmlReportJob" xmlns="http://xmlns.jcp.org/xml/ns/javaee" version="1.0">
+<job id="textReportPdfJob" xmlns="http://xmlns.jcp.org/xml/ns/javaee" version="1.0">
   <properties>
     <property name="queryId" value="#{jobParameters['queryId']}" />
     <property name="pageIds" value="#{jobParameters['pageIds']}" />

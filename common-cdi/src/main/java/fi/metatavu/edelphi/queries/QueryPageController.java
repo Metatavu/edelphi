@@ -27,6 +27,7 @@ import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageSetting;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageSettingKey;
+import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.resources.ResourceController;
 
@@ -284,6 +285,21 @@ public class QueryPageController {
     }
     
     return isPanelsPage(panel, category.getQueryPage());
+  }
+
+  /**
+   * Returns whether page is from query
+   * 
+   * @param query query
+   * @param queryPage page
+   * @return whether page is from query
+   */
+  public boolean isQuerysPage(Query query, QueryPage queryPage) {
+    if (query == null || queryPage == null) {
+      return false;
+    }
+    
+    return query.getId().equals(queryPage.getQuerySection().getQuery().getId());
   }
   
   /**

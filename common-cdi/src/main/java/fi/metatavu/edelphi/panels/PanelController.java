@@ -84,6 +84,21 @@ public class PanelController {
   }
 
   /**
+   * Returns whether stamp is from given panel
+   * 
+   * @param panel panel
+   * @param stamp stamp
+   * @return whether stamp is from given panel
+   */
+  public boolean isPanelsStamp(Panel panel, PanelStamp stamp) {
+    if (stamp == null || panel == null) {
+      return false;
+    }
+    
+    return stamp.getPanel().getId().equals(panel.getId());
+  }
+
+  /**
    * Returns list of panel expertise classes
    * 
    * @param panel panel

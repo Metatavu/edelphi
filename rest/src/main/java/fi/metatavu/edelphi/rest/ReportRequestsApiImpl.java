@@ -27,6 +27,7 @@ import fi.metatavu.edelphi.panels.PanelController;
 import fi.metatavu.edelphi.permissions.DelfoiActionName;
 import fi.metatavu.edelphi.permissions.PermissionController;
 import fi.metatavu.edelphi.queries.QueryController;
+import fi.metatavu.edelphi.queries.QueryPageController;
 import fi.metatavu.edelphi.reports.text.batch.TextReportProperties;
 import fi.metatavu.edelphi.rest.api.ReportRequestsApi;
 import fi.metatavu.edelphi.rest.model.ReportRequest;
@@ -53,6 +54,9 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
   @Inject
   private QueryController queryController;
 
+  @Inject
+  private QueryPageController queryPageController;
+
   @Override
   @RolesAllowed("user")
   public Response createReportRequest(ReportRequest body) {
@@ -61,7 +65,7 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
       return createNotFound();
     }
     
-    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.ACCESS_PANEL)) {
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.MANAGE_PANEL)) {
       return createForbidden("Forbidden");
     }
 
@@ -70,28 +74,45 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
       return createBadRequest(String.format("Invalid query id %d", body.getQueryId()));
     }
     
+    if (!queryController.isPanelsQuery(query, panel)) {
+      return createBadRequest(String.format("Query %d is not from panel %d", body.getQueryId(), body.getPanelId()));
+    }
+    
     ReportRequestOptions options = body.getOptions();
-    List<Long> pageIds;
+    List<Long> queryPageIds;
     
     if (options.getQueryPageIds() != null && !options.getQueryPageIds().isEmpty()) {
-      pageIds = options.getQueryPageIds();
+      queryPageIds = options.getQueryPageIds();
+      for (int i = 0; i < queryPageIds.size(); i++) {
+        Long queryPageId = queryPageIds.get(i);
+        QueryPage queryPage = queryPageController.findQueryPage(queryPageId);
+        if (queryPage == null) {
+          return createBadRequest(String.format("Invalid query page id %d", queryPageId));
+        }
+        
+        if (!queryPageController.isQuerysPage(query, queryPage)) {
+          return createBadRequest(String.format("Query page %d is not from query", queryPageId, query.getId()));
+        }
+      }
     } else {
       List<QueryPage> queryPages = queryController.listQueryPages(query, null);
-      pageIds = queryPages.stream().map(QueryPage::getId).collect(Collectors.toList());
+      queryPageIds = queryPages.stream().map(QueryPage::getId).collect(Collectors.toList());
     }
     
     PanelStamp stamp = body.getStampId() == null ? panel.getCurrentStamp() : panelController.findPanelStampById(body.getStampId());
-    if (stamp == null) {
+    if (stamp == null || panelController.isPanelStampArchived(stamp)) {
       return createBadRequest(String.format("Invalid panel stamp %d", body.getStampId()));
     }
     
-    // TODO: Permissions
+    if (!panelController.isPanelsStamp(panel, stamp)) {
+      return createBadRequest(String.format("Stamp %d is not from panel %d", stamp.getId(), panel.getId()));
+    }
     
     Properties properties = new Properties();
     properties.put(TextReportProperties.QUERY_ID, query.getId().toString());
     properties.put(TextReportProperties.BASE_URL, getBaseUrl());
     properties.put(TextReportProperties.LOCALE, getLocale().toString());
-    properties.put(TextReportProperties.PAGE_IDS, StringUtils.join(pageIds, ","));
+    properties.put(TextReportProperties.PAGE_IDS, StringUtils.join(queryPageIds, ","));
     properties.put(TextReportProperties.STAMP_ID, stamp.getId().toString());
     
     if (options.getExpertiseGroupIds() != null) {
@@ -105,8 +126,11 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
     }
     
     JobOperator jobOperator = BatchRuntime.getJobOperator();
-    jobOperator.start("htmlReportJob", properties);
+    long jobId = jobOperator.start("textReportPdfJob", properties);
+    if (jobId > 0) {
+      return Response.status(Status.ACCEPTED).build();
+    }
     
-    return Response.status(Status.ACCEPTED).build();
+    return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to submit job").build();
   }
 }

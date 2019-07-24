@@ -5,13 +5,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.batch.api.AbstractBatchlet;
-import javax.ejb.AccessTimeout;
-import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -39,8 +37,6 @@ import fi.metatavu.edelphi.resources.ResourceController;
  * @author Antti Leppä
  */
 @Named
-@Stateless
-@AccessTimeout (unit = TimeUnit.HOURS, value = 4)
 public class TextReportPdfPrinter extends AbstractBatchlet {
 
   @Inject
@@ -96,9 +92,12 @@ public class TextReportPdfPrinter extends AbstractBatchlet {
   
   @Override
   public String process() throws Exception { 
+    List<String> pageHtmls = reportHtmlBatchContext.getPageHtmls();
+    logger.info("Creating PDF from {} html pages", pageHtmls.size());
+    
     Query query = queryController.findQueryById(queryId);
     Panel panel = resourceController.getResourcePanel(query);
-    String html = htmlReportController.getHtmlReport(baseUrl, reportHtmlBatchContext.getPageHtmls());
+    String html = htmlReportController.getHtmlReport(baseUrl, pageHtmls);
     
     try (InputStream htmlStream = new ByteArrayInputStream(html.getBytes("UTF-8")); ByteArrayOutputStream pdfStream = new ByteArrayOutputStream()) {
       pdfPrinter.printHtmlAsPdf(htmlStream, pdfStream);

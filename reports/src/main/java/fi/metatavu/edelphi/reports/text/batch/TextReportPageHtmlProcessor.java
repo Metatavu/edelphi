@@ -1,12 +1,11 @@
 package fi.metatavu.edelphi.reports.text.batch;
 
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
-import javax.ejb.AccessTimeout;
-import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.slf4j.Logger;
 
 import fi.metatavu.edelphi.batch.JobProperty;
 import fi.metatavu.edelphi.batch.TypedItemProcessor;
@@ -23,9 +22,10 @@ import fi.metatavu.edelphi.reports.text.TextReportPageContext;
  * @author Antti Leppä
  */
 @Named
-@Stateless
-@AccessTimeout (unit = TimeUnit.HOURS, value = 4)
 public class TextReportPageHtmlProcessor extends TypedItemProcessor<QueryPage, String> {
+
+  @Inject
+  private Logger logger;
 
   @Inject
   private PanelController panelController;
@@ -55,6 +55,8 @@ public class TextReportPageHtmlProcessor extends TypedItemProcessor<QueryPage, S
     if (stamp == null) {
       throw new ReportException(String.format("Could not find panel stamp %d", stampId));
     }
+    
+    logger.info("Processing query page {}", queryPage.getId());
 
     return htmlReportController.getPageHtml(new TextReportPageContext(baseUrl, locale, stamp, expertiseGroupIds, queryPage));
   }

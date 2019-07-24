@@ -7,12 +7,9 @@ import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
-import javax.ejb.AccessTimeout;
-import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -22,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.slf4j.Logger;
 
 import fi.metatavu.edelphi.batch.JobProperty;
 import fi.metatavu.edelphi.batch.TypedItemWriter;
@@ -32,9 +30,10 @@ import fi.metatavu.edelphi.batch.TypedItemWriter;
  * @author Antti Leppä
  */
 @Named
-@Stateless
-@AccessTimeout (unit = TimeUnit.HOURS, value = 4)
 public class TextReportPageHtmlWriter extends TypedItemWriter<String> {
+
+  @Inject
+  private Logger logger;
   
   @Inject
   private TextReportBatchContext reportHtmlBatchContext;
@@ -53,6 +52,8 @@ public class TextReportPageHtmlWriter extends TypedItemWriter<String> {
   
   @Override
   public void write(List<String> pageHtmls) throws Exception {
+    logger.info("Processing {} report html pages", pageHtmls.size());
+    
     for (String pageHtml : pageHtmls) {
       reportHtmlBatchContext.addPageHtml(processHtml(pageHtml));
     }

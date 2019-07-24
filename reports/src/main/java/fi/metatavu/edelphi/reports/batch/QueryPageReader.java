@@ -1,12 +1,11 @@
 package fi.metatavu.edelphi.reports.batch;
 
 import java.io.Serializable;
-import java.util.concurrent.TimeUnit;
 
-import javax.ejb.AccessTimeout;
-import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.slf4j.Logger;
 
 import fi.metatavu.edelphi.batch.JobProperty;
 import fi.metatavu.edelphi.batch.TypedItemReader;
@@ -20,13 +19,14 @@ import fi.metatavu.edelphi.reports.ReportException;
  * @author Antti Leppä
  */
 @Named
-@Stateless
-@AccessTimeout (unit = TimeUnit.HOURS, value = 4)
 public class QueryPageReader extends TypedItemReader<QueryPage> {
+  
+  @Inject
+  private Logger logger;
 
   @Inject
   private QueryController queryController; 
-  
+
   @Inject
   @JobProperty
   private Long[] pageIds;
@@ -37,6 +37,7 @@ public class QueryPageReader extends TypedItemReader<QueryPage> {
   public void open(Serializable checkpoint) throws Exception {
     super.open(checkpoint);
     index = 0;
+    logger.info("Reading {} query pages for report", pageIds.length);
   }
 
   @Override
