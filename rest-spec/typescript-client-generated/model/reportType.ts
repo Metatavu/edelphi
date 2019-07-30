@@ -11,9 +11,9 @@
  */
 
 
-export type ReportFormat = 'PDF' | 'CSV';
+export type ReportType = 'TEXT' | 'SPREADSHEET';
 
-export const ReportFormat = {
-    PDF: 'PDF' as ReportFormat,
-    CSV: 'CSV' as ReportFormat
+export const ReportType = {
+    TEXT: 'TEXT' as ReportType,
+    SPREADSHEET: 'SPREADSHEET' as ReportType
 };
