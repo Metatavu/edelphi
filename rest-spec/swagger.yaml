@@ -1476,7 +1476,7 @@ components:
           format: int64
           description: Panel stamp id. Defaults to current stamp
         type:
-          $ref: '#/components/schemas/ReportText'
+          $ref: '#/components/schemas/ReportType'
         format:
           $ref: '#/components/schemas/ReportFormat'
         delivery:
