@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class ReportRequest   {
-  private @Valid Long panelId = null;  private @Valid Long queryId = null;  private @Valid Long stampId = null;  private @Valid ReportFormat format = null;  private @Valid ReportDelivery delivery = null;  private @Valid ReportRequestOptions options = null;
+  private @Valid Long panelId = null;  private @Valid Long queryId = null;  private @Valid Long stampId = null;  private @Valid ReportType type = null;  private @Valid ReportFormat format = null;  private @Valid ReportDelivery delivery = null;  private @Valid ReportRequestOptions options = null;
 
   /**
    **/
@@ -71,14 +71,33 @@ public class ReportRequest   {
 
   /**
    **/
+  public ReportRequest type(ReportType type) {
+    this.type = type;
+    return this;
+  }
+
+  
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty("type")
+  @NotNull
+  public ReportType getType() {
+    return type;
+  }
+  public void setType(ReportType type) {
+    this.type = type;
+  }
+
+  /**
+   **/
   public ReportRequest format(ReportFormat format) {
     this.format = format;
     return this;
   }
 
   
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty("format")
+  @NotNull
   public ReportFormat getFormat() {
     return format;
   }
@@ -134,6 +153,7 @@ public class ReportRequest   {
     return Objects.equals(panelId, reportRequest.panelId) &&
         Objects.equals(queryId, reportRequest.queryId) &&
         Objects.equals(stampId, reportRequest.stampId) &&
+        Objects.equals(type, reportRequest.type) &&
         Objects.equals(format, reportRequest.format) &&
         Objects.equals(delivery, reportRequest.delivery) &&
         Objects.equals(options, reportRequest.options);
@@ -141,7 +161,7 @@ public class ReportRequest   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(panelId, queryId, stampId, format, delivery, options);
+    return Objects.hash(panelId, queryId, stampId, type, format, delivery, options);
   }
 
   @Override
@@ -152,6 +172,7 @@ public class ReportRequest   {
     sb.append("    panelId: ").append(toIndentedString(panelId)).append("\n");
     sb.append("    queryId: ").append(toIndentedString(queryId)).append("\n");
     sb.append("    stampId: ").append(toIndentedString(stampId)).append("\n");
+    sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    format: ").append(toIndentedString(format)).append("\n");
     sb.append("    delivery: ").append(toIndentedString(delivery)).append("\n");
     sb.append("    options: ").append(toIndentedString(options)).append("\n");

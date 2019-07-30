@@ -11,15 +11,15 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Gets or Sets ReportFormat
+ * Gets or Sets ReportType
  */
-public enum ReportFormat {
-  PDF("PDF"),
-    CSV("CSV");
+public enum ReportType {
+  TEXT("TEXT"),
+    SPREADSHEET("SPREADSHEET");
 
   private String value;
 
-  ReportFormat(String value) {
+  ReportType(String value) {
     this.value = value;
   }
 
@@ -30,8 +30,8 @@ public enum ReportFormat {
   }
 
   @JsonCreator
-  public static ReportFormat fromValue(String text) {
-    for (ReportFormat b : ReportFormat.values()) {
+  public static ReportType fromValue(String text) {
+    for (ReportType b : ReportType.values()) {
       if (String.valueOf(b.value).equals(text)) {
         return b;
       }

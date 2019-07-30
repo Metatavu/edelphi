@@ -2049,7 +2049,11 @@
       },
       "ReportFormat" : {
         "type" : "string",
-        "enum" : [ "PDF" ]
+        "enum" : [ "PDF", "CSV" ]
+      },
+      "ReportType" : {
+        "type" : "string",
+        "enum" : [ "TEXT", "SPREADSHEET" ]
       },
       "ReportDelivery" : {
         "type" : "object",
@@ -2061,7 +2065,7 @@
         }
       },
       "ReportRequest" : {
-        "required" : [ "options", "panelId", "queryId" ],
+        "required" : [ "format", "options", "panelId", "queryId", "type" ],
         "type" : "object",
         "properties" : {
           "panelId" : {
@@ -2076,6 +2080,9 @@
             "type" : "integer",
             "description" : "Panel stamp id. Defaults to current stamp",
             "format" : "int64"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/ReportType"
           },
           "format" : {
             "$ref" : "#/components/schemas/ReportFormat"
