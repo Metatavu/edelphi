@@ -1441,6 +1441,13 @@ components:
       type: string
       enum:
         - PDF
+        - CSV 
+          
+    ReportType:
+      type: string
+      enum:
+        - TEXT
+        - SPREADSHEET
     
     ReportDelivery:
       type: object
@@ -1452,6 +1459,8 @@ components:
     ReportRequest:
       type: object
       required:
+        - type
+        - format
         - panelId
         - queryId
         - options
@@ -1466,6 +1475,8 @@ components:
           type: integer
           format: int64
           description: Panel stamp id. Defaults to current stamp
+        type:
+          $ref: '#/components/schemas/ReportText'
         format:
           $ref: '#/components/schemas/ReportFormat'
         delivery:
