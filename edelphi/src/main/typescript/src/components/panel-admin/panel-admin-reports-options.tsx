@@ -22,7 +22,8 @@ interface Props {
   onExpertiseGroupsChanged: (expertiseGroupIds: number[] | "ALL") => void
   onQueryPageChange: (queryPageId: number | "ALL") => void,
   onExportReportContentsPdfClick: () => void,
-  onExportReportSpreadsheetCsvClick: () => void
+  onExportReportSpreadsheetCsvClick: () => void,
+  onExportReportSpreadsheetGoogleSheetsClick: () => void
 }
 
 /**
@@ -282,10 +283,10 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
         </div>
         <h3> { strings.panelAdmin.reports.exportData } </h3>
         <div>
-        <a href="#" onClick={ this.onExportReportSpreadsheetCsvClick }> { strings.panelAdmin.reports.exportDataCSV } </a>
+          <a href="#" onClick={ this.onExportReportSpreadsheetCsvClick }> { strings.panelAdmin.reports.exportDataCSV } </a>
         </div>
         <div>
-          <a href="#" className="disabled"> { strings.panelAdmin.reports.exportDataGoogleSpreadsheet } </a>
+          <a href="#" onClick={ this.onExportReportSpreadsheetGoogleSheetsClick }> { strings.panelAdmin.reports.exportDataGoogleSpreadsheet } </a>
         </div>
       </div>
     );
@@ -300,11 +301,19 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
   }
 
   /**
-   * Event handler for export as PDF click
+   * Event handler for export as CSV click
    */
   private onExportReportSpreadsheetCsvClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     event.preventDefault();
     this.props.onExportReportSpreadsheetCsvClick();
+  }  
+
+  /**
+   * Event handler for export as Google Sheet click
+   */
+  private onExportReportSpreadsheetGoogleSheetsClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    event.preventDefault();
+    this.props.onExportReportSpreadsheetGoogleSheetsClick();
   }  
 
   /**

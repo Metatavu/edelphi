@@ -33,6 +33,7 @@ import fi.metatavu.edelphi.queries.QueryPageController;
 import fi.metatavu.edelphi.queries.QueryReplyController;
 import fi.metatavu.edelphi.reports.batch.ReportBatchProperties;
 import fi.metatavu.edelphi.rest.api.ReportRequestsApi;
+import fi.metatavu.edelphi.rest.model.ReportFormat;
 import fi.metatavu.edelphi.rest.model.ReportRequest;
 import fi.metatavu.edelphi.rest.model.ReportRequestOptions;
 import fi.metatavu.edelphi.rest.model.ReportType;
@@ -145,7 +146,7 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
     
     properties.put(ReportBatchProperties.QUERY_REPLY_IDS, replies.stream().map(QueryReply::getId).map(String::valueOf).collect(Collectors.joining(",")));
     
-    long jobId = requestReport(body.getType(), properties);
+    long jobId = requestReport(body.getType(), body.getFormat(), properties);
     if (jobId > 0) {
       return Response.status(Status.ACCEPTED).build();
     }
@@ -160,10 +161,10 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
    * @param properties properties
    * @return job id
    */
-  private long requestReport(ReportType reportType, Properties properties) {
+  private long requestReport(ReportType reportType, ReportFormat reportFormat, Properties properties) {
     switch (reportType) {
       case SPREADSHEET:
-        return requestSpreadsheetReport(properties);
+        return requestSpreadsheetReport(reportFormat, properties);
       case TEXT:
         return requestTextReport(properties);
     }
@@ -177,10 +178,19 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
    * @param properties properties
    * @return job id
    */
-  private long requestSpreadsheetReport(Properties properties) {
+  private long requestSpreadsheetReport(ReportFormat reportFormat, Properties properties) {
     JobOperator jobOperator = BatchRuntime.getJobOperator();
-    long jobId = jobOperator.start("spreadsheetReportCsvJob", properties);
-    return jobId;
+    
+    switch (reportFormat) {
+      case CSV:
+        return jobOperator.start("spreadsheetReportCsvJob", properties);
+      case GOOGLE_SHEETS:
+        return jobOperator.start("spreadsheetReportGoogleSheetsJob", properties);
+      default:
+      break;
+    }
+    
+    return 0;
   }
 
   /**

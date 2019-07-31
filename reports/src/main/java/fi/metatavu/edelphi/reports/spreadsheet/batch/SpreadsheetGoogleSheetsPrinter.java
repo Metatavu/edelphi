@@ -10,9 +10,14 @@ import org.simplejavamail.email.Email;
 import org.simplejavamail.email.EmailBuilder;
 import org.slf4j.Logger;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.services.drive.Drive;
+
 import fi.metatavu.edelphi.batch.JobProperty;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
+import fi.metatavu.edelphi.drive.AdminDrive;
+import fi.metatavu.edelphi.drive.GoogleDriveController;
 import fi.metatavu.edelphi.mail.Mailer;
 import fi.metatavu.edelphi.queries.QueryController;
 import fi.metatavu.edelphi.reports.i18n.ReportMessages;
@@ -24,7 +29,7 @@ import fi.metatavu.edelphi.resources.ResourceController;
  * @author Antti Leppä
  */
 @Named
-public class SpreadsheetCsvPrinter extends AbstractSpreadsheetPrinter {
+public class SpreadsheetGoogleSheetsPrinter extends AbstractSpreadsheetPrinter {
 
   @Inject
   private Logger logger;
@@ -41,6 +46,13 @@ public class SpreadsheetCsvPrinter extends AbstractSpreadsheetPrinter {
   @Inject
   private ReportMessages reportMessages;
   
+  @Inject
+  private GoogleDriveController googleDriveController;  
+
+  @Inject
+  @AdminDrive
+  private GoogleCredential googleCredentialAdmin;
+
   @Inject
   @JobProperty
   private Long queryId;
@@ -68,7 +80,6 @@ public class SpreadsheetCsvPrinter extends AbstractSpreadsheetPrinter {
   @Override
   public String process() throws Exception { 
     byte[] csvData = exportCsvData();
-    
     Query query = queryController.findQueryById(queryId);
     Panel panel = resourceController.getResourcePanel(query);
 
@@ -77,17 +88,20 @@ public class SpreadsheetCsvPrinter extends AbstractSpreadsheetPrinter {
     Date now = new Date();
     String filters = getFilters();
     String settings = getOptions();
+
+    Drive drive = googleDriveController.getDrive(googleCredentialAdmin);
+    String fileId = googleDriveController.insertFile(drive, query.getName(), "", null, "text/csv", csvData, 3);
+    googleDriveController.insertUserPermission(drive, fileId, deliveryEmail, "writer");
     
-    String subject = reportMessages.getText(locale, "reports.csv.mail.subject", panelName, queryName);
-    String contents = reportMessages.getText(locale, "reports.csv.mail.contents", now, filters, settings);
-    String file = String.format("%s-%s.csv", panel.getUrlName(), query.getUrlName());
-  
+    String fileUrl = googleDriveController.getWebViewLink(drive, fileId);    
+    String subject = reportMessages.getText(locale, "reports.googlesheets.mail.subject", panelName, queryName);
+    String contents = reportMessages.getText(locale, "reports.googlesheets.mail.contents", now, filters, settings, fileUrl);
+    
     Email email = EmailBuilder.startingBlank()
       .from("noreply@edelphi.org")
       .to(deliveryEmail)
       .withSubject(subject)
       .withHTMLText(contents)
-      .withAttachment(file, csvData, "text/csv")
       .buildEmail();
     
     mailer.sendMail(email);
