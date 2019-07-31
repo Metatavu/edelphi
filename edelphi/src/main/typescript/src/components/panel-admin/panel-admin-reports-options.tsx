@@ -21,7 +21,8 @@ interface Props {
   expertiseGroupIds: number[] | "ALL",
   onExpertiseGroupsChanged: (expertiseGroupIds: number[] | "ALL") => void
   onQueryPageChange: (queryPageId: number | "ALL") => void,
-  onExportReportContentsPdfClick: () => void
+  onExportReportContentsPdfClick: () => void,
+  onExportReportSpreadsheetCsvClick: () => void
 }
 
 /**
@@ -281,7 +282,7 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
         </div>
         <h3> { strings.panelAdmin.reports.exportData } </h3>
         <div>
-          <a href="#" className="disabled"> { strings.panelAdmin.reports.exportDataCSV } </a>
+        <a href="#" onClick={ this.onExportReportSpreadsheetCsvClick }> { strings.panelAdmin.reports.exportDataCSV } </a>
         </div>
         <div>
           <a href="#" className="disabled"> { strings.panelAdmin.reports.exportDataGoogleSpreadsheet } </a>
@@ -297,6 +298,14 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
     event.preventDefault();
     this.props.onExportReportContentsPdfClick();
   }
+
+  /**
+   * Event handler for export as PDF click
+   */
+  private onExportReportSpreadsheetCsvClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    event.preventDefault();
+    this.props.onExportReportSpreadsheetCsvClick();
+  }  
 
   /**
    * Event for page filter selected change

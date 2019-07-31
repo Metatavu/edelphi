@@ -32,6 +32,7 @@ import fi.metatavu.edelphi.reports.text.batch.TextReportProperties;
 import fi.metatavu.edelphi.rest.api.ReportRequestsApi;
 import fi.metatavu.edelphi.rest.model.ReportRequest;
 import fi.metatavu.edelphi.rest.model.ReportRequestOptions;
+import fi.metatavu.edelphi.rest.model.ReportType;
 
 /**
  * Report requests API implementation
@@ -125,12 +126,54 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
       properties.put(TextReportProperties.DELIVERY_EMAIL, getLoggedUser().getDefaultEmailAsString());      
     }
     
-    JobOperator jobOperator = BatchRuntime.getJobOperator();
-    long jobId = jobOperator.start("textReportPdfJob", properties);
+    long jobId = requestReport(body.getType(), properties);
     if (jobId > 0) {
       return Response.status(Status.ACCEPTED).build();
     }
     
     return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to submit job").build();
   }
+
+  /**
+   * Requests a report
+   * 
+   * @param reportType report type
+   * @param properties properties
+   * @return job id
+   */
+  private long requestReport(ReportType reportType, Properties properties) {
+    switch (reportType) {
+      case SPREADSHEET:
+        return requestSpreadsheetReport(properties);
+      case TEXT:
+        return requestTextReport(properties);
+    }
+    
+    return 0;
+  }
+
+  /**
+   * Requests a spreadsheet report
+   * 
+   * @param properties properties
+   * @return job id
+   */
+  private long requestSpreadsheetReport(Properties properties) {
+    JobOperator jobOperator = BatchRuntime.getJobOperator();
+    long jobId = jobOperator.start("spreadsheetReportCsvJob", properties);
+    return jobId;
+  }
+
+  /**
+   * Requests a text report
+   * 
+   * @param properties properties
+   * @return job id
+   */
+  private long requestTextReport(Properties properties) {
+    JobOperator jobOperator = BatchRuntime.getJobOperator();
+    long jobId = jobOperator.start("textReportPdfJob", properties);
+    return jobId;
+  }
+  
 }

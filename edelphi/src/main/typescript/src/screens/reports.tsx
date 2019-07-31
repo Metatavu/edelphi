@@ -4,7 +4,7 @@ import * as _ from "lodash";
 import { StoreState, AccessToken } from "../types";
 import { connect } from "react-redux";
 import PanelAdminLayout from "../components/generic/panel-admin-layout";
-import Api, { Panel, Query, QueryPage } from "edelphi-client";
+import Api, { Panel, Query, QueryPage, ReportFormat, ReportType } from "edelphi-client";
 import "../styles/reports.scss";
 import { PanelsService, QueriesService, ReportsService } from "edelphi-client/dist/api/api";
 import * as queryString from "query-string";
@@ -168,8 +168,48 @@ class Reports extends React.Component<Props, State> {
         expertiseGroupIds={ this.state.expertiseGroupIds } 
         onQueryPageChange={ this.onQueryPageFilterChange }
         onExpertiseGroupsChanged={ this.onExpertiseGroupsChanged }
-        onExportReportContentsPdfClick={ this.onExportReportContentsPdfClick } />
+        onExportReportContentsPdfClick={ this.onExportReportContentsPdfClick } 
+        onExportReportSpreadsheetCsvClick={ this.onExportReportSpreadsheetCsvClick }/>
     );
+  }
+
+  /**
+   * Does a request for a report
+   * 
+   * @param type report type
+   * @param format report format
+   */
+  private requestReport = async (type: ReportType, format: ReportFormat) => {
+    try {
+      if (!this.state.panel || !this.state.panel.id) {
+        throw new Error("Could not load panel");
+      }
+
+      if (!this.state.selectedQueryId) {
+        throw new Error("Query not selected");
+      }
+
+      const reportsService = this.getReportsService();
+
+      await reportsService.createReportRequest({
+        format: format,
+        type: type,
+        panelId: this.state.panel.id,
+        queryId: this.state.selectedQueryId,
+        options: {
+          expertiseGroupIds: this.state.expertiseGroupIds == "ALL" ? undefined : this.state.expertiseGroupIds,
+          queryPageIds: this.state.filterQueryPageId == "ALL" ? undefined : [ this.state.filterQueryPageId ]
+        }
+      });
+
+      this.setState({
+        reportToEmailDialogVisible: true
+      });
+    } catch (e) {
+      this.setState({
+        error: e
+      });
+    }
   }
 
   /**
@@ -225,35 +265,11 @@ class Reports extends React.Component<Props, State> {
    * Event handler for export as PDF click
    */
   private onExportReportContentsPdfClick = async () => {
-    try {
-      if (!this.state.panel || !this.state.panel.id) {
-        throw new Error("Could not load panel");
-      }
+    await this.requestReport("TEXT", "PDF");
+  }
 
-      if (!this.state.selectedQueryId) {
-        throw new Error("Query not selected");
-      }
-
-      const reportsService = this.getReportsService();
-
-      await reportsService.createReportRequest({
-        format: "PDF",
-        panelId: this.state.panel.id,
-        queryId: this.state.selectedQueryId,
-        options: {
-          expertiseGroupIds: this.state.expertiseGroupIds == "ALL" ? undefined : this.state.expertiseGroupIds,
-          queryPageIds: this.state.filterQueryPageId == "ALL" ? undefined : [ this.state.filterQueryPageId ]
-        }
-      });
-
-      this.setState({
-        reportToEmailDialogVisible: true
-      });
-    } catch (e) {
-      this.setState({
-        error: e
-      });
-    }
+  private onExportReportSpreadsheetCsvClick = async () => {
+    await this.requestReport("SPREADSHEET", "CSV");
   }
 
   /**

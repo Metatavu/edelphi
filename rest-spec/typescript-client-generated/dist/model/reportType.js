@@ -11,7 +11,7 @@
  * Do not edit the class manually.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ReportFormat = {
-    PDF: 'PDF',
-    CSV: 'CSV'
+exports.ReportType = {
+    TEXT: 'TEXT',
+    SPREADSHEET: 'SPREADSHEET'
 };

@@ -1,4 +1,3 @@
-"use strict";
 /**
  * eDelphi REST API
  * REST API for eDelphi
@@ -10,8 +9,8 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ReportFormat = {
-    PDF: 'PDF',
-    CSV: 'CSV'
+export declare type ReportType = 'TEXT' | 'SPREADSHEET';
+export declare const ReportType: {
+    TEXT: ReportType;
+    SPREADSHEET: ReportType;
 };
