@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -14,11 +15,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 
+import fi.metatavu.edelphi.dao.panels.PanelExpertiseGroupUserDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionNumericAnswerDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
+import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseGroup;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionNumericAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
@@ -53,6 +56,9 @@ public class QueryReplyController {
   @Inject
   private QueryReplyDAO queryReplyDAO;
   
+  @Inject
+  private PanelExpertiseGroupUserDAO expertiseGroupUserDAO;
+
   /**
    * Finds a query answer data object by id
    * 
@@ -84,6 +90,16 @@ public class QueryReplyController {
   }
   
   /**
+   * Returns single query reply
+   * 
+   * @param id id
+   * @return query reply
+   */
+  public QueryReply findQueryReply(Long id) {
+    return queryReplyDAO.findById(id);
+  }
+  
+  /**
    * Returns replies by query and stamp
    * 
    * @param query query
@@ -92,6 +108,24 @@ public class QueryReplyController {
    */
   public List<QueryReply> listQueryReplies(Query query, PanelStamp panelStamp) {
     return queryReplyDAO.listByQueryAndStamp(query, panelStamp);
+  }
+  
+  /**
+   * Filters reply list by user's membership in given list of expertise groups
+   * 
+   * @param replies replies
+   * @param expertiseGroups expertise groups
+   * @return filtered replies
+   */
+  public List<QueryReply> filterQueryRepliesByExpertiseGroup(List<QueryReply> replies, List<PanelUserExpertiseGroup> expertiseGroups) {
+    Set<Long> expertiseGroupUserIds = expertiseGroupUserDAO.listUsersByExpertiseGroups(expertiseGroups).stream()
+      .map(User::getId)
+      .collect(Collectors.toSet());
+    
+    return replies.stream()
+      .filter(reply -> reply.getUser() != null)
+      .filter(reply -> expertiseGroupUserIds.contains(reply.getUser().getId()))
+      .collect(Collectors.toList());
   }
 
   /**

@@ -21,6 +21,8 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
+import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseGroup;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.panels.PanelController;
@@ -28,7 +30,8 @@ import fi.metatavu.edelphi.permissions.DelfoiActionName;
 import fi.metatavu.edelphi.permissions.PermissionController;
 import fi.metatavu.edelphi.queries.QueryController;
 import fi.metatavu.edelphi.queries.QueryPageController;
-import fi.metatavu.edelphi.reports.text.batch.TextReportProperties;
+import fi.metatavu.edelphi.queries.QueryReplyController;
+import fi.metatavu.edelphi.reports.batch.ReportBatchProperties;
 import fi.metatavu.edelphi.rest.api.ReportRequestsApi;
 import fi.metatavu.edelphi.rest.model.ReportRequest;
 import fi.metatavu.edelphi.rest.model.ReportRequestOptions;
@@ -54,6 +57,9 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
 
   @Inject
   private QueryController queryController;
+
+  @Inject
+  private QueryReplyController queryReplyController;
 
   @Inject
   private QueryPageController queryPageController;
@@ -110,21 +116,34 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
     }
     
     Properties properties = new Properties();
-    properties.put(TextReportProperties.QUERY_ID, query.getId().toString());
-    properties.put(TextReportProperties.BASE_URL, getBaseUrl());
-    properties.put(TextReportProperties.LOCALE, getLocale().toString());
-    properties.put(TextReportProperties.PAGE_IDS, StringUtils.join(queryPageIds, ","));
-    properties.put(TextReportProperties.STAMP_ID, stamp.getId().toString());
+    properties.put(ReportBatchProperties.QUERY_ID, query.getId().toString());
+    properties.put(ReportBatchProperties.BASE_URL, getBaseUrl());
+    properties.put(ReportBatchProperties.LOCALE, getLocale().toString());
+    properties.put(ReportBatchProperties.PAGE_IDS, StringUtils.join(queryPageIds, ","));
+    properties.put(ReportBatchProperties.STAMP_ID, stamp.getId().toString());
     
-    if (options.getExpertiseGroupIds() != null) {
-      properties.put(TextReportProperties.EXPERTISE_GROUP_IDS, StringUtils.join(options.getExpertiseGroupIds(), ","));
+    List<PanelUserExpertiseGroup> expertiseGroups = null;
+    if (options.getExpertiseGroupIds() != null && !options.getExpertiseGroupIds().isEmpty()) {
+      expertiseGroups = options.getExpertiseGroupIds().stream().map(panelController::findPanelUserExpertiseGroup).collect(Collectors.toList());
+      if (expertiseGroups.contains(null)) {
+        return createBadRequest("Invalid expertise group id");
+      }
+      
+      properties.put(ReportBatchProperties.EXPERTISE_GROUP_IDS, StringUtils.join(options.getExpertiseGroupIds(), ","));
     }
     
     if (body.getDelivery() != null && StringUtils.isNotBlank(body.getDelivery().getEmail())) {
-      properties.put(TextReportProperties.DELIVERY_EMAIL, body.getDelivery().getEmail());
+      properties.put(ReportBatchProperties.DELIVERY_EMAIL, body.getDelivery().getEmail());
     } else {
-      properties.put(TextReportProperties.DELIVERY_EMAIL, getLoggedUser().getDefaultEmailAsString());      
+      properties.put(ReportBatchProperties.DELIVERY_EMAIL, getLoggedUser().getDefaultEmailAsString());      
     }
+
+    List<QueryReply> replies = queryReplyController.listQueryReplies(query, stamp);
+    if (expertiseGroups != null) {
+      replies = queryReplyController.filterQueryRepliesByExpertiseGroup(replies, expertiseGroups);
+    }
+    
+    properties.put(ReportBatchProperties.QUERY_REPLY_IDS, replies.stream().map(QueryReply::getId).map(String::valueOf).collect(Collectors.joining(",")));
     
     long jobId = requestReport(body.getType(), properties);
     if (jobId > 0) {

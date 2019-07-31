@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.dao.panels;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -15,6 +16,7 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelExpertiseGroupUser_;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUser;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseGroup;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUser_;
+import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
 public class PanelExpertiseGroupUserDAO extends GenericDAO<PanelExpertiseGroupUser> {
@@ -97,6 +99,31 @@ public class PanelExpertiseGroupUserDAO extends GenericDAO<PanelExpertiseGroupUs
     );
 
     return entityManager.createQuery(criteria).getResultList(); 
+  }
+  
+  /**
+   * Lists users in given expertise groups
+   * 
+   * @param expertiseGroups expertise groups
+   * @return users in given expertise groups
+   */
+  public List<User> listUsersByExpertiseGroups(List<PanelUserExpertiseGroup> expertiseGroups) {
+    if (expertiseGroups == null || expertiseGroups.isEmpty()) {
+      return Collections.emptyList();
+    }
+    
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<User> criteria = criteriaBuilder.createQuery(User.class);
+    Root<PanelExpertiseGroupUser> root = criteria.from(PanelExpertiseGroupUser.class);
+    Join<PanelExpertiseGroupUser, PanelUserExpertiseGroup> expertiseGroupJoin = root.join(PanelExpertiseGroupUser_.expertiseGroup);
+    Join<PanelExpertiseGroupUser, PanelUser> panelUser = root.join(PanelExpertiseGroupUser_.panelUser);
+    
+    criteria.select(panelUser.get(PanelUser_.user)).distinct(true);
+    criteria.where(expertiseGroupJoin.in(expertiseGroups));
+    
+    return entityManager.createQuery(criteria).getResultList();
   }
 
   public Long getUserCountInGroup(PanelUserExpertiseGroup group) {

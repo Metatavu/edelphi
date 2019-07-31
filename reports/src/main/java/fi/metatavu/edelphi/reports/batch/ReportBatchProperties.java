@@ -1,11 +1,11 @@
-package fi.metatavu.edelphi.reports.text.batch;
+package fi.metatavu.edelphi.reports.batch;
 
 /**
  * Properties for text report batch jobs
  * 
  * @author Antti Leppä
  */
-public class TextReportProperties {
+public class ReportBatchProperties {
 
   public static String QUERY_ID = "queryId";
   public static String PAGE_IDS = "pageIds";
@@ -14,5 +14,6 @@ public class TextReportProperties {
   public static String STAMP_ID = "stampId";
   public static String DELIVERY_EMAIL = "deliveryEmail";
   public static String EXPERTISE_GROUP_IDS = "expertiseGroupIds";
+  public static String QUERY_REPLY_IDS = "queryReplyIds";
   
 }

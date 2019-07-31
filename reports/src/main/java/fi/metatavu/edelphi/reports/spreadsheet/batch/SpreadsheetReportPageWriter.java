@@ -1,7 +1,9 @@
 package fi.metatavu.edelphi.reports.spreadsheet.batch;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -58,9 +60,17 @@ public class SpreadsheetReportPageWriter extends TypedItemWriter<QueryPage> {
   @Inject
   @JobProperty
   private Long[] expertiseGroupIds;
+
+  @Inject
+  @JobProperty
+  private Long[] queryReplyIds;
   
   @Override
   public void write(List<QueryPage> items) throws Exception {
+    if (queryReplyIds == null) {
+      return;
+    }
+    
     for (int i = 0; i < items.size(); i++) {
       writePage(items.get(i));
     }
@@ -74,9 +84,7 @@ public class SpreadsheetReportPageWriter extends TypedItemWriter<QueryPage> {
     
     logger.info("Processing query page {}", queryPage.getId());
     
-    // TODO: Replies...
-    
-    List<QueryReply> queryReplies = queryReplyController.listQueryReplies(queryPage.getQuerySection().getQuery(), stamp);
+    List<QueryReply> queryReplies = Arrays.stream(queryReplyIds).map(queryReplyController::findQueryReply).collect(Collectors.toList());
     SpreadsheetExportContext exportContext = new SpreadsheetExportContextImpl(locale, queryPage, stamp, queryReplies, spreadsheetReportBatchContext::addColumn, spreadsheetReportBatchContext::setCellValue);
     
     spreadsheetReportController.exportQueryPageSpreadsheet(exportContext);
