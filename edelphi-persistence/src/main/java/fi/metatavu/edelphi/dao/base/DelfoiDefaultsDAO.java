@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.dao.base;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -10,6 +11,7 @@ import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiDefaults;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiDefaults_;
 
+@ApplicationScoped
 public class DelfoiDefaultsDAO extends GenericDAO<DelfoiDefaults> {
 
   public DelfoiDefaults findByDelfoi(Delfoi delfoi) {

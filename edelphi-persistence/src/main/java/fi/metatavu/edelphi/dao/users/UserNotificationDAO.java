@@ -3,6 +3,7 @@ package fi.metatavu.edelphi.dao.users;
 import java.util.Date;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -14,6 +15,7 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserNotification;
 import fi.metatavu.edelphi.domainmodel.users.UserNotification_;
 
+@ApplicationScoped
 public class UserNotificationDAO extends GenericDAO<UserNotification> {
   
   public UserNotification create(Notification notification, User user, Date notificationSent) {

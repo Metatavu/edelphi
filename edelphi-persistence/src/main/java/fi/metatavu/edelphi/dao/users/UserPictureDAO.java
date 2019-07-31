@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.dao.users;
 
 import java.util.Date;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -12,6 +13,7 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserPicture;
 import fi.metatavu.edelphi.domainmodel.users.UserPicture_;
 
+@ApplicationScoped
 public class UserPictureDAO extends GenericDAO<UserPicture> {
 
   public UserPicture create(User user, String contentType, byte[] data) {

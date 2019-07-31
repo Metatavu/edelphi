@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.dao.orders;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -13,6 +14,7 @@ import fi.metatavu.edelphi.domainmodel.orders.Plan;
 import fi.metatavu.edelphi.domainmodel.orders.Plan_;
 import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 
+@ApplicationScoped
 public class PlanDAO extends GenericDAO<Plan> {
 
   public Plan create(SubscriptionLevel subscriptionLevel, Double price, String currency, Integer days, LocalizedEntry name, LocalizedEntry description, Boolean visible) {

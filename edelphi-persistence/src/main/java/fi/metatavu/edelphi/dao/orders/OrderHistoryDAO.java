@@ -2,6 +2,8 @@ package fi.metatavu.edelphi.dao.orders;
 
 import java.util.Date;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import fi.metatavu.edelphi.dao.GenericDAO;
 import fi.metatavu.edelphi.domainmodel.orders.OrderHistory;
 import fi.metatavu.edelphi.domainmodel.orders.OrderStatus;
@@ -9,6 +11,7 @@ import fi.metatavu.edelphi.domainmodel.orders.Plan;
 import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
+@ApplicationScoped
 public class OrderHistoryDAO extends GenericDAO<OrderHistory> {
 
   @SuppressWarnings ("squid:S00107")

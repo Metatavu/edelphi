@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.dao.querymeta;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -12,6 +13,7 @@ import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionField;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption_;
 
+@ApplicationScoped
 public class QueryOptionFieldOptionDAO extends GenericDAO<QueryOptionFieldOption> {
 
   public QueryOptionFieldOption create(QueryOptionField optionField, String text, String value) {

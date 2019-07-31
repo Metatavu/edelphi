@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
@@ -24,6 +25,7 @@ import fi.metatavu.edelphi.domainmodel.querymeta.QueryField;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption_;
 
+@ApplicationScoped
 public class QueryQuestionMultiOptionAnswerDAO extends GenericDAO<QueryQuestionMultiOptionAnswer> {
 
   public QueryQuestionMultiOptionAnswer create(QueryReply queryReply, QueryField queryField, Set<QueryOptionFieldOption> options) {

@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.dao.base;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -12,6 +13,7 @@ import fi.metatavu.edelphi.domainmodel.base.AuthSource;
 import fi.metatavu.edelphi.domainmodel.base.AuthSourceSetting;
 import fi.metatavu.edelphi.domainmodel.base.AuthSourceSetting_;
 
+@ApplicationScoped
 public class AuthSourceSettingDAO extends GenericDAO<AuthSource> {
   
   public List<AuthSourceSetting> listByAuthSource(AuthSource authSource) {

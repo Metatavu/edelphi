@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.dao.users;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -13,6 +14,7 @@ import fi.metatavu.edelphi.domainmodel.users.Notification;
 import fi.metatavu.edelphi.domainmodel.users.NotificationType;
 import fi.metatavu.edelphi.domainmodel.users.Notification_;
 
+@ApplicationScoped
 public class NotificationDAO extends GenericDAO<Notification> {
   
   public Notification create(NotificationType type, String name, Long millisBefore, LocalizedEntry contentTemplate, LocalizedEntry subjectTemplate) {

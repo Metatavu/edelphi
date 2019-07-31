@@ -1,9 +1,12 @@
 package fi.metatavu.edelphi.dao.querymeta;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import fi.metatavu.edelphi.dao.GenericDAO;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryNumericField;
 
+@ApplicationScoped
 public class QueryNumericFieldDAO extends GenericDAO<QueryNumericField> {
 
   public QueryNumericField create(QueryPage queryPage, String name, Boolean mandatory, String caption, Double min, Double max, Double precision) {

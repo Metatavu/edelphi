@@ -3,6 +3,7 @@ package fi.metatavu.edelphi.dao.base;
 import java.util.List;
 import java.util.Locale;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -13,6 +14,7 @@ import fi.metatavu.edelphi.domainmodel.base.LocalizedEntry;
 import fi.metatavu.edelphi.domainmodel.base.LocalizedValue;
 import fi.metatavu.edelphi.domainmodel.base.LocalizedValue_;
 
+@ApplicationScoped
 public class LocalizedValueDAO extends GenericDAO<LocalizedValue> {
 
   public LocalizedValue create(LocalizedEntry entry, Locale locale, String text) {

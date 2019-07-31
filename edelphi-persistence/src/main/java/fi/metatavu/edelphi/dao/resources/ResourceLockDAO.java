@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.dao.resources;
 
 import java.util.Date;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -13,6 +14,7 @@ import fi.metatavu.edelphi.domainmodel.resources.ResourceLock;
 import fi.metatavu.edelphi.domainmodel.resources.ResourceLock_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
+@ApplicationScoped
 public class ResourceLockDAO extends GenericDAO<ResourceLock> {
   
   public ResourceLock create(Resource resource, User creator, Date expires) {

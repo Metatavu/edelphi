@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -17,6 +18,7 @@ import fi.metatavu.edelphi.domainmodel.resources.ResourceType;
 import fi.metatavu.edelphi.domainmodel.resources.Resource_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
+@ApplicationScoped
 public class ResourceDAO extends GenericDAO<Resource> {
   
   public Resource findByUrlNameAndParentFolder(String urlName, Folder parentFolder) {
