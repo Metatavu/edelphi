@@ -82,6 +82,17 @@ public class QueryReplyController {
     
     return null;
   }
+  
+  /**
+   * Returns replies by query and stamp
+   * 
+   * @param query query
+   * @param panelStamp stamp
+   * @return replies
+   */
+  public List<QueryReply> listQueryReplies(Query query, PanelStamp panelStamp) {
+    return queryReplyDAO.listByQueryAndStamp(query, panelStamp);
+  }
 
   /**
    * Lists query question answers
