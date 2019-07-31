@@ -15,7 +15,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum ReportFormat {
   PDF("PDF"),
-    CSV("CSV");
+    CSV("CSV"),
+    GOOGLE_SHEETS("GOOGLE_SHEETS");
 
   private String value;
 
