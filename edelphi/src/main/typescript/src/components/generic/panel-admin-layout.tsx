@@ -89,7 +89,7 @@ class PanelAdminLayout extends React.Component<Props, State> {
 
             <Grid.Row>
               <Grid.Column>
-                { this.renderBackLink() }
+                { this.renderNavigation() }
               </Grid.Column>
             </Grid.Row>
           </Grid>
@@ -101,13 +101,17 @@ class PanelAdminLayout extends React.Component<Props, State> {
   /**
    * Renders back link
    */
-  private renderBackLink = () => {
-    if (!this.props.onBackLinkClick) {
-      return;
+  private renderNavigation = () => {
+    if (!this.props.panel) {
+      return null;
     }
-
+    
     return (
-      <a onClick={ this.props.onBackLinkClick } className="header-back-link"> { strings.generic.back } </a>
+      <nav className="header-nav">
+        <a href={ `/${this.props.panel.urlName}` } className="header-nav-link"> { strings.panelAdmin.navigation.panel } </a>
+        <a href={ `/panel/admin/dashboard.page?panelId=${this.props.panel.id}` } className="header-nav-link header-nav-link-selected"> { strings.panelAdmin.navigation.administration } </a>
+        <a href={ `/panel/reportissue.page?panelId=${this.props.panel.id}` } className="header-nav-link"> { strings.panelAdmin.navigation.reportAnIssue } </a>
+      </nav>
     );
   }
 

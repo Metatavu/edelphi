@@ -62,6 +62,11 @@ export interface IStrings extends LocalizedStringsMethods {
   },
 
   panelAdmin: {
+    navigation: {
+      panel: string,
+      administration: string,
+      reportAnIssue: string
+    },
     queryEditor: {
       pageCommentOptions: {
         title: string,

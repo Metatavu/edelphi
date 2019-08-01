@@ -57,6 +57,11 @@
   },
 
   "panelAdmin": {
+    "navigation": {
+      "panel": "Panel",
+      "administration": "Administration",
+      "reportAnIssue": "Report an Issue"
+    },
     "queryEditor": {
       "pageCommentOptions": {
         "title": "Comment options",

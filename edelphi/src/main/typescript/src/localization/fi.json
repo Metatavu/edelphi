@@ -57,6 +57,11 @@
   },
 
   "panelAdmin": {
+    "navigation": {
+      "panel": "Paneeli",
+      "administration": "Hallinnointi",
+      "reportAnIssue": "Virhe- ja kehitysehdotuslomake"
+    },
     "queryEditor": {
       "pageCommentOptions": {
         "title": "Kommenttiasetukset",
