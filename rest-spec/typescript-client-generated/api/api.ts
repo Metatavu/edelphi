@@ -14,6 +14,8 @@ export * from './queryQuestionComments.service';
 import { QueryQuestionCommentsService } from './queryQuestionComments.service';
 export * from './reports.service';
 import { ReportsService } from './reports.service';
+export * from './users.service';
+import { UsersService } from './users.service';
 
 export class ApiUtils {
   /**
@@ -79,6 +81,10 @@ export default new class Api {
   
   public getReportsService(token: string): ReportsService {
     return new ReportsService(this.apiUrl, token);
+  }
+  
+  public getUsersService(token: string): UsersService {
+    return new UsersService(this.apiUrl, token);
   }
   
 }
