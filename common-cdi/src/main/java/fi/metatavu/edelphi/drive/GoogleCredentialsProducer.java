@@ -40,10 +40,13 @@ public class GoogleCredentialsProducer {
     }
 
     if (!isExistingFile(keyFile)) {
-      logger.error("Google service account keyfile is not configured");
       keyFile = "/opt/google-service-account.json";
     }
-    
+
+    if (!isExistingFile(keyFile)) {
+      logger.error("Google service account keyfile is not configured");
+    }
+
     try {
       return GoogleCredential.fromStream(new FileInputStream(keyFile)).createScoped(Arrays.asList(REQUIRED_SCOPES));
     } catch (IOException e) {

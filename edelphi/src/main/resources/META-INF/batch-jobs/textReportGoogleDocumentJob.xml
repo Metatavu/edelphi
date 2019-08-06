@@ -1,4 +1,4 @@
-<job id="textReportPdfJob" xmlns="http://xmlns.jcp.org/xml/ns/javaee" version="1.0">
+<job id="textReportGoogleDocumentJob" xmlns="http://xmlns.jcp.org/xml/ns/javaee" version="1.0">
   <properties>
     <property name="queryId" value="#{jobParameters['queryId']}" />
     <property name="pageIds" value="#{jobParameters['pageIds']}" />
@@ -19,7 +19,7 @@
   </step>
 
   <step id="print">
-    <batchlet ref="textReportPdfPrinter" />
+    <batchlet ref="textReportGoogleDocumentPrinter" />
   </step>
 
 </job> 

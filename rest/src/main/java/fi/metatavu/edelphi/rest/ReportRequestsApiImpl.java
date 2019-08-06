@@ -166,7 +166,7 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
       case SPREADSHEET:
         return requestSpreadsheetReport(reportFormat, properties);
       case TEXT:
-        return requestTextReport(properties);
+        return requestTextReport(reportFormat, properties);
     }
     
     return 0;
@@ -184,7 +184,7 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
     switch (reportFormat) {
       case CSV:
         return jobOperator.start("spreadsheetReportCsvJob", properties);
-      case GOOGLE_SHEETS:
+      case GOOGLE_SHEET:
         return jobOperator.start("spreadsheetReportGoogleSheetsJob", properties);
       default:
       break;
@@ -199,10 +199,19 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
    * @param properties properties
    * @return job id
    */
-  private long requestTextReport(Properties properties) {
+  private long requestTextReport(ReportFormat reportFormat, Properties properties) {
     JobOperator jobOperator = BatchRuntime.getJobOperator();
-    long jobId = jobOperator.start("textReportPdfJob", properties);
-    return jobId;
+    
+    switch (reportFormat) {
+      case PDF:
+        return jobOperator.start("textReportPdfJob", properties);
+      case GOOGLE_DOCUMENT:
+        return jobOperator.start("textReportGoogleDocumentJob", properties);
+      default:
+      break;
+    }
+
+    return 0;
   }
   
 }

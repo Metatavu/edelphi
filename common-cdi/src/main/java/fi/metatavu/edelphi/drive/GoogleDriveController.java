@@ -15,7 +15,6 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.Drive.Files.Create;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.Permission;
 
@@ -41,7 +40,9 @@ public class GoogleDriveController {
    * @return initialized drive client
    */
   public Drive getDrive(GoogleCredential credential) {
-    return new Drive.Builder(TRANSPORT, JSON_FACTORY, credential).build();
+    return new Drive.Builder(TRANSPORT, JSON_FACTORY, credential)
+      .setApplicationName("eDelphi")
+      .build();
   }
   
   /**
@@ -102,7 +103,9 @@ public class GoogleDriveController {
     permissionObject.setEmailAddress(userEmail);
     permissionObject.setType("user");
     permissionObject.setRole(permission);
-    return drive.permissions().create(fileId, permissionObject).execute();
+    return drive.permissions().create(fileId, permissionObject)
+      .setSendNotificationEmail(false)
+      .execute();
   }
   
   /**
@@ -166,15 +169,16 @@ public class GoogleDriveController {
     body.setName(title);
     body.setDescription(description);
     body.setMimeType(mimeType);
-  
+
     if (parentId != null && parentId.length() > 0) {
       body.setParents(Arrays.asList(parentId));
     }
     
     if (content != null) {
       ByteArrayContent fileContent = new ByteArrayContent(mimeType, content);
-      Create create = drive.files().create(body, fileContent);
-      return create.execute();
+      return drive.files().create(body, fileContent)
+        .execute();
+      
     } else {
       return drive.files().create(body).execute();
     }

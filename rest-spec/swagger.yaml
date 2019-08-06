@@ -1442,7 +1442,8 @@ components:
       enum:
         - PDF
         - CSV
-        - GOOGLE_SHEETS 
+        - GOOGLE_SHEET
+        - GOOGLE_DOCUMENT
           
     ReportType:
       type: string
@@ -1453,9 +1454,9 @@ components:
     ReportDelivery:
       type: object
       properties:
-       email:
-         type: string
-         format: email
+        email:
+          type: string
+          format: email
           
     ReportRequest:
       type: object

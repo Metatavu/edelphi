@@ -1,6 +1,8 @@
-package fi.metatavu.edelphi.reports.spreadsheet.batch;
+package fi.metatavu.edelphi.reports.text.batch;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -20,20 +22,28 @@ import fi.metatavu.edelphi.drive.AdminDrive;
 import fi.metatavu.edelphi.drive.GoogleDriveController;
 import fi.metatavu.edelphi.mail.Mailer;
 import fi.metatavu.edelphi.queries.QueryController;
+import fi.metatavu.edelphi.reports.batch.AbstractPrinter;
 import fi.metatavu.edelphi.reports.i18n.ReportMessages;
+import fi.metatavu.edelphi.reports.text.TextReportController;
 import fi.metatavu.edelphi.resources.ResourceController;
 
 /**
- * Batchlet for printing and delivering spreadsheet reports as Google Sheets
+ * Batchlet for printing and delivering text reports as Google Documents
  * 
  * @author Antti Leppä
  */
 @Named
-public class SpreadsheetGoogleSheetsPrinter extends AbstractSpreadsheetPrinter {
+public class TextReportGoogleDocumentPrinter extends AbstractPrinter {
 
   @Inject
   private Logger logger;
   
+  @Inject
+  private TextReportBatchContext reportHtmlBatchContext;
+
+  @Inject
+  private TextReportController htmlReportController;
+
   @Inject
   private Mailer mailer;
 
@@ -52,7 +62,7 @@ public class SpreadsheetGoogleSheetsPrinter extends AbstractSpreadsheetPrinter {
   @Inject
   @AdminDrive
   private GoogleCredential googleCredentialAdmin;
-
+  
   @Inject
   @JobProperty
   private Long queryId;
@@ -79,9 +89,12 @@ public class SpreadsheetGoogleSheetsPrinter extends AbstractSpreadsheetPrinter {
   
   @Override
   public String process() throws Exception { 
-    byte[] csvData = exportCsvData();
+    List<String> pageHtmls = reportHtmlBatchContext.getPageHtmls();
+    logger.info("Creating Google Document from {} html pages", pageHtmls.size());
+    
     Query query = queryController.findQueryById(queryId);
     Panel panel = resourceController.getResourcePanel(query);
+    String html = htmlReportController.getHtmlReport(baseUrl, pageHtmls);
 
     String panelName = panel.getName();
     String queryName = query.getName();
@@ -90,12 +103,12 @@ public class SpreadsheetGoogleSheetsPrinter extends AbstractSpreadsheetPrinter {
     String settings = getOptions();
 
     Drive drive = googleDriveController.getDrive(googleCredentialAdmin);
-    String fileId = googleDriveController.insertFile(drive, query.getName(), "", null, "text/csv", csvData, 3);
+    String fileId = googleDriveController.insertFile(drive, query.getName(), "", null, "text/html", html.getBytes(StandardCharsets.UTF_8), 3);
     googleDriveController.insertUserPermission(drive, fileId, deliveryEmail, "writer");
     
-    String fileUrl = googleDriveController.getWebViewLink(drive, fileId);    
-    String subject = reportMessages.getText(locale, "reports.googlesheets.mail.subject", panelName, queryName);
-    String contents = reportMessages.getText(locale, "reports.googlesheets.mail.contents", now, filters, settings, fileUrl);
+    String fileUrl = googleDriveController.getWebViewLink(drive, fileId);
+    String subject = reportMessages.getText(locale, "reports.googledocuments.mail.subject", panelName, queryName);
+    String contents = reportMessages.getText(locale, "reports.googledocuments.mail.contents", now, filters, settings, fileUrl);
     
     Email email = EmailBuilder.startingBlank()
       .from("noreply@edelphi.org")
@@ -106,7 +119,7 @@ public class SpreadsheetGoogleSheetsPrinter extends AbstractSpreadsheetPrinter {
     
     mailer.sendMail(email);
     
-    logger.info(String.format("Google sheets report sent via email into address %s", deliveryEmail));
+    logger.info(String.format("Google documents report sent via email into address %s", deliveryEmail));
   
     return "DONE";
   }

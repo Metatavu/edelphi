@@ -23,7 +23,8 @@ interface Props {
   onQueryPageChange: (queryPageId: number | "ALL") => void,
   onExportReportContentsPdfClick: () => void,
   onExportReportSpreadsheetCsvClick: () => void,
-  onExportReportSpreadsheetGoogleSheetsClick: () => void
+  onExportReportSpreadsheetGoogleSheetsClick: () => void,
+  onExportReportContentsGoogleDocumentClick: () => void
 }
 
 /**
@@ -275,7 +276,7 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
           <a href="#" onClick={ this.onExportReportContentsPdfClick }> { strings.panelAdmin.reports.exportReportPDF } </a>
         </div>  
         <div>
-          <a href="#" className="disabled"> { strings.panelAdmin.reports.exportReportGoogleDocument } </a>
+          <a href="#" onClick={ this.onExportReportContentsGoogleDocumentClick }> { strings.panelAdmin.reports.exportReportGoogleDocument } </a>
         </div>
         <h3> { strings.panelAdmin.reports.exportCharts } </h3>
         <div>
@@ -298,6 +299,14 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
   private onExportReportContentsPdfClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     event.preventDefault();
     this.props.onExportReportContentsPdfClick();
+  }
+
+  /**
+   * Event handler for export as PDF click
+   */
+  private onExportReportContentsGoogleDocumentClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    event.preventDefault();
+    this.props.onExportReportContentsGoogleDocumentClick();
   }
 
   /**

@@ -170,7 +170,8 @@ class Reports extends React.Component<Props, State> {
         onExpertiseGroupsChanged={ this.onExpertiseGroupsChanged }
         onExportReportContentsPdfClick={ this.onExportReportContentsPdfClick } 
         onExportReportSpreadsheetCsvClick={ this.onExportReportSpreadsheetCsvClick }
-        onExportReportSpreadsheetGoogleSheetsClick={ this.onExportReportSpreadsheetGoogleSheetClick }/>
+        onExportReportSpreadsheetGoogleSheetsClick={ this.onExportReportSpreadsheetGoogleSheetClick }
+        onExportReportContentsGoogleDocumentClick={ this.onExportReportContentsGoogleDocumentClick }/>
     );
   }
 
@@ -280,7 +281,14 @@ class Reports extends React.Component<Props, State> {
    * Event handler for export as Google Sheet click
    */
   private onExportReportSpreadsheetGoogleSheetClick = async () => {
-    await this.requestReport("SPREADSHEET", "GOOGLE_SHEETS");
+    await this.requestReport("SPREADSHEET", "GOOGLE_SHEET");
+  } 
+
+  /**
+   * Event handler for export as Google Document click
+   */
+  private onExportReportContentsGoogleDocumentClick  = async () => {
+    await this.requestReport("TEXT", "GOOGLE_DOCUMENT");
   } 
 
   /**
