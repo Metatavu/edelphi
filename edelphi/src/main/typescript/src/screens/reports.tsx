@@ -4,9 +4,9 @@ import * as _ from "lodash";
 import { StoreState, AccessToken } from "../types";
 import { connect } from "react-redux";
 import PanelAdminLayout from "../components/generic/panel-admin-layout";
-import Api, { Panel, Query, QueryPage, ReportFormat, ReportType } from "edelphi-client";
+import Api, { Panel, Query, QueryPage, ReportFormat, ReportType, User } from "edelphi-client";
 import "../styles/reports.scss";
-import { PanelsService, QueriesService, ReportsService } from "edelphi-client/dist/api/api";
+import { PanelsService, QueriesService, ReportsService, UsersService } from "edelphi-client/dist/api/api";
 import * as queryString from "query-string";
 import { Grid, Container, List, Modal, Button, Icon, SemanticShorthandCollection, BreadcrumbSectionProps } from "semantic-ui-react";
 import strings from "../localization/strings";
@@ -27,6 +27,7 @@ interface Props {
  */
 interface State {
   error?: Error,
+  loggedUser?: User,
   panel?: Panel,
   queries: Query[],
   loading: boolean,
@@ -74,11 +75,13 @@ class Reports extends React.Component<Props, State> {
     
     const panel = await this.getPanelsService().findPanel(panelId);
     const queries = await this.getQueriesService().listQueries(panelId);
+    const loggedUser = await this.getUsersService().findUser(this.props.accessToken.userId);
 
     this.setState({
       loading: false,
       panel: panel,
-      queries: queries
+      queries: queries,
+      loggedUser: loggedUser
     });
   }
 
@@ -86,7 +89,7 @@ class Reports extends React.Component<Props, State> {
    * Component render method
    */
   public render() {
-    if (!this.state.panel) {
+    if (!this.state.panel || !this.state.loggedUser) {
       return null;
     }
 
@@ -101,7 +104,7 @@ class Reports extends React.Component<Props, State> {
     ];
 
     return (
-      <PanelAdminLayout breadcrumbs={ breadcrumbs } loading={ this.state.loading } panel={ this.state.panel } redirectTo={ this.state.redirectTo }>
+      <PanelAdminLayout loggedUser={ this.state.loggedUser } breadcrumbs={ breadcrumbs } loading={ this.state.loading } panel={ this.state.panel } redirectTo={ this.state.redirectTo }>
         <Modal open={this.state.reportToEmailDialogVisible} >
           <Modal.Header> { strings.panelAdmin.reports.reportToEmailTitle } </Modal.Header>
           <Modal.Content> 
@@ -231,6 +234,15 @@ class Reports extends React.Component<Props, State> {
    */
   private getQueriesService(): QueriesService {
     return Api.getQueriesService(this.props.accessToken.token);
+  }
+
+  /**
+   * Returns users API
+   * 
+   * @returns users API
+   */
+  private getUsersService(): UsersService {
+    return Api.getUsersService(this.props.accessToken.token);
   }
 
   /**

@@ -3,7 +3,10 @@
     "loading": "Loading...",
     "back": "Back",
     "ok": "Ok",
-    "eDelphi": "eDelphi.org"
+    "eDelphi": "eDelphi.org",
+    "welcomeUser": "Welcome {0}",
+    "profileLink": "Profile",
+    "logoutLink": "Logout"
   },
 
   "errorDialog": {

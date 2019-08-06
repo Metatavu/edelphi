@@ -3,7 +3,10 @@
     "loading": "Lataa...",
     "back": "Takaisin",
     "ok": "Ok",
-    "eDelphi": "eDelphi.org"
+    "eDelphi": "eDelphi.org",
+    "welcomeUser": "Tervetuloa {0}",
+    "profileLink": "Käyttäjäprofiili",
+    "logoutLink": "Kirjaudu ulos"
   },
 
   "errorDialog": {

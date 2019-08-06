@@ -5,10 +5,10 @@ import { StoreState, AccessToken, QueryQuestionCommentNotification, QueryQuestio
 import { connect } from "react-redux";
 import { Grid, DropdownItemProps, DropdownProps, Form, Container, Icon, Transition, SemanticShorthandCollection, BreadcrumbSectionProps } from "semantic-ui-react";
 import PanelAdminLayout from "../components/generic/panel-admin-layout";
-import Api, { Panel, QueryQuestionComment, Query, QueryPage, QueryQuestionAnswer, QueryQuestionCommentCategory } from "edelphi-client";
+import Api, { Panel, QueryQuestionComment, Query, QueryPage, QueryQuestionAnswer, QueryQuestionCommentCategory, User } from "edelphi-client";
 import "../styles/comment-view.scss";
 import { mqttConnection, OnMessageCallback } from "../mqtt";
-import { QueryQuestionCommentsService, QueriesService, PanelsService, QueryPagesService, QueryQuestionAnswersService, QueryQuestionCommentCategoriesService } from "edelphi-client/dist/api/api";
+import { QueryQuestionCommentsService, QueriesService, PanelsService, QueryPagesService, QueryQuestionAnswersService, QueryQuestionCommentCategoriesService, UsersService } from "edelphi-client/dist/api/api";
 import * as queryString from "query-string";
 import * as moment from "moment";
 import getLanguage from "../localization/language";
@@ -27,6 +27,7 @@ interface Props {
  */
 interface State {
   panel?: Panel,
+  loggedUser?: User,
   answers: QueryQuestionAnswer[],
   comments: QueryQuestionComment[],
   categories: QueryQuestionCommentCategory[],
@@ -99,11 +100,13 @@ class CommentView extends React.Component<Props, State> {
 
     const panel = await this.getPanelsService().findPanel(panelId);
     const queries = await this.getQueriesService().listQueries(panelId);
+    const loggedUser = await this.getUsersService().findUser(this.props.accessToken.userId);
 
     this.setState({
       loading: false,
       panel: panel,
-      queries: queries
+      queries: queries,
+      loggedUser: loggedUser
     });
   }
 
@@ -134,7 +137,7 @@ class CommentView extends React.Component<Props, State> {
    * Component render method
    */
   public render() {
-    if (!this.state.panel) {
+    if (!this.state.panel || !this.state.loggedUser) {
       return null;
     }
 
@@ -145,7 +148,7 @@ class CommentView extends React.Component<Props, State> {
     ];
 
     return (
-      <PanelAdminLayout breadcrumbs={ breadcrumbs } loading={ this.state.loading } panel={ this.state.panel } redirectTo={ this.state.redirectTo }>
+      <PanelAdminLayout loggedUser={ this.state.loggedUser } breadcrumbs={ breadcrumbs } loading={ this.state.loading } panel={ this.state.panel } redirectTo={ this.state.redirectTo }>
         <div style={{ width: "100%", height:"100%" }}>
           <Grid>
             { this.renderControls() }
@@ -486,6 +489,15 @@ class CommentView extends React.Component<Props, State> {
    */
   private getQueriesService(): QueriesService {
     return Api.getQueriesService(this.props.accessToken.token);
+  }
+
+  /**
+   * Returns users API
+   * 
+   * @returns users API
+   */
+  private getUsersService(): UsersService {
+    return Api.getUsersService(this.props.accessToken.token);
   }
 
   /**

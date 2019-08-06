@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Redirect } from "react-router-dom";
 import HeaderBackground from "../../gfx/header_background.png";
-import { Panel } from "edelphi-client";
+import { Panel, User } from "edelphi-client";
 import "../../styles/generic.scss";
 import { Container, Grid, Dimmer, Loader, Breadcrumb, SemanticShorthandCollection, BreadcrumbSectionProps } from "semantic-ui-react";
 import strings from "../../localization/strings";
@@ -13,6 +13,7 @@ interface Props {
   redirectTo?: string,
   panel?: Panel,
   loading?: boolean,
+  loggedUser: User,
   breadcrumbs: SemanticShorthandCollection<BreadcrumbSectionProps>
 }
 
@@ -20,7 +21,6 @@ interface Props {
  * Component state
  */
 interface State {
-
 }
 
 /**
@@ -65,42 +65,46 @@ class PanelAdminLayout extends React.Component<Props, State> {
    * Renders header
    */
   private renderHeader = () =>  {
-    if (!this.props.panel) {
-      return null;
-    }
-    
     return (
       <header style={{ backgroundImage: `url(${HeaderBackground})` }}>
         <Container>
           <Grid>
             <Grid.Row>
               <Grid.Column width={ 6 }>
-                <h1 className="header-title">
-                  <a className="root-link" href="/">eDelphi.org</a>
-                  <a className="panel-link" href={ "/" + this.props.panel.urlName }>{ this.props.panel.name }</a>
-                </h1>
+                <div>{ this.renderTitle() }</div>
+                <div style={{ marginTop: "22px" }}>{ this.renderNavigation() }</div>
               </Grid.Column>
-              <Grid.Column width={ 6 } textAlign="center">
-                { this.renderLocaleChange() }
+              <Grid.Column width={ 5 } textAlign="center">
+                { this.renderLocaleChange() } 
               </Grid.Column>
-              <Grid.Column width={ 6 }>
+              <Grid.Column width={ 5 } textAlign="right">
+                { this.remderProfileDetails() }
               </Grid.Column>
             </Grid.Row>
-
             <Grid.Row>
               <Grid.Column>
-                { this.renderNavigation() }
-              </Grid.Column>
-            </Grid.Row>
-
-            <Grid.Row style={ { padding: "0px 10px"  } }>
-              <Grid.Column>
-                <Breadcrumb icon='right angle' sections={ this.props.breadcrumbs } />
-              </Grid.Column>
-            </Grid.Row>
+                  <Breadcrumb icon='right angle' sections={ this.props.breadcrumbs } />
+                </Grid.Column>
+              </Grid.Row>
           </Grid>
         </Container>
       </header>
+    );
+  }
+
+  /**
+   * Renders title
+   */
+  private renderTitle = () => {
+    if (!this.props.panel) {
+      return null;
+    }
+
+    return (
+      <h1 className="header-title">
+        <a className="root-link" href="/">eDelphi.org</a>
+        <a className="panel-link" href={ "/" + this.props.panel.urlName }>{ this.props.panel.name }</a>
+      </h1>
     );
   }
 
@@ -132,6 +136,41 @@ class PanelAdminLayout extends React.Component<Props, State> {
         <a className={ selectedLanguage == "fi" ? "header-locale-link header-locale-link-selected" : "header-locale-link"} href="#" onClick={ this.onLocaleChangeFiClick }>Suomeksi</a>
         <a className={ selectedLanguage == "en" ? "header-locale-link header-locale-link-selected" : "header-locale-link"} href="#" onClick={ this.onLocaleChangeEnClick }>In English</a>
       </div>
+    );
+  }
+
+  /**
+   * Renders profile details
+   */
+  private remderProfileDetails = () => {
+    return (
+      <div style={{ marginTop: "10px" }}>
+        <Grid>
+          <Grid.Row>
+            <Grid.Column width={ 12 }>
+              <div style={{ color: "#fff" }}> { strings.formatString(strings.generic.welcomeUser, `${this.props.loggedUser.firstName} ${this.props.loggedUser.lastName}`) } </div>
+              <div><a href="/profile.page"> { strings.generic.profileLink } </a></div>
+              <div><a href="/logout.page"> { strings.generic.logoutLink } </a></div>
+            </Grid.Column>
+            <Grid.Column width={ 4 }>
+              { this.renderProfileImage() }
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
+      </div>
+    );
+  }
+
+  /**
+   * Renders profile image
+   */
+  private renderProfileImage = () => {
+    if (!this.props.loggedUser.profileImageUrl) {
+      return null;
+    }
+
+    return (
+      <img style={{ maxWidth: "65px" }} src={ this.props.loggedUser.profileImageUrl }/>
     );
   }
 

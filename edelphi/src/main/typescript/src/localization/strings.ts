@@ -8,7 +8,10 @@ export interface IStrings extends LocalizedStringsMethods {
     loading: string,
     back: string,
     ok: string,
-    eDelphi: string
+    eDelphi: string,
+    welcomeUser: string,
+    profileLink: string,
+    logoutLink: string
   },
 
   errorDialog: {
