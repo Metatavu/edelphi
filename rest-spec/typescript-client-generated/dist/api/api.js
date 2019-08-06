@@ -19,6 +19,8 @@ __export(require("./queryQuestionComments.service"));
 var queryQuestionComments_service_1 = require("./queryQuestionComments.service");
 __export(require("./reports.service"));
 var reports_service_1 = require("./reports.service");
+__export(require("./users.service"));
+var users_service_1 = require("./users.service");
 var ApiUtils = /** @class */ (function () {
     function ApiUtils() {
     }
@@ -76,6 +78,9 @@ exports.default = new /** @class */ (function () {
     };
     Api.prototype.getReportsService = function (token) {
         return new reports_service_1.ReportsService(this.apiUrl, token);
+    };
+    Api.prototype.getUsersService = function (token) {
+        return new users_service_1.UsersService(this.apiUrl, token);
     };
     return Api;
 }());

@@ -10,9 +10,11 @@ import org.slf4j.Logger;
 
 import fi.metatavu.edelphi.dao.base.AuthSourceDAO;
 import fi.metatavu.edelphi.dao.users.UserIdentificationDAO;
+import fi.metatavu.edelphi.dao.users.UserPictureDAO;
 import fi.metatavu.edelphi.domainmodel.base.AuthSource;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserIdentification;
+import fi.metatavu.edelphi.domainmodel.users.UserPicture;
 
 /**
  * Controller for users
@@ -32,6 +34,9 @@ public class UserController {
 
   @Inject
   private AuthSourceDAO authSourceDAO;
+  
+  @Inject
+  private UserPictureDAO userPictureDAO;
 
   /**
    * Finds user by Keycloak id
@@ -75,6 +80,25 @@ public class UserController {
     }
     
     return new UUID(0L, 0L);
+  }
+
+  /**
+   * Returns path for profile image
+   * 
+   * @param user user
+   * @return path for profile image
+   */
+  public String getProfileImagePath(User user) {
+    if (user == null) {
+      return null;
+    }
+    
+    UserPicture userPicture = userPictureDAO.findByUser(user);
+    if (userPicture == null) {
+      return null;
+    }
+    
+    return String.format("/user/picture.binary?userId=%d", user.getId());
   }
   
 }

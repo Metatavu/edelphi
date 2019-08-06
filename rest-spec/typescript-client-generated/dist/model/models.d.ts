@@ -24,3 +24,4 @@ export * from './reportFormat';
 export * from './reportRequest';
 export * from './reportRequestOptions';
 export * from './reportType';
+export * from './user';
