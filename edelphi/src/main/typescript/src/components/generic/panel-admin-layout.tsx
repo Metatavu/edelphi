@@ -3,7 +3,7 @@ import { Redirect } from "react-router-dom";
 import HeaderBackground from "../../gfx/header_background.png";
 import { Panel } from "edelphi-client";
 import "../../styles/generic.scss";
-import { Container, Grid, Dimmer, Loader } from "semantic-ui-react";
+import { Container, Grid, Dimmer, Loader, Breadcrumb, SemanticShorthandCollection, BreadcrumbSectionProps } from "semantic-ui-react";
 import strings from "../../localization/strings";
 
 /**
@@ -13,7 +13,7 @@ interface Props {
   redirectTo?: string,
   panel?: Panel,
   loading?: boolean,
-  onBackLinkClick?: () => void
+  breadcrumbs: SemanticShorthandCollection<BreadcrumbSectionProps>
 }
 
 /**
@@ -68,7 +68,7 @@ class PanelAdminLayout extends React.Component<Props, State> {
     if (!this.props.panel) {
       return null;
     }
-
+    
     return (
       <header style={{ backgroundImage: `url(${HeaderBackground})` }}>
         <Container>
@@ -90,6 +90,12 @@ class PanelAdminLayout extends React.Component<Props, State> {
             <Grid.Row>
               <Grid.Column>
                 { this.renderNavigation() }
+              </Grid.Column>
+            </Grid.Row>
+
+            <Grid.Row style={ { padding: "0px 10px"  } }>
+              <Grid.Column>
+                <Breadcrumb icon='right angle' sections={ this.props.breadcrumbs } />
               </Grid.Column>
             </Grid.Row>
           </Grid>

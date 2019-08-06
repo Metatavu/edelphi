@@ -2,7 +2,8 @@
   "generic": {
     "loading": "Lataa...",
     "back": "Takaisin",
-    "ok": "Ok"
+    "ok": "Ok",
+    "eDelphi": "eDelphi.org"
   },
 
   "errorDialog": {

@@ -3,7 +3,7 @@ import * as actions from "../actions";
 import * as _ from "lodash";
 import { StoreState, AccessToken, QueryQuestionCommentNotification, QueryQuestionAnswerNotification } from "../types";
 import { connect } from "react-redux";
-import { Grid, DropdownItemProps, DropdownProps, Form, Container, Icon, Transition } from "semantic-ui-react";
+import { Grid, DropdownItemProps, DropdownProps, Form, Container, Icon, Transition, SemanticShorthandCollection, BreadcrumbSectionProps } from "semantic-ui-react";
 import PanelAdminLayout from "../components/generic/panel-admin-layout";
 import Api, { Panel, QueryQuestionComment, Query, QueryPage, QueryQuestionAnswer, QueryQuestionCommentCategory } from "edelphi-client";
 import "../styles/comment-view.scss";
@@ -134,8 +134,18 @@ class CommentView extends React.Component<Props, State> {
    * Component render method
    */
   public render() {
+    if (!this.state.panel) {
+      return null;
+    }
+
+    const breadcrumbs: SemanticShorthandCollection<BreadcrumbSectionProps> = [
+      { key: "home", content: strings.generic.eDelphi, link: true, href: "/" },
+      { key: "panel", content: this.state.panel.name, link: true, href: `/${this.state.panel.urlName}` },
+      { key: "commentview", content: this.state.panel.name, active: true }      
+    ];
+
     return (
-      <PanelAdminLayout loading={ this.state.loading } panel={ this.state.panel } onBackLinkClick={ this.onBackLinkClick } redirectTo={ this.state.redirectTo }>
+      <PanelAdminLayout breadcrumbs={ breadcrumbs } loading={ this.state.loading } panel={ this.state.panel } redirectTo={ this.state.redirectTo }>
         <div style={{ width: "100%", height:"100%" }}>
           <Grid>
             { this.renderControls() }
@@ -650,17 +660,6 @@ class CommentView extends React.Component<Props, State> {
       parentMap: parentMap,
       rootMap: rootMap
     });
-  }
-
-  /**
-   * Event handler for back link click
-   */
-  private onBackLinkClick = () => {
-    if (!this.state.panel || !this.state.panel.id) {
-      return;
-    }
-
-    window.location.href = `/panel/admin/dashboard.page?panelId=${this.state.panel.id}`;
   }
   
   /**

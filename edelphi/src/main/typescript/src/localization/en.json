@@ -2,7 +2,8 @@
   "generic": {
     "loading": "Loading...",
     "back": "Back",
-    "ok": "Ok"
+    "ok": "Ok",
+    "eDelphi": "eDelphi.org"
   },
 
   "errorDialog": {

@@ -8,7 +8,7 @@ import Api, { Panel, Query, QueryPage, ReportFormat, ReportType } from "edelphi-
 import "../styles/reports.scss";
 import { PanelsService, QueriesService, ReportsService } from "edelphi-client/dist/api/api";
 import * as queryString from "query-string";
-import { Grid, Container, List, Modal, Button, Icon } from "semantic-ui-react";
+import { Grid, Container, List, Modal, Button, Icon, SemanticShorthandCollection, BreadcrumbSectionProps } from "semantic-ui-react";
 import strings from "../localization/strings";
 import PanelAdminReportsQueryListItem from "../components/panel-admin/panel-admin-reports-query-list-item";
 import PanelAdminReportsOptions from "../components/panel-admin/panel-admin-reports-options";
@@ -86,12 +86,22 @@ class Reports extends React.Component<Props, State> {
    * Component render method
    */
   public render() {
+    if (!this.state.panel) {
+      return null;
+    }
+
     if (this.state.error) {
       return <ErrorDialog error={ this.state.error } onClose={ () => this.setState({ error: undefined }) } /> 
     }
 
+    const breadcrumbs: SemanticShorthandCollection<BreadcrumbSectionProps> = [
+      { key: "home", content: strings.generic.eDelphi, link: true, href: "/" },
+      { key: "panel", content: this.state.panel.name, link: true, href: `/${this.state.panel.urlName}` },
+      { key: "reports", content: this.state.panel.name, active: true }      
+    ];
+
     return (
-      <PanelAdminLayout loading={ this.state.loading } panel={ this.state.panel } onBackLinkClick={ this.onBackLinkClick } redirectTo={ this.state.redirectTo }>
+      <PanelAdminLayout breadcrumbs={ breadcrumbs } loading={ this.state.loading } panel={ this.state.panel } redirectTo={ this.state.redirectTo }>
         <Modal open={this.state.reportToEmailDialogVisible} >
           <Modal.Header> { strings.panelAdmin.reports.reportToEmailTitle } </Modal.Header>
           <Modal.Content> 
@@ -291,16 +301,6 @@ class Reports extends React.Component<Props, State> {
     await this.requestReport("TEXT", "GOOGLE_DOCUMENT");
   } 
 
-  /**
-   * Event handler for back link click
-   */
-  private onBackLinkClick = () => {
-    if (!this.state.panel || !this.state.panel.id) {
-      return;
-    }
-
-    window.location.href = `/panel/admin/dashboard.page?panelId=${this.state.panel.id}`;
-  }
 }
 
 /**

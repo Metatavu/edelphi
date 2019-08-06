@@ -7,7 +7,8 @@ export interface IStrings extends LocalizedStringsMethods {
   generic: {
     loading: string,
     back: string,
-    ok: string
+    ok: string,
+    eDelphi: string
   },
 
   errorDialog: {
