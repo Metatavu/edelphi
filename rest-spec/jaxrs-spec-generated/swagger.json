@@ -2049,7 +2049,7 @@
       },
       "ReportFormat" : {
         "type" : "string",
-        "enum" : [ "PDF", "CSV", "GOOGLE_SHEETS" ]
+        "enum" : [ "PDF", "CSV", "GOOGLE_SHEET", "GOOGLE_DOCUMENT" ]
       },
       "ReportType" : {
         "type" : "string",
