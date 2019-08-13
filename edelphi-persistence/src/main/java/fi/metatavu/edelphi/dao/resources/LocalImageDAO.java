@@ -2,11 +2,14 @@ package fi.metatavu.edelphi.dao.resources;
 
 import java.util.Date;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import fi.metatavu.edelphi.dao.GenericDAO;
 import fi.metatavu.edelphi.domainmodel.resources.Folder;
 import fi.metatavu.edelphi.domainmodel.resources.LocalImage;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
+@ApplicationScoped
 public class LocalImageDAO extends GenericDAO<LocalImage> {
 
   public LocalImage create(String name, String urlName, String contentType, byte[] data, Folder parentFolder, User user, Integer indexNumber) {

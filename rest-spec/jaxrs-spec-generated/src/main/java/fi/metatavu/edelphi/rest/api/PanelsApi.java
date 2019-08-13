@@ -15,7 +15,7 @@ import javax.validation.Valid;
 
 @Path("/panels")
 @Api(description = "the panels API")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-06-02T11:48:21.381+03:00[Europe/Helsinki]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-08-06T10:40:24.181+03:00[Europe/Helsinki]")
 public interface PanelsApi {
 
     @POST
@@ -119,6 +119,39 @@ public interface PanelsApi {
         @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class),
         @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class) })
     Response findQueryQuestionCommentCategory(@PathParam("panelId")  Long panelId,@PathParam("categoryId")  Long categoryId);
+    @GET
+    @Path("/{panelId}/expertiseClasses")
+    @Produces({ "application/json" })
+    @ApiOperation(value = "List panel expertise classes", notes = "List defined expertise classes from a panel", authorizations = {
+        @Authorization(value = "bearer")    }, tags={ "PanelExpertise" })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "List of panel expertise classes", response = PanelExpertiseClass.class, responseContainer = "List"),
+        @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class, responseContainer = "List"),
+        @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class, responseContainer = "List"),
+        @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class, responseContainer = "List") })
+    Response listExpertiseClasses(@PathParam("panelId")  Long panelId);
+    @GET
+    @Path("/{panelId}/expertiseGroups")
+    @Produces({ "application/json" })
+    @ApiOperation(value = "List panel expertise groups", notes = "List defined expertise groups from a panel", authorizations = {
+        @Authorization(value = "bearer")    }, tags={ "PanelExpertise" })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "List of panel expertise groups", response = PanelExpertiseGroup.class, responseContainer = "List"),
+        @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class, responseContainer = "List"),
+        @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class, responseContainer = "List"),
+        @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class, responseContainer = "List") })
+    Response listExpertiseGroups(@PathParam("panelId")  Long panelId);
+    @GET
+    @Path("/{panelId}/interestClasses")
+    @Produces({ "application/json" })
+    @ApiOperation(value = "List panel interest classes", notes = "List defined interest classes from a panel", authorizations = {
+        @Authorization(value = "bearer")    }, tags={ "PanelExpertise" })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "List of panel interest classes", response = PanelInterestClass.class, responseContainer = "List"),
+        @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class, responseContainer = "List"),
+        @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class, responseContainer = "List"),
+        @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class, responseContainer = "List") })
+    Response listInterestClasses(@PathParam("panelId")  Long panelId);
     @GET
     @Path("/{panelId}/queries")
     @Produces({ "application/json" })

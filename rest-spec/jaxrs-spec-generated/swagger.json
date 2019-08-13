@@ -1429,10 +1429,341 @@
           }
         }
       }
+    },
+    "/panels/{panelId}/expertiseClasses" : {
+      "get" : {
+        "tags" : [ "PanelExpertise" ],
+        "summary" : "List panel expertise classes",
+        "description" : "List defined expertise classes from a panel",
+        "operationId" : "listExpertiseClasses",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of panel expertise classes",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PanelExpertiseClass"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panels/{panelId}/interestClasses" : {
+      "get" : {
+        "tags" : [ "PanelExpertise" ],
+        "summary" : "List panel interest classes",
+        "description" : "List defined interest classes from a panel",
+        "operationId" : "listInterestClasses",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of panel interest classes",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PanelInterestClass"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panels/{panelId}/expertiseGroups" : {
+      "get" : {
+        "tags" : [ "PanelExpertise" ],
+        "summary" : "List panel expertise groups",
+        "description" : "List defined expertise groups from a panel",
+        "operationId" : "listExpertiseGroups",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of panel expertise groups",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PanelExpertiseGroup"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}" : {
+      "get" : {
+        "tags" : [ "Users" ],
+        "summary" : "Find user",
+        "description" : "Finds an user by id",
+        "operationId" : "findUser",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "description" : "user id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Found user",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reportRequests" : {
+      "post" : {
+        "tags" : [ "Reports" ],
+        "summary" : "Creates a report request",
+        "description" : "Creates a request to generate a report",
+        "operationId" : "createReportRequest",
+        "requestBody" : {
+          "description" : "Payload",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ReportRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "202" : {
+            "description" : "Report request has been accepted"
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components" : {
     "schemas" : {
+      "User" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "format" : "uuid",
+            "readOnly" : true
+          },
+          "firstName" : {
+            "type" : "string"
+          },
+          "lastName" : {
+            "type" : "string"
+          },
+          "profileImageUrl" : {
+            "type" : "string",
+            "format" : "url"
+          }
+        }
+      },
       "Panel" : {
         "required" : [ "accessLevel", "name", "state" ],
         "type" : "object",
@@ -1682,6 +2013,58 @@
           }
         }
       },
+      "PanelExpertiseClass" : {
+        "required" : [ "name" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "description" : "Id",
+            "format" : "int64",
+            "readOnly" : true
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "Expertise class name"
+          }
+        }
+      },
+      "PanelInterestClass" : {
+        "required" : [ "name" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "description" : "Id",
+            "format" : "int64",
+            "readOnly" : true
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "Interest class name"
+          }
+        }
+      },
+      "PanelExpertiseGroup" : {
+        "required" : [ "expertiseClassId", "interestClassId" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "description" : "Id",
+            "format" : "int64",
+            "readOnly" : true
+          },
+          "interestClassId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "expertiseClassId" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
       "QueryQuestionComment" : {
         "required" : [ "comment", "queryPageId", "queryReplyId" ],
         "type" : "object",
@@ -1743,6 +2126,79 @@
             "description" : "Comment's last modification time",
             "format" : "date-time",
             "readOnly" : true
+          }
+        }
+      },
+      "ReportFormat" : {
+        "type" : "string",
+        "enum" : [ "PDF", "CSV", "GOOGLE_SHEET", "GOOGLE_DOCUMENT" ]
+      },
+      "ReportType" : {
+        "type" : "string",
+        "enum" : [ "TEXT", "SPREADSHEET" ]
+      },
+      "ReportDelivery" : {
+        "type" : "object",
+        "properties" : {
+          "email" : {
+            "type" : "string",
+            "format" : "email"
+          }
+        }
+      },
+      "ReportRequest" : {
+        "required" : [ "format", "options", "panelId", "queryId", "type" ],
+        "type" : "object",
+        "properties" : {
+          "panelId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "queryId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "stampId" : {
+            "type" : "integer",
+            "description" : "Panel stamp id. Defaults to current stamp",
+            "format" : "int64"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/ReportType"
+          },
+          "format" : {
+            "$ref" : "#/components/schemas/ReportFormat"
+          },
+          "delivery" : {
+            "$ref" : "#/components/schemas/ReportDelivery"
+          },
+          "options" : {
+            "$ref" : "#/components/schemas/ReportRequestOptions"
+          }
+        }
+      },
+      "ReportRequestOptions" : {
+        "type" : "object",
+        "properties" : {
+          "queryPageIds" : {
+            "type" : "array",
+            "description" : "Include only speficied page ids",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          },
+          "expertiseGroupIds" : {
+            "type" : "array",
+            "description" : "Include only speficied expertise group ids",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          },
+          "show2dAs1d" : {
+            "type" : "boolean",
+            "description" : "Show 2d answers as 1d graphs instead of 2d graphs"
           }
         }
       },

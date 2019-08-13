@@ -1,7 +1,12 @@
 {
   "generic": {
     "loading": "Loading...",
-    "back": "Back"
+    "back": "Back",
+    "ok": "Ok",
+    "eDelphi": "eDelphi.org",
+    "welcomeUser": "Welcome {0}",
+    "profileLink": "Profile",
+    "logoutLink": "Logout"
   },
 
   "errorDialog": {
@@ -56,6 +61,11 @@
   },
 
   "panelAdmin": {
+    "navigation": {
+      "panel": "Panel",
+      "administration": "Administration",
+      "reportAnIssue": "Report an Issue"
+    },
     "queryEditor": {
       "pageCommentOptions": {
         "title": "Comment options",
@@ -78,11 +88,33 @@
       }
     },
     "commentView": {
-      "querySelectLabel": "Kysely",
-      "pageSelectLabel": "Sivu",
-      "categorySelectLabel": "Kategoria",
-      "defaultCategory": "Oletus",
-      "replyCount": "{0} vastausta"
-    } 
+      "querySelectLabel": "Query",
+      "pageSelectLabel": "Page",
+      "categorySelectLabel": "Category",
+      "defaultCategory": "Default",
+      "replyCount": "{0} replies"
+    },
+    "reports": {
+      "title": "Query Results",
+      "queriesListTitle": "Queries",
+      "queriesListDates": "Created: {0}, Modified: {0}",
+      "exportFilter": "Filter",
+      "exportFilterByExpertise": "Interest and Expertise Groups",
+      "exportFilterByPage": "Page(s)",
+      "exportFilterByPageAll": "All",
+      "exportReport": "Export Report",
+      "exportReportContents": "Report Contents",
+      "exportReportPDF": "Export as PDF",
+      "exportReportGoogleDocument": "Export as Google Document",
+      "exportCharts": "Report Charts",
+      "exportChartsPNG": "Export as PNG",
+      "exportData": "Report Data",
+      "exportDataCSV": "Export as CSV",
+      "exportDataGoogleSpreadsheet": "Export into Google Spreadsheet",
+      "reportToEmailTitle": "The report will be sent by email",
+      "reportToEmailMessageDelivery": "The report will be sent to the email you specified in your profile",
+      "reportToEmailMessageDeliveryTime": "The report usually arrives within 30 minutes from request",
+      "reportToEmailMessageLeave": "Report is generated in the background so you are now free to navigate from this view"
+    }
   }
 }

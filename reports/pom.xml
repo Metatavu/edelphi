@@ -1,0 +1,179 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>reports</artifactId>
+  <packaging>jar</packaging>
+  <name>${project.groupId}:${project.artifactId}</name>
+  <description>Repors for eDelphi</description>
+  <url>https://github.com/Metatavu/edelphi</url>  
+
+  <parent>
+    <groupId>fi.metatavu.edelphi</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.1.80-SNAPSHOT</version>    
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  
+  <licenses>
+    <license>
+      <name>GNU LGPL v3</name>
+      <url>http://www.gnu.org/licenses/lgpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/Metatavu/edelphi/issues</url>
+  </issueManagement>
+  
+  <scm>
+    <developerConnection>scm:git:git@github.com:Metatavu/edelphi.git</developerConnection>
+    <url>git@github.com:Metatavu/edelphi.git</url>
+    <connection>scm:git:git@github.com:Metatavu/edelphi.git</connection>
+    <tag>1.1.0</tag>
+  </scm>
+  
+  <organization>
+    <name>Metatavu Oy</name>
+    <url>https://metatavu.fi</url>
+  </organization>
+  
+  <developers>
+    <developer>
+      <email>devs@metatavu.fi</email>
+      <name>Metatavu Oy</name>
+      <organization>Metatavu Oy</organization>
+      <organizationUrl>https://www.metatavu.fi</organizationUrl>
+    </developer>    
+  </developers>
+
+  <properties>
+    <maven.javadoc.skip>true</maven.javadoc.skip>
+  </properties>
+  
+  <dependencies>
+  
+    <!-- EE -->
+    
+    <dependency>
+      <groupId>javax.enterprise</groupId>
+      <artifactId>cdi-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.jboss.spec.javax.ejb</groupId>
+      <artifactId>jboss-ejb-api_3.2_spec</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.infinispan</groupId>
+      <artifactId>infinispan-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <!-- CSV -->
+    
+    <dependency>
+      <groupId>com.opencsv</groupId>
+      <artifactId>opencsv</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-lang3</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-beanutils</groupId>
+          <artifactId>commons-beanutils</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    
+    <!-- Batch -->
+    
+    <dependency>
+      <groupId>org.jboss.spec.javax.batch</groupId>
+      <artifactId>jboss-batch-api_1.0_spec</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.jberet</groupId>
+      <artifactId>jberet-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <!-- Jsoup -->
+    
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <!-- Birt -->
+    
+    <dependency>
+      <groupId>org.eclipse.birt.runtime</groupId>
+      <artifactId>org.eclipse.birt.runtime</artifactId>
+    </dependency>
+    
+    <!-- Flying saucer -->
+    
+    <dependency>
+      <groupId>org.xhtmlrenderer</groupId>
+      <artifactId>flying-saucer-pdf-itext5</artifactId>
+    </dependency>
+    
+    <!-- eDelphi -->
+    
+    <dependency>
+      <groupId>fi.metatavu.edelphi</groupId>
+      <artifactId>persistence</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  
+    <dependency>
+      <groupId>fi.metatavu.edelphi</groupId>
+      <artifactId>common-cdi</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    
+    <!-- Jackson -->
+    
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+        
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <scope>provided</scope>
+    </dependency>
+      
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <!-- Commons -->
+    
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+  </dependencies>
+  
+</project>

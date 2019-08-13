@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.dao.resources;
 
 import java.util.Date;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -12,6 +13,7 @@ import fi.metatavu.edelphi.domainmodel.resources.Folder;
 import fi.metatavu.edelphi.domainmodel.resources.Folder_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
+@ApplicationScoped
 public class FolderDAO extends GenericDAO<Folder> {
 
   public Folder create(User creator, String name, String urlName, Folder parentFolder, Integer indexNumber) {

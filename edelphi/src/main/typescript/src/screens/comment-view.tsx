@@ -3,12 +3,12 @@ import * as actions from "../actions";
 import * as _ from "lodash";
 import { StoreState, AccessToken, QueryQuestionCommentNotification, QueryQuestionAnswerNotification } from "../types";
 import { connect } from "react-redux";
-import { Grid, DropdownItemProps, DropdownProps, Form, Container, Icon, Transition } from "semantic-ui-react";
+import { Grid, DropdownItemProps, DropdownProps, Form, Container, Icon, Transition, SemanticShorthandCollection, BreadcrumbSectionProps } from "semantic-ui-react";
 import PanelAdminLayout from "../components/generic/panel-admin-layout";
-import Api, { Panel, QueryQuestionComment, Query, QueryPage, QueryQuestionAnswer, QueryQuestionCommentCategory } from "edelphi-client";
+import Api, { Panel, QueryQuestionComment, Query, QueryPage, QueryQuestionAnswer, QueryQuestionCommentCategory, User } from "edelphi-client";
 import "../styles/comment-view.scss";
 import { mqttConnection, OnMessageCallback } from "../mqtt";
-import { QueryQuestionCommentsService, QueriesService, PanelsService, QueryPagesService, QueryQuestionAnswersService, QueryQuestionCommentCategoriesService } from "edelphi-client/dist/api/api";
+import { QueryQuestionCommentsService, QueriesService, PanelsService, QueryPagesService, QueryQuestionAnswersService, QueryQuestionCommentCategoriesService, UsersService } from "edelphi-client/dist/api/api";
 import * as queryString from "query-string";
 import * as moment from "moment";
 import getLanguage from "../localization/language";
@@ -27,6 +27,7 @@ interface Props {
  */
 interface State {
   panel?: Panel,
+  loggedUser?: User,
   answers: QueryQuestionAnswer[],
   comments: QueryQuestionComment[],
   categories: QueryQuestionCommentCategory[],
@@ -99,11 +100,13 @@ class CommentView extends React.Component<Props, State> {
 
     const panel = await this.getPanelsService().findPanel(panelId);
     const queries = await this.getQueriesService().listQueries(panelId);
+    const loggedUser = await this.getUsersService().findUser(this.props.accessToken.userId);
 
     this.setState({
       loading: false,
       panel: panel,
-      queries: queries
+      queries: queries,
+      loggedUser: loggedUser
     });
   }
 
@@ -134,8 +137,18 @@ class CommentView extends React.Component<Props, State> {
    * Component render method
    */
   public render() {
+    if (!this.state.panel || !this.state.loggedUser) {
+      return null;
+    }
+
+    const breadcrumbs: SemanticShorthandCollection<BreadcrumbSectionProps> = [
+      { key: "home", content: strings.generic.eDelphi, link: true, href: "/" },
+      { key: "panel", content: this.state.panel.name, link: true, href: `/${this.state.panel.urlName}` },
+      { key: "commentview", content: this.state.panel.name, active: true }      
+    ];
+
     return (
-      <PanelAdminLayout loading={ this.state.loading } panel={ this.state.panel } onBackLinkClick={ this.onBackLinkClick } redirectTo={ this.state.redirectTo }>
+      <PanelAdminLayout loggedUser={ this.state.loggedUser } breadcrumbs={ breadcrumbs } loading={ this.state.loading } panel={ this.state.panel } redirectTo={ this.state.redirectTo }>
         <div style={{ width: "100%", height:"100%" }}>
           <Grid>
             { this.renderControls() }
@@ -479,6 +492,15 @@ class CommentView extends React.Component<Props, State> {
   }
 
   /**
+   * Returns users API
+   * 
+   * @returns users API
+   */
+  private getUsersService(): UsersService {
+    return Api.getUsersService(this.props.accessToken.token);
+  }
+
+  /**
    * Returns panels API
    * 
    * @returns panels API
@@ -650,17 +672,6 @@ class CommentView extends React.Component<Props, State> {
       parentMap: parentMap,
       rootMap: rootMap
     });
-  }
-
-  /**
-   * Event handler for back link click
-   */
-  private onBackLinkClick = () => {
-    if (!this.state.panel || !this.state.panel.id) {
-      return;
-    }
-
-    window.location.href = `/panel/admin/dashboard.page?panelId=${this.state.panel.id}`;
   }
   
   /**

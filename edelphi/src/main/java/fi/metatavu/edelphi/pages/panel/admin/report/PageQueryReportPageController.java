@@ -77,6 +77,9 @@ public class PageQueryReportPageController extends PanelPageController {
     List<QueryReportPageData> pageDatas = new ArrayList<QueryReportPageData>();
 
     QueryReportPageController queryReportPageController = QueryReportPageProvider.getController(queryPage.getPageType());
+    if (queryReportPageController == null) {
+      return;
+    }
 
     QueryReportPageData pageData = queryReportPageController.loadPageData(pageRequestContext, reportContext, queryPage);
     pageDatas.add(pageData);

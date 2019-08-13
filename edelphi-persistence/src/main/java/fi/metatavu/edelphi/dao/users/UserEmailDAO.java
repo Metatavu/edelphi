@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.dao.users;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -13,6 +14,7 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail_;
 
+@ApplicationScoped
 public class UserEmailDAO extends GenericDAO<UserEmail> {
 
   public UserEmail create(User user, String address) {

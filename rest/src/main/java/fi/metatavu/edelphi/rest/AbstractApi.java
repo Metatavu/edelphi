@@ -10,6 +10,8 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.slf4j.Logger;
 
@@ -266,5 +268,58 @@ public abstract class AbstractApi {
   protected HttpServletRequest getHttpServletRequest() {
     return ResteasyProviderFactory.getContextData(HttpServletRequest.class);
   }
+  
+  /**
+   * Returns request scheme
+   * 
+   * @return request scheme
+   */
+  protected String getRequestScheme() {
+    HttpServletRequest request = getHttpServletRequest();
+    String forwardProto = request.getHeader("X-Forwarded-Proto");
+    if (StringUtils.isNotBlank(forwardProto)) {
+      return forwardProto;
+    }
+    
+    return request.getScheme();
+  }
 
+  /**
+   * Returns request host
+   * 
+   * @return request host
+   */
+  protected String getRequestHost() {
+    HttpServletRequest request = getHttpServletRequest();
+    String forwardHost = request.getHeader("X-Forwarded-Host");
+    if (StringUtils.isNotBlank(forwardHost)) {
+      return forwardHost;
+    }
+    
+    return request.getServerName();
+  }
+
+  /**
+   * Returns request port
+   * 
+   * @return request port
+   */
+  protected Integer getRequestPort() {
+    HttpServletRequest request = getHttpServletRequest();
+    String forwardPort = request.getHeader("X-Forwarded-Port");
+    if (StringUtils.isNotBlank(forwardPort)) {
+      return NumberUtils.createInteger(forwardPort);
+    }
+    
+    return request.getLocalPort();
+  }
+  
+  /**
+   * Returns service base URL 
+   * @return service base URL
+   */
+  protected String getBaseUrl() {
+    return String.format("%s://%s:%d", getRequestScheme(), getRequestHost(), getRequestPort());
+  }
+  
 }

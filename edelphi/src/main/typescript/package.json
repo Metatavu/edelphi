@@ -12,7 +12,7 @@
   "dependencies": {
     "@types/node": "^11.11.3",
     "@types/recharts": "^1.1.16",
-    "edelphi-client": "1.0.27",
+    "edelphi-client": "1.0.43",
     "localized-strings": "^0.2.1",
     "lodash": "^4.17.11",
     "log4js": "^4.0.2",

@@ -3,6 +3,7 @@ package fi.metatavu.edelphi.dao.users;
 import java.util.Date;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -15,6 +16,7 @@ import fi.metatavu.edelphi.domainmodel.base.DelfoiUser_;
 import fi.metatavu.edelphi.domainmodel.users.DelfoiUserRole;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
+@ApplicationScoped
 public class DelfoiUserDAO extends GenericDAO<DelfoiUser> {
 
   public DelfoiUser create(Delfoi delfoi, User user, DelfoiUserRole role, User creator) {

@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
@@ -22,7 +21,6 @@ import fi.metatavu.edelphi.query.QueryOption;
 import fi.metatavu.edelphi.query.QueryOptionEditor;
 import fi.metatavu.edelphi.query.QueryOptionType;
 import fi.metatavu.edelphi.query.RequiredQueryFragment;
-import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.QueryPageUtils;

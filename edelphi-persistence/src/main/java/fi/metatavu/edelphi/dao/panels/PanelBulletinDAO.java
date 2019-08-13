@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.dao.panels;
 import java.util.Date;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -13,6 +14,7 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelBulletin;
 import fi.metatavu.edelphi.domainmodel.panels.PanelBulletin_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
+@ApplicationScoped
 public class PanelBulletinDAO extends GenericDAO<PanelBulletin> {
   
   public PanelBulletin create(Panel panel, String title, String message, User creator, Boolean important, Date importantEnds) {

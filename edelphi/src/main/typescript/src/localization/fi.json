@@ -1,7 +1,12 @@
 {
   "generic": {
     "loading": "Lataa...",
-    "back": "Takaisin"
+    "back": "Takaisin",
+    "ok": "Ok",
+    "eDelphi": "eDelphi.org",
+    "welcomeUser": "Tervetuloa {0}",
+    "profileLink": "Käyttäjäprofiili",
+    "logoutLink": "Kirjaudu ulos"
   },
 
   "errorDialog": {
@@ -56,6 +61,11 @@
   },
 
   "panelAdmin": {
+    "navigation": {
+      "panel": "Paneeli",
+      "administration": "Hallinnointi",
+      "reportAnIssue": "Virhe- ja kehitysehdotuslomake"
+    },
     "queryEditor": {
       "pageCommentOptions": {
         "title": "Kommenttiasetukset",
@@ -78,11 +88,33 @@
       }
     },
     "commentView": {
-      "querySelectLabel": "Query",
-      "pageSelectLabel": "Page",
-      "categorySelectLabel": "Category",
-      "defaultCategory": "Default",
-      "replyCount": "{0} replies"
+      "querySelectLabel": "Kysely",
+      "pageSelectLabel": "Sivu",
+      "categorySelectLabel": "Kategoria",
+      "defaultCategory": "Oletus",
+      "replyCount": "{0} vastausta"
+    },
+    "reports": {
+      "title": "Kyselyn tulokset",
+      "queriesListTitle": "Kyselyt",
+      "queriesListDates": "Luotu: {0}, Muokattu: {0}",
+      "exportFilter": "Suodata",
+      "exportFilterByExpertise": "Intressit ja asiantuntijuudet",
+      "exportFilterByPage": "Sivu(t)",
+      "exportFilterByPageAll": "Kaikki",
+      "exportReport": "Vie raportti",
+      "exportReportContents": "Raportin sisältö",
+      "exportReportPDF": "Vie PDF:nä",
+      "exportReportGoogleDocument": "Vie Google-dokumentiksi",
+      "exportCharts": "Raportin kuvat",
+      "exportChartsPNG": "Vie PNG-muodossa",
+      "exportData": "Raportin data",
+      "exportDataCSV": "Vie CSV:nä",
+      "exportDataGoogleSpreadsheet": "Vie Google-taulukoksi",
+      "reportToEmailTitle": "Raportti toimitetaan sähköpostiisi",
+      "reportToEmailMessageDelivery": "Raportti tullaan toimittamaan profiilissa määrittelemääsi sähköpostiin",
+      "reportToEmailMessageDeliveryTime": "Raportti saapuu yleensä 30 minuutin sisään pyynnön lähettämisestä",
+      "reportToEmailMessageLeave": "Raportin luonti tapahtuu taustalla, joten voitte poistua nyt tästä näkymästä"
     }
   }
 }

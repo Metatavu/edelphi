@@ -2,11 +2,14 @@ package fi.metatavu.edelphi.dao.resources;
 
 import java.util.Date;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import fi.metatavu.edelphi.dao.GenericDAO;
 import fi.metatavu.edelphi.domainmodel.resources.Folder;
 import fi.metatavu.edelphi.domainmodel.resources.LinkedImage;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
+@ApplicationScoped
 public class LinkedImageDAO extends GenericDAO<LinkedImage> {
 
   public LinkedImage create(String name, String urlName, String url, Folder parentFolder, User user, Integer indexNumber) {

@@ -3,6 +3,7 @@ package fi.metatavu.edelphi.dao.panels;
 import java.util.Date;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -15,6 +16,7 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelUserGroup;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserGroup_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
+@ApplicationScoped
 public class PanelUserGroupDAO extends GenericDAO<PanelUserGroup> {
 
   public PanelUserGroup create(Panel panel, String name, List<User> users, PanelStamp stamp, User creator) {

@@ -9,3 +9,5 @@ __export(require("./queryPageLive2DAnswersVisibleOption"));
 __export(require("./queryPageLive2DColor"));
 __export(require("./queryPageType"));
 __export(require("./queryState"));
+__export(require("./reportFormat"));
+__export(require("./reportType"));

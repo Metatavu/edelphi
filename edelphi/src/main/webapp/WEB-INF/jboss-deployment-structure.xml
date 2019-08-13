@@ -22,6 +22,7 @@
             <module name="org.apache.commons.logging"/>
             <module name="org.apache.xalan"/>
             <module name="org.infinispan" services="export" />
+            <module name="org.jsoup"/>
         </dependencies>
     </deployment>
 </jboss-deployment-structure>

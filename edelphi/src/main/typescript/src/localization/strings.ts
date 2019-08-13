@@ -6,7 +6,12 @@ export interface IStrings extends LocalizedStringsMethods {
 
   generic: {
     loading: string,
-    back: string
+    back: string,
+    ok: string,
+    eDelphi: string,
+    welcomeUser: string,
+    profileLink: string,
+    logoutLink: string
   },
 
   errorDialog: {
@@ -61,6 +66,11 @@ export interface IStrings extends LocalizedStringsMethods {
   },
 
   panelAdmin: {
+    navigation: {
+      panel: string,
+      administration: string,
+      reportAnIssue: string
+    },
     queryEditor: {
       pageCommentOptions: {
         title: string,
@@ -88,6 +98,28 @@ export interface IStrings extends LocalizedStringsMethods {
       categorySelectLabel: string,
       defaultCategory: string,
       replyCount: string
+    },
+    reports: {
+      title: string,
+      queriesListTitle: string,
+      queriesListDates: string,
+      exportFilter: string,
+      exportFilterByExpertise: string,
+      exportFilterByPage: string,
+      exportFilterByPageAll: string,
+      exportReport: string,
+      exportReportContents: string,
+      exportReportPDF: string,
+      exportReportGoogleDocument: string,
+      exportCharts: string,
+      exportChartsPNG: string,
+      exportData: string,
+      exportDataCSV: string,
+      exportDataGoogleSpreadsheet: string,
+      reportToEmailTitle: string,
+      reportToEmailMessageDelivery: string
+      reportToEmailMessageDeliveryTime: string,
+      reportToEmailMessageLeave: string
     }
   }
   

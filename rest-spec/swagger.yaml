@@ -48,7 +48,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-                                            
+
   /panels/{panelId}/queries:
     get:
       operationId: listQueries
@@ -771,7 +771,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-
+  
   /panels/{panelId}/queryPages:
     get:
       operationId: listQueryPages
@@ -929,7 +929,211 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-    
+  /panels/{panelId}/expertiseClasses:
+    get:
+      operationId: listExpertiseClasses
+      summary: List panel expertise classes
+      description: List defined expertise classes from a panel
+      tags:
+        - PanelExpertise
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: List of panel expertise classes
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/PanelExpertiseClass"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /panels/{panelId}/interestClasses:
+    get:
+      operationId: listInterestClasses
+      summary: List panel interest classes
+      description: List defined interest classes from a panel
+      tags:
+        - PanelExpertise
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: List of panel interest classes
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/PanelInterestClass"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /panels/{panelId}/expertiseGroups:
+    get:
+      operationId: listExpertiseGroups
+      summary: List panel expertise groups
+      description: List defined expertise groups from a panel
+      tags:
+        - PanelExpertise
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: List of panel expertise groups
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/PanelExpertiseGroup"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /users/{userId}:
+    get:
+      operationId: findUser
+      summary: Find user
+      description: Finds an user by id
+      tags:
+        - Users
+      parameters:
+        - name: userId
+          required: true
+          in: path
+          description: user id
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Found user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /reportRequests:
+    post:
+      operationId: createReportRequest
+      summary: Creates a report request
+      description: Creates a request to generate a report
+      tags:
+        - Reports
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReportRequest"
+        description: Payload
+        required: true
+      responses:
+        "202":
+          description: Report request has been accepted
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
 components:
   securitySchemes:
@@ -938,6 +1142,21 @@ components:
       name: Authorization
       in: header
   schemas:
+  
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        firstName:
+          type: string
+        lastName:
+          type: string
+        profileImageUrl:
+          type: string
+          format: url
 
     Panel:
       type: object
@@ -1172,7 +1391,53 @@ components:
           description: Page's id where the comment is
           type: integer
           format: int64
-          
+
+    PanelExpertiseClass:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          description: Id
+          type: integer
+          format: int64
+          readOnly: true
+        name:
+          description: Expertise class name
+          type: string
+
+    PanelInterestClass:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          description: Id
+          type: integer
+          format: int64
+          readOnly: true
+        name:
+          description: Interest class name
+          type: string
+
+    PanelExpertiseGroup:
+      type: object
+      required:
+        - interestClassId
+        - expertiseClassId
+      properties:
+        id:
+          description: Id
+          type: integer
+          format: int64
+          readOnly: true
+        interestClassId:
+          type: integer
+          format: int64
+        expertiseClassId:
+          type: integer
+          format: int64
+
     QueryQuestionComment:
       type: object
       required:
@@ -1226,8 +1491,76 @@ components:
           description: Comment's last modification time
           type: string
           format: date-time
-          readOnly: true          
+          readOnly: true    
           
+    ReportFormat:
+      type: string
+      enum:
+        - PDF
+        - CSV
+        - GOOGLE_SHEET
+        - GOOGLE_DOCUMENT
+          
+    ReportType:
+      type: string
+      enum:
+        - TEXT
+        - SPREADSHEET
+    
+    ReportDelivery:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          
+    ReportRequest:
+      type: object
+      required:
+        - type
+        - format
+        - panelId
+        - queryId
+        - options
+      properties:
+        panelId:
+          type: integer
+          format: int64
+        queryId:
+          type: integer
+          format: int64
+        stampId:
+          type: integer
+          format: int64
+          description: Panel stamp id. Defaults to current stamp
+        type:
+          $ref: '#/components/schemas/ReportType'
+        format:
+          $ref: '#/components/schemas/ReportFormat'
+        delivery:
+          $ref: '#/components/schemas/ReportDelivery'
+        options: 
+          $ref: '#/components/schemas/ReportRequestOptions'         
+        
+    ReportRequestOptions:
+      type: object
+      properties:
+        queryPageIds:
+          description: Include only speficied page ids
+          type: array
+          items:
+            type: integer
+            format: int64
+        expertiseGroupIds:
+          description: Include only speficied expertise group ids
+          type: array
+          items:
+            type: integer
+            format: int64
+        show2dAs1d:
+          description: Show 2d answers as 1d graphs instead of 2d graphs
+          type: boolean
+
     ErrorResponse:
       type: object
       properties:

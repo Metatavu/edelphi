@@ -22,12 +22,13 @@ module.exports = function(grunt) {
 
   grunt.registerMultiTask('typescript-process-any', 'Process any', function () {
     const modelFiles = {};
+    const prefix = this.data.prefix;
     const postfix = this.data.postfix;
     const field = this.data.field;
     const ignore = this.data.ignore || [];
 
     const objectFiles = fs.readdirSync(`${this.data.folder}/model`).filter((objectFile) => {
-      return ignore.indexOf(objectFile) == -1  && objectFile.endsWith(`${postfix}.ts`);
+      return ignore.indexOf(objectFile) == -1 && objectFile.endsWith(`${postfix}.ts`) && (!prefix || objectFile.startsWith(prefix));
     });
 
     objectFiles.forEach((objectFile) => {
@@ -83,6 +84,7 @@ module.exports = function(grunt) {
       },
       "query-options": {
         "folder": "typescript-client-generated",
+        "prefix": "queryPage",
         "postfix": "Options",
         "ignore": ["queryPageCommentOptions.ts"],
         "file": "model/queryPage.ts",
