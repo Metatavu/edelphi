@@ -6,3 +6,7 @@ jshint:
 
 tslint:
   config_file: edelphi/src/main/typescript/tslint.json
+
+scss:
+  enabled: true
+  config_file: .scss-style.yml

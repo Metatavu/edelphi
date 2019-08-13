@@ -20,11 +20,13 @@ import fi.metatavu.edelphi.reports.spreadsheet.comments.ReportPageCommentProcess
 public class TextQueryPageSpreadsheetExporter extends AbstractQueryPageSpreadsheetExporter {
 
   @Inject
+  private QueryQuestionCommentDAO queryQuestionCommentDAO;
+
+  @Inject
   private QueryPageController queryPageController;
 
   @Override
   public void exportSpreadsheet(SpreadsheetExportContext exportContext) {
-    QueryQuestionCommentDAO queryQuestionCommentDAO = new QueryQuestionCommentDAO();
     List<QueryReply> queryReplies = exportContext.getQueryReplies();
     QueryPage queryPage = exportContext.getQueryPage();
     boolean commentable = queryPageController.getBooleanSetting(queryPage, "text.commentable");

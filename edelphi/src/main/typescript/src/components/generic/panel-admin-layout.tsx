@@ -72,7 +72,7 @@ class PanelAdminLayout extends React.Component<Props, State> {
             <Grid.Row>
               <Grid.Column width={ 6 }>
                 <div>{ this.renderTitle() }</div>
-                <div style={{ marginTop: "22px" }}>{ this.renderNavigation() }</div>
+                <div style={{ marginTop: "24px" }}>{ this.renderNavigation() }</div>
               </Grid.Column>
               <Grid.Column width={ 5 } textAlign="center">
                 { this.renderLocaleChange() } 
@@ -81,7 +81,7 @@ class PanelAdminLayout extends React.Component<Props, State> {
                 { this.remderProfileDetails() }
               </Grid.Column>
             </Grid.Row>
-            <Grid.Row>
+            <Grid.Row style={{ paddingTop: "0px", paddingLeft: "10px" }}>
               <Grid.Column>
                   <Breadcrumb icon='right angle' sections={ this.props.breadcrumbs } />
                 </Grid.Column>
