@@ -41,15 +41,15 @@ module.exports = {
       },
       {
         test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,   
-        loader: "url-loader?limit=10000&mimetype=application/font-woff&name=[hash].[ext]"
+        loader: "url-loader?limit=10000&mimetype=application/font-woff&name=/_scripts/dist/[hash].[ext]"
       },
       {
         test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,  
-        loader: "url-loader?limit=10000&mimetype=application/font-woff&name=[hash].[ext]"
+        loader: "url-loader?limit=10000&mimetype=application/font-woff&name=/_scripts/dist/[hash].[ext]"
       },
       {
         test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,    
-        loader: "url-loader?limit=10000&mimetype=application/octet-stream&name=[name].[ext]"
+        loader: "url-loader?limit=10000&mimetype=application/octet-stream&name=/_scripts/dist/[name].[ext]"
       },
       {
         test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,    
@@ -57,7 +57,7 @@ module.exports = {
       },
       {
         test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,    
-        loader: "url-loader?limit=10000&mimetype=image/svg+xml&name=[name].[ext]"
+        loader: "url-loader?limit=10000&mimetype=image/svg+xml&name=/_scripts/dist/[name].[ext]"
       }
     ]
   }
