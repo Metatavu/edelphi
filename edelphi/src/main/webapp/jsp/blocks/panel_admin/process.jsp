@@ -28,16 +28,10 @@
         </div>
       </ed:feature>
       -->
-      <ed:feature featurePage="panel/admin/queryresults.page">
-        <div class="panelAdminProcessRow">
-          <div class="panelAdminGenericTitle"><a href="queryresults.page?panelId=${panel.id}"><fmt:message key="panel.admin.dashboard.panelProcessQueryResultsAction" /></a></div>
-          <div class="panelAdminGenericDescription"><fmt:message key="panel.admin.dashboard.panelProcessQueryResultsDescription" /></div>
-        </div>
-      </ed:feature>
       
       <ed:feature featurePage="panel/admin/queryresults.page">
         <div class="panelAdminProcessRow">
-          <div class="panelAdminGenericTitle"><a href="reports.page?panelId=${panel.id}"><fmt:message key="panel.admin.dashboard.panelProcessQueryResultsAction" /> (BETA)</a></div>
+          <div class="panelAdminGenericTitle"><a href="reports.page?panelId=${panel.id}"><fmt:message key="panel.admin.dashboard.panelProcessQueryResultsAction" /></a></div>
           <div class="panelAdminGenericDescription"><fmt:message key="panel.admin.dashboard.panelProcessQueryResultsDescription" /></div>
         </div>
       </ed:feature>
