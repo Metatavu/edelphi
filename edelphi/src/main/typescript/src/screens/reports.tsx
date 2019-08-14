@@ -98,8 +98,8 @@ class Reports extends React.Component<Props, State> {
     }
 
     const breadcrumbs: SemanticShorthandCollection<BreadcrumbSectionProps> = [
-      { key: "home", content: strings.generic.eDelphi, link: true, href: "/" },
-      { key: "panel", content: this.state.panel.name, link: true, href: `/${this.state.panel.urlName}` },
+      { key: "home", content: strings.generic.eDelphi, href: "/" },
+      { key: "panel", content: this.state.panel.name, href: `/${this.state.panel.urlName}` },
       { key: "reports", content: this.state.panel.name, active: true }      
     ];
 
