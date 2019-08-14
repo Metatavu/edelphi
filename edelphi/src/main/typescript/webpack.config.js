@@ -1,4 +1,5 @@
 const path = require('path');
+const output = path.join(__dirname, "../webapp/_scripts/dist"); 
 
 module.exports = {
   mode: "development",
@@ -10,7 +11,7 @@ module.exports = {
     extensions: ['.ts', '.tsx', '.js', '.jsx']
   },
   output: {
-    path: path.join(__dirname, "../webapp/_scripts/dist"),
+    path: output,
     filename: 'bundle.min.js'
   },
   module: {
@@ -41,23 +42,23 @@ module.exports = {
       },
       {
         test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,   
-        loader: "url-loader?limit=10000&mimetype=application/font-woff&name=/_scripts/dist/[hash].[ext]"
+        loader: `url-loader?limit=10000&mimetype=application/font-woff&name=${output}/[hash].[ext]`
       },
       {
         test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,  
-        loader: "url-loader?limit=10000&mimetype=application/font-woff&name=/_scripts/dist/[hash].[ext]"
+        loader: `url-loader?limit=10000&mimetype=application/font-woff&name=${output}/[hash].[ext]`
       },
       {
         test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,    
-        loader: "url-loader?limit=10000&mimetype=application/octet-stream&name=/_scripts/dist/[name].[ext]"
+        loader: `url-loader?limit=10000&mimetype=application/octet-stream&name=${output}/[name].[ext]`
       },
       {
         test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,    
-        loader: "file-loader"
+        loader: `file-loader`
       },
       {
         test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,    
-        loader: "url-loader?limit=10000&mimetype=image/svg+xml&name=/_scripts/dist/[name].[ext]"
+        loader: `url-loader?limit=10000&mimetype=image/svg+xml&name=${output}/[name].[ext]`
       }
     ]
   }
