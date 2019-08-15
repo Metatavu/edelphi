@@ -119,7 +119,7 @@ class Reports extends React.Component<Props, State> {
             </Button>
           </Modal.Actions>
         </Modal>
-        <Container>
+        <Container class="reports-screen-container">
           <Grid>
             <Grid.Row>
               <Grid.Column width={ 6 }>
