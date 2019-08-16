@@ -69,16 +69,20 @@ class PanelAdminLayout extends React.Component<Props, State> {
       <header style={{ backgroundImage: `url(${HeaderBackground})` }}>
         <Container>
           <Grid>
-            <Grid.Row>
+            <Grid.Row style={{ paddingBottom: 0 }}>
               <Grid.Column width={ 6 }>
-                <div>{ this.renderTitle() }</div>
-                <div style={{ marginTop: "24px" }}>{ this.renderNavigation() }</div>
+                { this.renderTitle() }
               </Grid.Column>
               <Grid.Column width={ 5 } textAlign="center">
                 { this.renderLocaleChange() } 
               </Grid.Column>
               <Grid.Column width={ 5 } textAlign="right">
                 { this.remderProfileDetails() }
+              </Grid.Column>
+            </Grid.Row>
+            <Grid.Row style={{ paddingTop: 0 }}>
+              <Grid.Column width={ 16 }>
+                { this.renderNavigation() }
               </Grid.Column>
             </Grid.Row>
             <Grid.Row style={{ paddingTop: "0px", paddingLeft: "10px" }}>
@@ -170,7 +174,7 @@ class PanelAdminLayout extends React.Component<Props, State> {
     }
 
     return (
-      <img style={{ maxWidth: "65px" }} src={ this.props.loggedUser.profileImageUrl }/>
+      <img style={{ maxWidth: "65px", maxHeight: "58px" }} src={ this.props.loggedUser.profileImageUrl }/>
     );
   }
 
