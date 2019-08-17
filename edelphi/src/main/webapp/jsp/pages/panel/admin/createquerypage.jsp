@@ -5,28 +5,30 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
-<div class="panelAdminQueryEditorCreatePage">
-  
-  <c:forEach var="queryPageTemplate" items="${queryPageTemplates}">
+<div>
+  <div class="panelAdminQueryEditorCreatePage">
+    
+    <c:forEach var="queryPageTemplate" items="${queryPageTemplates}">
 
-    <div class="panelAdminQueryEditorCreatePagePageTemplate">
-      <div class="panelAdminQueryEditorCreatePagePageTemplateIcon ${queryPageTemplate.iconName}"></div>
-      <div class="panelAdminQueryEditorCreatePagePageTemplateName">${queryPageTemplate.name}</div>
-      <input type="hidden" value="${queryPageTemplate.id}" name="templateId"/>
-      <input type="hidden" value="${queryPageTemplate.description}" name="templateDescription"/>
-    </div>
+      <div class="panelAdminQueryEditorCreatePagePageTemplate">
+        <div class="panelAdminQueryEditorCreatePagePageTemplateIcon ${queryPageTemplate.iconName}"></div>
+        <div class="panelAdminQueryEditorCreatePagePageTemplateName">${queryPageTemplate.name}</div>
+        <input type="hidden" value="${queryPageTemplate.id}" name="templateId"/>
+        <input type="hidden" value="${queryPageTemplate.description}" name="templateDescription"/>
+      </div>
 
-  </c:forEach>  
-  
-</div>
-
-<div class="panelAdminQueryEditorCreatePageGuide">
-  <div class="panelAdminQueryEditorCreatePageStaticGuideContainer">
-  
+    </c:forEach>  
+    
   </div>
-  <div class="panelAdminQueryEditorCreatePageGuideContainer"><fmt:message key="panelAdmin.dialog.createQueryPage.pageIntro"/></div>
-  <div class="panelAdminQueryEditorCreatePageTemplateGuideContainer">
-    <p class="templateGuideContainerTitle"></p>
-    <p class="templateGuideContainerDescription"></p>
+
+  <div class="panelAdminQueryEditorCreatePageGuide">
+    <div class="panelAdminQueryEditorCreatePageStaticGuideContainer">
+    
+    </div>
+    <div class="panelAdminQueryEditorCreatePageGuideContainer"><fmt:message key="panelAdmin.dialog.createQueryPage.pageIntro"/></div>
+    <div class="panelAdminQueryEditorCreatePageTemplateGuideContainer">
+      <p class="templateGuideContainerTitle"></p>
+      <p class="templateGuideContainerDescription"></p>
+    </div>
   </div>
 </div>
