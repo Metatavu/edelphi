@@ -54,7 +54,10 @@ public class Live2DThesisQueryPageHandler extends AbstractThesisQueryPageHandler
     requiredFragment.addAttribute("panelId", panel.getId().toString());
     requiredFragment.addAttribute("queryId", query.getId().toString());
     requiredFragment.addAttribute("pageId", queryPage.getId().toString());
-    requiredFragment.addAttribute("queryReplyId", queryReply.getId().toString());
+    
+    if (queryReply != null) {
+      requiredFragment.addAttribute("queryReplyId", queryReply.getId().toString());
+    }
     
     addRequiredFragment(requestContext, requiredFragment);
   }

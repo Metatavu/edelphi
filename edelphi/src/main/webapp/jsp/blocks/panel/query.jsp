@@ -41,7 +41,8 @@
     <div id="query-navigation" 
       data-panel-id="${panel.id}"
       data-query-id="${queryPage.querySection.query.id}"
-      data-page-id="${queryPage.id}"></div>
+      data-page-id="${queryPage.id}"
+      data-query-state="${queryPage.querySection.query.state}"></div>
     
   </form>
 </div>

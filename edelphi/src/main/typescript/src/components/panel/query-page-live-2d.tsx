@@ -13,7 +13,7 @@ import ErrorDialog from "../error-dialog";
  * Interface representing component properties
  */
 interface Props {
-  queryReplyId: number,
+  queryReplyId: number | null,
   accessToken?: AccessToken,
   pageId: number,
   panelId: number,
@@ -58,7 +58,7 @@ const LABEL_MARGIN = 17;
 /**
  * React component for live 2d chart
  */
-class Live2dChart extends React.Component<Props, State> {
+class QueryPageLive2d extends React.Component<Props, State> {
 
   private wrapperDiv: HTMLDivElement | null;
   private queryQuestionAnswersListener: OnMessageCallback;
@@ -620,7 +620,7 @@ class Live2dChart extends React.Component<Props, State> {
    * @param y answer y
    */
   private saveAnswer = async (x: number, y: number) => {
-    if (!this.props.accessToken || this.saving) {
+    if (!this.props.accessToken || this.saving || !this.props.queryReplyId) {
       return;
     }
 
@@ -724,4 +724,4 @@ function mapDispatchToProps(dispatch: React.Dispatch<actions.AppAction>) {
   return {};
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Live2dChart);
+export default connect(mapStateToProps, mapDispatchToProps)(QueryPageLive2d);
