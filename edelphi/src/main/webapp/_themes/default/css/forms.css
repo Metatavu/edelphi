@@ -61,6 +61,10 @@ button {
   cursor:default;
 }
 
+.disabledButton:hover {
+  color: #fff;
+}
+
 .formSelectContainer input,
 .formCheckBoxContainer input {
   margin-right:5px;

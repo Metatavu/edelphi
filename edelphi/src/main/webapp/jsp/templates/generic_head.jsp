@@ -1,3 +1,4 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@page import="java.util.Map"%>
@@ -34,7 +35,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <script type="text/javascript" src="//cdn.metatavu.io/libs/prototype/1.7/prototype.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/uiutils.js"></script>
-
+<c:if test="${loggedUserId gt 0}"><script type="text/javascript">window.isLoggedIn = true;</script></c:if>
 <script type="text/javascript">
   function setLocale(locale) {
     var date = new Date();

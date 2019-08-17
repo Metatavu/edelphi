@@ -129,6 +129,21 @@ public class AuthUtils {
     return authenticationStrategies != null && authenticationStrategies.contains(strategy);
   }
   
+  /**
+   * Purges all OAuth tokens from given provider
+   * 
+   * @param requestContext request context
+   * @param provider provider
+   */
+  public static void purgeOAuthAccessTokens(RequestContext requestContext, String provider) {
+    String key = String.format(PROVIDER_ACCESS_TOKENS, provider);
+    HttpSession session = requestContext.getRequest().getSession();
+    OAuthAccessToken[] accessTokens = (OAuthAccessToken[]) session.getAttribute(key);
+    if (accessTokens != null) {
+      session.removeAttribute(key);
+    }
+  }
+  
   public static void storeOAuthAccessToken(RequestContext requestContext, String provider, OAuthAccessToken token) {
     HttpSession session = requestContext.getRequest().getSession();
     OAuthAccessToken[] accessTokens = (OAuthAccessToken[]) session.getAttribute(String.format(PROVIDER_ACCESS_TOKENS, provider));
@@ -162,9 +177,15 @@ public class AuthUtils {
     if (accessTokens != null) {
       for (OAuthAccessToken accessToken : accessTokens) {
         List<String> accessTokenScopes = accessToken.getScopes() != null ? Arrays.asList(accessToken.getScopes()) : Collections.emptyList();
-        if (scopes == null || accessTokenScopes.containsAll(Arrays.asList(scopes)) && !isOAuthTokenExpired(accessToken)) {
-          return accessToken;
-      	}
+        if (scopes == null || accessTokenScopes.containsAll(Arrays.asList(scopes))) {
+          if (isOAuthTokenExpired(accessToken)) {
+            if ("Keycloak".equals(provider)) {
+              return getKeycloakStrategy().refreshToken(requestContext, accessToken);
+            }
+          } else {
+            return accessToken;
+          }
+        }
       }
     }
     

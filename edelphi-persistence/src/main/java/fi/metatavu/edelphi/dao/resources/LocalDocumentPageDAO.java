@@ -3,6 +3,7 @@ package fi.metatavu.edelphi.dao.resources;
 import java.util.Date;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -14,6 +15,7 @@ import fi.metatavu.edelphi.domainmodel.resources.LocalDocumentPage;
 import fi.metatavu.edelphi.domainmodel.resources.LocalDocumentPage_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
+@ApplicationScoped
 public class LocalDocumentPageDAO extends GenericDAO<LocalDocumentPage> {
 
   public LocalDocumentPage create(LocalDocument localDocument, User creator, String title, Integer pageNumber, String content) {

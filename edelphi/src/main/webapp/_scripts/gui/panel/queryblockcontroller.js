@@ -22,22 +22,33 @@ var QueryBarChartLiveReportController;
 var QueryPageController;
 var QueryLiveReportController;
 
+/**
+ * Trigger event from legacy code into ReactJs
+ * 
+ * @param string command
+ * @param object event data 
+ */
+function triggerReactCommand(command, data) {
+  var event = new CustomEvent('react-command', { 
+    bubbles: true,
+    detail: {
+      command: command,
+      data: data || {}
+    }
+  });
+
+  document.dispatchEvent(event);
+}
+
 var QueryBlockController = Class.create(BlockController, {
   initialize : function($super) {
      $super();
 
-     this._nextButtonClickListener = this._onNextButtonClick.bindAsEventListener(this);
-     this._finishButtonClickListener = this._onFinishButtonClick.bindAsEventListener(this);
-     this._previousButtonClickListener = this._onPreviousButtonClick.bindAsEventListener(this);
-     this._skipButtonClickListener = this._onSkipButtonClick.bindAsEventListener(this);
-     this._skipLastButtonClickListener = this._onSkipLastButtonClick.bindAsEventListener(this);
      this._toggleCommentsClickListener = this._onToggleCommentsClickListener.bindAsEventListener(this);
      this._sortCommentsAscendingTimeClickListener = this._onSortCommentsAscendingTimeClickListener.bindAsEventListener(this);
      this._sortCommentsDescendingTimeClickListener = this._onSortCommentsDescendingTimeClickListener.bindAsEventListener(this);
 
      this._currentPage = 0;
-     this._nextPageNumber = null;
-     this._previousPageNumber = null;
    },
           setup : function($super) {
             $super($('panelQueryBlock'));
@@ -60,37 +71,6 @@ var QueryBlockController = Class.create(BlockController, {
 
             this._pageType = this.getBlockElement().down(
                 'input[name="queryPageType"]').value;
-            this._nextPageNumber = this.getBlockElement().down(
-                'input[name="queryNextPageNumber"]').value;
-            this._previousPageNumber = this.getBlockElement().down(
-                'input[name="queryPreviousPageNumber"]').value;
-
-            this._nextButton = this.getBlockElement()
-                .down('input[name="next"]');
-            this._finishButton = this.getBlockElement().down(
-                'input[name="finish"]');
-            this._previousButton = this.getBlockElement().down(
-                'input[name="previous"]');
-            this._skipButton = this.getBlockElement()
-                .down('input[name="skip"]');
-            this._skipLastButton = this.getBlockElement().down(
-                'input[name="skipLast"]');
-
-            if (this._nextButton)
-              Event.observe(this._nextButton, "click",
-                  this._nextButtonClickListener);
-            if (this._finishButton)
-              Event.observe(this._finishButton, "click",
-                  this._finishButtonClickListener);
-            if (this._previousButton)
-              Event.observe(this._previousButton, "click",
-                  this._previousButtonClickListener);
-            if (this._skipButton)
-              Event.observe(this._skipButton, "click",
-                  this._skipButtonClickListener);
-            if (this._skipLastButton)
-              Event.observe(this._skipLastButton, "click",
-                  this._skipLastButtonClickListener);
 
             this._commentsHeaderToggle = this.getBlockElement().down(
                 ".queryCommentsShowHideToggle");
@@ -156,21 +136,6 @@ var QueryBlockController = Class.create(BlockController, {
           },
 
           deinitialize : function() {
-            if (this._nextButton)
-              Event.stopObserving(this._nextButton, "click",
-                  this._nextButtonClickListener);
-            if (this._finishButton)
-              Event.stopObserving(this._finishButton, "click",
-                  this._finishButtonClickListener);
-            if (this._previousButton)
-              Event.stopObserving(this._previousButton, "click",
-                  this._previousButtonClickListener);
-            if (this._skipButton)
-              Event.stopObserving(this._skipButton, "click",
-                  this._skipButtonClickListener);
-            if (this._skipLastButton)
-              Event.stopObserving(this._skipLastButton, "click",
-                  this._skipLastButtonClickListener);
             if (this._commentsHeaderToggle)
               Event.stopObserving(this._commentsHeaderToggle, "click",
                   this._toggleCommentsClickListener);
@@ -182,136 +147,14 @@ var QueryBlockController = Class.create(BlockController, {
                   this._sortCommentsDescendingTimeClickListener);
           },
 
-          disableNext : function() {
-            this._disableNextButton();
-            
-            var button = this._nextButton || this._finishButton;
-
-            var originalTitle = $(button).readAttribute('data-original-title');
-            var title = $(button).readAttribute('title');
-
-            $(button).writeAttribute('title', getLocale().getText('query.buttonDisabledNotReplied'));
-
-            if (!originalTitle) {
-              $(button).writeAttribute('data-original-title', title);
-            }
+          disableNext : function() { 
+            triggerReactCommand("disable-query-next");
           },
 
           enableNext : function() {
-            var button = this._nextButton || this._finishButton;
-            var originalTitle = $(button).readAttribute('data-original-title');
-            $(button).writeAttribute('title', originalTitle);
-            $(button).removeAttribute('disabled');
+            triggerReactCommand("enable-query-next");
           },
           
-          _disablePreviousButton: function () {
-            $(this._previousButton).writeAttribute('disabled', 'disabled');
-          },
-          
-          _disableNextButton: function () {
-            var button = this._nextButton || this._finishButton;
-            $(button).writeAttribute('disabled', 'disabled');
-          },
-
-          _onNextButtonClick : function(event) {
-            Event.stop(event);
-            this._disableNextButton();
-            
-            var button = Event.element(event);
-            var form = button.form;
-            var _this = this;
-
-            startBlockingOperation();
-            JSONUtils.sendForm(form, {
-              onSuccess : function(jsonResponse) {
-                window.location.search = "?page=" + _this._nextPageNumber;
-              },
-              onFailure : function(jsonResponse) {
-                endBlockingOperation();
-                JSONUtils.showMessages(jsonResponse);
-              }
-            });
-          },
-
-          _onFinishButtonClick : function(event) {
-            Event.stop(event);
-            this._disableNextButton();
-            
-            var button = Event.element(event);
-            var form = button.form;
-            var _this = this;
-            startBlockingOperation();
-            JSONUtils.sendForm(form, {
-              onSuccess : function(jsonResponse) {
-                JSONUtils.request(CONTEXTPATH + '/queries/finishquery.json', {
-                  parameters : {
-                    replyId : form.queryReplyId.value
-                  },
-                  onSuccess : function(jsonResponse) {
-                    window.location.href = CONTEXTPATH
-                        + _this.getBlockElement().down(
-                            'input[name="panelPath"]').value;
-                  },
-                  onFailure : function(jsonResponse) {
-                    endBlockingOperation();
-                    JSONUtils.showMessages(jsonResponse);
-                  }
-                });
-              },
-              onFailure : function(jsonResponse) {
-                endBlockingOperation();
-                JSONUtils.showMessages(jsonResponse);
-              }
-            });
-          },
-
-          _onPreviousButtonClick : function(event) {
-            Event.stop(event);
-            this._disablePreviousButton();
-
-            var button = Event.element(event);
-            var form = button.form;
-            var _this = this;
-
-            startBlockingOperation();
-            JSONUtils.sendForm(form, {
-              onSuccess : function(jsonResponse) {
-                window.location.search = "?page=" + _this._previousPageNumber;
-              },
-              onFailure : function(jsonResponse) {
-                endBlockingOperation();
-                JSONUtils.showMessages(jsonResponse);
-              }
-            });
-          },
-
-          _onSkipButtonClick : function(event) {
-            Event.stop(event);
-            window.location.search = "?page=" + this._nextPageNumber;
-          },
-
-          _onSkipLastButtonClick : function(event) {
-            Event.stop(event);
-            var button = Event.element(event);
-            var form = button.form;
-            var _this = this;
-            JSONUtils.request(CONTEXTPATH + '/queries/finishquery.json',
-                {
-                  parameters : {
-                    replyId : form.queryReplyId.value
-                  },
-                  onSuccess : function(jsonResponse) {
-                    window.location.href = CONTEXTPATH
-                        + _this.getBlockElement().down(
-                            'input[name="panelPath"]').value;
-                  },
-                  onFailure : function(jsonResponse) {
-                    endBlockingOperation();
-                    JSONUtils.showMessages(jsonResponse);
-                  }
-                });
-          },
-
           _onToggleCommentsClickListener : function(event) {
             var element = Event.element(event);
             Event.stop(event);

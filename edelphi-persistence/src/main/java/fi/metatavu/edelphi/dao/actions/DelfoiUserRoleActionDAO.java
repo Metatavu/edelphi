@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.dao.actions;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -14,6 +15,7 @@ import fi.metatavu.edelphi.domainmodel.actions.DelfoiUserRoleAction_;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.users.UserRole;
 
+@ApplicationScoped
 public class DelfoiUserRoleActionDAO extends GenericDAO<DelfoiUserRoleAction> {
 
   public boolean hasDelfoiActionAccess(Delfoi delfoi, UserRole userRole, DelfoiAction delfoiAction) {

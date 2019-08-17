@@ -3,6 +3,7 @@ package fi.metatavu.edelphi.dao.resources;
 import java.util.Date;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -15,6 +16,7 @@ import fi.metatavu.edelphi.domainmodel.resources.GoogleImage;
 import fi.metatavu.edelphi.domainmodel.resources.GoogleImage_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
+@ApplicationScoped
 public class GoogleImageDAO extends GenericDAO<GoogleImage> {
 
   public GoogleImage create(String name, String urlName, Folder parentFolder, String resourceId, Integer indexNumber, Date lastSynchronized, User creator, Date created, User lastModifier, Date lastModified) {

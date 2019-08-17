@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.dao.features;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -11,6 +12,7 @@ import fi.metatavu.edelphi.domainmodel.features.SubscriptionLevelFeature;
 import fi.metatavu.edelphi.domainmodel.features.SubscriptionLevelFeature_;
 import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 
+@ApplicationScoped
 public class SubscriptionLevelFeatureDAO extends GenericDAO<SubscriptionLevelFeature> {
 
   public SubscriptionLevelFeature create(SubscriptionLevel subscriptionLevel, Feature feature) {

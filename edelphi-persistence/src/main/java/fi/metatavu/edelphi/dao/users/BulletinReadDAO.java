@@ -3,6 +3,7 @@ package fi.metatavu.edelphi.dao.users;
 import java.util.Date;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -14,6 +15,7 @@ import fi.metatavu.edelphi.domainmodel.base.Bulletin;
 import fi.metatavu.edelphi.domainmodel.users.BulletinRead;
 import fi.metatavu.edelphi.domainmodel.users.BulletinRead_;
 
+@ApplicationScoped
 public class BulletinReadDAO extends GenericDAO<BulletinRead> {
   
   public BulletinRead create(Bulletin bulletin, User user, Date readTime) {

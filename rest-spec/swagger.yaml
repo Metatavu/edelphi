@@ -1,0 +1,1568 @@
+openapi: 3.0.3
+info:
+  title: eDelphi REST API
+  description: REST API for eDelphi
+  version: 1.0.1
+security:
+  - bearer:
+      []
+paths:
+                                            
+  /panels/{panelId}:
+    get:
+      operationId: findPanel
+      summary: Find a panel.
+      description: Finds a panel by id
+      tags:
+        - Panels
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: A panel
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Panel"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /panels/{panelId}/queries:
+    get:
+      operationId: listQueries
+      summary: Lists queries in a panel.
+      description: Lists queries in a panel
+      tags:
+        - Queries
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: List of panel queries
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/Query"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    
+  /panels/{panelId}/queryQuestionAnswers:
+    get:
+      operationId: listQueryQuestionAnswers
+      summary: Lists query question answers
+      description: Lists query question answers
+      tags:
+        - QueryQuestionAnswers
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: queryId
+          required: false
+          in: query
+          description: Filter by query id
+          schema:
+            type: integer
+            format: int64
+        - name: pageId
+          required: false
+          in: query
+          description: Filter by query page id
+          schema:
+            type: integer
+            format: int64
+        - name: userId
+          required: false
+          in: query
+          description: Filter by user id
+          schema:
+            type: string
+            format: uuid
+        - name: stampId
+          required: false
+          in: query
+          description: Filter by stamp id. Defaults to current stamp
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: List of query question answers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/QueryQuestionAnswer"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /panels/{panelId}/queryQuestionAnswers/{answerId}:
+    get:
+      operationId: findQueryQuestionAnswer
+      summary: Find query question answer.
+      description: Finds query question answer by id
+      tags:
+        - QueryQuestionAnswers
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: answerId
+          required: true
+          in: path
+          description: query question answer id
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A queryQuestionAnswer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryQuestionAnswer"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: upsertQueryQuestionAnswer
+      summary: Creates or updates query question answer
+      description: Creates or updates query question answer
+      tags:
+        - QueryQuestionAnswers
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: answerId
+          required: true
+          in: path
+          description: query question answer id
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QueryQuestionAnswer"
+        description: Payload
+        required: true
+      responses:
+        "200":
+          description: Updated query question answer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryQuestionAnswer"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /panels/{panelId}/queryQuestionComments:
+    post:
+      operationId: createQueryQuestionComment
+      summary: Create query question comment
+      description: Creates query question comment
+      tags:
+        - QueryQuestionComments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QueryQuestionComment"
+        description: Payload
+        required: true
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Created query question comment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryQuestionComment"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    get:
+      operationId: listQueryQuestionComments
+      summary: Lists query question comments
+      description: Lists query question comments
+      tags:
+        - QueryQuestionComments
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: queryId
+          required: false
+          in: query
+          description: Filter by query id
+          schema:
+            type: integer
+            format: int64
+        - name: pageId
+          required: false
+          in: query
+          description: Filter by query page id
+          schema:
+            type: integer
+            format: int64
+        - name: userId
+          required: false
+          in: query
+          description: Filter by user id
+          schema:
+            type: string
+            format: uuid
+        - name: stampId
+          required: false
+          in: query
+          description: Filter by stamp id. Defaults to current stamp
+          schema:
+            type: integer
+            format: int64
+        - name: parentId
+          required: false
+          in: query
+          description: parent comment id. With zero only root comments are returned
+          schema:
+            type: integer
+            format: int64
+        - name: categoryId
+          required: false
+          in: query
+          description: category id. If zero is specified only non categorized comments are returned
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: List of query question comments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/QueryQuestionComment"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /panels/{panelId}/queryQuestionComments/{commentId}:
+    get:
+      operationId: findQueryQuestionComment
+      summary: Find query question comment
+      description: Finds query question comment by id
+      tags:
+        - QueryQuestionComments
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: commentId
+          required: true
+          in: path
+          description: query question comment id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: A queryQuestionComment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryQuestionComment"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updateQueryQuestionComment
+      summary: Update query question comment
+      description: Updates query question comment
+      tags:
+        - QueryQuestionComments
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: commentId
+          required: true
+          in: path
+          description: query question comment id
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QueryQuestionComment"
+        description: Payload
+        required: true
+      responses:
+        "200":
+          description: Updated query question comment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryQuestionComment"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteQueryQuestionComment
+      summary: Delete query question comment
+      description: Deletes query question comment
+      tags:
+        - QueryQuestionComments
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: commentId
+          required: true
+          in: path
+          description: query question comment id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: No content to indicate successful delete
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+                
+  /panels/{panelId}/queryQuestionCommentCategories:
+    post:
+      operationId: createQueryQuestionCommentCategory
+      summary: Create query question category
+      description: Creates query question category
+      tags:
+        - QueryQuestionCommentCategories
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QueryQuestionCommentCategory"
+        description: Payload
+        required: true
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Created query question category
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryQuestionCommentCategory"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    get:
+      operationId: listQueryQuestionCommentCategories
+      summary: Lists query question categories
+      description: Lists query question categories
+      tags:
+        - QueryQuestionCommentCategories
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: pageId
+          required: false
+          in: query
+          description: Filter by query page id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: List of query question categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/QueryQuestionCommentCategory"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /panels/{panelId}/queryQuestionCommentCategories/{categoryId}:
+    get:
+      operationId: findQueryQuestionCommentCategory
+      summary: Find query question category
+      description: Finds query question category by id
+      tags:
+        - QueryQuestionCommentCategories
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: categoryId
+          required: true
+          in: path
+          description: query question category id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: A queryQuestionCommentCategory
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryQuestionCommentCategory"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updateQueryQuestionCommentCategory
+      summary: Update query question category
+      description: Updates query question category
+      tags:
+        - QueryQuestionCommentCategories
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: categoryId
+          required: true
+          in: path
+          description: query question category id
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QueryQuestionCommentCategory"
+        description: Payload
+        required: true
+      responses:
+        "200":
+          description: Updated query question category
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryQuestionCommentCategory"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteQueryQuestionCommentCategory
+      summary: Delete query question category
+      description: Deletes query question category
+      tags:
+        - QueryQuestionCommentCategories
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: categoryId
+          required: true
+          in: path
+          description: query question category id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: No content to indicate successful delete
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  
+  /panels/{panelId}/queryPages:
+    get:
+      operationId: listQueryPages
+      summary: Lists query pages.
+      description: Lists query pages
+      tags:
+        - QueryPages
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: queryId
+          in: query
+          description: query id
+          schema:
+            type: integer
+            format: int64
+        - name: includeHidden
+          in: query
+          description: Whether to include hidden pages. Defaults to false
+          schema:
+            type: boolean
+            default: false
+
+      responses:
+        "200":
+          description: A queryPage
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/QueryPage"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /panels/{panelId}/queryPages/{queryPageId}:
+    get:
+      operationId: findQueryPage
+      summary: Find query page.
+      description: Finds query page by id
+      tags:
+        - QueryPages
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: queryPageId
+          required: true
+          in: path
+          description: query page id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: A queryPage
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryPage"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updateQueryPage
+      summary: Update query page
+      description: Updates query page
+      tags:
+        - QueryPages
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: queryPageId
+          required: true
+          in: path
+          description: query page id
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QueryPage"
+        description: Payload
+        required: true
+      responses:
+        "200":
+          description: Updated query page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryPage"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /panels/{panelId}/expertiseClasses:
+    get:
+      operationId: listExpertiseClasses
+      summary: List panel expertise classes
+      description: List defined expertise classes from a panel
+      tags:
+        - PanelExpertise
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: List of panel expertise classes
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/PanelExpertiseClass"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /panels/{panelId}/interestClasses:
+    get:
+      operationId: listInterestClasses
+      summary: List panel interest classes
+      description: List defined interest classes from a panel
+      tags:
+        - PanelExpertise
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: List of panel interest classes
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/PanelInterestClass"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /panels/{panelId}/expertiseGroups:
+    get:
+      operationId: listExpertiseGroups
+      summary: List panel expertise groups
+      description: List defined expertise groups from a panel
+      tags:
+        - PanelExpertise
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: List of panel expertise groups
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/PanelExpertiseGroup"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /users/{userId}:
+    get:
+      operationId: findUser
+      summary: Find user
+      description: Finds an user by id
+      tags:
+        - Users
+      parameters:
+        - name: userId
+          required: true
+          in: path
+          description: user id
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Found user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /reportRequests:
+    post:
+      operationId: createReportRequest
+      summary: Creates a report request
+      description: Creates a request to generate a report
+      tags:
+        - Reports
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReportRequest"
+        description: Payload
+        required: true
+      responses:
+        "202":
+          description: Report request has been accepted
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  securitySchemes:
+    bearer:
+      type: apiKey
+      name: Authorization
+      in: header
+  schemas:
+  
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        firstName:
+          type: string
+        lastName:
+          type: string
+        profileImageUrl:
+          type: string
+          format: url
+
+    Panel:
+      type: object
+      required:
+        - name
+        - accessLevel
+        - state
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+        name:
+          type: string
+        urlName:
+          type: string
+          readOnly: true
+        description:
+          type: string
+        accessLevel:
+          $ref: "#/components/schemas/PanelAccessLevel"
+        state:
+          $ref: "#/components/schemas/PanelState"
+    
+    PanelAccessLevel:
+      type: string
+      enum:
+        - OPEN
+        - CLOSED
+    
+    PanelState:
+      type: string
+      enum:
+        - DESIGN
+        - IN_PROGRESS
+        - ENDED
+
+    QueryState:
+      type: string
+      enum:
+        - EDIT
+        - ACTIVE
+        - CLOSED
+
+    Query:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+        allowEditReply:
+          type: boolean
+        closes:
+          type: string
+          format: date-time
+        state:
+          $ref: "#/components/schemas/QueryState"
+        name:
+          type: string
+        urlName:
+          type: string
+        visible:
+          type: boolean
+        description:
+          type: string
+        creatorId:
+          description: Comment's creator id
+          type: string
+          format: uuid
+          readOnly: true
+        lastModifierId:
+          description: Comment's last modifier id
+          type: string
+          format: uuid
+          readOnly: true
+        created:
+          description: Comment's creation time
+          type: string
+          format: date-time
+          readOnly: true
+        lastModified:
+          description: Comment's last modification time
+          type: string
+          format: date-time
+          readOnly: true   
+
+
+    QueryPageType:
+      type: string
+      enum:
+        - TEXT
+        - FORM
+        - EXPERTISE
+        - THESIS_SCALE_1D
+        - THESIS_SCALE_2D
+        - THESIS_ORDER
+        - THESIS_TIME_SERIE
+        - THESIS_MULTI_SELECT
+        - THESIS_TIMELINE
+        - THESIS_GROUPING
+        - THESIS_MULTIPLE_2D_SCALES
+        - LIVE_2D
+        - COLLAGE_2D
+          
+    QueryPage:
+      type: object
+      required:
+        - pageNumber
+        - type
+        - title
+        - commentOptions
+        - queryOptions
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+        pageNumber:
+          type: integer
+          format: int32
+        title:
+          type: string
+        type:
+          $ref: '#/components/schemas/QueryPageType'
+        commentOptions:
+          $ref: '#/components/schemas/QueryPageCommentOptions'
+        queryOptions:
+          oneOf:
+            - $ref: '#/components/schemas/QueryPageLive2DOptions'
+    
+    QueryPageCommentOptions:
+      type: object
+      required:
+        - commentable
+        - discussionVisible
+      properties:      
+        commentable: 
+          type: boolean
+        discussionVisible:
+          type: boolean
+        categories:
+          type: array
+          items:
+            type: string
+            
+    QueryPageLive2DColor:
+      type: string
+      enum:
+        - RED
+        - GREEN
+        - BLUE
+
+    QueryPageLive2DAxis:
+      properties:
+        label: 
+          type: string
+        color:
+          $ref: '#/components/schemas/QueryPageLive2DColor'
+        options:
+          type: array
+          items:
+            type: string
+
+    QueryPageLive2DAnswersVisibleOption:
+      type: string
+      enum:
+        - IMMEDIATELY
+        - AFTER_OWN_ANSWER
+
+    QueryPageLive2DOptions:
+      properties:
+        answersVisible:
+          $ref: '#/components/schemas/QueryPageLive2DAnswersVisibleOption'          
+        axisX:
+          $ref: '#/components/schemas/QueryPageLive2DAxis'
+        axisY:
+          $ref: '#/components/schemas/QueryPageLive2DAxis'
+
+    QueryReply:
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+          
+    QueryQuestionAnswer:
+      required: 
+        - queryPageId
+        - queryReplyId
+        - data
+      properties:
+        id:
+          type: string
+          description: Id of the query answer. Id is a composed from queryPageId and queryReplyId by joining them with minus sign (e.g. 123-456)
+          readOnly: true
+        queryPageId:
+          type: integer
+          format: int64
+        queryReplyId:
+          type: integer
+          format: int64
+        data:
+          oneOf:
+            - $ref: '#/components/schemas/QueryQuestionLive2dAnswerData'          
+    QueryQuestionLive2dAnswerData:
+      required: 
+        - x
+        - y
+      properties:
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+          
+    QueryQuestionCommentCategory:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          description: Comment category's id
+          type: integer
+          format: int64
+          readOnly: true
+        name:
+          description: Comment category's name
+          type: string
+        queryPageId:
+          description: Page's id where the comment is
+          type: integer
+          format: int64
+
+    PanelExpertiseClass:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          description: Id
+          type: integer
+          format: int64
+          readOnly: true
+        name:
+          description: Expertise class name
+          type: string
+
+    PanelInterestClass:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          description: Id
+          type: integer
+          format: int64
+          readOnly: true
+        name:
+          description: Interest class name
+          type: string
+
+    PanelExpertiseGroup:
+      type: object
+      required:
+        - interestClassId
+        - expertiseClassId
+      properties:
+        id:
+          description: Id
+          type: integer
+          format: int64
+          readOnly: true
+        interestClassId:
+          type: integer
+          format: int64
+        expertiseClassId:
+          type: integer
+          format: int64
+
+    QueryQuestionComment:
+      type: object
+      required:
+        - comment
+        - queryPageId
+        - queryReplyId
+      properties:
+        id:
+          description: Comment's id
+          type: integer
+          format: int64
+          readOnly: true
+        categoryId:
+          description: Comment's category id
+          type: integer
+          format: int64
+        parentId:
+          description: Parent comment's id
+          type: integer
+          format: int64
+        hidden:
+          description: Whether the comment has been hided by the manager
+          type: boolean
+        queryPageId:
+          description: Page's id where the comment is
+          type: integer
+          format: int64
+        queryReplyId:
+          description: Comment's query reply id
+          type: integer
+          format: int64
+        contents:
+          description: Comment's contents
+          type: string
+        creatorId:
+          description: Comment's creator id
+          type: string
+          format: uuid
+          readOnly: true
+        lastModifierId:
+          description: Comment's last modifier id
+          type: string
+          format: uuid
+          readOnly: true
+        created:
+          description: Comment's creation time
+          type: string
+          format: date-time
+          readOnly: true
+        lastModified:
+          description: Comment's last modification time
+          type: string
+          format: date-time
+          readOnly: true    
+          
+    ReportFormat:
+      type: string
+      enum:
+        - PDF
+        - CSV
+        - GOOGLE_SHEET
+        - GOOGLE_DOCUMENT
+          
+    ReportType:
+      type: string
+      enum:
+        - TEXT
+        - SPREADSHEET
+    
+    ReportDelivery:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          
+    ReportRequest:
+      type: object
+      required:
+        - type
+        - format
+        - panelId
+        - queryId
+        - options
+      properties:
+        panelId:
+          type: integer
+          format: int64
+        queryId:
+          type: integer
+          format: int64
+        stampId:
+          type: integer
+          format: int64
+          description: Panel stamp id. Defaults to current stamp
+        type:
+          $ref: '#/components/schemas/ReportType'
+        format:
+          $ref: '#/components/schemas/ReportFormat'
+        delivery:
+          $ref: '#/components/schemas/ReportDelivery'
+        options: 
+          $ref: '#/components/schemas/ReportRequestOptions'         
+        
+    ReportRequestOptions:
+      type: object
+      properties:
+        queryPageIds:
+          description: Include only speficied page ids
+          type: array
+          items:
+            type: integer
+            format: int64
+        expertiseGroupIds:
+          description: Include only speficied expertise group ids
+          type: array
+          items:
+            type: integer
+            format: int64
+        show2dAs1d:
+          description: Show 2d answers as 1d graphs instead of 2d graphs
+          type: boolean
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string

@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.dao.querymeta;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -12,6 +13,7 @@ import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryField;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryField_;
 
+@ApplicationScoped
 public class QueryFieldDAO extends GenericDAO<QueryField> {
 
   public QueryField findByQueryPageAndName(QueryPage queryPage, String name) {
@@ -28,7 +30,6 @@ public class QueryFieldDAO extends GenericDAO<QueryField> {
         criteriaBuilder.equal(root.get(QueryField_.archived), Boolean.FALSE)
       )
     );
-    
 
     return getSingleResult(entityManager.createQuery(criteria));
   }

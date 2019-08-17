@@ -1,0 +1,120 @@
+{
+  "generic": {
+    "loading": "Lataa...",
+    "back": "Takaisin",
+    "ok": "Ok",
+    "eDelphi": "eDelphi.org",
+    "welcomeUser": "Tervetuloa {0}",
+    "profileLink": "Käyttäjäprofiili",
+    "logoutLink": "Kirjaudu ulos"
+  },
+
+  "errorDialog": {
+    "header": "Virhe",
+    "errorOccurred": "Seuraava virhe tapahtui: ",
+    "close": "Sulje"
+  },
+  
+  "panel": {
+    "query": {
+      "previous": "Edellinen",
+      "next": "Seuraava",
+      "save": "Tallenna",
+      "skip": "Ohita kysymys",
+      "quickNavigationTitle": "Siirry tallentamatta sivulle:",
+      "noAnswer": "Et ole vielä vastannut kysymykseen",
+      "live2d": {
+        "statistics": {
+          "title": "Tilastotietoja",
+          "axisX": "X-akseli",
+          "axisY": "Y-akseli",
+          "answerCount": "Vastausmäärä",
+          "lowerQuartile": "Alakvartiili (Q1)",
+          "median": "Mediaani (Q2)",
+          "upperQuartile": "yläkvartiili (Q3)"
+        }
+      },
+      "commentEditor": {
+        "title": "Kommentoi",
+        "save": "Tallenna",
+        "modify": "Muokkaa kommenttiasi"
+      },
+      "comments": {
+        "title": "Kommentit",
+        "reply": "Vastaa",
+        "ellaborate": "Täsmennä vastausta",
+        "hide": "Piilota",
+        "edit": "Muokkaa",
+        "remove": "Poista",
+        "show": "Palauta näkyviin",
+        "commentDate": "Kommentti kirjoitettu {0}",
+        "commentModified": "Kommenttia muokattu {0}",
+        "saveReply": "Tallenna kommentti",
+        "saveEdit": "Tallenna",
+        "confirmRemoveConfirm": "Poista", 
+        "confirmRemoveCancel": "Peruuta",
+        "confirmRemoveText": "Oletko varma, että haluat poistaa kommentin \"{0}\" sekä kaikki siihen liittyvät vastaukset?",
+        "noComments": "Kysymykseen ei ole vielä jätetty kommentteja",
+        "yourComment": "Tämä on sinun kommenttisi"
+      }
+    }
+  },
+
+  "panelAdmin": {
+    "navigation": {
+      "panel": "Paneeli",
+      "administration": "Hallinnointi",
+      "reportAnIssue": "Virhe- ja kehitysehdotuslomake"
+    },
+    "queryEditor": {
+      "pageCommentOptions": {
+        "title": "Kommenttiasetukset",
+        "categories": "Kategoriat",
+        "addCategory": "Lisää kategoria",
+        "save": "Tallenna",
+        "close": "Sulje",
+        "deleteCategory": "Poista",
+        "deleteCategoryConfirm": "Oletko varma?"
+      },
+      "pageLive2dOptions": {
+        "title": "Live 2d asetukset",
+        "save": "Tallenna",
+        "close": "Sulje",
+        "visible": "Näytä muiden vastaukset",
+        "visibleOptions": {
+          "AFTEROWNANSWER": "Oman vastauksen jälkeen",
+          "IMMEDIATELY": "Heti"
+        }
+      }
+    },
+    "commentView": {
+      "querySelectLabel": "Kysely",
+      "pageSelectLabel": "Sivu",
+      "categorySelectLabel": "Kategoria",
+      "defaultCategory": "Oletus",
+      "replyCount": "{0} vastausta"
+    },
+    "reports": {
+      "title": "Kyselyn tulokset",
+      "queriesListTitle": "Kyselyt",
+      "queriesListDates": "Luotu: {0}, Muokattu: {0}",
+      "exportFilter": "Suodata",
+      "exportFilterByExpertise": "Intressit ja asiantuntijuudet",
+      "exportFilterByPage": "Sivu(t)",
+      "exportFilterByPageAll": "Kaikki",
+      "exportReport": "Vie raportti",
+      "exportReportContents": "Raportin sisältö",
+      "exportReportPDF": "Vie PDF:nä",
+      "exportReportGoogleDocument": "Vie Google-dokumentiksi",
+      "exportCharts": "Raportin kuvat",
+      "exportChartsPNG": "Vie PNG-muodossa",
+      "exportData": "Raportin data",
+      "exportDataCSV": "Vie CSV:nä",
+      "exportDataGoogleSpreadsheet": "Vie Google-taulukoksi",
+      "reportToEmailTitle": "Raportti toimitetaan sähköpostiisi",
+      "reportToEmailMessageDelivery": "Raportti tullaan toimittamaan profiilissa määrittelemääsi sähköpostiin",
+      "reportToEmailMessageDeliveryTime": "Raportti saapuu 5 - 60 minuutin sisään pyynnön lähettämisestä",
+      "reportToEmailMessageLeave": "Raportin luonti tapahtuu taustalla, joten voitte poistua nyt tästä näkymästä"
+    }
+  }
+}

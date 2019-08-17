@@ -57,6 +57,9 @@
   
   <modules>
     <module>bom</module>
+    <module>common-cdi</module>
+    <module>reports</module>
+    <module>rest</module>
     <module>smvcj</module>
     <module>edelphi-persistence</module>
     <module>edelphi</module>
@@ -158,6 +161,14 @@
     </profile>
 
   </profiles>
+  
+  <repositories>
+    <repository>
+      <id>repository.jboss.org-public</id>
+      <name>JBoss repository</name>
+      <url>https://repository.jboss.org/nexus/content/groups/public</url>
+    </repository>
+  </repositories>
   
   <distributionManagement>
     <snapshotRepository>

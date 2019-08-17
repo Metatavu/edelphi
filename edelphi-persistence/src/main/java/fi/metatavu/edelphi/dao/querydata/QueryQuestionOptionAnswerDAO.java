@@ -2,6 +2,8 @@ package fi.metatavu.edelphi.dao.querydata;
 
 import java.util.Date;
 import java.util.List;
+
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -18,6 +20,7 @@ import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionField;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption_;
 
+@ApplicationScoped
 public class QueryQuestionOptionAnswerDAO extends GenericDAO<QueryQuestionOptionAnswer> {
 
   public QueryQuestionOptionAnswer create(QueryReply queryReply, QueryField queryField, QueryOptionFieldOption option) {

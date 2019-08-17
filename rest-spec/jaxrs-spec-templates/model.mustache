@@ -1,0 +1,24 @@
+package fi.metatavu.edelphi.rest.model;
+
+import java.time.*;
+import java.util.*;
+
+{{#serializableModel}}
+import java.io.Serializable;
+{{/serializableModel}}
+{{#useBeanValidation}}
+import javax.validation.constraints.*;
+import javax.validation.Valid;
+{{/useBeanValidation}}
+
+{{#models}}
+{{#model}}{{#description}}
+/**
+ * {{description}}
+ **/{{/description}}
+{{#isEnum}}
+{{>enumOuterClass}}
+{{/isEnum}}
+{{^isEnum}}{{>pojo}}{{/isEnum}}
+{{/model}}
+{{/models}}

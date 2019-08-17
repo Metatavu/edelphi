@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.dao.querydata;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -15,6 +16,7 @@ import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryField;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryField_;
 
+@ApplicationScoped
 public class QueryQuestionAnswerDAO extends GenericDAO<QueryQuestionAnswer> {
 
   public QueryQuestionAnswer findByQueryReplyAndQueryField(QueryReply queryReply, QueryField queryField) {

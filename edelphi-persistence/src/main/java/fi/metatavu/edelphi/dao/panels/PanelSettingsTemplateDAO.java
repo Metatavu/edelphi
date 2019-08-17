@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.dao.panels;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -13,6 +14,7 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelSettingsTemplate_;
 import fi.metatavu.edelphi.domainmodel.panels.PanelState;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserRole;
 
+@ApplicationScoped
 public class PanelSettingsTemplateDAO extends GenericDAO<PanelSettingsTemplate> {
   
   public PanelSettingsTemplate create(String name, String description, PanelState state, PanelAccessLevel accessLevel, PanelUserRole defaultPanelUserRole, Boolean archived) {

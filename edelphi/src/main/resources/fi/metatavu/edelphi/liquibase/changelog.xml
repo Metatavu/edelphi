@@ -3299,4 +3299,75 @@
     <customChange class="fi.metatavu.edelphi.liquibase.changes.FixInvitations"/>
   </changeSet>
 
+  <changeSet author="antti.leppa" id="live2d">
+    <sql>
+      SET @NAMEID = (SELECT max(id) + 1 FROM LocalizedEntry);
+      INSERT INTO LocalizedEntry (id) VALUES (@NAMEID);
+      SET @DESCID = (SELECT max(id) + 1 FROM LocalizedEntry);
+      INSERT INTO LocalizedEntry (id) VALUES (@DESCID);
+      SET @LOCVALSTART = (SELECT max(id) FROM LocalizedValue);
+      SET @TEMPLATEID = (SELECT max(id) + 1 FROM QueryPageTemplate);
+
+      INSERT INTO
+        LocalizedValue (id, entry_id, locale, text)
+      VALUES 
+        (@LOCVALSTART + 1, @NAMEID, 'fi', 'Live 2D'),
+        (@LOCVALSTART + 2, @NAMEID, 'en', 'Live 2D'),
+        (@LOCVALSTART + 3, @DESCID, 'fi', 'Tällä sivulla panelistit valitsevat vastauksen kahdesta eri akselista. Sivun vastaukset näkyvät reaaliaikaisena kaikille panelisteille'),
+        (@LOCVALSTART + 4, @DESCID, 'en', 'This page allows panelists to choose their answer from two questions. Panelists answers are visible to other users in realtime');
+
+      INSERT INTO 
+        QueryPageTemplate (id, iconName, pageType, name_id, description_id, creator_id, created, lastModifier_id, lastModified, archived)
+      VALUES 
+        (@TEMPLATEID, 'live2d', 'LIVE_2D', @NAMEID, @DESCID, 1, NOW(), 1, NOW(), false);
+    </sql>
+  </changeSet>
+  
+  <changeSet id="query-live2d-template-settings" author="antti.leppa">
+    <addUniqueConstraint columnNames="name" tableName="QueryPageSettingKey"/>
+    <sqlFile path="fi/metatavu/edelphi/liquibase/query-template-live2d.sql"/>
+  </changeSet>
+  
+  <changeSet id="query-question-comment-category" author="antti.leppa">
+   <createTable tableName="QueryQuestionCommentCategory">
+      <column name="id" type="BIGINT(20)" autoIncrement="true">
+        <constraints nullable="false" primaryKey="true" />
+      </column>
+      <column name="queryPage_id" type="BIGINT">
+        <constraints foreignKeyName="FK_QUERY_QUESTION_COMMENT_CATEGORY_QUERY_PAGE" referencedColumnNames="id" referencedTableName="QueryPage" nullable="false"/>
+      </column>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="creator_id" type="BIGINT">
+        <constraints foreignKeyName="FK_QUERY_QUESTION_COMMENT_CREATOR" referencedColumnNames="id" referencedTableName="User" nullable="false"/>
+      </column>
+      <column name="created" type="datetime(6)">
+        <constraints nullable="false" />
+      </column>
+      <column name="lastModifier_id" type="BIGINT">
+        <constraints foreignKeyName="FK_QUERY_QUESTION_COMMENT_LAST_MODIFIER" referencedColumnNames="id" referencedTableName="User" nullable="false"/>
+      </column>
+      <column name="lastModified" type="datetime(6)">
+        <constraints nullable="false" />
+      </column>      
+    </createTable>
+  </changeSet>
+  
+  <changeSet id="query-comment-category" author="antti.leppa">
+    <addColumn tableName="queryquestioncomment">
+      <column name="category_id" type="BIGINT">
+        <constraints foreignKeyName="FK_QUERY_QUESTION_COMMENT_CATEGORY" referencedColumnNames="id" referencedTableName="QueryQuestionCommentCategory" nullable="true"/>
+      </column>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="antti.leppa" id="comment-reply-categories">
+    <sql>UPDATE queryquestioncomment c, queryquestioncomment p SET c.category_id = p.category_id WHERE c.parentComment_id = p.id</sql>
+    <sql>UPDATE queryquestioncomment c, queryquestioncomment p SET c.category_id = p.category_id WHERE c.parentComment_id = p.id</sql>
+    <sql>UPDATE queryquestioncomment c, queryquestioncomment p SET c.category_id = p.category_id WHERE c.parentComment_id = p.id</sql>
+    <sql>UPDATE queryquestioncomment c, queryquestioncomment p SET c.category_id = p.category_id WHERE c.parentComment_id = p.id</sql>
+    <sql>UPDATE queryquestioncomment c, queryquestioncomment p SET c.category_id = p.category_id WHERE c.parentComment_id = p.id</sql>
+  </changeSet>
+  
 </databaseChangeLog>

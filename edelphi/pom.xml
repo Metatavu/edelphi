@@ -100,7 +100,7 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
     
     <dependency>
       <groupId>org.jboss.spec.javax.servlet</groupId>
-      <artifactId>jboss-servlet-api_3.1_spec</artifactId>
+      <artifactId>jboss-servlet-api_4.0_spec</artifactId>
       <scope>provided</scope>
     </dependency>
     
@@ -111,8 +111,14 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
     </dependency>
     
     <dependency>
-      <groupId>org.jboss.spec.javax.servlet.jstl</groupId>
-      <artifactId>jboss-jstl-api_1.2_spec</artifactId>
+      <groupId>org.apache.taglibs</groupId>
+      <artifactId>taglibs-standard-spec</artifactId>
+      <scope>provided</scope>
+    </dependency> 
+    
+    <dependency>
+      <groupId>org.apache.taglibs</groupId>
+      <artifactId>taglibs-standard-impl</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -136,7 +142,7 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
 
     <dependency>
       <groupId>org.jboss.spec.javax.ws.rs</groupId>
-      <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
+      <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
       <scope>provided</scope>
     </dependency>
     
@@ -147,14 +153,14 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
     </dependency>
     
     <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-core</artifactId>
+      <groupId>org.infinispan</groupId>
+      <artifactId>infinispan-core</artifactId>
       <scope>provided</scope>
     </dependency>
     
     <dependency>
       <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-infinispan</artifactId>
+      <artifactId>hibernate-core</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -177,7 +183,7 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
     </dependency>
 
     <dependency>
-      <groupId>org.hibernate</groupId>
+      <groupId>org.hibernate.validator</groupId>
       <artifactId>hibernate-validator</artifactId>
       <scope>provided</scope>
     </dependency>
@@ -316,6 +322,12 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
           <artifactId>commons-lang3</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>fi.metatavu.edelphi</groupId>
+      <artifactId>rest</artifactId>
+      <version>${project.version}</version>
     </dependency>
       
     <dependency>
@@ -480,7 +492,11 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
     <dependency>
       <groupId>org.keycloak</groupId>
       <artifactId>keycloak-admin-client</artifactId>
-      <exclusions>      
+      <exclusions>       
+        <exclusion>
+          <groupId>org.keycloak</groupId>
+          <artifactId>keycloak-core</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>com.fasterxml.jackson.core</groupId>
           <artifactId>jackson-core</artifactId>
@@ -492,16 +508,63 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
       </exclusions>
     </dependency>
     
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-adapter-spi</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-adapter-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
   </dependencies>
   
-  <repositories>
-  
-    <repository>
-      <id>repository.jboss.org-public</id>
-      <name>JBoss repository</name>
-      <url>https://repository.jboss.org/nexus/content/groups/public</url>
-    </repository>
-    
-  </repositories>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <version>1.8.0</version>
+        <configuration>
+            <workingDirectory>src/main/typescript</workingDirectory>
+        </configuration>        
+        <executions>
+          <execution>
+            <id>install-node</id>
+            <goals>
+              <goal>install-node-and-npm</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <nodeVersion>v11.15.0</nodeVersion>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npm-install</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>grunt</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>grunt</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
   
 </project>

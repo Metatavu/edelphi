@@ -27,7 +27,6 @@ import fi.metatavu.edelphi.query.QueryOptionEditor;
 import fi.metatavu.edelphi.query.QueryOptionType;
 import fi.metatavu.edelphi.query.RequiredQueryFragment;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
-import fi.metatavu.edelphi.utils.QueryUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 import fi.metatavu.edelphi.utils.comments.GenericReportPageCommentProcessor;
 import fi.metatavu.edelphi.utils.comments.ReportPageCommentProcessor;
@@ -50,12 +49,10 @@ public class TextQueryPageHandler extends AbstractQueryPageHandler {
     addRequiredFragment(requestContext, requiredFragment);
 
     QuerySection section = queryPage.getQuerySection();
+    boolean commentable = (section.getCommentable() == Boolean.TRUE) && getBooleanOptionValue(queryPage, getDefinedOption("text.commentable"));
+    boolean viewDiscussion = (section.getViewDiscussions() == Boolean.TRUE) && getBooleanOptionValue(queryPage, getDefinedOption("text.viewDiscussions"));
     
-    if ((section.getCommentable() == Boolean.TRUE) && getBooleanOptionValue(queryPage, getDefinedOption("text.commentable")))
-      renderCommentEditor(requestContext, queryPage, queryReply);
-    
-    if ((section.getViewDiscussions() == Boolean.TRUE) && getBooleanOptionValue(queryPage, getDefinedOption("text.viewDiscussions")))
-      renderComments(requestContext, queryPage);
+    renderComments(requestContext, queryPage, queryReply, commentable, viewDiscussion);
   }
   
   @Override
@@ -94,22 +91,6 @@ public class TextQueryPageHandler extends AbstractQueryPageHandler {
         }
         else {
           queryQuestionCommentDAO.create(queryReply, queryPage, null, commentText, false, loggedUser);
-        }
-      }
-      
-      Long replyCount = requestContext.getLong("newRepliesCount");
-      
-      for (int i = 0; i < replyCount; i++) {
-        Long parentId = requestContext.getLong("commentReplyParent." + i);
-        String replyContent = requestContext.getString("commentReply." + i);
-        
-        if ((parentId != null) && (!StringUtils.isEmpty(replyContent))) {
-          QueryQuestionComment parentComment = queryQuestionCommentDAO.findById(parentId); 
-          if (parentComment == null) {
-            throw new SmvcRuntimeException(EdelfoiStatusCode.NO_PARENT_COMMENT, messages.getText(locale, "exception.1043.noParentComment"));
-          }
-          
-          queryQuestionCommentDAO.create(queryReply, queryPage, parentComment, replyContent, false, loggedUser);
         }
       }
     }
@@ -157,17 +138,6 @@ public class TextQueryPageHandler extends AbstractQueryPageHandler {
     
     addRequiredFragment(requestContext, commentEditorFragment);
   }
-
-  private void renderComments(PageRequestContext requestContext, QueryPage queryPage) {
-    Boolean commentable = getBooleanOptionValue(queryPage, getDefinedOption("text.commentable"));
-    
-    QueryUtils.appendQueryPageComments(requestContext, queryPage);
-    
-    RequiredQueryFragment queryFragment = new RequiredQueryFragment("commentlist");
-    queryFragment.addAttribute("queryPageId", queryPage.getId().toString());
-    queryFragment.addAttribute("queryPageCommentable", commentable.toString());
-    addRequiredFragment(requestContext, queryFragment);
-  }
-
+  
   private List<QueryOption> options = new ArrayList<QueryOption>();
 }

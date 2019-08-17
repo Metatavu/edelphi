@@ -1,0 +1,17 @@
+embed-server --server-config=standalone-full-ha.xml
+
+/system-property=java.net.preferIPv4Stack:add(value=true)
+/subsystem=messaging-activemq/server=default:write-attribute(name=cluster-password,value="${env.CLUSTER_PASSWORD}")
+
+/interface=private:undefine-attribute(name=inet-address)
+/interface=private:write-attribute(name=nic,value=eth0)
+
+/interface=management:undefine-attribute(name=inet-address)
+/interface=management:write-attribute(name=nic,value=eth0)
+
+/interface=public:undefine-attribute(name=inet-address)
+/interface=public:write-attribute(name=nic,value=eth0)
+
+/interface=unsecure:undefine-attribute(name=inet-address)
+/interface=unsecure:write-attribute(name=nic,value=eth0)
+

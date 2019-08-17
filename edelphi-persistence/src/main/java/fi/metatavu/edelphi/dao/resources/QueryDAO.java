@@ -3,6 +3,7 @@ package fi.metatavu.edelphi.dao.resources;
 import java.util.Date;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -15,6 +16,7 @@ import fi.metatavu.edelphi.domainmodel.resources.QueryState;
 import fi.metatavu.edelphi.domainmodel.resources.Query_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
+@ApplicationScoped
 public class QueryDAO extends GenericDAO<Query> {
 
   public Query create(Folder parentFolder, String name, String urlName, Boolean allowEditReply, String description, QueryState state, Date closes, Integer indexNumber, User creator) {

@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.dao.panels;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -15,6 +16,7 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseGroup;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseGroup_;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserIntressClass;
 
+@ApplicationScoped
 public class PanelUserExpertiseGroupDAO extends GenericDAO<PanelUserExpertiseGroup> {
 
   public PanelUserExpertiseGroup create(Panel panel, PanelUserExpertiseClass expertiseClass, PanelUserIntressClass intressClass, Long color, PanelStamp stamp) {

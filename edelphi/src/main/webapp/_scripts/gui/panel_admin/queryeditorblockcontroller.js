@@ -5,7 +5,7 @@ var QueryEditorBlockController;
 var QueryOptionEditor;
 var QueryOptionTextEditor;
 var QueryOptionMemoEditor;
-var QueryOptionFloatEdito;
+var QueryOptionFloatEditor;
 var QueryOptionIntegerEditor;
 var QueryOptionBooleanEditor;
 var QueryOptionTimeSerieDataEditor;
@@ -13,6 +13,7 @@ var QueryOptionOptionSetEditor;
 var QueryOptionScale1DEditor;
 var QueryOptionTimelineTypeEditor;
 var QueryOptionScale2DEditor;
+var QueryOptionColorEditor;
 var QueryOptionHiddenEditor;
 var QueryEditorQuestionPreview;
 var QueryEditorTimeSerieQuestionPreview;
@@ -46,6 +47,14 @@ var QueryEditorMultiselectPageEditor;
 var QueryEditorOrderingPageEditor;
 var QueryEditorGroupingPageEditor;
 var QueryEditorCollage2DPageEditor;
+
+var QueryEditorLiveQuestionPreview;
+var QueryEditorLive2DThesisPageEditor;
+
+function triggerReactCommand(command, data) {
+  $("panel-admin-query-editor-" + command).setAttribute('data-data', JSON.stringify(data));
+  $("panel-admin-query-editor-" + command).click();
+}
 
 QueryEditorUtils = {
   parseSerializedList: function (serializedValue) {
@@ -517,6 +526,9 @@ QueryEditorBlockController = Class.create(BlockController, {
             case 'THESIS_MULTIPLE_2D_SCALES':
               this._elementEditor = new QueryEditorMultipleScale2DThesisPageEditor(this);
             break;
+            case 'LIVE_2D':
+              this._elementEditor = new QueryEditorLive2DThesisPageEditor(this);
+            break;
             case 'COLLAGE_2D':
               this._elementEditor = new QueryEditorCollage2DPageEditor(this);
             break;
@@ -785,6 +797,8 @@ QueryEditorBlockController = Class.create(BlockController, {
         endLoadingOperation();
       },
       onSuccess: function (jsonResponse) {
+        _this._triggerOnSave();
+        
         if (createNewQuery) {
           var panelId = JSDATA['securityContextId'];
           window.location.href = CONTEXTPATH + '/panel/admin/editquery.page?panelId=' + panelId + '&queryId=' + jsonResponse.queryId;
@@ -803,7 +817,7 @@ QueryEditorBlockController = Class.create(BlockController, {
             var sectionData = _this.getSectionData(tempId);
             sectionData.id = sectionId;
             sectionData.isNew = false;
-            
+
             _this.fire("sectionIdChange", {
               from: tempId,
               to: sectionId
@@ -879,6 +893,11 @@ QueryEditorBlockController = Class.create(BlockController, {
     
     return pageIdInput.up(".panelAdminQueryEditorPage");
   },
+
+  _triggerOnSave: function () {
+    this.fire("querySaved");
+  },
+
   _onPageClick: function (event) {
     var pageElement = Event.element(event);
     if (!pageElement.hasClassName('panelAdminQueryEditorPage')) {
@@ -1764,6 +1783,61 @@ QueryOptionScale2DEditor = Class.create(QueryOptionEditor, {
       radioOption.setAttribute("selected", "selected");
     }
     
+    this._editorContainer.appendChild(this._editor);
+  },
+  setup: function ($super) {
+    $super();
+    
+    Event.observe(this._editor, "change", function (event) {
+      var editorElement = Event.element(event);
+      this.fire("valueChange", {
+        value: editorElement.value,
+        name: this.getName(),
+        editorElement: editorElement
+      });
+    }.bind(this));
+  },
+  deinitialize: function ($super) {
+    $super();
+    this._editor.purge();
+  },
+  disable: function ($super) {
+    this._editor.disable();
+  }
+});
+
+QueryOptionColorEditor = Class.create(QueryOptionEditor, {
+  initialize: function ($super, pageEditor, caption, name, value) {
+    $super(pageEditor, caption, name, value);
+
+    this._editor = new Element("select", {
+      className: "panelAdminQueryEditorOptionEditorOptionEditor",
+      name: name
+    });
+    
+    var colors = [{
+      value: "RED",
+      label: "redLabel"
+    }, {
+      value: "GREEN",
+      label: "greenLabel"
+    }, {
+      value: "BLUE",
+      label: "blueLabel"
+    }];
+    
+    for (var i = 0; i < colors.length; i++) {
+	    var option = new Element("option", {
+        value: colors[i].value      
+      }).update(getLocale().getText('panelAdmin.block.query.colorOptionEditor.' + colors[i].label));	    
+
+      this._editor.appendChild(option);
+
+      if (colors[i].value == value) {
+        option.setAttribute("selected", "selected");		  
+      }
+    }
+
     this._editorContainer.appendChild(this._editor);
   },
   setup: function ($super) {
@@ -4013,6 +4087,11 @@ QueryEditorQuestionEditor = Class.create(QueryEditorPageEditor, {
     
     return null;
   },
+
+  isNewPage: function () {
+    return this.getBlockController().getCurrentPageData().isNew === true;
+  },
+
   setup: function ($super) {
     $super();
 
@@ -4026,7 +4105,48 @@ QueryEditorQuestionEditor = Class.create(QueryEditorPageEditor, {
       href: "javascript:void(null);",
       className: "queryEditorPreviewShowOptionsLink"
     }).update(getLocale().getText("panelAdmin.block.query.showOptions"));
+
+    this._queryOptionsLink = new Element("a", {
+      href: "javascript:void(null);",
+      className: "queryEditorPreviewShowQueryOptionsLink" + (this.isNewPage() ? " disabledButton" : ""),
+      title: this.isNewPage() ? getLocale().getText("panelAdmin.block.query.pageSaveRequired") : ""
+    }).update(getLocale().getText("panelAdmin.block.query.showQueryOptions"));
+
+    this._commentOptionsLink = new Element("a", {
+      href: "javascript:void(null);",
+      className: "queryEditorPreviewShowCommentOptionsLink" + (this.isNewPage() ? " disabledButton" : ""),
+      title: this.isNewPage() ? getLocale().getText("panelAdmin.block.query.pageSaveRequired") : ""
+    }).update(getLocale().getText("panelAdmin.block.query.showCommentOptions"));
+
+    this._commentOptionsLink.on("click", function () {
+      if (this.isNewPage()) {
+        return;
+      }
+
+      triggerReactCommand("edit-page-comment-options", {
+        pageData: this.getBlockController().getCurrentPageData()
+      });
+    }.bindAsEventListener(this));
+
+    this._queryOptionsLink.on("click", function () {
+      if (this.isNewPage()) {
+        return;
+      }
+
+      triggerReactCommand("edit-page-live2d-options", {
+        pageData: this.getBlockController().getCurrentPageData()
+      });
+    }.bindAsEventListener(this));
     
+    if (this.isNewPage()) {
+      this.getBlockController().addListener("querySaved", this, function () {
+        this._queryOptionsLink.removeAttribute("title");
+        this._commentOptionsLink.removeAttribute("title");
+        this._queryOptionsLink.removeClassName("disabledButton");
+        this._commentOptionsLink.removeClassName("disabledButton");
+      });
+    }
+
     this._optionsContainer = new Element("div", {
       className: "queryEditorQuestionOptions",
       style: "display:none"
@@ -4037,6 +4157,8 @@ QueryEditorQuestionEditor = Class.create(QueryEditorPageEditor, {
       });
     
     this._questionContainer.appendChild(this._questionOptionsLink);
+    this._questionContainer.appendChild(this._queryOptionsLink);
+    this._questionContainer.appendChild(this._commentOptionsLink);
     this._questionContainer.appendChild(this._optionsContainer);
     this._optionsContainer.appendChild(this._optionsArrowUpContainer);
     
@@ -4142,6 +4264,9 @@ QueryEditorQuestionEditor = Class.create(QueryEditorPageEditor, {
             break;
             case 'SCALE2D_TYPE':
               editor = new QueryOptionScale2DEditor(this, pageData.options[optionIndex].caption, pageData.options[optionIndex].name, pageData.options[optionIndex].value);
+            break;
+            case 'COLOR':
+              editor = new QueryOptionColorEditor(this, pageData.options[optionIndex].caption, pageData.options[optionIndex].name, pageData.options[optionIndex].value);
             break;
             case 'HIDDEN':
               editor = new QueryOptionHiddenEditor(this, pageData.options[optionIndex].caption, pageData.options[optionIndex].name, pageData.options[optionIndex].value);
@@ -4374,6 +4499,71 @@ QueryEditorMultipleScale2DThesisPageEditor = Class.create(QueryEditorThesisPageE
     
     this._thesisTextContainer = null;
     this._showLiveReportContainer = null;
+  }
+});
+
+/**
+ * Query editor for live 2D questions
+ */
+QueryEditorLive2DThesisPageEditor = Class.create(QueryEditorThesisPageEditor, {
+  initialize: function ($super,blockController) {
+    $super(blockController);
+  },
+  deinitialize: function($super) {
+    $super();
+  },
+  setup: function ($super) {
+    $super();
+    this._showLiveReportContainer.remove();
+    this._showLiveReportContainer = null;
+    this._preview = new QueryEditorLive2DQuestionPreview(this, this._previewContainer);
+    this._preview.setup();
+  }
+});
+
+/**
+ * Preview component for live 2D questions
+ */
+QueryEditorLive2DQuestionPreview = Class.create(QueryEditorQuestionPreview, {
+  initialize: function ($super, pageEditor, container) {
+    $super(pageEditor, container);
+    
+    this.getBlockController().addListener("tabChange", this, this._onBlockControllerTabChange);
+    
+    this._flotrContainer = new Element("div", {
+      className: "queryEditorQuestionTimeSerieContainer"
+    });
+    
+    pageEditor.addListener("optionEditorValueChange", this, this._onPageEditorOptionValueChange);
+  },
+  deinitialize: function ($super) {
+    $super();
+    
+    this.getBlockController().removeListener("tabChange", this);
+    this.getPageEditor().removeListener("optionEditorValueChange", this);
+  },
+  setup: function ($super) {
+    $super();
+    
+    this._render();
+  },
+  _render: function() {
+  },
+  
+  _onPageEditorOptionValueChange: function (event) {
+    var render = false;
+    
+    if (render) {
+      this._render();
+    }
+  },
+  
+  _onBlockControllerTabChange: function (event) {
+    if (event.to == 'PAGES') {
+      event.toPanel.removeClassName('ui-tabs-hide');
+      
+      this._render();
+    }
   }
 });
 

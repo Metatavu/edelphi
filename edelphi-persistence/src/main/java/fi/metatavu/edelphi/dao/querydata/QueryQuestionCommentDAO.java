@@ -6,30 +6,41 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment_;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply_;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
+import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage_;
+import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection;
+import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection_;
+import fi.metatavu.edelphi.domainmodel.resources.Folder;
+import fi.metatavu.edelphi.domainmodel.resources.Folder_;
+import fi.metatavu.edelphi.domainmodel.resources.Query;
+import fi.metatavu.edelphi.domainmodel.resources.Query_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
+@ApplicationScoped
 public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
 
   public QueryQuestionComment create(QueryReply queryReply, QueryPage queryPage, QueryQuestionComment parentComment, String comment, Boolean hidden, User creator) {
     Date now = new Date();
-    return create(queryReply, queryPage, parentComment, comment, hidden, creator, now, creator, now);
+    return create(queryReply, queryPage, parentComment, null, comment, hidden, creator, now, creator, now);
   }
 
   @SuppressWarnings ("squid:S00107")
-  public QueryQuestionComment create(QueryReply queryReply, QueryPage queryPage, QueryQuestionComment parentComment, String comment, Boolean hidden, User creator, Date created, User modifier, Date modified) {
+  public QueryQuestionComment create(QueryReply queryReply, QueryPage queryPage, QueryQuestionComment parentComment, QueryQuestionCommentCategory category, String comment, Boolean hidden, User creator, Date created, User modifier, Date modified) {
     QueryQuestionComment questionComment = new QueryQuestionComment();
 
     questionComment.setComment(comment);
@@ -38,6 +49,7 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
     questionComment.setParentComment(parentComment);
     questionComment.setCreator(creator);
     questionComment.setHidden(hidden);
+    questionComment.setCategory(category);
     questionComment.setCreated(created);
     questionComment.setLastModifier(modifier);
     questionComment.setLastModified(modified);
@@ -108,6 +120,84 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
 
     return entityManager.createQuery(criteria).getResultList(); 
   }
+  
+
+  /**
+   * Lists comments by given parameters. All parameters are optional
+   * 
+   * @param queryPage filter by comment's query page
+   * @param stamp filter by panel stamp
+   * @param query filter by query
+   * @param queryParentFolder filter by query parent folder
+   * @param parentComment filter by parent comment. Ignored if null
+   * @param onlyRootComments return only root comments. 
+   * @param user filter by user
+   * @param category return only comments of specified category. Ignored if null
+   * @param onlyNullCategories return only comments without category. Ignored if null
+   * @param archived filter by archived
+   * 
+   * @return a list of comments
+   */
+  public List<QueryQuestionComment> list(QueryPage queryPage, PanelStamp stamp, Query query, Folder queryParentFolder, QueryQuestionComment parentComment, boolean onlyRootComments, User user, fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category, boolean onlyNullCategories, Boolean archived) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryQuestionComment> criteria = criteriaBuilder.createQuery(QueryQuestionComment.class);
+    Root<QueryQuestionComment> root = criteria.from(QueryQuestionComment.class);
+    Join<QueryQuestionComment, QueryPage> queryPageJoin = root.join(QueryQuestionComment_.queryPage);
+    Join<QueryPage, QuerySection> querySectionJoin = queryPageJoin.join(QueryPage_.querySection);
+    Join<QueryQuestionComment, QueryReply> queryReplyJoin = root.join(QueryQuestionComment_.queryReply);
+    Join<QuerySection, Query> queryJoin = querySectionJoin.join(QuerySection_.query);
+    Join<Query, Folder> queryFolderJoin = queryJoin.join(Query_.parentFolder);
+    
+    List<Predicate> criterias = new ArrayList<>();
+    
+    if (queryPage != null) {
+      criterias.add(criteriaBuilder.equal(root.get(QueryQuestionComment_.queryPage), queryPage));
+    }
+    
+    if (stamp != null) {
+      criterias.add(criteriaBuilder.equal(queryReplyJoin.get(QueryReply_.stamp), stamp));
+    }
+    
+    if (query != null) {
+      criterias.add(criteriaBuilder.equal(querySectionJoin.get(QuerySection_.query), query));
+    }
+    
+    if (queryParentFolder != null) {
+      criterias.add(criteriaBuilder.equal(queryJoin.get(Query_.parentFolder), queryParentFolder));
+    }
+    
+    if (onlyRootComments) {
+      criterias.add(criteriaBuilder.isNull(root.get(QueryQuestionComment_.parentComment)));      
+    } else if (parentComment != null) {
+      criterias.add(criteriaBuilder.equal(root.get(QueryQuestionComment_.parentComment), parentComment)); 
+    }
+    
+    if (onlyNullCategories) {
+      criterias.add(criteriaBuilder.isNull(root.get(QueryQuestionComment_.category)));      
+    } else if (category != null) {
+      criterias.add(criteriaBuilder.equal(root.get(QueryQuestionComment_.category), category)); 
+    }
+    
+    if (user != null) {
+      criterias.add(criteriaBuilder.equal(queryReplyJoin.get(QueryReply_.user), user));
+    }
+    
+    if (archived != null) {
+      criterias.add(criteriaBuilder.equal(queryJoin.get(Query_.archived), archived));
+      criterias.add(criteriaBuilder.equal(queryReplyJoin.get(QueryReply_.archived), archived));
+      criterias.add(criteriaBuilder.equal(queryPageJoin.get(QueryPage_.archived), archived));
+      criterias.add(criteriaBuilder.equal(querySectionJoin.get(QuerySection_.archived), archived));
+      criterias.add(criteriaBuilder.equal(queryFolderJoin.get(Folder_.archived), archived));
+      criterias.add(criteriaBuilder.equal(root.get(QueryQuestionComment_.archived), archived));
+    }
+    
+    criteria.select(root);
+    criteria.where(criteriaBuilder.and(criterias.toArray(new Predicate[0])));
+
+    return entityManager.createQuery(criteria).getResultList();
+  }  
 
   /**
    * Lists all nonarchived comments left on the given query page in the given panel stamp.
@@ -266,6 +356,13 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
     
     getEntityManager().persist(comment);
     return comment;
+  }
+
+  public QueryQuestionComment updateCategory(QueryQuestionComment comment, QueryQuestionCommentCategory category, User modifier, Date modified) {
+    comment.setLastModified(modified);
+    comment.setLastModifier(modifier);
+    comment.setCategory(category);    
+    return persist(comment);
   }
 
   public QueryQuestionComment updateHidden(QueryQuestionComment comment, Boolean hidden, User modifier) {

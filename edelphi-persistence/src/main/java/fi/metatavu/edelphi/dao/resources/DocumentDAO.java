@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.dao.resources;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -13,6 +14,7 @@ import fi.metatavu.edelphi.domainmodel.resources.Document;
 import fi.metatavu.edelphi.domainmodel.resources.Document_;
 import fi.metatavu.edelphi.domainmodel.resources.Folder;
 
+@ApplicationScoped
 public class DocumentDAO extends GenericDAO<Document> {
 
   public List<Document> listByFolderAndArchived(Folder folder, Boolean archived) {

@@ -22,6 +22,50 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 @Entity
 @Cacheable
 public class QueryQuestionComment implements ArchivableEntity, ModificationTrackedEntity {
+
+  @Id 
+  @GeneratedValue(strategy=GenerationType.TABLE, generator="QueryQuestionComment")  
+  @TableGenerator(name="QueryQuestionComment", initialValue=1, allocationSize=100, table = "hibernate_sequences", pkColumnName = "sequence_name", valueColumnName = "sequence_next_hi_value")
+  private Long id;
+  
+  @ManyToOne
+  private QueryReply queryReply;
+  
+  @ManyToOne
+  private QueryPage queryPage;
+  
+  @ManyToOne
+  private QueryQuestionCommentCategory category;
+  
+  @ManyToOne
+  private QueryQuestionComment parentComment;
+  
+  @Column (length=1073741824)
+  private String comment;
+  
+  @NotNull
+  @Column(nullable = false)
+  private Boolean archived = Boolean.FALSE;
+  
+  @NotNull
+  @Column(nullable = false)
+  private Boolean hidden;
+  
+  @ManyToOne 
+  private User creator;
+  
+  @NotNull
+  @Column (updatable=false, nullable=false)
+  @Temporal (value=TemporalType.TIMESTAMP)
+  private Date created;
+  
+  @ManyToOne  
+  private User lastModifier;
+  
+  @NotNull
+  @Column (nullable=false)
+  @Temporal (value=TemporalType.TIMESTAMP)
+  private Date lastModified;
   
   /**
    * Returns internal unique id
@@ -54,6 +98,14 @@ public class QueryQuestionComment implements ArchivableEntity, ModificationTrack
 
   public void setQueryPage(QueryPage queryPage) {
     this.queryPage = queryPage;
+  }
+  
+  public QueryQuestionCommentCategory getCategory() {
+    return category;
+  }
+  
+  public void setCategory(QueryQuestionCommentCategory category) {
+    this.category = category;
   }
 
   @Override
@@ -121,45 +173,4 @@ public class QueryQuestionComment implements ArchivableEntity, ModificationTrack
   public void setParentComment(QueryQuestionComment parentComment) {
     this.parentComment = parentComment;
   }
-
-  @Id 
-  @GeneratedValue(strategy=GenerationType.TABLE, generator="QueryQuestionComment")  
-  @TableGenerator(name="QueryQuestionComment", initialValue=1, allocationSize=100, table = "hibernate_sequences", pkColumnName = "sequence_name", valueColumnName = "sequence_next_hi_value")
-  private Long id;
-  
-  @ManyToOne
-  private QueryReply queryReply;
-  
-  @ManyToOne
-  private QueryPage queryPage;
-  
-  @ManyToOne
-  private QueryQuestionComment parentComment;
-  
-  @Column (length=1073741824)
-  private String comment;
-  
-  @NotNull
-  @Column(nullable = false)
-  private Boolean archived = Boolean.FALSE;
-  
-  @NotNull
-  @Column(nullable = false)
-  private Boolean hidden;
-  
-  @ManyToOne 
-  private User creator;
-  
-  @NotNull
-  @Column (updatable=false, nullable=false)
-  @Temporal (value=TemporalType.TIMESTAMP)
-  private Date created;
-  
-  @ManyToOne  
-  private User lastModifier;
-  
-  @NotNull
-  @Column (nullable=false)
-  @Temporal (value=TemporalType.TIMESTAMP)
-  private Date lastModified;
 }

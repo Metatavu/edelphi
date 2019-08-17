@@ -3,6 +3,7 @@ package fi.metatavu.edelphi.dao.users;
 import java.util.Date;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -24,6 +25,7 @@ import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.domainmodel.users.User_;
 import fi.metatavu.edelphi.search.SearchResult;
 
+@ApplicationScoped
 public class UserDAO extends GenericDAO<User> {
   
   @SuppressWarnings ("squid:S00107")

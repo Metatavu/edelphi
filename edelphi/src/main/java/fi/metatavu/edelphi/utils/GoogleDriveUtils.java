@@ -114,16 +114,23 @@ public class GoogleDriveUtils {
   }
 
   private static GoogleCredential getAdminCredential() {
-	  String keyFile = System.getProperty("edelphi.googleServiceAccount.key");
-	  if (keyFile == null) {
-	    logger.severe("Google service account keyfile is not configured");
-	    return null;
-	  }
-	  
-	  try {
+    try {
   		if (adminCredentials != null) {
   			return refreshCredentials(adminCredentials);
   		}
+  		
+  		String keyFile = System.getProperty("edelphi.googleServiceAccount.key");
+      if (!isExistingFile(keyFile)) {
+        keyFile = System.getenv("GOOGLE_SERVICE_ACCOUNT_KEY");
+      }
+
+      if (!isExistingFile(keyFile)) {
+        keyFile = "/opt/google-service-account.json";
+      }
+
+      if (!isExistingFile(keyFile)) {
+        logger.log(Level.SEVERE, "Google service account keyfile is not configured");
+      }
   
   		adminCredentials = GoogleCredential
   	    .fromStream(new FileInputStream(keyFile))
@@ -134,6 +141,21 @@ public class GoogleDriveUtils {
 	    logger.log(Level.SEVERE, "Failed to create admin service credentials", e);
 	    return null;
 	  }
+  }
+
+  /**
+   * Returns whether file exists or not
+   * 
+   * @param file file path
+   * @return whether file exists or not
+   */
+  private static boolean isExistingFile(String path) {
+    if (path == null) {
+      return false;
+    }
+    
+    java.io.File file = new java.io.File(path);
+    return file.exists();
   }
 
   public static GoogleCredential refreshCredentials(GoogleCredential credential) {

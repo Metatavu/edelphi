@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.dao.users;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -11,6 +12,7 @@ import fi.metatavu.edelphi.domainmodel.users.UserSetting;
 import fi.metatavu.edelphi.domainmodel.users.UserSettingKey;
 import fi.metatavu.edelphi.domainmodel.users.UserSetting_;
 
+@ApplicationScoped
 public class UserSettingDAO extends GenericDAO<UserSetting> {
   
   public UserSetting create(User user, UserSettingKey key, String value) {

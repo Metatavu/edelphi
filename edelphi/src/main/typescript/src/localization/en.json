@@ -1,0 +1,120 @@
+{
+  "generic": {
+    "loading": "Loading...",
+    "back": "Back",
+    "ok": "Ok",
+    "eDelphi": "eDelphi.org",
+    "welcomeUser": "Welcome {0}",
+    "profileLink": "Profile",
+    "logoutLink": "Logout"
+  },
+
+  "errorDialog": {
+    "header": "Error",
+    "errorOccurred": "Error occurred:",
+    "close": "Close"
+  },
+
+  "panel": {
+    "query": {
+      "previous": "Previous",
+      "next": "Next",
+      "save": "Save",
+      "skip": "Skip Question",
+      "quickNavigationTitle": "Skip question without saving and move to page:",
+      "noAnswer": "You have not answered the question",
+      "live2d": {
+        "statistics": {
+          "title": "Statistics",
+          "axisX": "X-axis",
+          "axisY": "Y-axis",
+          "answerCount": "Answer count",
+          "lowerQuartile": "Lower quartile (Q1)",
+          "median": "Median (Q2)",
+          "upperQuartile": "Upper quartile (Q3)"
+        }
+      },
+      "commentEditor": {
+        "title": "Elaborate on this topic (add a comment)",
+        "save": "Save",
+        "modify": "Modify your comment"
+      },
+      "comments": {
+        "title": "Comments",
+        "reply": "Reply",
+        "ellaborate": "Ellaborate comment",
+        "hide": "Hide",
+        "edit": "Edit",
+        "remove": "Remove",
+        "show": "Show",
+        "commentDate": "Comment date {0}",
+        "commentModified": "Comment modified {0}",
+        "saveReply": "Save comment",
+        "saveEdit": "Save",
+        "confirmRemoveConfirm": "Delete", 
+        "confirmRemoveCancel": "Cancel",
+        "confirmRemoveText": "Are you sure that you want to delete comment \"{0}\" including all its replies?",
+        "noComments": "There are no comments yet",
+        "yourComment": "This is your own comment"
+      }
+    }
+  },
+
+  "panelAdmin": {
+    "navigation": {
+      "panel": "Panel",
+      "administration": "Administration",
+      "reportAnIssue": "Report an Issue"
+    },
+    "queryEditor": {
+      "pageCommentOptions": {
+        "title": "Comment options",
+        "categories": "Categories",
+        "addCategory": "Add a category",
+        "save": "Save",
+        "close": "Close",
+        "deleteCategory": "Delete",
+        "deleteCategoryConfirm": "Are you sure?"
+      },
+      "pageLive2dOptions": {
+        "title": "Live 2d options",
+        "save": "Save",
+        "close": "Close",
+        "visible": "View others answers",
+        "visibleOptions": {
+          "AFTEROWNANSWER": "After own answer",
+          "IMMEDIATELY": "Immediately"
+        }
+      }
+    },
+    "commentView": {
+      "querySelectLabel": "Query",
+      "pageSelectLabel": "Page",
+      "categorySelectLabel": "Category",
+      "defaultCategory": "Default",
+      "replyCount": "{0} replies"
+    },
+    "reports": {
+      "title": "Query Results",
+      "queriesListTitle": "Queries",
+      "queriesListDates": "Created: {0}, Modified: {0}",
+      "exportFilter": "Filter",
+      "exportFilterByExpertise": "Interest and Expertise Groups",
+      "exportFilterByPage": "Page(s)",
+      "exportFilterByPageAll": "All",
+      "exportReport": "Export Report",
+      "exportReportContents": "Report Contents",
+      "exportReportPDF": "Export as PDF",
+      "exportReportGoogleDocument": "Export as Google Document",
+      "exportCharts": "Report Charts",
+      "exportChartsPNG": "Export as PNG",
+      "exportData": "Report Data",
+      "exportDataCSV": "Export as CSV",
+      "exportDataGoogleSpreadsheet": "Export into Google Spreadsheet",
+      "reportToEmailTitle": "The report will be sent by email",
+      "reportToEmailMessageDelivery": "The report will be sent to the email you specified in your profile",
+      "reportToEmailMessageDeliveryTime": "The report arrives in 5 - 30 minutes from the request",
+      "reportToEmailMessageLeave": "Report is generated in the background so you are now free to navigate from this view"
+    }
+  }
+}

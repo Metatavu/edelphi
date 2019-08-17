@@ -14,4 +14,7 @@ travis-encrypted.tar
 /test-variables.sh
 /google-service-account.json
 /keycloak-3.2.1.Final/
+node_modules
 /keycloak-3.4.3.Final/
+dev
+.classpath

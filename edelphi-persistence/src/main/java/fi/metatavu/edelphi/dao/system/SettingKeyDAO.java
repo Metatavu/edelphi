@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.dao.system;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -9,6 +10,7 @@ import fi.metatavu.edelphi.dao.GenericDAO;
 import fi.metatavu.edelphi.domainmodel.system.SettingKey;
 import fi.metatavu.edelphi.domainmodel.system.SettingKey_;
 
+@ApplicationScoped
 public class SettingKeyDAO extends GenericDAO<SettingKey> {
 
   public SettingKey findByName(String settingName) {

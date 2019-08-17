@@ -3534,18 +3534,17 @@ div.queryCommentChildren div.queryComment {
 
 .queryCommentHeader {
   padding:1px 0px 6px 0px;
-  clear:both;
 }
 
 .queryCommentText,
 .queryCommentMeta {
   padding:0px 0px 6px 0px;
+  min-height: 30px;
 }
 
 .queryCommentDate {
   font-style:italic;
   margin:0px;
-  float:left;
   color:#df4d1c;
   font-size:1.2em;
   margin-right:10px;
@@ -3582,33 +3581,6 @@ div.queryCommentChildren div.queryComment {
 .queryCommentHeader {
   min-height: 20px;
   padding:3px 0 5px 0px;
-}
-
-.queryComment .queryCommentShowComment {
-  display: none;
-}
-
-.queryCommentHidden .queryCommentShowComment {
-  display: block;
-}
-
-.queryCommentHidden .queryCommentHideComment {
-  display: none;
-}
-
-.queryCommentHidden .queryCommentNewComment {
-  display: none;
-}
-
-.queryCommentHidden .queryComment .queryCommentHeader .queryCommentNewCommentLink,
-.queryCommentHidden .queryComment .queryCommentHeader .queryCommentHideComment,
-.queryCommentHidden .queryComment .queryCommentHeader .queryCommentShowComment {
-  display: none;
-}
-
-.queryCommentHidden .queryCommentHeader {
-  background: url("../gfx/icons/16x16/actions/hidden.png") no-repeat left 4px;
-  padding:3px 0 5px 26px;
 }
 
 .editCommentEditor {
@@ -4169,6 +4141,8 @@ label.queryScaleSliderItemLabel {
   margin-top:20px;
 }
 
+.queryEditorPreviewShowQueryOptionsLink,
+.queryEditorPreviewShowCommentOptionsLink,
 .queryEditorPreviewShowOptionsLink {
   background:#0099ff;
   color:#fff;
@@ -4177,6 +4151,7 @@ label.queryScaleSliderItemLabel {
   padding:2px 6px;
   text-transform:uppercase;
   font-size:0.8em;
+  margin-right: 10px;
 }
  
 .queryEditorQuestionOptions {
@@ -5186,6 +5161,10 @@ label.queryScaleSliderItemLabel {
   background: url('../gfx/icons/32x32/apps/query_page_multiple2dscales.png') no-repeat center center #ffffff;
 }
 
+.panelAdminQueryEditorCreatePage .live2d {
+  background: url('../gfx/icons/32x32/apps/query_page_live2d.png') no-repeat center center #ffffff;
+}
+
 .panelAdminQueryEditorCreatePage .collage2d {
   background: url('../gfx/icons/32x32/apps/query_page_2dcollage.png') no-repeat center center #ffffff;
 }
@@ -5461,6 +5440,13 @@ label.queryScaleSliderItemLabel {
   font-size: 1.35em;
   padding: 20px 0 10px;
   text-transform: uppercase;
+}
+
+#GUI_panelReportContainer .reportPage .queryCommentCategoryTitle {
+  color: #0099FF;
+  font-size: 1.25em;
+  padding: 20px 0 10px;
+  border-bottom: 1px solid #DDE7ED;
 }
  
 #GUI_panelReportContainer .reportPage .queryCommentDate {
