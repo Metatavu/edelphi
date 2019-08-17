@@ -797,6 +797,8 @@ QueryEditorBlockController = Class.create(BlockController, {
         endLoadingOperation();
       },
       onSuccess: function (jsonResponse) {
+        _this._triggerOnSave();
+        
         if (createNewQuery) {
           var panelId = JSDATA['securityContextId'];
           window.location.href = CONTEXTPATH + '/panel/admin/editquery.page?panelId=' + panelId + '&queryId=' + jsonResponse.queryId;
@@ -815,7 +817,7 @@ QueryEditorBlockController = Class.create(BlockController, {
             var sectionData = _this.getSectionData(tempId);
             sectionData.id = sectionId;
             sectionData.isNew = false;
-            
+
             _this.fire("sectionIdChange", {
               from: tempId,
               to: sectionId
@@ -891,6 +893,11 @@ QueryEditorBlockController = Class.create(BlockController, {
     
     return pageIdInput.up(".panelAdminQueryEditorPage");
   },
+
+  _triggerOnSave: function () {
+    this.fire("querySaved");
+  },
+
   _onPageClick: function (event) {
     var pageElement = Event.element(event);
     if (!pageElement.hasClassName('panelAdminQueryEditorPage')) {
@@ -4080,6 +4087,11 @@ QueryEditorQuestionEditor = Class.create(QueryEditorPageEditor, {
     
     return null;
   },
+
+  isNewPage: function () {
+    return this.getBlockController().getCurrentPageData().isNew === true;
+  },
+
   setup: function ($super) {
     $super();
 
@@ -4096,25 +4108,44 @@ QueryEditorQuestionEditor = Class.create(QueryEditorPageEditor, {
 
     this._queryOptionsLink = new Element("a", {
       href: "javascript:void(null);",
-      className: "queryEditorPreviewShowQueryOptionsLink"
+      className: "queryEditorPreviewShowQueryOptionsLink" + (this.isNewPage() ? " disabledButton" : ""),
+      title: this.isNewPage() ? getLocale().getText("panelAdmin.block.query.pageSaveRequired") : ""
     }).update(getLocale().getText("panelAdmin.block.query.showQueryOptions"));
 
     this._commentOptionsLink = new Element("a", {
       href: "javascript:void(null);",
-      className: "queryEditorPreviewShowCommentOptionsLink"
+      className: "queryEditorPreviewShowCommentOptionsLink" + (this.isNewPage() ? " disabledButton" : ""),
+      title: this.isNewPage() ? getLocale().getText("panelAdmin.block.query.pageSaveRequired") : ""
     }).update(getLocale().getText("panelAdmin.block.query.showCommentOptions"));
 
     this._commentOptionsLink.on("click", function () {
+      if (this.isNewPage()) {
+        return;
+      }
+
       triggerReactCommand("edit-page-comment-options", {
         pageData: this.getBlockController().getCurrentPageData()
       });
     }.bindAsEventListener(this));
 
     this._queryOptionsLink.on("click", function () {
+      if (this.isNewPage()) {
+        return;
+      }
+
       triggerReactCommand("edit-page-live2d-options", {
         pageData: this.getBlockController().getCurrentPageData()
       });
     }.bindAsEventListener(this));
+    
+    if (this.isNewPage()) {
+      this.getBlockController().addListener("querySaved", this, function () {
+        this._queryOptionsLink.removeAttribute("title");
+        this._commentOptionsLink.removeAttribute("title");
+        this._queryOptionsLink.removeClassName("disabledButton");
+        this._commentOptionsLink.removeClassName("disabledButton");
+      });
+    }
 
     this._optionsContainer = new Element("div", {
       className: "queryEditorQuestionOptions",
