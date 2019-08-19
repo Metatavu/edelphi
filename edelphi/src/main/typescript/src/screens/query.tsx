@@ -13,6 +13,7 @@ import QueryPageLive2d from "../components/panel/query-page-live-2d";
 import QueryComments from "../components/panel/query-comments";
 import QueryNavigation from "../components/panel/query-navigation";
 import getLanguage from "../localization/language";
+import { QueryState } from "edelphi-client";
 
 declare const JSDATA: any;
 let initialQueryValidationMessage: string | undefined = undefined;
@@ -95,7 +96,7 @@ window.addEventListener('load', () => {
     const pageId: number | null = getIntAttribute(queryPageLive2D, "data-page-id");
     const queryReplyId: number | null = getIntAttribute(queryPageLive2D, "data-query-reply-id");
 
-    if (panelId && queryId && pageId && queryReplyId) {
+    if (panelId && queryId && pageId) {
       const component =
         <Provider store={store}>
           <AccessTokenRefresh />
@@ -112,13 +113,14 @@ window.addEventListener('load', () => {
     const panelId: number | null = getIntAttribute(queryNavigation, "data-panel-id");
     const queryId: number | null = getIntAttribute(queryNavigation, "data-query-id");
     const pageId: number | null = getIntAttribute(queryNavigation, "data-page-id");
+    const queryState = (getAttribute(queryNavigation, "data-query-state") as QueryState) || QueryState.ACTIVE;
 
     if (panelId && queryId && pageId) {
       const component =
         <Provider store={store}>
           <AccessTokenRefresh />
           <MqttConnector>
-            <QueryNavigation pageId={pageId} panelId={panelId} queryId={queryId} onPageChange={ pageChangeListener }/>
+            <QueryNavigation queryState={ queryState } pageId={pageId} panelId={panelId} queryId={queryId} onPageChange={ pageChangeListener }/>
           </MqttConnector>
         </Provider>;
 

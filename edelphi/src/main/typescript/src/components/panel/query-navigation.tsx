@@ -4,7 +4,7 @@ import * as _ from "lodash";
 import { StoreState, CommandEvent, PageChangeEvent } from "../../types";
 import { connect } from "react-redux";
 import { Grid, Button, Popup, List, Segment, Dimmer, Loader, Icon } from "semantic-ui-react";
-import Api, { QueryPage, Panel } from "edelphi-client";
+import Api, { QueryPage, Panel, QueryState } from "edelphi-client";
 import { QueryPagesService, PanelsService } from "edelphi-client/dist/api/api";
 import strings from "../../localization/strings";
 
@@ -18,6 +18,7 @@ interface Props {
   panelId: number,
   queryId: number,
   pageId: number,
+  queryState: QueryState,
   queryValidationMessage: string | null,
   onPageChange: (event: PageChangeEvent) => void,
   queryValidationMessageUpdate: (queryValidationMessage: string | null) => void
@@ -108,7 +109,7 @@ class QueryNavigation extends React.Component<Props, State> {
       return null;
     }
 
-    const nextDisabled = !!this.props.queryValidationMessage || this.state.previousSaving || this.state.nextSaving;
+    const nextDisabled = this.props.queryState !== "ACTIVE" || !!this.props.queryValidationMessage || this.state.previousSaving || this.state.nextSaving;
     const previousDisabled = !previousPage || this.state.previousSaving || this.state.nextSaving;
     const skipDisabled = !nextPage || this.state.previousSaving || this.state.nextSaving;
     
