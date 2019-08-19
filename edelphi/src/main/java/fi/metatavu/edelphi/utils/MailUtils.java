@@ -62,7 +62,7 @@ public class MailUtils {
       }
 
       m.setRecipients(Message.RecipientType.TO, to);
-      m.setSubject(subject);
+      m.setSubject(subject, "UTF-8");
       m.setSentDate(new Date());
       m.setContent(content, mimetype);
 
