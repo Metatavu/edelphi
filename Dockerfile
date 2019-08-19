@@ -11,6 +11,7 @@ ADD --chown=jboss ./docker/jboss-cli.properties /opt/docker/jboss-cli.properties
 ADD --chown=jboss ./docker/keycloak.cli /opt/docker/keycloak.cli
 ADD --chown=jboss ./docker/smtp.cli /opt/docker/smtp.cli
 ADD --chown=jboss ./docker/infinispan.cli /opt/docker/infinispan.cli
+ADD --chown=jboss ./docker/http-max-parameters.cli /opt/docker/http-max-parameters.cli
 RUN chmod a+x /opt/docker/entrypoint.sh
 
 ARG WILDFLY_VERSION=16.0.0.Final
@@ -34,6 +35,7 @@ RUN /opt/jboss/wildfly/bin/jboss-cli.sh --properties=/opt/docker/jboss-cli.prope
 RUN /opt/jboss/wildfly/bin/jboss-cli.sh --file=/opt/docker/keycloak.cli
 RUN /opt/jboss/wildfly/bin/jboss-cli.sh --file=/opt/docker/smtp.cli
 RUN /opt/jboss/wildfly/bin/jboss-cli.sh --file=/opt/docker/infinispan.cli
+RUN /opt/jboss/wildfly/bin/jboss-cli.sh --file=/opt/docker/http-max-parameters.cli
 
 EXPOSE 8080
 EXPOSE 9990
