@@ -7,6 +7,7 @@ import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.Defaults;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
+import fi.metatavu.edelphi.auth.OAuthAccessToken;
 import fi.metatavu.edelphi.dao.panels.PanelInvitationDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserDAO;
 import fi.metatavu.edelphi.dao.users.DelfoiUserDAO;
@@ -25,6 +26,7 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.i18n.Messages;
 import fi.metatavu.edelphi.utils.AuthUtils;
+import fi.metatavu.edelphi.utils.KeycloakUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 
 public class JoinPanelPageController extends PageController {
@@ -119,6 +121,11 @@ public class JoinPanelPageController extends PageController {
         // Ensure user is logged in
         
         RequestUtils.loginUser(pageRequestContext, user, null);
+        
+        OAuthAccessToken impersonatedToken = KeycloakUtils.getImpersonatedToken(user);
+        if (impersonatedToken != null) {
+          AuthUtils.storeOAuthAccessToken(pageRequestContext, KeycloakUtils.KEYCLOAK_AUTH_SOURCE, impersonatedToken);
+        }
         
         // TODO if user has no password or external authentication, add a welcome message 
         
