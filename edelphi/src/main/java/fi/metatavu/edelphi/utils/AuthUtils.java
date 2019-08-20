@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -180,6 +181,10 @@ public class AuthUtils {
         if (scopes == null || accessTokenScopes.containsAll(Arrays.asList(scopes))) {
           if (isOAuthTokenExpired(accessToken)) {
             if ("Keycloak".equals(provider)) {
+              if (StringUtils.equals("__IMPERSONATED__", accessToken.getRefreshToken())) {
+                return KeycloakUtils.getImpersonatedToken(UUID.fromString(accessToken.getExternalId()));
+              }
+              
               return getKeycloakStrategy().refreshToken(requestContext, accessToken);
             }
           } else {
