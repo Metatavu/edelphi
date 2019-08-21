@@ -10,8 +10,8 @@ module.exports = {
     extensions: ['.ts', '.tsx', '.js', '.jsx']
   },
   output: {
-    path: path.join(__dirname, "../webapp/_scripts/dist"),
-    filename: 'bundle.min.js'
+    path: path.join(__dirname, "../webapp"),
+    filename: '_scripts/dist/bundle.min.js'
   },
   module: {
     rules: [
@@ -53,7 +53,7 @@ module.exports = {
       },
       {
         test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,    
-        loader: "file-loader"
+        loader: "file-loader?name=/_scripts/dist/[name].[ext]"
       },
       {
         test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,    
