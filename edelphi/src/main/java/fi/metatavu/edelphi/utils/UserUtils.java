@@ -2,7 +2,6 @@ package fi.metatavu.edelphi.utils;
 
 import java.util.List;
 
-import fi.metatavu.edelphi.auth.KeycloakAuthenticationStrategy;
 import fi.metatavu.edelphi.dao.panels.PanelExpertiseGroupUserDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
@@ -37,11 +36,6 @@ public class UserUtils {
     PanelUserDAO panelUserDAO = new PanelUserDAO();
     PanelUser panelUser = panelUserDAO.findByPanelAndUserAndStamp(panel, user, panel.getCurrentStamp());
     return panelUser != null;
-  }
-  
-  public static void createUserPassword(User user, String password, boolean passwordTemporary, boolean emailVerified) {
-    KeycloakAuthenticationStrategy keycloakStrategy = AuthUtils.getKeycloakStrategy();
-    keycloakStrategy.createUserPassword(user, password, passwordTemporary, emailVerified);
   }
 
   public static void merge(User source, User target) {
