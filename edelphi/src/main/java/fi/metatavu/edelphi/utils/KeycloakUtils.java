@@ -515,23 +515,46 @@ public class KeycloakUtils {
   private static String getRealm(Map<String, String> settings) {
     return settings.get("oauth.keycloak.realm");
   }
-  
+
+  /**
+   * Returns admin password
+   * 
+   * @param settings settings
+   * @return admin password
+   */
   private static String getAdminPassword(Map<String, String> settings) {
     return settings.get("oauth.keycloak.adminPassword");
   }
 
+  /**
+   * Returns admin user
+   * 
+   * @param settings settings
+   * @return admin user
+   */
   private static String getAdminUser(Map<String, String> settings) {
     return settings.get("oauth.keycloak.adminUser");
   }
 
+  /**
+   * Returns admin client id
+   * 
+   * @param settings settings
+   * @return admin client id
+   */
   private static String getAdminClientId(Map<String, String> settings) {
     return settings.get("oauth.keycloak.apiKey");
   }
 
+  /**
+   * Returns admin client secret
+   * 
+   * @param settings settings
+   * @return admin client secret
+   */
   private static String getAdminClientSecret(Map<String, String> settings) {
     return settings.get("oauth.keycloak.apiSecret");
   }
-
 
   /**
    * Returns impersonate client id
