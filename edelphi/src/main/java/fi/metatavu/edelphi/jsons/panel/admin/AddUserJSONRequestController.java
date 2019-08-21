@@ -27,6 +27,7 @@ import fi.metatavu.edelphi.jsons.JSONController;
 import fi.metatavu.edelphi.smvcj.PageNotFoundException;
 import fi.metatavu.edelphi.smvcj.Severity;
 import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
+import fi.metatavu.edelphi.utils.KeycloakUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 import fi.metatavu.edelphi.utils.UserUtils;
 
@@ -72,7 +73,7 @@ public class AddUserJSONRequestController extends JSONController {
         user = userDAO.create(firstName, lastName, null, creator, Defaults.NEW_USER_SUBSCRIPTION_LEVEL, null, null, locale.getLanguage());
         userEmail = userEmailDAO.create(user, email);
         userDAO.addUserEmail(user, userEmail, true, creator);
-        UserUtils.createUserPassword(user, password, false, true);
+        KeycloakUtils.createUser(user, password, false, true);
       }
       
       DelfoiUserDAO delfoiUserDAO = new DelfoiUserDAO();

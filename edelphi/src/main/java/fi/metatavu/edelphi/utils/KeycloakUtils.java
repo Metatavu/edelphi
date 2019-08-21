@@ -11,8 +11,11 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.Header;
@@ -28,12 +31,18 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.keycloak.OAuth2Constants;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.auth.OAuthAccessToken;
 import fi.metatavu.edelphi.dao.base.AuthSourceDAO;
 import fi.metatavu.edelphi.dao.base.AuthSourceSettingDAO;
@@ -42,6 +51,7 @@ import fi.metatavu.edelphi.domainmodel.base.AuthSource;
 import fi.metatavu.edelphi.domainmodel.base.AuthSourceSetting;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserIdentification;
+import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 
 /**
  * Utilities for Keycloak
@@ -53,6 +63,45 @@ public class KeycloakUtils {
   public static final String KEYCLOAK_AUTH_SOURCE = "Keycloak";
 
   private static final Logger logger = LoggerFactory.getLogger(RequestUtils.class);
+  
+  /**
+   * Creates user into Keycloak (if missing)
+   * 
+   * @param user user
+   * @param password password
+   * @param passwordTemporary whether password is temporary or not
+   * @param emailVerified whether email is verified
+   */
+  public static void createUser(User user, String password, boolean passwordTemporary, boolean emailVerified) {
+    UserIdentificationDAO userIdentificationDAO = new UserIdentificationDAO();
+    
+    Map<String, String> settings = getKeycloakSettings();
+    
+    Keycloak keycloakClient = getAdminClient(settings);
+    String email = user.getDefaultEmailAsString();
+    String realm = getRealm(settings);
+
+    UserRepresentation userRepresentation = findUser(keycloakClient, realm, email);
+    if (userRepresentation == null) {
+      userRepresentation = createUser(keycloakClient, realm, user, email, password, passwordTemporary, emailVerified);
+      if (userRepresentation == null) {
+        logger.error("Failed to create user for {}", email);
+        return;
+      }
+    }
+    
+    AuthSource keycloakAuthSource = getKeycloakAuthSource();
+    
+    UUID keycloakUserId = UUID.fromString(userRepresentation.getId());
+    
+    UUID storedKeycloakId = getUserKeycloakId(user);
+    if (storedKeycloakId == null) {
+      userIdentificationDAO.create(user, keycloakUserId.toString(), keycloakAuthSource);
+    } else if (!storedKeycloakId.equals(keycloakUserId)) {
+      userIdentificationDAO.listByUserAndAuthSource(user, keycloakAuthSource).stream().forEach(userIdentificationDAO::delete);
+      userIdentificationDAO.create(user, keycloakUserId.toString(), keycloakAuthSource);
+    }
+  }
   
   /**
    * Returns access token for impersonated user
@@ -92,6 +141,65 @@ public class KeycloakUtils {
     
     List<Cookie> cookies = getImpersonationCookies(serverUrl, realm, adminAccessToken, userId);
     return exchangeImpersonationCookiesToToken(serverUrl, realm, impersonateClientId, userId, impersonateRedirectUrl, cookies);
+  }
+
+  /**
+   * Creates user into Keycloak
+   * 
+   * @param keycloakClient Keycloak client
+   * @param realm realm
+   * @param user user
+   * @param email email
+   * @param password password
+   * @param passwordTemporary whether password is temporary or not
+   * @param emailVerified whether email is verified
+   * @return created user
+   */
+  private static UserRepresentation createUser(Keycloak keycloakClient, String realm, User user, String email, String password, boolean passwordTemporary, boolean emailVerified) {
+    CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
+    credentialRepresentation.setType(CredentialRepresentation.PASSWORD);
+    credentialRepresentation.setValue(password);
+    credentialRepresentation.setTemporary(passwordTemporary);
+    
+    UserRepresentation userRepresentation = new UserRepresentation();
+    userRepresentation.setUsername(email);
+    userRepresentation.setFirstName(user.getFirstName());
+    userRepresentation.setLastName(user.getLastName());
+    userRepresentation.setCredentials(Arrays.asList(credentialRepresentation));
+    userRepresentation.setEnabled(true);
+    userRepresentation.setEmail(email);
+    userRepresentation.setEmailVerified(emailVerified); 
+    
+    javax.ws.rs.core.Response response = keycloakClient.realm(realm).users().create(userRepresentation);
+    if (response.getStatus() < 200 && response.getStatus() >= 300) {
+      throw new SmvcRuntimeException(EdelfoiStatusCode.UNDEFINED, "Failed to create user on authentication server");
+    }
+    
+    UUID id = getCreateResponseId(response);
+    
+    UserRepresentation result = keycloakClient.realm(realm).users().get(id.toString()).toRepresentation();
+    if (result != null) {
+      return result;
+    }
+    
+    return findUser(keycloakClient, realm, email);
+  }
+
+  /**
+   * Tries to find user by email
+   * 
+   * @param keycloakClient Keycloak client
+   * @param realm realm
+   * @param email email
+   * @return found user or null if not found
+   */
+  private static UserRepresentation findUser(Keycloak keycloakClient, String realm, String email) {
+    List<UserRepresentation> users = keycloakClient.realm(realm).users().search(null, null, null, email, 0, 1);
+    if (users.isEmpty()) {
+      return null;
+    }
+    
+    return users.get(0);
   }
   
   /**
@@ -202,9 +310,38 @@ public class KeycloakUtils {
       logger.warn("User {} has more than one identity", user.getId());
     }
     
-    return new UUID(0L, 0L);
+    return null;
   }
 
+
+  /**
+   * Creates admin client for config
+   * 
+   * @param configuration configuration
+   * @return admin client
+   */
+  private static Keycloak getAdminClient(Map<String, String> settings) {
+    String realm = getRealm(settings);
+    String serverUrl = getServerUrl(settings);
+    String clientId = getAdminClientId(settings);
+    String clientSecret = getAdminClientSecret(settings);
+    String adminUser = getAdminUser(settings);
+    String adminPass = getAdminPassword(settings);
+    
+    String token = getAccessToken(serverUrl, realm, clientId, clientSecret, adminUser, adminPass);
+    
+    return KeycloakBuilder.builder()
+      .serverUrl(serverUrl)
+      .realm(realm)
+      .grantType(OAuth2Constants.PASSWORD)
+      .clientId(clientId)
+      .clientSecret(clientSecret)
+      .username(adminUser)
+      .password(adminPass)
+      .authorization(String.format("Bearer %s", token))
+      .build();
+  }
+  
   /**
    * Returns Keycloak auth source
    * 
@@ -284,6 +421,80 @@ public class KeycloakUtils {
     ObjectMapper objectMapper = new ObjectMapper();
     return objectMapper.readValue(src, new TypeReference<Map<String, Object>>() {});
   }
+  
+  /**
+   * Finds a id from Keycloak create response 
+   * 
+   * @param response response object
+   * @return id
+   */
+  private static UUID getCreateResponseId(javax.ws.rs.core.Response response) {
+    if (response.getStatus() != 201) {
+      try {
+        if (logger.isErrorEnabled()) {
+          logger.error("Failed to execute create: {}", IOUtils.toString((InputStream) response.getEntity(), "UTF-8"));
+        }
+      } catch (IOException e) {
+        logger.error("Failed to extract error message", e);
+      }
+      
+      return null;
+    }
+    
+    UUID locationId = getCreateResponseLocationId(response);
+    if (locationId != null) {
+      return locationId;
+    }
+    
+    return getCreateResponseBodyId(response);
+  }
+
+  /**
+   * Attempts to locate id from create location response
+   * 
+   * @param response response
+   * @return id or null if not found
+   */
+  private static UUID getCreateResponseLocationId(javax.ws.rs.core.Response response) {
+    String location = response.getHeaderString("location");
+    if (StringUtils.isNotBlank(location)) {
+      Pattern pattern = Pattern.compile(".*\\/(.*)$");
+      Matcher matcher = pattern.matcher(location);
+      
+      if (matcher.find()) {
+        return UUID.fromString(matcher.group(1));
+      }
+    }
+    
+    return null;
+  }
+
+  /**
+   * Attempts to locate id from create response body
+   * 
+   * @param response response object
+   * @return id or null if not found
+   */
+  private static UUID getCreateResponseBodyId(javax.ws.rs.core.Response response) {
+    if (response.getEntity() instanceof InputStream) {
+      try (InputStream inputStream = (InputStream) response.getEntity()) {
+        Map<String, Object> result = readJsonMap(inputStream);
+        if (result.get("_id") instanceof String) {
+          return UUID.fromString((String) result.get("_id"));
+        }
+        
+        if (result.get("id") instanceof String) {
+          return UUID.fromString((String) result.get("id"));
+        } 
+      } catch (IOException e) {
+        if (logger.isDebugEnabled()) {
+          logger.debug("Failed to locate id from response", e);
+        }
+      }
+    }
+    
+    return null;
+  }
 
   /**
    * Returns impersonate server URL
@@ -303,6 +514,46 @@ public class KeycloakUtils {
    */
   private static String getRealm(Map<String, String> settings) {
     return settings.get("oauth.keycloak.realm");
+  }
+
+  /**
+   * Returns admin password
+   * 
+   * @param settings settings
+   * @return admin password
+   */
+  private static String getAdminPassword(Map<String, String> settings) {
+    return settings.get("oauth.keycloak.adminPassword");
+  }
+
+  /**
+   * Returns admin user
+   * 
+   * @param settings settings
+   * @return admin user
+   */
+  private static String getAdminUser(Map<String, String> settings) {
+    return settings.get("oauth.keycloak.adminUser");
+  }
+
+  /**
+   * Returns admin client id
+   * 
+   * @param settings settings
+   * @return admin client id
+   */
+  private static String getAdminClientId(Map<String, String> settings) {
+    return settings.get("oauth.keycloak.apiKey");
+  }
+
+  /**
+   * Returns admin client secret
+   * 
+   * @param settings settings
+   * @return admin client secret
+   */
+  private static String getAdminClientSecret(Map<String, String> settings) {
+    return settings.get("oauth.keycloak.apiSecret");
   }
 
   /**
