@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.utils;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -151,6 +152,12 @@ public class AuthUtils {
     if (accessTokens == null) {
       session.setAttribute(String.format(PROVIDER_ACCESS_TOKENS, provider), new OAuthAccessToken[]{token});
     } else {
+      Date now = new Date();
+      
+      accessTokens = Arrays.stream(accessTokens)
+        .filter(accessToken -> now.before(accessToken.getExpires()))
+        .toArray(OAuthAccessToken[]::new);
+      
       OAuthAccessToken[] newTokens = new OAuthAccessToken[accessTokens.length + 1];
       for (int i = 0, l = accessTokens.length; i < l; i++) {
         newTokens[i] = accessTokens[i];
@@ -182,7 +189,12 @@ public class AuthUtils {
           if (isOAuthTokenExpired(accessToken)) {
             if ("Keycloak".equals(provider)) {
               if (StringUtils.equals("__IMPERSONATED__", accessToken.getRefreshToken())) {
-                return KeycloakUtils.getImpersonatedToken(UUID.fromString(accessToken.getExternalId()));
+                OAuthAccessToken impersonatedToken = KeycloakUtils.getImpersonatedToken(UUID.fromString(accessToken.getExternalId()));
+                if (impersonatedToken != null) {
+                  AuthUtils.storeOAuthAccessToken(requestContext, KeycloakUtils.KEYCLOAK_AUTH_SOURCE, impersonatedToken);
+                }
+                
+                return impersonatedToken;
               }
               
               return getKeycloakStrategy().refreshToken(requestContext, accessToken);
