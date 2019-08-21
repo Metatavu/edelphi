@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -35,8 +38,32 @@ public class DriveImageCache {
     return (ImageEntry) cache.get(fileId);
   }
   
+  private static DriveImageCacheContainer getCacheContainer() {
+    BeanManager beanManager = lookup("java:comp/BeanManager");
+    Bean<? extends Object> bean = beanManager.resolve(beanManager.getBeans(DriveImageCacheContainer.class ));
+    CreationalContext<?> context = beanManager.createCreationalContext(bean);
+    DriveImageCacheContainer driveImageCacheContainer = (DriveImageCacheContainer) beanManager.getReference(bean, DriveImageCacheContainer.class, context);
+    return driveImageCacheContainer;
+  }
+  
   private static Cache<Object, Object> getCache() {
-    CacheContainer cacheContainer = getCacheContainer();
+    Cache<Object, Object> cache = null;
+    
+    DriveImageCacheContainer driveImageCacheContainer = getCacheContainer();
+    if (driveImageCacheContainer != null) {
+      cache = driveImageCacheContainer.getCache();
+    }
+    
+    if (cache != null) {
+      return cache;
+    }
+    
+    cache = lookup("java:jboss/infinispan/cache/edelphi/google-image-cache");
+    if (cache != null) {
+      return cache;
+    }
+    
+    CacheContainer cacheContainer = lookup("java:jboss/infinispan/container/edelphi");
     if (cacheContainer == null) {
       return null;
     }
@@ -44,10 +71,11 @@ public class DriveImageCache {
     return cacheContainer.getCache("google-image-cache");
   }
   
-  private static CacheContainer getCacheContainer() {
+  @SuppressWarnings("unchecked")
+  private static <L> L lookup(String name) {
     try {
       InitialContext initialContext = new InitialContext();
-      return (CacheContainer) initialContext.lookup("java:jboss/infinispan/container/edelphi");
+      return (L) initialContext.lookup(name);
     } catch (NamingException e) {
       if (logger.isLoggable(Level.SEVERE)) {
         logger.log(Level.SEVERE, "Failed to lookup edelphi cache container", e);
