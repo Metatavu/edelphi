@@ -1,6 +1,7 @@
 package fi.metatavu.edelphi.pages;
 
 import java.util.Locale;
+import java.util.UUID;
 
 import fi.metatavu.edelphi.smvcj.Severity;
 import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
@@ -28,6 +29,7 @@ import fi.metatavu.edelphi.i18n.Messages;
 import fi.metatavu.edelphi.utils.AuthUtils;
 import fi.metatavu.edelphi.utils.KeycloakUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.UserUtils;
 
 public class JoinPanelPageController extends PageController {
 
@@ -106,6 +108,10 @@ public class JoinPanelPageController extends PageController {
         else {
           user = userEmail.getUser();
         }
+        
+        // Ensure user has a Keycloak user
+        
+        UserUtils.createUserPassword(user, UUID.randomUUID().toString(), false, true);
         
         // Ensure panel membership 
         
