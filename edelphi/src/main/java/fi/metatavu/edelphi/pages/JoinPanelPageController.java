@@ -111,7 +111,7 @@ public class JoinPanelPageController extends PageController {
         
         // Ensure user has a Keycloak user
         
-        UserUtils.createUserPassword(user, UUID.randomUUID().toString(), false, true);
+//        UserUtils.createUserPassword(user, UUID.randomUUID().toString(), false, true);
         
         // Ensure panel membership 
         
