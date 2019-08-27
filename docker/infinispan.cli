@@ -1,7 +1,8 @@
 embed-server --server-config=standalone-full-ha.xml
 /subsystem=infinispan/cache-container=edelphi:add()
 /subsystem=infinispan/cache-container=edelphi/transport=jgroups:add(stack=kubernetes,channel=ee,lock-timeout=60000,cluster=ejb)
-/subsystem=infinispan/cache-container=edelphi/replicated-cache=google-image-cache:add(mode=ASYNC)
-/subsystem=infinispan/cache-container=edelphi/replicated-cache=google-image-cache/store=file:add()
-/subsystem=infinispan/cache-container=edelphi/replicated-cache=report-image-cache:add(mode=ASYNC)
-/subsystem=infinispan/cache-container=edelphi/replicated-cache=report-image-cache/store=file:add()
+/subsystem=infinispan/cache-container=edelphi/distributed-cache=google-image-cache:add(mode=ASYNC)
+/subsystem=infinispan/cache-container=edelphi/distributed-cache=google-image-cache/store=file:add()
+/subsystem=infinispan/cache-container=edelphi/distributed-cache=report-image-cache:add(mode=SYNC)
+/subsystem=infinispan/cache-container=edelphi/distributed-cache=report-image-cache/store=file:add()
+/subsystem=infinispan/cache-container=web/distributed-cache=dist:write-attribute(name=mode,value=ASYNC)
