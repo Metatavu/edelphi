@@ -7,6 +7,7 @@ package fi.metatavu.edelphi.reports.charts;
  */
 public class ScatterValue {
 
+  private Long replyId;
   private double x;
   private double y;
 
@@ -16,9 +17,19 @@ public class ScatterValue {
    * @param x x
    * @param y y
    */
-  public ScatterValue(double x, double y) {
+  public ScatterValue(Long replyId, double x, double y) {
+    this.replyId = replyId;
     this.x = x;
     this.y = y;
+  }
+  
+  /**
+   * Returns reply id
+   * 
+   * @return reply id
+   */
+  public Long getReplyId() {
+    return replyId;
   }
 
   /**
@@ -37,24 +48,6 @@ public class ScatterValue {
    */
   public double getY() {
     return y;
-  }
-
-  /**
-   * Sets x
-   * 
-   * @param x x
-   */
-  public void setX(double x) {
-    this.x = x;
-  }
-
-  /**
-   * Sets y
-   * 
-   * @param y y
-   */
-  public void setY(double y) {
-    this.y = y;
   }
 
 }

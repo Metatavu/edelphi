@@ -8,14 +8,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 import org.apache.commons.codec.binary.Base64;
+import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
+import org.knowm.xchart.BitmapEncoder.BitmapFormat;
 import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
 import org.knowm.xchart.style.Styler.LegendPosition;
 
@@ -24,13 +24,8 @@ import de.erichseifert.vectorgraphics2d.VectorGraphics2D;
 import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
 import de.erichseifert.vectorgraphics2d.svg.SVGProcessor;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
-import fi.metatavu.edelphi.dao.querydata.QueryQuestionNumericAnswerDAO;
-import fi.metatavu.edelphi.dao.querymeta.QueryNumericFieldDAO;
-import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionNumericAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
-import fi.metatavu.edelphi.domainmodel.querymeta.QueryNumericField;
-import fi.metatavu.edelphi.queries.QueryPageController;
 import fi.metatavu.edelphi.reports.ReportException;
 
 /**
@@ -41,21 +36,9 @@ import fi.metatavu.edelphi.reports.ReportException;
 @ApplicationScoped
 public class ChartController {
   
-  private static final int GRAPH_WIDTH = 600;
-  private static final int GRAPH_HEIGHT = 600;
-  
+  private static final int GRAPH_WIDTH = 690;
+  private static final int GRAPH_HEIGHT = 690;
   private static final String OBJECT_STYLES = "display: block; border: 1px solid #000; margin: 10px;";
-  private static final String OPTIONS_X = "live2d.options.x";
-  private static final String OPTIONS_Y = "live2d.options.y";
-  
-  @Inject
-  private QueryNumericFieldDAO queryNumericFieldDAO;
-
-  @Inject
-  private QueryQuestionNumericAnswerDAO queryQuestionNumericAnswerDAO;
-
-  @Inject
-  private QueryPageController queryPageController;
 
   /**
    * Creates a live 2d report
@@ -72,25 +55,7 @@ public class ChartController {
    * @throws ReportException
    */
   @SuppressWarnings ({"squid:S3776"})
-  public String createLive2dChart(Locale locale, QueryPage queryPage, List<QueryReply> queryReplies, String title, String labelX, String labelY, String fieldNameX, String fieldNameY) throws ReportException {
-    QueryNumericField queryFieldX = queryNumericFieldDAO.findByQueryPageAndName(queryPage, fieldNameX);
-    QueryNumericField queryFieldY = queryNumericFieldDAO.findByQueryPageAndName(queryPage, fieldNameY);
-
-    List<String> optionsX = queryPageController.getListSetting(queryPage, OPTIONS_X);
-    List<String> optionsY = queryPageController.getListSetting(queryPage, OPTIONS_Y);
-    
-    List<QueryQuestionNumericAnswer> answersX = queryQuestionNumericAnswerDAO.listByQueryFieldAndRepliesIn(queryFieldX, queryReplies);
-    List<QueryQuestionNumericAnswer> answersY = queryQuestionNumericAnswerDAO.listByQueryFieldAndRepliesIn(queryFieldY, queryReplies);
-    
-    Map<Long, Double> answerMapX = answersX.stream().collect(Collectors.toMap(answer -> answer.getQueryReply().getId(), QueryQuestionNumericAnswer::getData));
-    Map<Long, Double> answerMapY = answersY.stream().collect(Collectors.toMap(answer -> answer.getQueryReply().getId(), QueryQuestionNumericAnswer::getData));
-    Map<Long, Double[]> answerMap = queryReplies.stream().map(QueryReply::getId).collect(Collectors.toMap(queryReplyId -> queryReplyId, queryReplyId -> new Double[] { answerMapX.get(queryReplyId), answerMapY.get(queryReplyId) }));
-    
-    List<ScatterValue> scatterValues = answerMap.values().stream()
-      .filter(values -> values[0] != null && values[1] != null)
-      .map(values -> new ScatterValue(values[0], values[1]))
-      .collect(Collectors.toList());
-    
+  public String createLive2dChart(Locale locale, QueryPage queryPage, List<QueryReply> queryReplies, List<ScatterValue> scatterValues, String labelX, String labelY, List<String> optionsX, List<String> optionsY) throws ReportException {
     // Create Chart
     
     XYChart chart = new XYChartBuilder().width(GRAPH_WIDTH).height(GRAPH_HEIGHT).title(queryPage.getTitle()).xAxisTitle(labelX).yAxisTitle(labelY).build();
@@ -127,7 +92,7 @@ public class ChartController {
     
     chart.addSeries("values", xValues, yValues);
     
-    return printGraph(chart);
+    return printGraphPNG(chart);
   }
 
   /**
@@ -137,7 +102,8 @@ public class ChartController {
    * @return HTML
    * @throws ReportException thrown when graph printing fails
    */
-  private String printGraph(XYChart chart) throws ReportException {
+  @SuppressWarnings("unused")
+  private String printGraphSVG(XYChart chart) throws ReportException {
     try {
       byte[] chartData = renderChartSVG(chart);
 
@@ -154,6 +120,22 @@ public class ChartController {
       throw new ReportException(e);
     }
   }
+
+  /**
+   * Prints graph
+   * 
+   * @param chart chart
+   * @return HTML
+   * @throws ReportException thrown when graph printing fails
+   */
+  private String printGraphPNG(XYChart chart) throws ReportException {
+    try {
+      byte[] chartData = renderChartPNG(chart);
+      return String.format("<img src=\"data:image/svg+xml;charset=UTF-8;base64,%s\" width=\"%s\" height=\"%s\"/>", Base64.encodeBase64String(chartData), GRAPH_WIDTH, GRAPH_HEIGHT);
+    } catch (IOException e) {
+      throw new ReportException(e);
+    }
+  }
   
   /**
    * Renders a chart as SVG
@@ -162,6 +144,7 @@ public class ChartController {
    * @return SVG
    * @throws IOException thrown when chart rendering fails
    */
+  @SuppressWarnings("unused")
   private byte[] renderChartSVG(XYChart chart) throws IOException {
     Processor processor = new SVGProcessor();
     Graphics2D vg2d = new VectorGraphics2D();
@@ -175,6 +158,17 @@ public class ChartController {
       
       return output.toByteArray();
     }
+  }
+  
+  /**
+   * Renders a chart as PNG
+   * 
+   * @param chart chart
+   * @return SVG
+   * @throws IOException thrown when chart rendering fails
+   */
+  private byte[] renderChartPNG(XYChart chart) throws IOException {
+    return BitmapEncoder.getBitmapBytes(chart, BitmapFormat.PNG);
   }
 
   /**
