@@ -96,7 +96,7 @@ public class TimeserieQueryPageSpreadsheetExporter extends AbstractQueryPageSpre
   public ReportPageCommentProcessor exportComments(QueryPage queryPage, PanelStamp stamp, List<QueryReply> replies) {
     Double maxX = queryPageController.getDoubleSetting(queryPage, "time_serie.maxX");
     String axisXTitle = queryPageController.getSetting(queryPage, "time_serie.xAxisTitle");
-    return new TimeSerieReportPageCommentProcessor(stamp, queryPage, new HashMap<>(), maxX, axisXTitle);
+    return new TimeSerieReportPageCommentProcessor(queryPage, listRootComments(stamp, queryPage), new HashMap<>(), maxX, axisXTitle);
   }
   
   private int getPredefinedValueCount(NavigableMap<String, String> predefinedValues) {

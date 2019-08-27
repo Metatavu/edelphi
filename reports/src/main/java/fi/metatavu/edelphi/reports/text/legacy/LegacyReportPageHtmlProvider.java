@@ -21,8 +21,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.reports.ReportException;
+import fi.metatavu.edelphi.reports.text.AbstractReportPageHtmlProvider;
 import fi.metatavu.edelphi.reports.text.TextReportPageContext;
-import fi.metatavu.edelphi.reports.text.ReportPageHtmlProvider;
 import fi.metatavu.edelphi.settings.SettingsController;
 
 /**
@@ -31,7 +31,7 @@ import fi.metatavu.edelphi.settings.SettingsController;
  * @author Antti Leppä
  */
 @ApplicationScoped
-public class LegacyReportPageHtmlProvider implements ReportPageHtmlProvider {
+public class LegacyReportPageHtmlProvider extends AbstractReportPageHtmlProvider {
   
   @Inject
   private SettingsController settingsController;

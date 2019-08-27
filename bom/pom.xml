@@ -76,6 +76,10 @@
     
     <openid4java.version>1.0.0</openid4java.version>
     
+    <!-- Birt -->
+    
+    <birt.version>4.5.0a</birt.version>
+    
     <!-- PDFs -->
     
     <flying-saucer-pdf-itext5.version>9.1.1</flying-saucer-pdf-itext5.version>
@@ -139,7 +143,7 @@
       <dependency>
         <groupId>org.eclipse.birt.runtime</groupId>
         <artifactId>org.eclipse.birt.runtime</artifactId>
-        <version>4.5.0a</version>
+        <version>${birt.version}</version>
       </dependency>
       
       <dependency>

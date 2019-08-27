@@ -1,11 +1,11 @@
 package fi.metatavu.edelphi.reports.spreadsheet.comments;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionNumericAnswerDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
-import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionNumericAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
@@ -25,14 +25,14 @@ public class TimeSerieReportPageCommentProcessor extends AbstractReportPageComme
   /**
    * Constructor for a comment processor
    * 
-   * @param panelStamp panel stamp
    * @param queryPage query page
+   * @param rootComments root comments
    * @param answers target map for answers
    * @param maxX max value for x axis
    * @param axisXTitle x axis title
    */
-  public TimeSerieReportPageCommentProcessor(PanelStamp panelStamp, QueryPage queryPage, Map<Long, Map<String, String>> answers, Double maxX, String axisXTitle) {
-    super(panelStamp, queryPage, answers);
+  public TimeSerieReportPageCommentProcessor(QueryPage queryPage, List<QueryQuestionComment> rootComments, Map<Long, Map<String, String>> answers, Double maxX, String axisXTitle) {
+    super(queryPage, rootComments, answers);
     this.maxX = maxX;
     this.axisXTitle = axisXTitle;
   }

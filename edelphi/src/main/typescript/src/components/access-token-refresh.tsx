@@ -55,7 +55,7 @@ class AccessTokenRefresh extends React.Component<Props, State> {
 
     this.timer = setInterval(() => {
       this.refreshAccessToken();
-    }, 5000);
+    }, 1000 * 60 * 5);
   }
 
   /**

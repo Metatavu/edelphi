@@ -6,14 +6,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Set;
-
-import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
-import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 
@@ -24,7 +21,6 @@ import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
  */
 public abstract class AbstractReportPageCommentProcessor implements ReportPageCommentProcessor {
   
-  private PanelStamp panelStamp;
   private QueryPage queryPage;
   private List<QueryQuestionComment> rootComments;
   private Map<Long, Map<String, String>> answers;
@@ -36,11 +32,10 @@ public abstract class AbstractReportPageCommentProcessor implements ReportPageCo
    * @param queryPage query page
    * @param answers target map for answers
    */
-  public AbstractReportPageCommentProcessor(PanelStamp panelStamp, QueryPage queryPage, Map<Long, Map<String, String>> answers) {
-    this.panelStamp = panelStamp;
+  public AbstractReportPageCommentProcessor(QueryPage queryPage, List<QueryQuestionComment> rootComments, Map<Long, Map<String, String>> answers) {
     this.queryPage = queryPage;
     this.answers = answers;
-    this.rootComments = listRootComments();
+    this.rootComments = rootComments;
   }
   
   /**
@@ -106,16 +101,6 @@ public abstract class AbstractReportPageCommentProcessor implements ReportPageCo
     
     valueMap.put(caption, value);
     answers.put(id, valueMap);
-  }
-  
-  /**
-   * Lists page's root comments
-   * 
-   * @return page's root comments
-   */
-  private List<QueryQuestionComment> listRootComments() {
-    QueryQuestionCommentDAO queryQuestionCommentDAO = new QueryQuestionCommentDAO();
-    return queryQuestionCommentDAO.listRootCommentsByQueryPageAndStampOrderByCreated(queryPage, panelStamp); 
   }
  
 }
