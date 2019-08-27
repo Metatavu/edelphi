@@ -1,8 +1,9 @@
 package fi.metatavu.edelphi.reports.spreadsheet.comments;
 
+import java.util.List;
 import java.util.Map;
 
-import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 
 /**
@@ -15,12 +16,12 @@ public class GenericReportPageCommentProcessor extends AbstractReportPageComment
   /**
    * Constructor for a comment processor
    * 
-   * @param panelStamp panel stamp
    * @param queryPage query page
+   * @param rootComments root comments
    * @param answers target map for answers
    */
-  public GenericReportPageCommentProcessor(PanelStamp panelStamp, QueryPage queryPage, Map<Long, Map<String, String>> answers) {
-    super(panelStamp, queryPage, answers);
+  public GenericReportPageCommentProcessor(QueryPage queryPage, List<QueryQuestionComment> rootComments, Map<Long, Map<String, String>> answers) {
+    super(queryPage, rootComments, answers);
   }
 
   @Override

@@ -12,6 +12,7 @@ import org.jsoup.nodes.Document;
 
 import fi.metatavu.edelphi.reports.ReportException;
 import fi.metatavu.edelphi.reports.text.legacy.LegacyReportPageHtmlProvider;
+import fi.metatavu.edelphi.reports.text.live2d.Live2dReportPageHtmlProvider;
 
 /**
  * Controller for text reports
@@ -23,6 +24,9 @@ public class TextReportController {
   
   @Inject
   private LegacyReportPageHtmlProvider legacyReportPageHtmlProvider;
+
+  @Inject
+  private Live2dReportPageHtmlProvider live2dReportPageHtmlProvider;
   
   /**
    * Returns a report HTML for given report pages
@@ -74,6 +78,12 @@ public class TextReportController {
    * @throws ReportException thrown when report HTML generation fails
    */
   public String getPageHtml(TextReportPageContext context) throws ReportException {
+    switch (context.getPage().getPageType()) {
+      case LIVE_2D:
+        return live2dReportPageHtmlProvider.getPageHtml(context);
+      default:
+    }
+    
     return legacyReportPageHtmlProvider.getPageHtml(context);
   }
 

@@ -1,11 +1,11 @@
 package fi.metatavu.edelphi.reports.spreadsheet.comments;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionNumericAnswerDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
-import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionNumericAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
@@ -25,12 +25,12 @@ public class TimelineReportPageCommentProcessor extends AbstractReportPageCommen
   /**
    * Constructor for a comment processor
    * 
-   * @param panelStamp panel stamp
    * @param queryPage query page
+   * @param rootComments root comments
    * @param answers target map for answers
    */
-  public TimelineReportPageCommentProcessor(PanelStamp panelStamp, QueryPage queryPage, Map<Long, Map<String, String>> answers) {
-    super(panelStamp, queryPage, answers);
+  public TimelineReportPageCommentProcessor(QueryPage queryPage, List<QueryQuestionComment> rootComments, Map<Long, Map<String, String>> answers) {
+    super(queryPage, rootComments, answers);
   }
 
   @Override

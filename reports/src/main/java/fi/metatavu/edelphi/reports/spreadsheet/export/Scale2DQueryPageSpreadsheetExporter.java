@@ -79,7 +79,7 @@ public class Scale2DQueryPageSpreadsheetExporter extends AbstractQueryPageSpread
 
   @Override
   public ReportPageCommentProcessor exportComments(QueryPage queryPage, PanelStamp stamp, List<QueryReply> replies) {
-    return new Scale2DReportPageCommentProcessor(stamp, queryPage, new HashMap<>());
+    return new Scale2DReportPageCommentProcessor(queryPage, listRootComments(stamp, queryPage), new HashMap<>());
   }
   
   private String getFieldName(String axis) {
