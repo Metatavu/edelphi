@@ -83,7 +83,7 @@ public class TimelineQueryPageSpreadsheetExporter extends AbstractQueryPageSprea
 
   @Override
   public ReportPageCommentProcessor exportComments(QueryPage queryPage, PanelStamp stamp, List<QueryReply> replies) {
-    return new TimelineReportPageCommentProcessor(stamp, queryPage, new HashMap<>());
+    return new TimelineReportPageCommentProcessor(queryPage, listRootComments(stamp, queryPage), new HashMap<>());
   }
   
 }

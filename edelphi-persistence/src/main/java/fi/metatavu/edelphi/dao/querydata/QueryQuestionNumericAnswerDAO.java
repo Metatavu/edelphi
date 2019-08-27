@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.dao.querydata;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -74,6 +75,32 @@ public class QueryQuestionNumericAnswerDAO extends GenericDAO<QueryQuestionNumer
     Root<QueryQuestionNumericAnswer> root = criteria.from(QueryQuestionNumericAnswer.class);
     criteria.select(root);
     criteria.where(
+      criteriaBuilder.equal(root.get(QueryQuestionNumericAnswer_.queryField), queryField)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  /**
+   * Lists answers by field and replies
+   * 
+   * @param queryField field
+   * @param queryReplies replies
+   * @return answers into field in with replies
+   */
+  public List<QueryQuestionNumericAnswer> listByQueryFieldAndRepliesIn(QueryField queryField, List<QueryReply> queryReplies) {
+    if (queryReplies == null || queryReplies.isEmpty()) {
+      return Collections.emptyList();
+    }
+    
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryQuestionNumericAnswer> criteria = criteriaBuilder.createQuery(QueryQuestionNumericAnswer.class);
+    Root<QueryQuestionNumericAnswer> root = criteria.from(QueryQuestionNumericAnswer.class);
+    criteria.select(root);
+    criteria.where(
+      root.get(QueryQuestionNumericAnswer_.queryReply).in(queryReplies),
       criteriaBuilder.equal(root.get(QueryQuestionNumericAnswer_.queryField), queryField)
     );
 

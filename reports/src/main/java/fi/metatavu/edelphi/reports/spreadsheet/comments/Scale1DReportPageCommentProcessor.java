@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionOptionAnswerDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
-import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionAnswer;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
@@ -25,12 +24,12 @@ public class Scale1DReportPageCommentProcessor extends AbstractReportPageComment
   /**
    * Constructor for a comment processor
    * 
-   * @param panelStamp panel stamp
    * @param queryPage query page
+   * @param rootComments root comments
    * @param answers target map for answers
    */
-  public Scale1DReportPageCommentProcessor(PanelStamp panelStamp, QueryPage queryPage, Map<Long, Map<String, String>> answers) {
-    super(panelStamp, queryPage, answers);
+  public Scale1DReportPageCommentProcessor(QueryPage queryPage, List<QueryQuestionComment> rootComments, Map<Long, Map<String, String>> answers) {
+    super(queryPage, rootComments, answers);
   }
 
   @Override

@@ -41,7 +41,7 @@ public class TextQueryPageSpreadsheetExporter extends AbstractQueryPageSpreadshe
   
   @Override
   public ReportPageCommentProcessor exportComments(QueryPage queryPage, PanelStamp stamp, List<QueryReply> replies) {
-    return new GenericReportPageCommentProcessor(stamp, queryPage, new HashMap<>());
+    return new GenericReportPageCommentProcessor(queryPage, listRootComments(stamp, queryPage), new HashMap<>());
   }
   
 }

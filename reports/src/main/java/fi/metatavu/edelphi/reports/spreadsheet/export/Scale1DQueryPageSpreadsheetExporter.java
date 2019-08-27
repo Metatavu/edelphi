@@ -71,7 +71,7 @@ public class Scale1DQueryPageSpreadsheetExporter extends AbstractQueryPageSpread
   
   @Override
   public ReportPageCommentProcessor exportComments(QueryPage queryPage, PanelStamp stamp, List<QueryReply> replies) {
-    return new Scale1DReportPageCommentProcessor(stamp, queryPage, new HashMap<>());
+    return new Scale1DReportPageCommentProcessor(queryPage, listRootComments(stamp, queryPage), new HashMap<>());
   }
   
   private String getFieldName() {
