@@ -87,14 +87,16 @@ public class ChartController {
     
     double[] xValues = scatterValues.stream().map(ScatterValue::getX).mapToDouble(Double::doubleValue).toArray();
     double[] yValues = scatterValues.stream().map(ScatterValue::getY).mapToDouble(Double::doubleValue).toArray();
-    
+
     // Series
-    
-    chart.addSeries("values", xValues, yValues);
+
+    if (xValues != null && xValues.length > 0 && yValues != null && yValues.length > 0) {
+      chart.addSeries("values", xValues, yValues);
+    }
     
     return printGraphPNG(chart);
   }
-
+  
   /**
    * Prints graph
    * 
