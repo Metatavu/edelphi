@@ -37,6 +37,7 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/uiutils.js"></script>
 <c:if test="${loggedUserId gt 0}"><script type="text/javascript">window.isLoggedIn = true;</script></c:if>
 <script type="text/javascript">
+
   function setLocale(locale) {
     var date = new Date();
     date.setTime(date.getTime() + (3650*24*60*60*1000));
@@ -107,6 +108,26 @@
   </script>
   
 </c:if>
+
+<script type="text/javascript">
+  function isSupportedBrowser() {
+    var ua = window.navigator.userAgent;
+    var msie = ua.indexOf("MSIE ");
+    var isIE = msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./);
+    return !isIE;
+  }
+  
+  document.observe("dom:loaded", function() {
+    var eventQueue = getGlobalEventQueue();
+
+    if (!isSupportedBrowser()) {
+      eventQueue.addItem(new EventQueueItem(getLocale().getText("oldbrowerwarning"), {
+        className: "eventQueueCriticalItem",
+        timeout: -1
+      }));
+    }
+  });
+</script>
 
 <script type="text/javascript">
   var CONTEXTPATH = "${pageContext.request.contextPath}";
