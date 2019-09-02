@@ -25,8 +25,8 @@ interface Props {
  */
 interface State {
   contents?: string,
-  updating: boolean,
-  loaded: boolean,
+  saving: boolean,
+  loading: boolean,
   commentId?: number,
   changed: boolean
 }
@@ -44,8 +44,8 @@ class QueryCommentEditor extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      updating: true,
-      loaded: false,
+      saving: false,
+      loading: false,
       changed: false
     };
 
@@ -53,9 +53,9 @@ class QueryCommentEditor extends React.Component<Props, State> {
   }
   
   /**
-   * Component did update life-cycle event
+   * Component did mount life-cycle event
    */
-  public async componentDidUpdate() {
+  public async componentDidMount() {
     this.loadComment();
   }
 
@@ -65,12 +65,12 @@ class QueryCommentEditor extends React.Component<Props, State> {
   public render() {
     return (
       <div className="queryCommentEditor">
-        <h2 className="querySubTitle">{ strings.panel.query.commentEditor.title }</h2>
+        <h2 className="querySubTitle">{ this.props.category ? this.props.category.name : strings.panel.query.commentEditor.title }</h2>
         <div className="formFieldContainer formMemoFieldContainer">
-          <TextArea className="formField formMemoField queryComment" value={ this.state.contents } disabled={ this.state.updating } onChange={ this.onContentChange } />
+          <TextArea className="formField formMemoField queryComment" value={ this.state.contents } disabled={ this.state.saving || this.state.loading } onChange={ this.onContentChange } />
         </div>
         <div className="formFieldContainer formSubmitContainer">
-          <input type="submit" className="formField formSubmit" value={ this.state.commentId ? strings.panel.query.commentEditor.modify : strings.panel.query.commentEditor.save } onClick={ this.onSaveButtonClick } disabled={ !this.state.contents || this.state.updating }/>
+          <input type="submit" className="formField formSubmit" value={ this.state.commentId ? strings.panel.query.commentEditor.modify : strings.panel.query.commentEditor.save } onClick={ this.onSaveButtonClick } disabled={ !this.state.contents || this.state.saving || this.state.loading }/>
         </div>
       </div>
     );
@@ -87,29 +87,27 @@ class QueryCommentEditor extends React.Component<Props, State> {
    * Loads a comment
    */
   private async loadComment() {
-    if (!this.props.accessToken || this.state.loaded) {
+    if (!this.props.accessToken || this.state.loading || this.state.saving) {
       return;
     }
+
+    this.setState({
+      loading: true
+    });
 
     const categoryId = this.props.category ? this.props.category.id : 0;
     const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken.token);
     const comments = await queryQuestionCommentsService.listQueryQuestionComments(this.props.panelId, this.props.queryId, this.props.pageId, this.props.accessToken.userId, undefined, 0, categoryId);
     
-    if (comments.length === 1) {
-      this.setState({
-        commentId: comments[0].id,
-        contents: comments[0].contents,
-        updating: false,
-        loaded: true
-      });
-    } else if (comments.length > 1) {
-      throw new Error("Unexpected comment count");
-    } else {
-      this.setState({
-        updating: false,
-        loaded: true
-      });
+    if (comments.length > 1) {
+      console.error("Unexpected comment count");
     }
+
+    this.setState({
+      loading: false,
+      commentId: comments.length ? comments[0].id : undefined,
+      contents: comments.length ? comments[0].contents : undefined
+    });
   }
 
   /**
@@ -125,12 +123,12 @@ class QueryCommentEditor extends React.Component<Props, State> {
    * Saves editor contents
    */
   private save = async () => {
-    if (!this.state.changed || !this.state.contents || this.state.updating || !this.props.accessToken) {
+    if (!this.state.changed || !this.state.contents || this.state.saving || !this.props.accessToken) {
       return;
     }
 
     this.setState({
-      updating: true
+      saving: true
     });
 
     const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken.token);
@@ -159,7 +157,7 @@ class QueryCommentEditor extends React.Component<Props, State> {
     this.setState({
       commentId: comment.id,
       contents: comment.contents,
-      updating: false
+      saving: false
     });
   }
 
