@@ -850,6 +850,17 @@
             "type" : "integer",
             "format" : "int64"
           }
+        }, {
+          "name" : "queryId",
+          "in" : "query",
+          "description" : "Filter by query id",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
         } ],
         "responses" : {
           "200" : {
