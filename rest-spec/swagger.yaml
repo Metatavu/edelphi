@@ -1564,6 +1564,12 @@ components:
           items:
             type: integer
             format: int64
+        commentCategoryIds:
+          description: Include only comments from speficied comment category ids
+          type: array
+          items:
+            type: integer
+            format: int64
         show2dAs1d:
           description: Show 2d answers as 1d graphs instead of 2d graphs
           type: boolean
