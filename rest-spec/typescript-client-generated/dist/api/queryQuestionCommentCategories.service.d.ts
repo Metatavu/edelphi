@@ -29,8 +29,9 @@ export declare class QueryQuestionCommentCategoriesService {
      * @summary Lists query question categories
      * @param panelId panel id
      * @param pageId Filter by query page id
+     * @param queryId Filter by query id
     */
-    listQueryQuestionCommentCategories(panelId: number, pageId?: number): Promise<Array<QueryQuestionCommentCategory>>;
+    listQueryQuestionCommentCategories(panelId: number, pageId?: number, queryId?: number): Promise<Array<QueryQuestionCommentCategory>>;
     /**
      * Updates query question category
      * @summary Update query question category

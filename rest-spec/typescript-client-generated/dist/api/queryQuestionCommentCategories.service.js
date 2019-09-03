@@ -70,11 +70,15 @@ var QueryQuestionCommentCategoriesService = /** @class */ (function () {
      * @summary Lists query question categories
      * @param panelId panel id
      * @param pageId Filter by query page id
+     * @param queryId Filter by query id
     */
-    QueryQuestionCommentCategoriesService.prototype.listQueryQuestionCommentCategories = function (panelId, pageId) {
+    QueryQuestionCommentCategoriesService.prototype.listQueryQuestionCommentCategories = function (panelId, pageId, queryId) {
         var uri = new URI(this.basePath + "/panels/" + encodeURIComponent(String(panelId)) + "/queryQuestionCommentCategories");
         if (pageId !== undefined && pageId !== null) {
             uri.addQuery('pageId', pageId);
+        }
+        if (queryId !== undefined && queryId !== null) {
+            uri.addQuery('queryId', queryId);
         }
         var options = {
             method: "get",
