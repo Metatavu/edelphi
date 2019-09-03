@@ -2207,6 +2207,14 @@
               "format" : "int64"
             }
           },
+          "commentCategoryIds" : {
+            "type" : "array",
+            "description" : "Include only comments from speficied comment category ids",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          },
           "show2dAs1d" : {
             "type" : "boolean",
             "description" : "Show 2d answers as 1d graphs instead of 2d graphs"

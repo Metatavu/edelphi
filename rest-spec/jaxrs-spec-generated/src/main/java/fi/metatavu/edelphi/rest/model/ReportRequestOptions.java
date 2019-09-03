@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class ReportRequestOptions   {
-  private @Valid List<Long> queryPageIds = new ArrayList<>();  private @Valid List<Long> expertiseGroupIds = new ArrayList<>();  private @Valid Boolean show2dAs1d = null;
+  private @Valid List<Long> queryPageIds = new ArrayList<>();  private @Valid List<Long> expertiseGroupIds = new ArrayList<>();  private @Valid List<Long> commentCategoryIds = new ArrayList<>();  private @Valid Boolean show2dAs1d = null;
 
   /**
    * Include only speficied page ids
@@ -52,6 +52,24 @@ public class ReportRequestOptions   {
   }
 
   /**
+   * Include only comments from speficied comment category ids
+   **/
+  public ReportRequestOptions commentCategoryIds(List<Long> commentCategoryIds) {
+    this.commentCategoryIds = commentCategoryIds;
+    return this;
+  }
+
+  
+  @ApiModelProperty(value = "Include only comments from speficied comment category ids")
+  @JsonProperty("commentCategoryIds")
+  public List<Long> getCommentCategoryIds() {
+    return commentCategoryIds;
+  }
+  public void setCommentCategoryIds(List<Long> commentCategoryIds) {
+    this.commentCategoryIds = commentCategoryIds;
+  }
+
+  /**
    * Show 2d answers as 1d graphs instead of 2d graphs
    **/
   public ReportRequestOptions show2dAs1d(Boolean show2dAs1d) {
@@ -81,12 +99,13 @@ public class ReportRequestOptions   {
     ReportRequestOptions reportRequestOptions = (ReportRequestOptions) o;
     return Objects.equals(queryPageIds, reportRequestOptions.queryPageIds) &&
         Objects.equals(expertiseGroupIds, reportRequestOptions.expertiseGroupIds) &&
+        Objects.equals(commentCategoryIds, reportRequestOptions.commentCategoryIds) &&
         Objects.equals(show2dAs1d, reportRequestOptions.show2dAs1d);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(queryPageIds, expertiseGroupIds, show2dAs1d);
+    return Objects.hash(queryPageIds, expertiseGroupIds, commentCategoryIds, show2dAs1d);
   }
 
   @Override
@@ -96,6 +115,7 @@ public class ReportRequestOptions   {
     
     sb.append("    queryPageIds: ").append(toIndentedString(queryPageIds)).append("\n");
     sb.append("    expertiseGroupIds: ").append(toIndentedString(expertiseGroupIds)).append("\n");
+    sb.append("    commentCategoryIds: ").append(toIndentedString(commentCategoryIds)).append("\n");
     sb.append("    show2dAs1d: ").append(toIndentedString(show2dAs1d)).append("\n");
     sb.append("}");
     return sb.toString();
