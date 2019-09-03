@@ -2,7 +2,6 @@ package fi.metatavu.edelphi.reports.text.live2d;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -19,19 +18,15 @@ import org.jsoup.nodes.Document;
 
 import fi.metatavu.edelphi.batch.JobProperty;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
-import fi.metatavu.edelphi.dao.querydata.QueryQuestionNumericAnswerDAO;
-import fi.metatavu.edelphi.dao.querymeta.QueryNumericFieldDAO;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
-import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionNumericAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
-import fi.metatavu.edelphi.domainmodel.querymeta.QueryNumericField;
 import fi.metatavu.edelphi.queries.QueryPageController;
 import fi.metatavu.edelphi.queries.QueryReplyController;
+import fi.metatavu.edelphi.queries.ScatterValue;
 import fi.metatavu.edelphi.reports.ReportException;
 import fi.metatavu.edelphi.reports.charts.ChartController;
-import fi.metatavu.edelphi.reports.charts.ScatterValue;
 import fi.metatavu.edelphi.reports.i18n.ReportMessages;
 import fi.metatavu.edelphi.reports.text.AbstractReportPageHtmlProvider;
 import fi.metatavu.edelphi.reports.text.TextReportPageContext;
@@ -46,9 +41,6 @@ public class Live2dReportPageHtmlProvider extends AbstractReportPageHtmlProvider
 
   private static final String OPTIONS_X = "live2d.options.x";
   private static final String OPTIONS_Y = "live2d.options.y";
-  private static final String FIELD_NAME_X = "x";
-  private static final String FIELD_NAME_Y = "y";
-  
   @Inject
   private ReportMessages reportMessages;
 
@@ -63,12 +55,6 @@ public class Live2dReportPageHtmlProvider extends AbstractReportPageHtmlProvider
 
   @Inject
   private QueryPageController queryPageController;
-
-  @Inject
-  private QueryNumericFieldDAO queryNumericFieldDAO;
-
-  @Inject
-  private QueryQuestionNumericAnswerDAO queryQuestionNumericAnswerDAO;
   
   @Inject
   @JobProperty
@@ -103,28 +89,12 @@ public class Live2dReportPageHtmlProvider extends AbstractReportPageHtmlProvider
       String labelY = queryPageController.getSetting(queryPage, "live2d.label.y");
       String thesis = queryPageController.getSetting(queryPage, "thesis.text");
       String description = queryPageController.getSetting(queryPage, "thesis.description");
-      
-      QueryNumericField queryFieldX = queryNumericFieldDAO.findByQueryPageAndName(queryPage, FIELD_NAME_X);
-      QueryNumericField queryFieldY = queryNumericFieldDAO.findByQueryPageAndName(queryPage, FIELD_NAME_Y);
 
       List<String> optionsX = queryPageController.getListSetting(queryPage, OPTIONS_X);
       List<String> optionsY = queryPageController.getListSetting(queryPage, OPTIONS_Y);
       
-      List<QueryQuestionNumericAnswer> answersX = queryQuestionNumericAnswerDAO.listByQueryFieldAndRepliesIn(queryFieldX, queryReplies);
-      List<QueryQuestionNumericAnswer> answersY = queryQuestionNumericAnswerDAO.listByQueryFieldAndRepliesIn(queryFieldY, queryReplies);
-      
-      Map<Long, Double> answerMapX = answersX.stream().collect(Collectors.toMap(answer -> answer.getQueryReply().getId(), QueryQuestionNumericAnswer::getData));
-      Map<Long, Double> answerMapY = answersY.stream().collect(Collectors.toMap(answer -> answer.getQueryReply().getId(), QueryQuestionNumericAnswer::getData));
-      Map<Long, Double[]> answerMap = queryReplies.stream().map(QueryReply::getId).collect(Collectors.toMap(queryReplyId -> queryReplyId, queryReplyId -> new Double[] { answerMapX.get(queryReplyId), answerMapY.get(queryReplyId) }));
-      
-      List<ScatterValue> scatterValues = new ArrayList<>();
-      for (Map.Entry<Long, Double[]> answerMapEntry : answerMap.entrySet()) {
-        Double[] values = answerMapEntry.getValue();
-        if (values[0] != null && values[1] != null) {
-          scatterValues.add(new ScatterValue(answerMapEntry.getKey(), values[0], values[1]));
-        }
-      }
-      
+      List<ScatterValue> scatterValues = queryPageController.getLive2dScatterValues(queryPage, queryReplies);
+
       String chartHtml = chartController.createLive2dChart(locale, queryPage, queryReplies, scatterValues, labelX, labelY, optionsX, optionsY);
       
       document.getElementById("title").html(queryPage.getTitle());

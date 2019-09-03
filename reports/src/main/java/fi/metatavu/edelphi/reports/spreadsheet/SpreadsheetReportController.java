@@ -32,6 +32,7 @@ import fi.metatavu.edelphi.reports.spreadsheet.comments.ReportPageCommentProcess
 import fi.metatavu.edelphi.reports.spreadsheet.export.ExpertiseQueryPageSpreadsheetExporter;
 import fi.metatavu.edelphi.reports.spreadsheet.export.FormQueryPageSpreadsheetExporter;
 import fi.metatavu.edelphi.reports.spreadsheet.export.GroupingQueryPageSpreadsheetExporter;
+import fi.metatavu.edelphi.reports.spreadsheet.export.Live2dQueryPageSpreadsheetExporter;
 import fi.metatavu.edelphi.reports.spreadsheet.export.MultiSelectQueryPageSpreadsheetExporter;
 import fi.metatavu.edelphi.reports.spreadsheet.export.Multiple2DScalesQueryPageSpreadsheetExporter;
 import fi.metatavu.edelphi.reports.spreadsheet.export.OrderingQueryPageSpreadsheetExporter;
@@ -89,6 +90,9 @@ public class SpreadsheetReportController {
   @Inject
   private TimeserieQueryPageSpreadsheetExporter timeserieQueryPageSpreadsheetExporter;
 
+  @Inject
+  private Live2dQueryPageSpreadsheetExporter live2dQueryPageSpreadsheetExporter;
+  
   /**
    * Exports query page spreadsheet data
    * 
@@ -232,7 +236,7 @@ public class SpreadsheetReportController {
       case FORM:
         return formQueryPageSpreadsheetExporter;
       case LIVE_2D:
-        return null; // Does not support spreadsheet exports
+        return live2dQueryPageSpreadsheetExporter;
       case TEXT:
         return textQueryPageSpreadsheetExporter;
       case THESIS_GROUPING:

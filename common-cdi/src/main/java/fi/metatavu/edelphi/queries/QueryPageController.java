@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -19,14 +21,19 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentCategoryDAO;
+import fi.metatavu.edelphi.dao.querydata.QueryQuestionNumericAnswerDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingKeyDAO;
+import fi.metatavu.edelphi.dao.querymeta.QueryNumericFieldDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionNumericAnswer;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageSetting;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageSettingKey;
+import fi.metatavu.edelphi.domainmodel.querymeta.QueryNumericField;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.resources.ResourceController;
@@ -43,10 +50,12 @@ public class QueryPageController {
   public static final String LIVE2D_LABEL_OPTION_TEMPLATE = "live2d.label.%s";
   public static final String LIVE2D_COLOR_OPTION_TEMPLATE = "live2d.color.%s";
   public static final String OPTIONS_OPTION_TEMPLATE = "live2d.options.%s";
-
+  
   private static final String UTF_8 = "UTF-8";
   private static final String JSON_SERIALIZED_FILTER_START = "/**JSS-";
   private static final String JSON_SERIALIZED_FILTER_END = "-JSS**/";
+  private static final String LIVE2D_FIELD_NAME_X = "x";
+  private static final String LIVE2D_FIELD_NAME_Y = "y";
   
   @Inject
   private Logger logger;
@@ -65,6 +74,12 @@ public class QueryPageController {
 
   @Inject
   private QueryQuestionCommentCategoryDAO queryQuestionCommentCategoryDAO;
+
+  @Inject
+  private QueryNumericFieldDAO queryNumericFieldDAO;
+
+  @Inject
+  private QueryQuestionNumericAnswerDAO queryQuestionNumericAnswerDAO;
 
   /**
    * Finds a query page by id
@@ -353,6 +368,35 @@ public class QueryPageController {
    */
   public void deleteCommentCategory(QueryQuestionCommentCategory queryQuestionCommentCategory) {
     queryQuestionCommentCategoryDAO.delete(queryQuestionCommentCategory);
+  }
+  
+  /**
+   * Returns live2d query page answers as list of scatter values
+   * 
+   * @param queryPage query page
+   * @param queryReplies included replies
+   * @return live2d query page answers as list of scatter values
+   */
+  public List<ScatterValue> getLive2dScatterValues(QueryPage queryPage, List<QueryReply> queryReplies) {
+    QueryNumericField queryFieldX = queryNumericFieldDAO.findByQueryPageAndName(queryPage, LIVE2D_FIELD_NAME_X);
+    QueryNumericField queryFieldY = queryNumericFieldDAO.findByQueryPageAndName(queryPage, LIVE2D_FIELD_NAME_Y);
+    
+    List<QueryQuestionNumericAnswer> answersX = queryQuestionNumericAnswerDAO.listByQueryFieldAndRepliesIn(queryFieldX, queryReplies);
+    List<QueryQuestionNumericAnswer> answersY = queryQuestionNumericAnswerDAO.listByQueryFieldAndRepliesIn(queryFieldY, queryReplies);
+    
+    Map<Long, Double> answerMapX = answersX.stream().collect(Collectors.toMap(answer -> answer.getQueryReply().getId(), QueryQuestionNumericAnswer::getData));
+    Map<Long, Double> answerMapY = answersY.stream().collect(Collectors.toMap(answer -> answer.getQueryReply().getId(), QueryQuestionNumericAnswer::getData));
+    Map<Long, Double[]> answerMap = queryReplies.stream().map(QueryReply::getId).collect(Collectors.toMap(queryReplyId -> queryReplyId, queryReplyId -> new Double[] { answerMapX.get(queryReplyId), answerMapY.get(queryReplyId) }));
+    
+    List<ScatterValue> scatterValues = new ArrayList<>();
+    for (Map.Entry<Long, Double[]> answerMapEntry : answerMap.entrySet()) {
+      Double[] values = answerMapEntry.getValue();
+      if (values[0] != null && values[1] != null) {
+        scatterValues.add(new ScatterValue(answerMapEntry.getKey(), values[0], values[1]));
+      }
+    }
+    
+    return scatterValues;
   }
   
   /**
