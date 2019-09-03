@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.reports.charts;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.ByteArrayOutputStream;
@@ -15,9 +16,11 @@ import org.apache.commons.codec.binary.Base64;
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
+import org.knowm.xchart.XYSeries;
 import org.knowm.xchart.BitmapEncoder.BitmapFormat;
 import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
 import org.knowm.xchart.style.Styler.LegendPosition;
+import org.knowm.xchart.style.markers.SeriesMarkers;
 
 import de.erichseifert.vectorgraphics2d.Processor;
 import de.erichseifert.vectorgraphics2d.VectorGraphics2D;
@@ -73,10 +76,13 @@ public class ChartController {
     
     // Axis 
     
+    double maxX = optionsX.size() - 1;
+    double maxY = optionsY.size() - 1;
+    
     chart.getStyler().setXAxisMin(0d);
-    chart.getStyler().setXAxisMax(Double.valueOf(optionsX.size()));
+    chart.getStyler().setXAxisMax(maxX);
     chart.getStyler().setYAxisMin(0d);
-    chart.getStyler().setYAxisMax(Double.valueOf(optionsY.size()));
+    chart.getStyler().setYAxisMax(maxY);
     
     // Ticks 
     
@@ -94,7 +100,28 @@ public class ChartController {
       chart.addSeries("values", xValues, yValues);
     }
     
+    addStraightLineSerie(chart, "xaxis", 0, maxY / 2, maxX, maxY / 2);
+    addStraightLineSerie(chart, "yaxis", maxX / 2, 0, maxX / 2, maxY);
+    
     return printGraphPNG(chart);
+  }
+  
+  /**
+   * Adds a straight line series into a chart
+   * 
+   * @param chart chart
+   * @param label label
+   * @param x1 x1
+   * @param y1 xy
+   * @param x2 x2
+   * @param y2 y2
+   */
+  private void addStraightLineSerie(XYChart chart, String label, double x1, double y1, double x2, double y2) {
+    XYSeries axisSeriesLiability = chart.addSeries(label, new double[] { x1, x2 }, new double[] { y1, y2 });
+    axisSeriesLiability.setXYSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Line);
+    axisSeriesLiability.setMarker(SeriesMarkers.NONE);
+    axisSeriesLiability.setLineWidth(2f);
+    axisSeriesLiability.setLineColor(Color.gray);
   }
   
   /**
