@@ -38,6 +38,7 @@ import fi.metatavu.edelphi.jsons.JSONController;
 import fi.metatavu.edelphi.query.QueryPageHandler;
 import fi.metatavu.edelphi.query.QueryPageHandlerFactory;
 import fi.metatavu.edelphi.utils.ResourceUtils;
+import fi.metatavu.edelphi.utils.SystemUtils;
 
 public class SaveQueryJSONRequestController extends JSONController {
 
@@ -175,7 +176,7 @@ public class SaveQueryJSONRequestController extends JSONController {
         Long queryPageId = createNewPage ? null : NumberUtils.createLong(queryPageIdParam);
         
         QueryPageType queryPageType = QueryPageType.valueOf(jsonRequestContext.getString(pagePrefix + "type"));
-        String title = jsonRequestContext.getString(pagePrefix + "title");
+        String title = StringUtils.abbreviate(jsonRequestContext.getString(pagePrefix + "title"), SystemUtils.MAX_QUERY_PAGE_TITLE);
         QueryPage queryPage;
         QueryPageHandler handler = QueryPageHandlerFactory.getInstance().buildPageHandler(queryPageType);
 

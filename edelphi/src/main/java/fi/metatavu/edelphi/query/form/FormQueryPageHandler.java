@@ -41,6 +41,7 @@ import fi.metatavu.edelphi.query.QueryOptionEditor;
 import fi.metatavu.edelphi.query.QueryOptionType;
 import fi.metatavu.edelphi.query.RequiredQueryFragment;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
+import fi.metatavu.edelphi.utils.SystemUtils;
 import fi.metatavu.edelphi.utils.comments.ReportPageCommentProcessor;
 
 public class FormQueryPageHandler extends AbstractQueryPageHandler {
@@ -195,7 +196,7 @@ public class FormQueryPageHandler extends AbstractQueryPageHandler {
     if (queryTextField == null) {
       queryTextField = queryTextFieldDAO.create(queryPage, fieldName, mandatory, textField.getCaption());
     } else {
-      queryFieldDAO.updateCaption(queryTextField, textField.getCaption());
+      queryFieldDAO.updateCaption(queryTextField, StringUtils.abbreviate(textField.getCaption(), SystemUtils.MAX_QUERY_FIELD_CAPTION));
       queryFieldDAO.updateMandatory(queryTextField, mandatory);
       removedFields.remove(fieldName);
     }
@@ -212,7 +213,7 @@ public class FormQueryPageHandler extends AbstractQueryPageHandler {
     if (queryMemoField == null) {
       queryMemoField = queryTextFieldDAO.create(queryPage, fieldName, mandatory, memoField.getCaption());
     } else {
-      queryFieldDAO.updateCaption(queryMemoField, memoField.getCaption());
+      queryFieldDAO.updateCaption(queryMemoField, StringUtils.abbreviate(memoField.getCaption(), SystemUtils.MAX_QUERY_FIELD_CAPTION));
       queryFieldDAO.updateMandatory(queryMemoField, mandatory);
       removedFields.remove(fieldName);
     }
@@ -232,7 +233,7 @@ public class FormQueryPageHandler extends AbstractQueryPageHandler {
       if (queryListField == null) {
         queryListField = queryOptionFieldDAO.create(queryPage, fieldName, mandatory, listField.getCaption());
       } else {
-        queryFieldDAO.updateCaption(queryListField, listField.getCaption());
+        queryFieldDAO.updateCaption(queryListField, StringUtils.abbreviate(listField.getCaption(), SystemUtils.MAX_QUERY_FIELD_CAPTION));
         queryFieldDAO.updateMandatory(queryListField, mandatory);
         removedFields.remove(fieldName);
       }

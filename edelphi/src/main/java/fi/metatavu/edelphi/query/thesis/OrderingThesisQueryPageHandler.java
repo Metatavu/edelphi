@@ -36,6 +36,7 @@ import fi.metatavu.edelphi.query.RequiredQueryFragment;
 import fi.metatavu.edelphi.utils.QueryDataUtils;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.SystemUtils;
 
 public class OrderingThesisQueryPageHandler extends AbstractScaleThesisQueryPageHandler {
 
@@ -189,7 +190,7 @@ public class OrderingThesisQueryPageHandler extends AbstractScaleThesisQueryPage
         QueryNumericField queryNumericField = (QueryNumericField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldName);
   
         if (queryNumericField != null) {
-          queryFieldDAO.updateCaption(queryNumericField, itemName);
+          queryFieldDAO.updateCaption(queryNumericField, StringUtils.abbreviate(itemName, SystemUtils.MAX_QUERY_FIELD_CAPTION));
           queryFieldDAO.updateMandatory(queryNumericField, mandatory);
         } else {
           queryNumericFieldDAO.create(queryPage, fieldName, mandatory, itemName, null, null, 1d);
