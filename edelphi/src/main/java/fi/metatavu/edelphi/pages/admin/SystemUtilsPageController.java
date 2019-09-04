@@ -57,6 +57,7 @@ import fi.metatavu.edelphi.utils.QueryPageUtils;
 import fi.metatavu.edelphi.utils.QueryUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 import fi.metatavu.edelphi.utils.ResourceUtils;
+import fi.metatavu.edelphi.utils.SystemUtils;
 import fi.metatavu.edelphi.utils.UserUtils;
 
 public class SystemUtilsPageController extends PageController {
@@ -116,7 +117,7 @@ public class SystemUtilsPageController extends PageController {
             items[i] = URLDecoder.decode(items[i], "UTF-8");
             QueryNumericField queryNumericField = (QueryNumericField) queryFieldDAO.findByQueryPageAndName(queryPage, "orderItem." + i);
             if (queryNumericField != null && queryNumericField.getCaption().equals(queryNumericField.getName())) {
-              queryFieldDAO.updateCaption(queryNumericField, items[i]);
+              queryFieldDAO.updateCaption(queryNumericField, StringUtils.abbreviate(items[i], SystemUtils.MAX_QUERY_FIELD_CAPTION));
             }
           }
           catch (Exception e) {

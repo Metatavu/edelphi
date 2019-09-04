@@ -10,6 +10,9 @@ import fi.metatavu.edelphi.domainmodel.system.SettingKey;
 
 public class SystemUtils {
   
+  public static final int MAX_QUERY_PAGE_TITLE = 192;
+  public static final int MAX_QUERY_FIELD_CAPTION = 192;
+  
   private static final String SYSTEM_ENVIRONMENT = "system.environment";
   private static final String ENV_PRODUCTION = "production";
   private static final String ENV_DEVELOPMENT = "development";

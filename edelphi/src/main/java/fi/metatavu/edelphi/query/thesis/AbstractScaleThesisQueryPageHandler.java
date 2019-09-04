@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionOptionAnswerDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldDAO;
@@ -21,6 +23,7 @@ import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
 import fi.metatavu.edelphi.utils.QueryUtils;
+import fi.metatavu.edelphi.utils.SystemUtils;
 
 public abstract class AbstractScaleThesisQueryPageHandler extends AbstractThesisQueryPageHandler {
 
@@ -115,7 +118,7 @@ public abstract class AbstractScaleThesisQueryPageHandler extends AbstractThesis
 
     QueryOptionField queryField = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldName);
     if (queryField != null)
-      queryFieldDAO.updateCaption(queryField, fieldCaption);
+      queryFieldDAO.updateCaption(queryField, StringUtils.abbreviate(fieldCaption, SystemUtils.MAX_QUERY_FIELD_CAPTION));
   }
   
   /**
@@ -149,7 +152,7 @@ public abstract class AbstractScaleThesisQueryPageHandler extends AbstractThesis
     QueryOptionField queryField = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldName);
     if (queryField != null) {
       queryFieldDAO.updateMandatory(queryField, mandatory);
-      queryFieldDAO.updateCaption(queryField, fieldCaption);
+      queryFieldDAO.updateCaption(queryField, StringUtils.abbreviate(fieldCaption, SystemUtils.MAX_QUERY_FIELD_CAPTION));
     } else {
       queryField = queryOptionFieldDAO.create(queryPage, fieldName, mandatory, fieldCaption);
     }

@@ -46,6 +46,7 @@ import fi.metatavu.edelphi.utils.QueryDataUtils;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
 import fi.metatavu.edelphi.utils.ReportUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.SystemUtils;
 import fi.metatavu.edelphi.utils.comments.ReportPageCommentProcessor;
 import fi.metatavu.edelphi.utils.comments.TimeSerieReportPageCommentProcessor;
 
@@ -257,8 +258,8 @@ public class TimeSerieThesisQueryPageHandler extends AbstractThesisQueryPageHand
             if (!queryNumericField.getPrecision().equals(stepY)) {
               queryNumericFieldDAO.updatePrecision(queryNumericField, stepY);
             }
-  
-            queryFieldDAO.updateCaption(queryNumericField, caption);
+
+            queryFieldDAO.updateCaption(queryNumericField, StringUtils.abbreviate(caption, SystemUtils.MAX_QUERY_FIELD_CAPTION));
           } else {
             // If field does not exist we create new one
             queryNumericFieldDAO.create(queryPage, fieldName, mandatory, caption, minY, maxY, stepY);
