@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title><fmt:message key="changeplan.page.title"/></title>
   <jsp:include page="/jsp/templates/index_head.jsp"></jsp:include>
-  <link href="${pageContext.request.contextPath}/_themes/${theme}/css/changeplan.css" rel="stylesheet"/>
+  <link href="//cdn.metatavu.io/assets/edelphi/_themes/${theme}/css/changeplan.css" rel="stylesheet"/>
   <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/changeplanblockcontroller.js"></script>
 </head>
 

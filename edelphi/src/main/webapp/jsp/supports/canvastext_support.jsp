@@ -3,7 +3,7 @@
 
 <c:choose>
   <c:when test="${canvastextSupportIncluded != true}">
-    <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/canvastext/canvastext.js"></script>
+    <script type="text/javascript" src="//cdn.metatavu.io/assets/edelphi/_scripts/canvastext/canvastext.js"></script>
     <c:set scope="request" var="canvastextSupportIncluded" value="true"/>
   </c:when>
 </c:choose>

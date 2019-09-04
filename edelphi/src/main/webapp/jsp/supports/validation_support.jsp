@@ -3,7 +3,7 @@
 
 <c:choose>
   <c:when test="${validationSupportIncluded != true}">
-    <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/pfvlib/pfvlib-uncompressed.js"></script>
+    <script type="text/javascript" src="//cdn.metatavu.io/assets/edelphi/_scripts/pfvlib/pfvlib-uncompressed.js"></script>
     <script type="text/javascript">
       document.observe("dom:loaded", function(event) {
         initializeValidation();

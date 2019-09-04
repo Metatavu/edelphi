@@ -15,7 +15,7 @@
       </fmt:message>
     </title>
     <jsp:include page="/jsp/templates/panel_head.jsp"></jsp:include>
-    <link href="${pageContext.request.contextPath}/_themes/default/css/document.css" rel="stylesheet">
+    <link href="//cdn.metatavu.io/assets/edelphi/_themes/default/css/document.css" rel="stylesheet">
     <c:if test="${styleSheet != null}">
       <style type="text/css">${styleSheet}</style>
     </c:if>

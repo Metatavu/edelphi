@@ -4,7 +4,7 @@
 <c:choose>
   <c:when test="${dragdropSupportIncluded != true}">
     <jsp:include page="scripty2_support.jsp"></jsp:include>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/dragdrop/dragdrop.js"></script>
+    <script type="text/javascript" src="//cdn.metatavu.io/assets/edelphi/_scripts/dragdrop/dragdrop.js"></script>
     <c:set scope="request" var="dragdropSupportIncluded" value="true"/>
   </c:when>
 </c:choose>

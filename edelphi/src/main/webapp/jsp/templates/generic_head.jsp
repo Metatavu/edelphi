@@ -30,7 +30,7 @@
   }
 %>
 
-<link rel="icon" type="image/png" href="${pageContext.request.contextPath}/_themes/default/gfx/edelfoi.png"/>    
+<link rel="icon" type="image/png" href="//cdn.metatavu.io/assets/edelphi/_themes/default/gfx/edelfoi.png"/>    
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <script type="text/javascript" src="//cdn.metatavu.io/libs/prototype/1.7/prototype.js"></script>
@@ -58,11 +58,11 @@
 <jsp:include page="/jsp/supports/validation_support.jsp"></jsp:include>
 <jsp:include page="/jsp/supports/blockcontroller_support.jsp"></jsp:include>
 <jsp:include page="/jsp/supports/eventqueue_support.jsp"></jsp:include>
-<link href="${pageContext.request.contextPath}/_themes/${theme}/css/theme.css" rel="stylesheet"/>
+<link href="//cdn.metatavu.io/assets/edelphi/_themes/${theme}/css/theme.css" rel="stylesheet"/>
 
 <c:if test="${hasUnreadImportantBulletins}">
   <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/importantbulletins.js"></script>
-  <link href="${pageContext.request.contextPath}/_themes/${theme}/css/important-bulletins.css" rel="stylesheet"/>
+  <link href="//cdn.metatavu.io/assets/edelphi/_themes/${theme}/css/important-bulletins.css" rel="stylesheet"/>
 </c:if>
 
 <c:if test="${!empty(messages) && param.skipErrorProcessing ne 'true'}">
@@ -131,7 +131,7 @@
 
 <script type="text/javascript">
   var CONTEXTPATH = "${pageContext.request.contextPath}";
-  var THEMEPATH = "${pageContext.request.contextPath}/_themes/${theme}/";
+  var THEMEPATH = "//cdn.metatavu.io/assets/edelphi/_themes/${theme}/";
   
   function redirectTo(url) {
     if (url.indexOf("#") > 0) {

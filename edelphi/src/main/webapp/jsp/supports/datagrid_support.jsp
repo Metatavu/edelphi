@@ -3,7 +3,7 @@
 
 <c:choose>
   <c:when test="${dataGridSupportIncluded != true}">
-    <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/pdgrid/pdgrid-uncompressed.js"></script>
+    <script type="text/javascript" src="//cdn.metatavu.io/assets/edelphi/_scripts/pdgrid/pdgrid-uncompressed.js"></script>
     <c:set scope="request" var="dataGridSupportIncluded" value="true"/>
   </c:when>
 </c:choose>

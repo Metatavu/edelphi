@@ -10,9 +10,9 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title><fmt:message key="panelAdmin.block.queryResults.pageTitle" /></title>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/jquery/jquery.js"></script>
+    <script type="text/javascript" src="//cdn.metatavu.io/assets/edelphi/_scripts/jquery/jquery.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/panel_admin/comparereports.js"></script>
-    <link href="${pageContext.request.contextPath}/_themes/${theme}/css/comparereports.css" rel="stylesheet"/>
+    <link href="//cdn.metatavu.io/assets/edelphi/_themes/${theme}/css/comparereports.css" rel="stylesheet"/>
   </head>
   <body class="panel_admin_selection">
 

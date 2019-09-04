@@ -11,7 +11,7 @@
 <title><fmt:message key="panelAdmin.block.queryResults.pageTitle" /></title>
 <jsp:include page="/jsp/templates/panel_head.jsp"></jsp:include>
 <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/panel_admin/comparereports.js"></script>
-<link href="${pageContext.request.contextPath}/_themes/${theme}/css/comparereports.css" rel="stylesheet" />
+<link href="//cdn.metatavu.io/assets/edelphi/_themes/${theme}/css/comparereports.css" rel="stylesheet" />
 </head>
 <body class="panel_admin_compare">
 
