@@ -49,6 +49,14 @@ public class TextReportPageHtmlProcessor extends TypedItemProcessor<QueryPage, S
   @JobProperty
   private Long[] expertiseGroupIds;
   
+  @Inject
+  @JobProperty
+  private Long[] queryReplyIds;
+
+  @Inject
+  @JobProperty
+  private Long[] commentCategoryIds;
+  
   @Override
   public String process(QueryPage queryPage) throws Exception {
     PanelStamp stamp = panelController.findPanelStampById(stampId);
@@ -58,7 +66,7 @@ public class TextReportPageHtmlProcessor extends TypedItemProcessor<QueryPage, S
     
     logger.info("Processing query page {}", queryPage.getId());
 
-    return htmlReportController.getPageHtml(new TextReportPageContext(baseUrl, locale, stamp, expertiseGroupIds, queryPage));
+    return htmlReportController.getPageHtml(new TextReportPageContext(baseUrl, locale, stamp, expertiseGroupIds, queryReplyIds, commentCategoryIds, queryPage));
   }
 
 }

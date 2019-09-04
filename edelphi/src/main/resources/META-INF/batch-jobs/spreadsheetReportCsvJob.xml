@@ -8,6 +8,7 @@
     <property name="deliveryEmail" value="#{jobParameters['deliveryEmail']}" />
     <property name="expertiseGroupIds" value="#{jobParameters['expertiseGroupIds']}" />
     <property name="queryReplyIds" value="#{jobParameters['queryReplyIds']}" />
+    <property name="commentCategoryIds" value="#{jobParameters['commentCategoryIds']}" />
   </properties>
         
   <step id="pages" next="print">

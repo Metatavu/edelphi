@@ -602,6 +602,13 @@ paths:
           schema:
             type: integer
             format: int64
+        - name: queryId
+          required: false
+          in: query
+          description: Filter by query id
+          schema:
+            type: integer
+            format: int64
       responses:
         "200":
           description: List of query question categories
@@ -1553,6 +1560,12 @@ components:
             format: int64
         expertiseGroupIds:
           description: Include only speficied expertise group ids
+          type: array
+          items:
+            type: integer
+            format: int64
+        commentCategoryIds:
+          description: Include only comments from speficied comment category ids
           type: array
           items:
             type: integer

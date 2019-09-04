@@ -36,7 +36,8 @@ interface State {
   queryPages: QueryPage[],
   reportToEmailDialogVisible: boolean,
   filterQueryPageId: number | "ALL",
-  expertiseGroupIds: number[] | "ALL"
+  expertiseGroupIds: number[] | "ALL",
+  commentCategoryIds: number[] | "ALL"
 }
 
 /**
@@ -57,7 +58,8 @@ class Reports extends React.Component<Props, State> {
       reportToEmailDialogVisible: false,
       queryPages: [],
       filterQueryPageId: "ALL",
-      expertiseGroupIds: "ALL"
+      expertiseGroupIds: "ALL",
+      commentCategoryIds: "ALL"
     };
   }
 
@@ -178,9 +180,11 @@ class Reports extends React.Component<Props, State> {
       <PanelAdminReportsOptions panelId={ this.state.panel.id } 
         queryId={ this.state.selectedQueryId } 
         queryPageId={ this.state.filterQueryPageId }
-        expertiseGroupIds={ this.state.expertiseGroupIds } 
+        expertiseGroupIds={ this.state.expertiseGroupIds }
+        commentCategoryIds={ this.state.commentCategoryIds }
         onQueryPageChange={ this.onQueryPageFilterChange }
         onExpertiseGroupsChanged={ this.onExpertiseGroupsChanged }
+        onCommentCategoriesChanged={ this.onCommentCategoriesChanged }
         onExportReportContentsPdfClick={ this.onExportReportContentsPdfClick } 
         onExportReportSpreadsheetCsvClick={ this.onExportReportSpreadsheetCsvClick }
         onExportReportSpreadsheetGoogleSheetsClick={ this.onExportReportSpreadsheetGoogleSheetClick }
@@ -213,7 +217,8 @@ class Reports extends React.Component<Props, State> {
         queryId: this.state.selectedQueryId,
         options: {
           expertiseGroupIds: this.state.expertiseGroupIds == "ALL" ? undefined : this.state.expertiseGroupIds,
-          queryPageIds: this.state.filterQueryPageId == "ALL" ? undefined : [ this.state.filterQueryPageId ]
+          queryPageIds: this.state.filterQueryPageId == "ALL" ? undefined : [ this.state.filterQueryPageId ],
+          commentCategoryIds: this.state.commentCategoryIds == "ALL" ? undefined : this.state.commentCategoryIds
         }
       });
 
@@ -282,6 +287,12 @@ class Reports extends React.Component<Props, State> {
   private onExpertiseGroupsChanged = (expertiseGroupIds: number[] | "ALL") => {
     this.setState({
       expertiseGroupIds: expertiseGroupIds
+    });
+  }
+
+  private onCommentCategoriesChanged = (commentCategoryIds: number[] | "ALL") => {
+    this.setState({
+      commentCategoryIds: commentCategoryIds
     });
   }
 

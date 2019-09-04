@@ -57,7 +57,7 @@ public class QueryPageTranslator extends AbstractTranslator<fi.metatavu.edelphi.
     result.setCommentable(queryPageController.getBooleanSetting(entity, "thesis.commentable"));
     result.setDiscussionVisible(queryPageController.getBooleanSetting(entity, "thesis.viewDiscussions"));
     
-    List<String> categories = queryPageController.listCommentCategories(entity).stream()
+    List<String> categories = queryPageController.listCommentCategoriesByPage(entity).stream()
       .map(QueryQuestionCommentCategory::getName)
       .collect(Collectors.toList());
     

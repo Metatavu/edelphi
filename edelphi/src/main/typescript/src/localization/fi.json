@@ -102,6 +102,7 @@
       "exportFilterByExpertise": "Intressit ja asiantuntijuudet",
       "exportFilterByPage": "Sivu(t)",
       "exportFilterByPageAll": "Kaikki",
+      "exportFilterByCommentCategory": "Kommenttikategoriat",
       "exportReport": "Vie raportti",
       "exportReportContents": "Raportin sisältö",
       "exportReportPDF": "Vie PDF:nä",

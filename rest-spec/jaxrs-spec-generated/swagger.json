@@ -850,6 +850,17 @@
             "type" : "integer",
             "format" : "int64"
           }
+        }, {
+          "name" : "queryId",
+          "in" : "query",
+          "description" : "Filter by query id",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
         } ],
         "responses" : {
           "200" : {
@@ -2191,6 +2202,14 @@
           "expertiseGroupIds" : {
             "type" : "array",
             "description" : "Include only speficied expertise group ids",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          },
+          "commentCategoryIds" : {
+            "type" : "array",
+            "description" : "Include only comments from speficied comment category ids",
             "items" : {
               "type" : "integer",
               "format" : "int64"
