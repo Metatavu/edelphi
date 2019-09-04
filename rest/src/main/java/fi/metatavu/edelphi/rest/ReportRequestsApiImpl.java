@@ -19,9 +19,6 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.ejb3.annotation.SecurityDomain;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseGroup;
@@ -137,11 +134,7 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
     }
     
     if (options.getCommentCategoryIds() != null && !options.getCommentCategoryIds().isEmpty()) {
-      System.out.println("getCommentCategoryIds not null");
-      
       properties.put(ReportBatchProperties.COMMENT_CATEGORY_IDS, StringUtils.join(options.getCommentCategoryIds(), ","));
-    } else {
-      System.out.println("getCommentCategoryIds ARE null");
     }
     
     if (body.getDelivery() != null && StringUtils.isNotBlank(body.getDelivery().getEmail())) {
