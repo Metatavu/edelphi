@@ -107,6 +107,7 @@ export interface IStrings extends LocalizedStringsMethods {
       exportFilterByExpertise: string,
       exportFilterByPage: string,
       exportFilterByPageAll: string,
+      exportFilterByCommentCategory: string,
       exportReport: string,
       exportReportContents: string,
       exportReportPDF: string,

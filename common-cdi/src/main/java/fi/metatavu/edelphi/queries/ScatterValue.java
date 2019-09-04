@@ -1,4 +1,4 @@
-package fi.metatavu.edelphi.reports.charts;
+package fi.metatavu.edelphi.queries;
 
 /**
  * Scatter value

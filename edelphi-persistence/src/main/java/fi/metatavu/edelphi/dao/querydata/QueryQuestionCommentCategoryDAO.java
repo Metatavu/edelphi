@@ -7,12 +7,17 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory_;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
+import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage_;
+import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection;
+import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection_;
+import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 /**
@@ -72,6 +77,29 @@ public class QueryQuestionCommentCategoryDAO extends GenericDAO<QueryQuestionCom
     criteria.select(root);
     criteria.where(
       criteriaBuilder.equal(root.get(QueryQuestionCommentCategory_.queryPage), queryPage)
+    );
+    
+    return entityManager.createQuery(criteria).getResultList(); 
+  }
+  
+  /**
+   * Lists query question comment categories by query
+   * 
+   * @param query query
+   * @return query question comment categories by query
+   */
+  public List<QueryQuestionCommentCategory> listByQuery(Query query) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryQuestionCommentCategory> criteria = criteriaBuilder.createQuery(QueryQuestionCommentCategory.class);
+    Root<QueryQuestionCommentCategory> root = criteria.from(QueryQuestionCommentCategory.class);
+    Join<QueryQuestionCommentCategory, QueryPage> queryPageJoin = root.join(QueryQuestionCommentCategory_.queryPage);
+    Join<QueryPage, QuerySection> querySectionJoin = queryPageJoin.join(QueryPage_.querySection);
+    
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(querySectionJoin.get(QuerySection_.query), query)
     );
     
     return entityManager.createQuery(criteria).getResultList(); 

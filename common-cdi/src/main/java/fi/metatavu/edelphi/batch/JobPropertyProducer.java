@@ -46,7 +46,7 @@ public class JobPropertyProducer {
     Member member = injectionPoint.getMember();
     String name = member.getName();
     String value = getJobProperty(name);
-    
+
     if (StringUtils.isEmpty(value)) {
       return null;
     }

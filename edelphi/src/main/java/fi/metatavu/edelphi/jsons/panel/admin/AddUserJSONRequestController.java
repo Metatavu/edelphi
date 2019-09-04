@@ -29,7 +29,6 @@ import fi.metatavu.edelphi.smvcj.Severity;
 import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 import fi.metatavu.edelphi.utils.KeycloakUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
-import fi.metatavu.edelphi.utils.UserUtils;
 
 public class AddUserJSONRequestController extends JSONController {
 

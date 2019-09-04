@@ -19,6 +19,10 @@ export interface ReportRequestOptions {
      */
     expertiseGroupIds?: Array<number>;
     /**
+     * Include only comments from speficied comment category ids
+     */
+    commentCategoryIds?: Array<number>;
+    /**
      * Show 2d answers as 1d graphs instead of 2d graphs
      */
     show2dAs1d?: boolean;
@@ -32,6 +36,10 @@ export interface ReportRequestOptionsOpt {
      * Include only speficied expertise group ids
      */
     expertiseGroupIds?: Array<number>;
+    /**
+     * Include only comments from speficied comment category ids
+     */
+    commentCategoryIds?: Array<number>;
     /**
      * Show 2d answers as 1d graphs instead of 2d graphs
      */

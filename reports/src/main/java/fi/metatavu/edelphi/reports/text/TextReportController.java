@@ -3,6 +3,7 @@ package fi.metatavu.edelphi.reports.text;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Locale;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -10,6 +11,7 @@ import javax.inject.Inject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import fi.metatavu.edelphi.batch.JobProperty;
 import fi.metatavu.edelphi.reports.ReportException;
 import fi.metatavu.edelphi.reports.text.legacy.LegacyReportPageHtmlProvider;
 import fi.metatavu.edelphi.reports.text.live2d.Live2dReportPageHtmlProvider;
@@ -27,6 +29,10 @@ public class TextReportController {
 
   @Inject
   private Live2dReportPageHtmlProvider live2dReportPageHtmlProvider;
+
+  @Inject
+  @JobProperty
+  private Locale locale;
   
   /**
    * Returns a report HTML for given report pages

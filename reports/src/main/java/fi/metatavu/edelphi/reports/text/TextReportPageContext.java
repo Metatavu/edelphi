@@ -16,8 +16,10 @@ public class TextReportPageContext {
   private Locale locale;
   private PanelStamp stamp;
   private Long[] expertiseGroupIds;
+  private Long[] queryReplyIds;
+  private Long[] commentCategoryIds;
   private QueryPage page;
-  
+
   /**
    * Zero-argument constructor
    */
@@ -34,12 +36,14 @@ public class TextReportPageContext {
    * @param expertiseGroupIds expertise group ids
    * @param page query page
    */
-  public TextReportPageContext(String baseURL, Locale locale, PanelStamp stamp, Long[] expertiseGroupIds, QueryPage page) {
+  public TextReportPageContext(String baseURL, Locale locale, PanelStamp stamp, Long[] expertiseGroupIds, Long[] queryReplyIds, Long[] commentCategoryIds, QueryPage page) {
     super();
     this.baseURL = baseURL;
     this.locale = locale;
     this.stamp = stamp;
     this.expertiseGroupIds = expertiseGroupIds;
+    this.queryReplyIds = queryReplyIds;
+    this.commentCategoryIds = commentCategoryIds;
     this.page = page;
   }
 
@@ -113,6 +117,42 @@ public class TextReportPageContext {
    */
   public void setExpertiseGroupIds(Long[] expertiseGroupIds) {
     this.expertiseGroupIds = expertiseGroupIds;
+  }
+  
+  /**
+   * Returns comment category ids
+   *  
+   * @return comment category ids
+   */
+  public Long[] getCommentCategoryIds() {
+    return commentCategoryIds;
+  }
+  
+  /**
+   * Sets comment category ids
+   * 
+   * @param commentCategoryIds comment category ids
+   */
+  public void setCommentCategoryIds(Long[] commentCategoryIds) {
+    this.commentCategoryIds = commentCategoryIds;
+  }
+  
+  /**
+   * Returns query reply ids
+   * 
+   * @return query reply ids
+   */
+  public Long[] getQueryReplyIds() {
+    return queryReplyIds;
+  }
+ 
+  /**
+   * Sets query reply ids
+   * 
+   * @param queryReplyIds query reply ids
+   */
+  public void setQueryReplyIds(Long[] queryReplyIds) {
+    this.queryReplyIds = queryReplyIds;
   }
 
   /**

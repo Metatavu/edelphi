@@ -2,7 +2,6 @@ package fi.metatavu.edelphi.reports.text.live2d;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,24 +13,21 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import fi.metatavu.edelphi.batch.JobProperty;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
-import fi.metatavu.edelphi.dao.querydata.QueryQuestionNumericAnswerDAO;
-import fi.metatavu.edelphi.dao.querymeta.QueryNumericFieldDAO;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
-import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionNumericAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
-import fi.metatavu.edelphi.domainmodel.querymeta.QueryNumericField;
 import fi.metatavu.edelphi.queries.QueryPageController;
 import fi.metatavu.edelphi.queries.QueryReplyController;
+import fi.metatavu.edelphi.queries.ScatterValue;
 import fi.metatavu.edelphi.reports.ReportException;
 import fi.metatavu.edelphi.reports.charts.ChartController;
-import fi.metatavu.edelphi.reports.charts.ScatterValue;
 import fi.metatavu.edelphi.reports.i18n.ReportMessages;
 import fi.metatavu.edelphi.reports.text.AbstractReportPageHtmlProvider;
 import fi.metatavu.edelphi.reports.text.TextReportPageContext;
@@ -46,8 +42,6 @@ public class Live2dReportPageHtmlProvider extends AbstractReportPageHtmlProvider
 
   private static final String OPTIONS_X = "live2d.options.x";
   private static final String OPTIONS_Y = "live2d.options.y";
-  private static final String FIELD_NAME_X = "x";
-  private static final String FIELD_NAME_Y = "y";
   
   @Inject
   private ReportMessages reportMessages;
@@ -63,27 +57,17 @@ public class Live2dReportPageHtmlProvider extends AbstractReportPageHtmlProvider
 
   @Inject
   private QueryPageController queryPageController;
-
-  @Inject
-  private QueryNumericFieldDAO queryNumericFieldDAO;
-
-  @Inject
-  private QueryQuestionNumericAnswerDAO queryQuestionNumericAnswerDAO;
-  
-  @Inject
-  @JobProperty
-  private Locale locale;
-  
-  @Inject
-  @JobProperty
-  private Long[] queryReplyIds;
   
   @Override
   public String getPageHtml(TextReportPageContext exportContext) throws ReportException {
+    Locale locale = exportContext.getLocale();
+    Long[] queryReplyIds = exportContext.getQueryReplyIds();
+    Long[] commentCategoryIds = exportContext.getCommentCategoryIds();
+    
     List<QueryReply> queryReplies = queryReplyIds == null ? Collections.emptyList() : Arrays.stream(queryReplyIds).map(queryReplyController::findQueryReply).collect(Collectors.toList());
     QueryPage queryPage = exportContext.getPage();
     PanelStamp panelStamp = exportContext.getStamp();
-    return renderPage(queryPage, panelStamp, queryReplies);
+    return renderPage(locale, queryPage, panelStamp, queryReplies, commentCategoryIds);
   }
   
   /**
@@ -95,7 +79,7 @@ public class Live2dReportPageHtmlProvider extends AbstractReportPageHtmlProvider
    * @return rendered page
    * @throws ReportException thrown when generation fails
    */
-  private String renderPage(QueryPage queryPage, PanelStamp panelStamp, List<QueryReply> queryReplies) throws ReportException {
+  private String renderPage(Locale locale, QueryPage queryPage, PanelStamp panelStamp, List<QueryReply> queryReplies, Long[] commentCategoryIds) throws ReportException {
     try (InputStream htmlStream = getClass().getClassLoader().getResourceAsStream("report-contents.html")) {
       Document document = Jsoup.parse(htmlStream, "UTF-8", "");
       
@@ -103,28 +87,12 @@ public class Live2dReportPageHtmlProvider extends AbstractReportPageHtmlProvider
       String labelY = queryPageController.getSetting(queryPage, "live2d.label.y");
       String thesis = queryPageController.getSetting(queryPage, "thesis.text");
       String description = queryPageController.getSetting(queryPage, "thesis.description");
-      
-      QueryNumericField queryFieldX = queryNumericFieldDAO.findByQueryPageAndName(queryPage, FIELD_NAME_X);
-      QueryNumericField queryFieldY = queryNumericFieldDAO.findByQueryPageAndName(queryPage, FIELD_NAME_Y);
 
       List<String> optionsX = queryPageController.getListSetting(queryPage, OPTIONS_X);
       List<String> optionsY = queryPageController.getListSetting(queryPage, OPTIONS_Y);
       
-      List<QueryQuestionNumericAnswer> answersX = queryQuestionNumericAnswerDAO.listByQueryFieldAndRepliesIn(queryFieldX, queryReplies);
-      List<QueryQuestionNumericAnswer> answersY = queryQuestionNumericAnswerDAO.listByQueryFieldAndRepliesIn(queryFieldY, queryReplies);
-      
-      Map<Long, Double> answerMapX = answersX.stream().collect(Collectors.toMap(answer -> answer.getQueryReply().getId(), QueryQuestionNumericAnswer::getData));
-      Map<Long, Double> answerMapY = answersY.stream().collect(Collectors.toMap(answer -> answer.getQueryReply().getId(), QueryQuestionNumericAnswer::getData));
-      Map<Long, Double[]> answerMap = queryReplies.stream().map(QueryReply::getId).collect(Collectors.toMap(queryReplyId -> queryReplyId, queryReplyId -> new Double[] { answerMapX.get(queryReplyId), answerMapY.get(queryReplyId) }));
-      
-      List<ScatterValue> scatterValues = new ArrayList<>();
-      for (Map.Entry<Long, Double[]> answerMapEntry : answerMap.entrySet()) {
-        Double[] values = answerMapEntry.getValue();
-        if (values[0] != null && values[1] != null) {
-          scatterValues.add(new ScatterValue(answerMapEntry.getKey(), values[0], values[1]));
-        }
-      }
-      
+      List<ScatterValue> scatterValues = queryPageController.getLive2dScatterValues(queryPage, queryReplies);
+
       String chartHtml = chartController.createLive2dChart(locale, queryPage, queryReplies, scatterValues, labelX, labelY, optionsX, optionsY);
       
       document.getElementById("title").html(queryPage.getTitle());
@@ -140,7 +108,7 @@ public class Live2dReportPageHtmlProvider extends AbstractReportPageHtmlProvider
       }
       
       document.getElementById("comments-title").html(reportMessages.getText(locale, "reports.page.commentsTitle"));
-      document.getElementById("comments").html(renderComments(panelStamp, queryPage, scatterValues, labelX, labelY, optionsX, optionsY));
+      document.getElementById("comments").html(renderComments(locale, panelStamp, queryPage, scatterValues, labelX, labelY, optionsX, optionsY, commentCategoryIds));
       
       document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);    
       document.outputSettings().escapeMode(org.jsoup.nodes.Entities.EscapeMode.xhtml);
@@ -159,9 +127,9 @@ public class Live2dReportPageHtmlProvider extends AbstractReportPageHtmlProvider
    * @return report comments
    * @throws ReportException thrown when generation fails
    */
-  private String renderComments(PanelStamp panelStamp, QueryPage queryPage, List<ScatterValue> scatterValues, String labelX, String labelY, List<String> optionsX, List<String> optionsY) throws ReportException {
+  private String renderComments(Locale locale, PanelStamp panelStamp, QueryPage queryPage, List<ScatterValue> scatterValues, String labelX, String labelY, List<String> optionsX, List<String> optionsY, Long[] commentCategoryIds) throws ReportException {
     Map<Long, List<QueryQuestionComment>> childCommentMap = queryQuestionCommentDAO.listTreesByQueryPage(queryPage);
-    List<QueryQuestionComment> rootComments = listRootComments(panelStamp, queryPage);
+    List<QueryQuestionComment> rootComments = filterComments(commentCategoryIds, listRootComments(panelStamp, queryPage));
     Map<Long, String> commentAnswers = getCommentAnswers(rootComments, scatterValues, labelX, labelY, optionsX, optionsY);
     
     rootComments.sort(new Comparator<QueryQuestionComment>() {
@@ -176,7 +144,7 @@ public class Live2dReportPageHtmlProvider extends AbstractReportPageHtmlProvider
     StringBuilder html = new StringBuilder();
     
     for (QueryQuestionComment rootComment : rootComments) {
-      html.append(renderComment(rootComment, childCommentMap, commentAnswers));
+      html.append(renderComment(locale, rootComment, childCommentMap, commentAnswers));
     }
     
     return html.toString();
@@ -222,6 +190,23 @@ public class Live2dReportPageHtmlProvider extends AbstractReportPageHtmlProvider
   
     return "-";
   }
+  
+  /**
+   * Filters out comments based on report settings
+   * 
+   * @param questionComments comments
+   * @return filtered comments
+   */
+  private List<QueryQuestionComment> filterComments(Long[] commentCategoryIds, List<QueryQuestionComment> questionComments) {
+    if (commentCategoryIds == null) {
+      return questionComments;
+    }
+    
+    return questionComments.stream()
+      .filter(comment -> comment.getCategory() != null)
+      .filter(comment -> { boolean r = ArrayUtils.contains(commentCategoryIds, comment.getCategory().getId()); System.out.println("" + comment.getCategory().getId() + ":" + r  ); return r; })
+      .collect(Collectors.toList());
+  }
 
   /**
    * Lists page's root comments
@@ -240,7 +225,7 @@ public class Live2dReportPageHtmlProvider extends AbstractReportPageHtmlProvider
    * @return
    * @throws ReportException
    */
-  private String renderComment(QueryQuestionComment comment, Map<Long, List<QueryQuestionComment>> childCommentMap, Map<Long, String> commentAnswers) throws ReportException {
+  private String renderComment(Locale locale, QueryQuestionComment comment, Map<Long, List<QueryQuestionComment>> childCommentMap, Map<Long, String> commentAnswers) throws ReportException {
     List<QueryQuestionComment> childComments = childCommentMap.get(comment.getId());
     String commentAnswer = commentAnswers.get(comment.getId());
     
@@ -257,7 +242,7 @@ public class Live2dReportPageHtmlProvider extends AbstractReportPageHtmlProvider
       
       if (childComments != null) {
         for (QueryQuestionComment childComment : childComments) {
-          document.getElementById("comment-children").append(renderComment(childComment, childCommentMap, commentAnswers)); 
+          document.getElementById("comment-children").append(renderComment(locale, childComment, childCommentMap, commentAnswers)); 
         }
       }
       
