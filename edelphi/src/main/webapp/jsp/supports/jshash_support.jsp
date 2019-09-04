@@ -3,7 +3,7 @@
 
 <c:choose>
   <c:when test="${jsHashSupportIncluded != true}">
-    <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/jshash-2.2/md5.js"></script>
+    <script type="text/javascript" src="//cdn.metatavu.io/assets/edelphi/_scripts/jshash-2.2/md5.js"></script>
     <c:set scope="request" var="jsHashSupportIncluded" value="true"/>
   </c:when>
 </c:choose>

@@ -14,8 +14,8 @@
         <fmt:param>${panel.name}</fmt:param>
       </fmt:message>
     </title>
-    <link type="text/css" href="${pageContext.request.contextPath}/_themes/${theme}/css/theme.css" rel="stylesheet"/>
-    <link type="text/css" href="${pageContext.request.contextPath}/_themes/${theme}/css/report_overrides.css" rel="stylesheet"/>
+    <link type="text/css" href="https://cdn.metatavu.io/assets/edelphi/_themes/${theme}/css/theme.css" rel="stylesheet"/>
+    <link type="text/css" href="https://cdn.metatavu.io/assets/edelphi/_themes/${theme}/css/report_overrides.css" rel="stylesheet"/>
   </head>
   
   <body class="queryReport">
