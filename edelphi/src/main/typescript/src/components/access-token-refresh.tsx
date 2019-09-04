@@ -102,9 +102,9 @@ class AccessTokenRefresh extends React.Component<Props, State> {
         window.location.href = "/logout.page";
       }
     } catch (e) {
-      this.setState({
-        error: e
-      });
+      // this.setState({
+      //   error: e
+      // });
     }
   }
 
