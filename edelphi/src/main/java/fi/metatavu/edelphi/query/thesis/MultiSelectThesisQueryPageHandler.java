@@ -7,6 +7,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
@@ -35,6 +37,7 @@ import fi.metatavu.edelphi.utils.QueryDataUtils;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
 import fi.metatavu.edelphi.utils.QueryUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.SystemUtils;
 
 public class MultiSelectThesisQueryPageHandler extends AbstractScaleThesisQueryPageHandler {
 
@@ -129,7 +132,7 @@ public class MultiSelectThesisQueryPageHandler extends AbstractScaleThesisQueryP
       QueryOptionField queryField = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldName);
       if (queryField != null) {
         queryFieldDAO.updateMandatory(queryField, mandatory);
-        queryFieldDAO.updateCaption(queryField, fieldCaption);
+        queryFieldDAO.updateCaption(queryField, StringUtils.abbreviate(fieldCaption, SystemUtils.MAX_QUERY_FIELD_CAPTION));
       } else {
         queryField = queryOptionFieldDAO.create(queryPage, fieldName, mandatory, queryPage.getTitle());
       }

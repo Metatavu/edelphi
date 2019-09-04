@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
@@ -21,6 +22,7 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
 import fi.metatavu.edelphi.utils.ResourceUtils;
+import fi.metatavu.edelphi.utils.SystemUtils;
 
 public abstract class AbstractQueryPageHandler implements QueryPageHandler {
 
@@ -37,7 +39,7 @@ public abstract class AbstractQueryPageHandler implements QueryPageHandler {
     String title = settings.get("title");
     Boolean visible = "1".equals(settings.get("visible"));
     
-    queryPageDAO.updateTitle(queryPage, title, modifier);
+    queryPageDAO.updateTitle(queryPage, StringUtils.abbreviate(title, SystemUtils.MAX_QUERY_PAGE_TITLE), modifier);
     queryPageDAO.updateVisible(queryPage, visible, modifier);
   }
   

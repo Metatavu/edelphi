@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryNumericFieldDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
@@ -21,6 +23,7 @@ import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
 import fi.metatavu.edelphi.utils.ResourceUtils;
+import fi.metatavu.edelphi.utils.SystemUtils;
 
 public class Live2DThesisQueryPageHandler extends AbstractThesisQueryPageHandler {
 
@@ -113,7 +116,7 @@ public class Live2DThesisQueryPageHandler extends AbstractThesisQueryPageHandler
     QueryNumericField queryNumericField = (QueryNumericField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldName);
     
     if (queryNumericField != null) {
-      queryFieldDAO.updateCaption(queryNumericField, label);
+      queryFieldDAO.updateCaption(queryNumericField, StringUtils.abbreviate(label, SystemUtils.MAX_QUERY_FIELD_CAPTION));
       if (!hasAnswers) {
         queryNumericFieldDAO.updateMin(queryNumericField, min);
         queryNumericFieldDAO.updateMax(queryNumericField, max);

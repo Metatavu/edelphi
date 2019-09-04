@@ -37,6 +37,7 @@ import fi.metatavu.edelphi.utils.QueryDataUtils;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
 import fi.metatavu.edelphi.utils.ReportUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.SystemUtils;
 import fi.metatavu.edelphi.utils.comments.ReportPageCommentProcessor;
 import fi.metatavu.edelphi.utils.comments.TimelineReportPageCommentProcessor;
 
@@ -174,9 +175,9 @@ public class TimelineThesisQueryPageHandler extends AbstractThesisQueryPageHandl
         queryNumericFieldDAO.create(queryPage, TIMELINE_VALUE1, mandatory1, caption1, null, null, 1d);
       } else {
         queryFieldDAO.updateMandatory(queryNumericField1, mandatory1);
-        queryFieldDAO.updateCaption(queryNumericField1, caption1);
+        queryFieldDAO.updateCaption(queryNumericField1, StringUtils.abbreviate(caption1, SystemUtils.MAX_QUERY_FIELD_CAPTION));
       }
-
+      
       QueryNumericField queryNumericField2 = (QueryNumericField) queryFieldDAO.findByQueryPageAndName(queryPage, TIMELINE_VALUE2);
       if (getIntegerOptionValue(queryPage, getDefinedOption("timeline.type")) == TIMELINE_TYPE_2VALUE) {
         // if page has also second field by it does not exist yet we need to create new. Otherwise we just update existing properties
@@ -184,7 +185,7 @@ public class TimelineThesisQueryPageHandler extends AbstractThesisQueryPageHandl
           queryNumericFieldDAO.create(queryPage, TIMELINE_VALUE2, mandatory2, caption2, null, null, 1d);
         } else {
           queryFieldDAO.updateMandatory(queryNumericField2, mandatory2);
-          queryFieldDAO.updateCaption(queryNumericField2, caption2);
+          queryFieldDAO.updateCaption(queryNumericField2, StringUtils.abbreviate(caption2, SystemUtils.MAX_QUERY_FIELD_CAPTION));
         }
       } else {
         // If query does not anymore have two fields but the field still exists we need to delete that deprecated field

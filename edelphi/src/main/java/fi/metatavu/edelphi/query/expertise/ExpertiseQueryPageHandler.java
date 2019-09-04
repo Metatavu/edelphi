@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
@@ -46,6 +47,7 @@ import fi.metatavu.edelphi.utils.QueryDataUtils;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
 import fi.metatavu.edelphi.utils.ResourceUtils;
+import fi.metatavu.edelphi.utils.SystemUtils;
 import fi.metatavu.edelphi.utils.comments.ReportPageCommentProcessor;
 
 public class ExpertiseQueryPageHandler extends AbstractQueryPageHandler {
@@ -235,7 +237,7 @@ public class ExpertiseQueryPageHandler extends AbstractQueryPageHandler {
         if (queryField == null) {
           queryField = queryOptionFieldDAO.create(queryPage, fieldName, mandatory, caption);
         } else {
-          queryFieldDAO.updateCaption(queryField, caption);
+          queryFieldDAO.updateCaption(queryField, StringUtils.abbreviate(caption, SystemUtils.MAX_QUERY_FIELD_CAPTION));
           queryFieldDAO.updateMandatory(queryField, mandatory);
         }
  
