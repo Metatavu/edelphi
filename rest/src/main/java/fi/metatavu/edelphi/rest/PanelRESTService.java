@@ -607,10 +607,10 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     
     return createOk(queryQuestionCommentCategoryTranslator.translate(category));
   }
-
+  
   @Override
   @RolesAllowed("user") 
-  public Response listQueryQuestionCommentCategories(Long panelId, Long pageId) {
+  public Response listQueryQuestionCommentCategories(Long panelId, Long pageId, Long queryId) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
@@ -620,16 +620,37 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createForbidden("Forbidden");
     }
     
-    QueryPage queryPage = queryPageController.findQueryPage(pageId);
-    if (queryPage == null) {
-      return createNotFound();
+    if (pageId == null && queryId == null) {
+      return createBadRequest("Either pageId or queryId is required");
     }
-
-    if (!queryPageController.isPanelsPage(panel, queryPage)) {
-      return createBadRequest("Panel and page mismatch");
+    
+    List<fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory> commentCategories = null;
+    
+    if (queryId != null) {
+      Query query = queryController.findQueryById(queryId);
+      if (query == null) {
+        return createBadRequest(String.format("Invalid query id %d", queryId));
+      }
+      
+      if (!queryController.isPanelsQuery(query, panel)) {
+        return createBadRequest("Panel and query mismatch");
+      }
+      
+      commentCategories = queryPageController.listCommentCategoriesByQuery(query);
+    } else if (pageId != null) {
+      QueryPage queryPage = queryPageController.findQueryPage(pageId);
+      if (queryPage == null) {
+        return createNotFound();
+      }
+  
+      if (!queryPageController.isPanelsPage(panel, queryPage)) {
+        return createBadRequest("Panel and page mismatch");
+      }
+      
+      commentCategories = queryPageController.listCommentCategoriesByPage(queryPage);
     }
-
-    return createOk(queryPageController.listCommentCategories(queryPage).stream().map(queryQuestionCommentCategoryTranslator::translate).collect(Collectors.toList()));
+    
+    return createOk(commentCategories.stream().map(queryQuestionCommentCategoryTranslator::translate).collect(Collectors.toList()));
   }
 
   @Override

@@ -102,6 +102,7 @@
       "exportFilterByExpertise": "Interest and Expertise Groups",
       "exportFilterByPage": "Page(s)",
       "exportFilterByPageAll": "All",
+      "exportFilterByCommentCategory": "Comment categories",
       "exportReport": "Export Report",
       "exportReportContents": "Report Contents",
       "exportReportPDF": "Export as PDF",

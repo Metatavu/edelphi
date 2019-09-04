@@ -330,13 +330,23 @@ public class QueryPageController {
   }
   
   /**
-   * Lists page comment categories
+   * Lists page comment categories by page
    * 
    * @param queryPage query page
    * @return comment categories
    */
-  public List<QueryQuestionCommentCategory> listCommentCategories(QueryPage queryPage) {
+  public List<QueryQuestionCommentCategory> listCommentCategoriesByPage(QueryPage queryPage) {
     return queryQuestionCommentCategoryDAO.listByQueryPage(queryPage);
+  }
+  
+  /**
+   * Lists page comment categories by query
+   * 
+   * @param queryPage query
+   * @return comment categories
+   */
+  public List<QueryQuestionCommentCategory> listCommentCategoriesByQuery(Query query) {
+    return queryQuestionCommentCategoryDAO.listByQuery(query);
   }
   
   /**
