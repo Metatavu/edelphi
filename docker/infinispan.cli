@@ -5,10 +5,3 @@ embed-server --server-config=standalone-full-ha.xml
 /subsystem=infinispan/cache-container=edelphi/distributed-cache=google-image-cache/store=file:add()
 /subsystem=infinispan/cache-container=edelphi/distributed-cache=report-image-cache:add(mode=ASYNC)
 /subsystem=infinispan/cache-container=edelphi/distributed-cache=report-image-cache/store=file:add()
-/subsystem=infinispan/cache-container=web:undefine-attribute(name=default-cache)
-/subsystem=infinispan/cache-container=web/distributed-cache=dist:remove
-/subsystem=infinispan/cache-container=web/replicated-cache=dist:add(mode=ASYNC)
-/subsystem=infinispan/cache-container=web/replicated-cache=dist/store=file:add()
-/subsystem=infinispan/cache-container=web/replicated-cache=dist/component=locking:add(isolation=REPEATABLE_READ)
-/subsystem=infinispan/cache-container=web/replicated-cache=dist/component=transaction:add(mode=BATCH)
-/subsystem=infinispan/cache-container=web:write-attribute(name=default-cache,value=dist)
