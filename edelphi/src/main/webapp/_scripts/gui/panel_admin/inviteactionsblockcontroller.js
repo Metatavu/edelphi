@@ -122,12 +122,15 @@ var InviteActionsBlockController = Class.create(BlockController, {
           queryId: queryId
         },
         onSuccess : function(response) {
-          var error = this._getResponseError(response);
-          progressCallback(error);
-          callback(null, {
-            error: error,
-            email: email
-          });
+          // Wait 300 ms before sending another invitation
+          setTimeout(function () {
+            var error = this._getResponseError(response);
+              progressCallback(error);
+              callback(null, {
+                error: error,
+                email: email
+              });
+          }.bind(this), 300);
         }.bind(this),
         onFailure: function (response) {
           var error = this._getResponseError(response);
@@ -269,7 +272,7 @@ var InviteActionsBlockController = Class.create(BlockController, {
       addRequests.push(this._createUserAddRequest(userId, queryId, email, firstName, lastName, password, progressCallback));
     }
     
-    async.parallelLimit(addRequests, 2, function (err, results) {
+    async.parallelLimit(addRequests, 1, function (err, results) {
       if (err) {
         this._showError(err);
       } else {
@@ -333,7 +336,7 @@ var InviteActionsBlockController = Class.create(BlockController, {
       addRequests.push(this._createInvitationRequest(invitationMessage, userId, queryId, email, progressCallback));
     }
     
-    async.parallelLimit(addRequests, 5, function (err, results) {
+    async.parallelLimit(addRequests, 1, function (err, results) {
       if (err) {
         this._showError(err);
       } else {
