@@ -1,4 +1,4 @@
-FROM jboss/wildfly:16.0.0.Final
+FROM jboss/wildfly:10.1.0.Final
 
 ADD --chown=jboss edelphi/target/*.war /opt/jboss/wildfly/standalone/deployments/app.war
 ADD --chown=jboss ./docker/entrypoint.sh /opt/docker/entrypoint.sh 
@@ -14,7 +14,7 @@ ADD --chown=jboss ./docker/infinispan.cli /opt/docker/infinispan.cli
 ADD --chown=jboss ./docker/http-max-parameters.cli /opt/docker/http-max-parameters.cli
 RUN chmod a+x /opt/docker/entrypoint.sh
 
-ARG WILDFLY_VERSION=16.0.0.Final
+ARG WILDFLY_VERSION=10.1.0.Final
 ARG MARIADB_MODULE_VERSION=2.3.0
 ARG MYSQL_MODULE_VERSION=8.0.15
 ARG KEYCLOAK_MODULE_VERSION=5.0.0
