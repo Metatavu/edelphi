@@ -250,6 +250,8 @@ class QueryNavigation extends React.Component<Props, State> {
     if (save) {
       await this.saveLegacyForm(finish);
     }
+
+    await this.promiseAwait(500);
     
     if (page) {
       window.location.href = `?page=${page.pageNumber}`;
@@ -322,6 +324,15 @@ class QueryNavigation extends React.Component<Props, State> {
       loading: false,
       pages: pages,
       panel: panel
+    });
+  }
+
+  /**
+   * Resolves promise after given  time
+   */
+  private promiseAwait = (timeout: number) => {
+    return new Promise((resolve) => {
+      setTimeout(resolve, timeout);
     });
   }
 

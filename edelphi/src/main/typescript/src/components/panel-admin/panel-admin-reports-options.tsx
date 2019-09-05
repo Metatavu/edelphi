@@ -79,7 +79,7 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
     const panelExpertiseGroups = await this.getPanelExpertiseService().listExpertiseGroups(this.props.panelId);
     const panelInterestClasses = await this.getPanelExpertiseService().listInterestClasses(this.props.panelId);
     const panelExpertiseClasses = await this.getPanelExpertiseService().listExpertiseClasses(this.props.panelId);
-    const commentCategories: QueryQuestionCommentCategory[] = []; // await this.loadCommentCategories();
+    const commentCategories: QueryQuestionCommentCategory[] = await this.loadCommentCategories();
 
     this.setState({
       loading: false,
@@ -348,8 +348,12 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
    * Loads comment categories
    */
   private loadCommentCategories = async () => {
-    const queryQuestionCommentCategoriesService = this.getQueryQuestionCommentCategoriesService();
-    return await queryQuestionCommentCategoriesService.listQueryQuestionCommentCategories(this.props.panelId, undefined, this.props.queryId);
+    try {
+      const queryQuestionCommentCategoriesService = this.getQueryQuestionCommentCategoriesService();
+      return await queryQuestionCommentCategoriesService.listQueryQuestionCommentCategories(this.props.panelId, undefined, this.props.queryId);
+    } catch (e) {
+      return [];
+    }
   }
 
   /**

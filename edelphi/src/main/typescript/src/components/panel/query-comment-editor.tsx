@@ -28,7 +28,8 @@ interface State {
   saving: boolean,
   loading: boolean,
   commentId?: number,
-  changed: boolean
+  changed: boolean,
+  loaded: boolean
 }
 
 /**
@@ -46,7 +47,8 @@ class QueryCommentEditor extends React.Component<Props, State> {
     this.state = {
       saving: false,
       loading: false,
-      changed: false
+      changed: false,
+      loaded: false
     };
 
     this.props.setPageChangeListener(this.onPageChange);
@@ -57,6 +59,15 @@ class QueryCommentEditor extends React.Component<Props, State> {
    */
   public async componentDidMount() {
     this.loadComment();
+  }
+  
+  /**
+   * Component did mount life-cycle event
+   */
+  public async componentDidUpdate() {
+    if (!this.state.loaded) {
+      this.loadComment();
+    }
   }
 
   /** 
@@ -106,7 +117,8 @@ class QueryCommentEditor extends React.Component<Props, State> {
     this.setState({
       loading: false,
       commentId: comments.length ? comments[0].id : undefined,
-      contents: comments.length ? comments[0].contents : undefined
+      contents: comments.length ? comments[0].contents : undefined,
+      loaded: true
     });
   }
 
