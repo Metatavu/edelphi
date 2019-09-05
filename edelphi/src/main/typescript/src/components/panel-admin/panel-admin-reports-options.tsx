@@ -79,7 +79,7 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
     const panelExpertiseGroups = await this.getPanelExpertiseService().listExpertiseGroups(this.props.panelId);
     const panelInterestClasses = await this.getPanelExpertiseService().listInterestClasses(this.props.panelId);
     const panelExpertiseClasses = await this.getPanelExpertiseService().listExpertiseClasses(this.props.panelId);
-    const commentCategories: QueryQuestionCommentCategory[] = []; // await this.loadCommentCategories();
+    const commentCategories: QueryQuestionCommentCategory[] = await this.loadCommentCategories();
 
     this.setState({
       loading: false,
