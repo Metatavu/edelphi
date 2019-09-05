@@ -2,7 +2,7 @@ embed-server --server-config=standalone-full-ha.xml
 
 /subsystem=keycloak/secure-deployment=edelphi.war:add(realm=${env.KEYCLOAK_REALM},resource=${env.KEYCLOAK_RESOURCE},bearer-only=true,auth-server-url=${env.KEYCLOAK_URL},ssl-required=EXTERNAL,enable-cors=true)
 /subsystem=keycloak/secure-deployment=edelphi.war/credential=secret:add(value=${env.KEYCLOAK_SECRET})
-/subsystem=security/security-domain=keycloak/:add
-/subsystem=security/security-domain=keycloak/authentication=classic/:add(login-modules=[{ "code" => "org.keycloak.adapters.jboss.KeycloakLoginModule","flag" => "required"}])
+#/subsystem=security/security-domain=keycloak/:add
+#/subsystem=security/security-domain=keycloak/authentication=classic/:add(login-modules=[{ "code" => "org.keycloak.adapters.jboss.KeycloakLoginModule","flag" => "required"}])
 /subsystem=logging/logger=org.keycloak.adapters.BearerTokenRequestAuthenticator:add(level=FATAL)
 /subsystem=logging/logger=org.jboss.as.ejb3.invocation:add(level=FATAL)

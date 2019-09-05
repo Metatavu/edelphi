@@ -15,15 +15,12 @@ ADD --chown=jboss ./docker/http-max-parameters.cli /opt/docker/http-max-paramete
 RUN chmod a+x /opt/docker/entrypoint.sh
 
 ARG WILDFLY_VERSION=10.1.0.Final
-ARG MARIADB_MODULE_VERSION=2.3.0
 ARG MYSQL_MODULE_VERSION=8.0.15
 ARG KEYCLOAK_MODULE_VERSION=5.0.0
 
-RUN curl -o /tmp/mariadb-module.zip -L https://static.metatavu.io/wildfly/wildfly-${WILDFLY_VERSION}-mariadb-module-${MARIADB_MODULE_VERSION}.zip
 RUN curl -o /tmp/mysql-module.zip -L https://static.metatavu.io/wildfly/wildfly-${WILDFLY_VERSION}-mysql-module-${MYSQL_MODULE_VERSION}.zip
 RUN curl -o /tmp/keycloak-module.zip -L https://downloads.jboss.org/keycloak/${KEYCLOAK_MODULE_VERSION}/adapters/keycloak-oidc/keycloak-wildfly-adapter-dist-${KEYCLOAK_MODULE_VERSION}.zip
 
-RUN unzip -o /tmp/mariadb-module.zip -d /opt/jboss/wildfly/
 RUN unzip -o /tmp/mysql-module.zip -d /opt/jboss/wildfly/
 RUN unzip -o /tmp/keycloak-module.zip -d /opt/jboss/wildfly/
 RUN /opt/jboss/wildfly/bin/jboss-cli.sh --file=/opt/docker/host.cli
@@ -31,7 +28,7 @@ RUN /opt/jboss/wildfly/bin/jboss-cli.sh --file=/opt/docker/jdbc.cli
 RUN /opt/jboss/wildfly/bin/jboss-cli.sh --file=/opt/docker/kubernets-jgroups.cli
 RUN /opt/jboss/wildfly/bin/jboss-cli.sh --file=/opt/docker/interfaces.cli
 #RUN /opt/jboss/wildfly/bin/jboss-cli.sh --file=/opt/docker/hibernate-search.cli
-RUN /opt/jboss/wildfly/bin/jboss-cli.sh --properties=/opt/docker/jboss-cli.properties --file=/opt/jboss/wildfly/bin/adapter-elytron-install-offline.cli
+RUN /opt/jboss/wildfly/bin/jboss-cli.sh --properties=/opt/docker/jboss-cli.properties --file=/opt/jboss/wildfly/bin/adapter-install-offline.cli
 RUN /opt/jboss/wildfly/bin/jboss-cli.sh --file=/opt/docker/keycloak.cli
 RUN /opt/jboss/wildfly/bin/jboss-cli.sh --file=/opt/docker/smtp.cli
 RUN /opt/jboss/wildfly/bin/jboss-cli.sh --file=/opt/docker/infinispan.cli
