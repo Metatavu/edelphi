@@ -2004,7 +2004,7 @@
         }
       },
       "QueryQuestionCommentCategory" : {
-        "required" : [ "name" ],
+        "required" : [ "name", "queryId" ],
         "type" : "object",
         "properties" : {
           "id" : {
@@ -2017,9 +2017,14 @@
             "type" : "string",
             "description" : "Comment category's name"
           },
+          "queryId" : {
+            "type" : "integer",
+            "description" : "Query's id where the comment is",
+            "format" : "int64"
+          },
           "queryPageId" : {
             "type" : "integer",
-            "description" : "Page's id where the comment is",
+            "description" : "Query page's id or null if category is query scoped",
             "format" : "int64"
           }
         }
