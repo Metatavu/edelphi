@@ -188,7 +188,9 @@ QueryEditorBlockController = Class.create(BlockController, {
     var commentOptionsLink = $('queryEditorShowQueryCommentOptionsLink');
     
     commentOptionsLink.on("click", function () {
-      triggerReactCommand("edit-query-comment-options", { });
+      triggerReactCommand("edit-query-comment-options", { 
+        pageDatas: this._pageDatas
+      });
     }.bindAsEventListener(this));
     
     if ("NEW" == this.getBlockElement().down('input[name="queryId"]').value) {

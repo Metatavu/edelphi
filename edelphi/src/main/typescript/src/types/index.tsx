@@ -71,7 +71,7 @@ export interface EnableQueryNextCommandEventData {
 } 
 
 export interface EditQueryCommentOptionsEventData {
-  
+  pageDatas: EditPageLegacyPageData[]
 }
 
 /**

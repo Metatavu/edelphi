@@ -20,6 +20,7 @@ interface Props {
  */
 interface State {
   queryCommentOptionsOpen: boolean,
+  queryCommentOptionsHasAnswers: boolean,
   pageCommentOptionsOpen: boolean,
   pageLive2dOptionsOpen: boolean,
   pageData?: EditPageLegacyPageData,
@@ -42,6 +43,7 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
     super(props);
     this.state = {
       queryCommentOptionsOpen: false,
+      queryCommentOptionsHasAnswers: false,
       pageCommentOptionsOpen: false,
       pageLive2dOptionsOpen: false,
       pageId: 0
@@ -89,8 +91,14 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
   private onReactCommand = async (event: CommandEvent) => {
     switch (event.detail.command) {
       case "edit-query-comment-options":
+        const pageDatas = event.detail.data.pageDatas;
+        const hasAnswers = !!pageDatas.find(pageData => {
+          return "true" == pageData.hasAnswers;
+        });
+
         this.setState({
-          queryCommentOptionsOpen: true
+          queryCommentOptionsOpen: true,
+          queryCommentOptionsHasAnswers: hasAnswers
         });
       break;
       case "edit-page-comment-options":
@@ -119,7 +127,7 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
         panelId={ this.props.panelId} 
         open={ this.state.queryCommentOptionsOpen } 
         queryId={ this.props.queryId } 
-        hasAnswers={ false }
+        hasAnswers={ this.state.queryCommentOptionsHasAnswers }
         onClose={ this.onQueryCommentOptionsEditorClose }/>
     );
   }

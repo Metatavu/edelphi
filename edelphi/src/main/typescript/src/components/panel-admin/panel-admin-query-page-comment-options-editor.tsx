@@ -25,6 +25,7 @@ interface Props {
  * Interface representing component state
  */
 interface State {
+  deleteConfirmOpen: boolean,
   updating: boolean,
   loading: boolean,
   categories: QueryQuestionCommentCategory[]
@@ -43,6 +44,7 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
   constructor(props: Props) {
     super(props);
     this.state = {
+      deleteConfirmOpen: false,
       updating: false,
       loading: false,
       categories: []
@@ -134,7 +136,12 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
                   <Input style={{ width: "100%" }} value={ category.name } onChange={ (event: React.ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => this.onCategoryListNameChange(index, data.value) }/>
                 </Grid.Column>
                 <Grid.Column width={ 4 }>
-                  <Confirm content={ strings.panelAdmin.queryEditor.pageCommentOptions.deleteCategoryConfirm } trigger={ <Button disabled={ this.props.pageData.hasAnswers == "true" } negative> { strings.panelAdmin.queryEditor.pageCommentOptions.deleteCategory } </Button> } onConfirm={ () => this.deleteCategory(index) } />
+                  <Button onClick={ () => this.setState({ deleteConfirmOpen: true }) } disabled={ this.props.pageData.hasAnswers == "true" } negative> { strings.panelAdmin.queryEditor.pageCommentOptions.deleteCategory } </Button>
+                  <Confirm 
+                    content={ strings.panelAdmin.queryEditor.queryCommentOptions.deleteCategoryConfirm } 
+                    open={ this.state.deleteConfirmOpen }
+                    onConfirm={ () => { this.setState({ deleteConfirmOpen: false }); this.deleteCategory(index) } } 
+                    onCancel={ () => { this.setState({ deleteConfirmOpen: false }); } }/>                    
                 </Grid.Column>
               </Grid.Row>
             )
