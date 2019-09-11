@@ -554,16 +554,22 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createForbidden("Forbidden");
     }
     
+    Long queryId = body.getQueryId();
     Long queryPageId = body.getQueryPageId();
     String name = body.getName();
     User loggedUser = getLoggedUser();
     
-    QueryPage queryPage = queryPageController.findQueryPage(queryPageId);
-    if (queryPage == null) {
-      return createNotFound();
+    Query query = queryController.findQueryById(queryId);
+    if (query == null) {
+      return createBadRequest(String.format("Invalid query id %d", queryId));
     }
     
-    return createOk(queryQuestionCommentCategoryTranslator.translate(queryPageController.createCommentCategory(queryPage, name, loggedUser)));
+    QueryPage queryPage = queryPageId != null ? queryPageController.findQueryPage(queryPageId) : null;
+    if (queryPageId != null && queryPage == null) {
+      return createBadRequest(String.format("Invalid query page id %d", queryPageId));
+    }
+    
+    return createOk(queryQuestionCommentCategoryTranslator.translate(queryPageController.createCommentCategory(query, queryPage, name, loggedUser)));
   }
 
   @Override
@@ -579,7 +585,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     }
     
     fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category = queryPageController.findCommentCategory(categoryId);
-    if (!queryPageController.isPanelsCommentCategory(category, panel)) {
+    if (!queryQuestionCommentController.isPanelsCommentCategory(category, panel)) {
       return createBadRequest("Panel and comment mismatch");
     }
     
@@ -601,7 +607,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     }
     
     fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category = queryPageController.findCommentCategory(categoryId);
-    if (!queryPageController.isPanelsCommentCategory(category, panel)) {
+    if (!queryQuestionCommentController.isPanelsCommentCategory(category, panel)) {
       return createBadRequest("Panel and comment mismatch");
     }
     
@@ -620,24 +626,14 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createForbidden("Forbidden");
     }
     
-    if (pageId == null && queryId == null) {
+    if ((pageId == null || pageId == 0) && queryId == null) {
       return createBadRequest("Either pageId or queryId is required");
     }
     
+    boolean includeAllPages = pageId != null && pageId == 0;
     List<fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory> commentCategories = null;
     
-    if (queryId != null) {
-      Query query = queryController.findQueryById(queryId);
-      if (query == null) {
-        return createBadRequest(String.format("Invalid query id %d", queryId));
-      }
-      
-      if (!queryController.isPanelsQuery(query, panel)) {
-        return createBadRequest("Panel and query mismatch");
-      }
-      
-      commentCategories = queryPageController.listCommentCategoriesByQuery(query);
-    } else if (pageId != null) {
+    if (pageId != null && !includeAllPages) {
       QueryPage queryPage = queryPageController.findQueryPage(pageId);
       if (queryPage == null) {
         return createNotFound();
@@ -647,7 +643,18 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
         return createBadRequest("Panel and page mismatch");
       }
       
-      commentCategories = queryPageController.listCommentCategoriesByPage(queryPage);
+      commentCategories = queryPageController.listCommentCategoriesByPage(queryPage, false);
+    } else if (queryId != null) {
+      Query query = queryController.findQueryById(queryId);
+      if (query == null) {
+        return createBadRequest(String.format("Invalid query id %d", queryId));
+      }
+      
+      if (!queryController.isPanelsQuery(query, panel)) {
+        return createBadRequest("Panel and query mismatch");
+      }
+      
+      commentCategories = queryPageController.listCommentCategoriesByQuery(query, !includeAllPages);
     }
     
     return createOk(commentCategories.stream().map(queryQuestionCommentCategoryTranslator::translate).collect(Collectors.toList()));
@@ -671,7 +678,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createNotFound(String.format("Category %d not found", categoryId));
     }
 
-    if (!queryPageController.isPanelsCommentCategory(category, panel)) {
+    if (!queryQuestionCommentController.isPanelsCommentCategory(category, panel)) {
       return createBadRequest("Panel and comment mismatch");
     }
 

@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as actions from "../../actions";
 import * as _ from "lodash";
-import { StoreState, AccessToken, EditPageLegacyPageData } from "../../types";
+import { StoreState, AccessToken } from "../../types";
 import { connect } from "react-redux";
 import { Modal, Button, Input, InputOnChangeData, Grid, Loader, Dimmer, Confirm } from "semantic-ui-react";
 import Api, { QueryQuestionCommentCategory } from "edelphi-client";
@@ -13,11 +13,10 @@ import strings from "../../localization/strings";
  */
 interface Props {
   accessToken?: AccessToken,
-  pageId: number,
   panelId: number,
   queryId: number,
   open: boolean,
-  pageData: EditPageLegacyPageData,
+  hasAnswers: boolean,
   onClose: () => void
 }
 
@@ -33,7 +32,7 @@ interface State {
 /**
  * React component for comment editor
  */
-class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, State> {
+class PanelAdminQueryCommentOptionsEditor extends React.Component<Props, State> {
 
   /**
    * Constructor
@@ -62,7 +61,7 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
    * @param oldProps old props
    */
   public async componentDidUpdate(oldProps: Props) {
-    if ((!oldProps.accessToken && !!this.props.accessToken) || (this.props.panelId != oldProps.panelId) || (this.props.pageId != oldProps.pageId)) {
+    if ((!oldProps.accessToken && !!this.props.accessToken) || (this.props.panelId != oldProps.panelId)) {
       await this.loadData();
     }
   }
@@ -73,11 +72,11 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
   public render() {
     return (
       <Modal open={this.props.open} onClose={this.onModalClose}>
-        <Modal.Header>{ strings.panelAdmin.queryEditor.pageCommentOptions.title }</Modal.Header>
+        <Modal.Header>{ strings.panelAdmin.queryEditor.queryCommentOptions.title }</Modal.Header>
         <Modal.Content>  { this.renderModalContent() } </Modal.Content>
         <Modal.Actions>
-          <Button onClick={ this.onSaveClick } positive> { strings.panelAdmin.queryEditor.pageCommentOptions.save } </Button>
-          <Button onClick={ this.onCloseClick }> { strings.panelAdmin.queryEditor.pageCommentOptions.close } </Button>
+          <Button onClick={ this.onSaveClick } positive> { strings.panelAdmin.queryEditor.queryCommentOptions.save } </Button>
+          <Button onClick={ this.onCloseClick }> { strings.panelAdmin.queryEditor.queryCommentOptions.close } </Button>
         </Modal.Actions>
       </Modal>
     );
@@ -101,7 +100,7 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
       <Grid>
         <Grid.Row>
           <Grid.Column>
-             <h2> { strings.panelAdmin.queryEditor.pageCommentOptions.categories } </h2>
+            <h2> { strings.panelAdmin.queryEditor.queryCommentOptions.categories } </h2>
           </Grid.Column>
         </Grid.Row>
         <Grid.Row>
@@ -109,7 +108,7 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
             { this.renderCategoryList() }
           </Grid.Column>
           <Grid.Column width={ 6 } style={{ textAlign: "right" }}>
-            <Button disabled={ this.props.pageData.hasAnswers == "true" } onClick={ this.onCategoryAddButtonClick }>{ strings.panelAdmin.queryEditor.pageCommentOptions.addCategory }</Button>
+            <Button disabled={ this.props.hasAnswers } onClick={ this.onCategoryAddButtonClick }>{ strings.panelAdmin.queryEditor.queryCommentOptions.addCategory }</Button>
           </Grid.Column>
         </Grid.Row>
         <Grid.Row>
@@ -134,7 +133,7 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
                   <Input style={{ width: "100%" }} value={ category.name } onChange={ (event: React.ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => this.onCategoryListNameChange(index, data.value) }/>
                 </Grid.Column>
                 <Grid.Column width={ 4 }>
-                  <Confirm content={ strings.panelAdmin.queryEditor.pageCommentOptions.deleteCategoryConfirm } trigger={ <Button disabled={ this.props.pageData.hasAnswers == "true" } negative> { strings.panelAdmin.queryEditor.pageCommentOptions.deleteCategory } </Button> } onConfirm={ () => this.deleteCategory(index) } />
+                  <Confirm content={ strings.panelAdmin.queryEditor.queryCommentOptions.deleteCategoryConfirm } trigger={ <Button disabled={ this.props.hasAnswers } negative> { strings.panelAdmin.queryEditor.queryCommentOptions.deleteCategory } </Button> } onConfirm={ () => this.deleteCategory(index) } />
                 </Grid.Column>
               </Grid.Row>
             )
@@ -148,7 +147,7 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
    * Loads a comment
    */
   private loadData = async () => {
-    if (!this.props.accessToken || !this.props.pageId) {
+    if (!this.props.accessToken) {
       return;
     }
 
@@ -157,7 +156,7 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
     });
 
     const queryQuestionCommentCategoriesService = await this.getQueryQuestionCommentCategoriesService(this.props.accessToken.token);
-    const categories = await queryQuestionCommentCategoriesService.listQueryQuestionCommentCategories(this.props.panelId, this.props.pageId, this.props.queryId);
+    const categories = await queryQuestionCommentCategoriesService.listQueryQuestionCommentCategories(this.props.panelId, undefined, this.props.queryId);
 
     this.setState({
       categories: categories,
@@ -264,8 +263,7 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
     this.setState({
       categories: this.state.categories.concat({
         name: "",
-        queryId: this.props.queryId,
-        queryPageId: this.props.pageId
+        queryId: this.props.queryId
       })
     });
   }
@@ -292,4 +290,4 @@ function mapDispatchToProps(dispatch: React.Dispatch<actions.AppAction>) {
   return { };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(PanelAdminQueryPageCommentOptionsEditor);
+export default connect(mapStateToProps, mapDispatchToProps)(PanelAdminQueryCommentOptionsEditor);

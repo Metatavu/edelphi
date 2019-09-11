@@ -67,6 +67,16 @@
       "reportAnIssue": "Report an Issue"
     },
     "queryEditor": {
+      "queryCommentOptions": {
+        "title": "Comment options",
+        "categories": "Categories",
+        "addCategory": "Add a category",
+        "save": "Save",
+        "close": "Close",
+        "deleteCategory": "Delete",
+        "deleteCategoryConfirm": "Are you sure?"
+      },
+
       "pageCommentOptions": {
         "title": "Comment options",
         "categories": "Categories",
@@ -76,6 +86,7 @@
         "deleteCategory": "Delete",
         "deleteCategoryConfirm": "Are you sure?"
       },
+
       "pageLive2dOptions": {
         "title": "Live 2d options",
         "save": "Save",

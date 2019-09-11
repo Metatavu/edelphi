@@ -598,7 +598,7 @@ paths:
         - name: pageId
           required: false
           in: query
-          description: Filter by query page id
+          description: Filter by query page id. Specify 0 to include all pages in query
           schema:
             type: integer
             format: int64

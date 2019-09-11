@@ -350,7 +350,7 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
   private loadCommentCategories = async () => {
     try {
       const queryQuestionCommentCategoriesService = this.getQueryQuestionCommentCategoriesService();
-      return await queryQuestionCommentCategoriesService.listQueryQuestionCommentCategories(this.props.panelId, undefined, this.props.queryId);
+      return await queryQuestionCommentCategoriesService.listQueryQuestionCommentCategories(this.props.panelId, 0, this.props.queryId);
     } catch (e) {
       return [];
     }

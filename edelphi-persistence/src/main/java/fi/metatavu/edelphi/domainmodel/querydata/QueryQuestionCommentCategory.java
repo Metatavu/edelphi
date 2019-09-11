@@ -15,6 +15,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
+import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @Entity
@@ -26,8 +27,11 @@ public class QueryQuestionCommentCategory {
   private Long id;
 
   @ManyToOne
-  private QueryPage queryPage;
+  private Query query;
 
+  @ManyToOne
+  private QueryPage queryPage;
+  
   @NotEmpty
   @NotNull
   @Column(nullable = false)
@@ -55,6 +59,14 @@ public class QueryQuestionCommentCategory {
 
   public void setId(Long id) {
     this.id = id;
+  }
+  
+  public Query getQuery() {
+    return query;
+  }
+  
+  public void setQuery(Query query) {
+    this.query = query;
   }
 
   public QueryPage getQueryPage() {
