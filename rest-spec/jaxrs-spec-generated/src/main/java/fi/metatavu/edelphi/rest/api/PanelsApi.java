@@ -15,7 +15,7 @@ import javax.validation.Valid;
 
 @Path("/panels")
 @Api(description = "the panels API")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-09-09T05:40:18.567+03:00[Europe/Helsinki]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-09-11T17:16:23.233+03:00[Europe/Helsinki]")
 public interface PanelsApi {
 
     @POST
@@ -42,6 +42,17 @@ public interface PanelsApi {
         @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class),
         @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class) })
     Response createQueryQuestionCommentCategory(@Valid QueryQuestionCommentCategory body,@PathParam("panelId")  Long panelId);
+    @DELETE
+    @Path("/{panelId}/queryQuestionAnswers")
+    @Produces({ "application/json" })
+    @ApiOperation(value = "Delete query question answers", notes = "Deletes query question answers", authorizations = {
+        @Authorization(value = "bearer")    }, tags={ "QueryQuestionAnswers" })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 204, message = "Success", response = Void.class),
+        @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class),
+        @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class),
+        @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class) })
+    Response deleteQueryQuestionAnswers(@PathParam("panelId")  Long panelId,@QueryParam("queryId")     Long queryId,@QueryParam("queryPageId")     Long queryPageId,@QueryParam("queryReplyId")     Long queryReplyId);
     @DELETE
     @Path("/{panelId}/queryQuestionComments/{commentId}")
     @Produces({ "application/json" })
