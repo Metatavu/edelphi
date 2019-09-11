@@ -286,9 +286,9 @@
             "format" : "int64"
           }
         }, {
-          "name" : "queryReplyId",
+          "name" : "querySectionId",
           "in" : "query",
-          "description" : "Delete answers by query reply",
+          "description" : "Delete answers by query section",
           "required" : false,
           "style" : "form",
           "explode" : true,

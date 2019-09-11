@@ -15,7 +15,7 @@ import javax.validation.Valid;
 
 @Path("/panels")
 @Api(description = "the panels API")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-09-11T17:16:58.484+03:00[Europe/Helsinki]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-09-11T17:40:23.904+03:00[Europe/Helsinki]")
 public interface PanelsApi {
 
     @POST
@@ -52,7 +52,7 @@ public interface PanelsApi {
         @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class),
         @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class),
         @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class) })
-    Response deleteQueryQuestionAnswers(@PathParam("panelId")  Long panelId,@QueryParam("queryId")     Long queryId,@QueryParam("queryPageId")     Long queryPageId,@QueryParam("queryReplyId")     Long queryReplyId);
+    Response deleteQueryQuestionAnswers(@PathParam("panelId")  Long panelId,@QueryParam("queryId")     Long queryId,@QueryParam("queryPageId")     Long queryPageId,@QueryParam("querySectionId")     Long querySectionId);
     @DELETE
     @Path("/{panelId}/queryQuestionComments/{commentId}")
     @Produces({ "application/json" })
