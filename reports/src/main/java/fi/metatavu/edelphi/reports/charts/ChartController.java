@@ -160,7 +160,7 @@ public class ChartController {
   private String printGraphPNG(XYChart chart) throws ReportException {
     try {
       byte[] chartData = renderChartPNG(chart);
-      return String.format("<img src=\"data:image/svg+xml;charset=UTF-8;base64,%s\" width=\"%s\" height=\"%s\"/>", Base64.encodeBase64String(chartData), GRAPH_WIDTH, GRAPH_HEIGHT);
+      return String.format("<img src=\"data:image/png;base64,%s\" width=\"%s\" height=\"%s\"/>", Base64.encodeBase64String(chartData), GRAPH_WIDTH, GRAPH_HEIGHT);
     } catch (IOException e) {
       throw new ReportException(e);
     }
