@@ -20,9 +20,9 @@ export class QueryQuestionAnswersService {
    * @param panelId panel id
    * @param queryId Delete answers by query
    * @param queryPageId Delete answers by query page
-   * @param queryReplyId Delete answers by query reply
+   * @param querySectionId Delete answers by query section
   */
-  public deleteQueryQuestionAnswers(panelId: number, queryId?: number, queryPageId?: number, queryReplyId?: number, ):Promise<any> {
+  public deleteQueryQuestionAnswers(panelId: number, queryId?: number, queryPageId?: number, querySectionId?: number, ):Promise<any> {
     const uri = new URI(`${this.basePath}/panels/${encodeURIComponent(String(panelId))}/queryQuestionAnswers`);
     if (queryId !== undefined && queryId !== null) {
         uri.addQuery('queryId', <any>queryId);
@@ -30,8 +30,8 @@ export class QueryQuestionAnswersService {
     if (queryPageId !== undefined && queryPageId !== null) {
         uri.addQuery('queryPageId', <any>queryPageId);
     }
-    if (queryReplyId !== undefined && queryReplyId !== null) {
-        uri.addQuery('queryReplyId', <any>queryReplyId);
+    if (querySectionId !== undefined && querySectionId !== null) {
+        uri.addQuery('querySectionId', <any>querySectionId);
     }
     const options = {
       method: "delete",
