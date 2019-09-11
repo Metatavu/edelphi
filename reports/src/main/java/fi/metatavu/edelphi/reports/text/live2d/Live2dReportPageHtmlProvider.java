@@ -107,7 +107,7 @@ public class Live2dReportPageHtmlProvider extends AbstractReportPageHtmlProvider
         document.getElementById("description").html(description);
       }
       
-      List<QueryQuestionCommentCategory> categories = queryPageController.listCommentCategoriesByPage(queryPage);
+      List<QueryQuestionCommentCategory> categories = queryPageController.listCommentCategoriesByPage(queryPage, true);
       if (categories.isEmpty()) {
         String title = reportMessages.getText(locale, "reports.page.commentsTitle");
         String comments = renderComments(locale, panelStamp, queryPage, scatterValues, labelX, labelY, optionsX, optionsY, commentCategoryIds);

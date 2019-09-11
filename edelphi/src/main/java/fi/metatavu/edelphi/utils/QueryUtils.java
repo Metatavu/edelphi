@@ -213,6 +213,7 @@ public class QueryUtils {
     QueryQuestionOptionAnswerDAO queryQuestionOptionAnswerDAO = new QueryQuestionOptionAnswerDAO();
     QueryQuestionMultiOptionAnswerDAO queryQuestionMultiOptionAnswerDAO = new QueryQuestionMultiOptionAnswerDAO();
     QueryQuestionOptionGroupOptionAnswerDAO queryQuestionOptionGroupOptionAnswerDAO = new QueryQuestionOptionGroupOptionAnswerDAO();
+    QueryQuestionCommentCategoryDAO queryQuestionCommentCategoryDAO = new QueryQuestionCommentCategoryDAO();
     
     Date now = new Date();
     
@@ -221,6 +222,8 @@ public class QueryUtils {
     if (!copyAnswers && copyComments) {
       copyAnswers = copyComments;
     }
+    
+    Map<Long, QueryQuestionCommentCategory> commentCategoryMap = new HashMap<>();
     
     // Queries containing expertise pages cannot be copied to other panels (due to differing expertises)
     
@@ -253,7 +256,15 @@ public class QueryUtils {
       now,
       copier,
       now);
+
+    // Copy query scoped comment categories
     
+    List<QueryQuestionCommentCategory> queryCommentCategories = queryQuestionCommentCategoryDAO.listByQueryAndPageNull(originalQuery);
+    for (QueryQuestionCommentCategory queryCommentCategory : queryCommentCategories) {
+      QueryQuestionCommentCategory newCategory = queryQuestionCommentCategoryDAO.create(newQuery, null, queryCommentCategory.getName(), copier, copier, now, now);
+      commentCategoryMap.put(queryCommentCategory.getId(), newCategory);
+    }
+
     // Replies
     
     HashMap<Long, QueryReply> replyMap = null;
@@ -320,6 +331,14 @@ public class QueryUtils {
         if (queryPage.getPageType() == QueryPageType.COLLAGE_2D) {
           collagePages.add(newQueryPage);
         }
+        
+        // Copy page scoped comment categories
+        
+        List<QueryQuestionCommentCategory> pageCommentCategories = queryQuestionCommentCategoryDAO.listByQueryPage(queryPage);
+        for (QueryQuestionCommentCategory pageCommentCategory : pageCommentCategories) {
+          QueryQuestionCommentCategory newCategory = queryQuestionCommentCategoryDAO.create(newQuery, newQueryPage, pageCommentCategory.getName(), copier, copier, now, now);
+          commentCategoryMap.put(pageCommentCategory.getId(), newCategory);
+        }
       
         // Comments
         
@@ -353,11 +372,13 @@ public class QueryUtils {
               }
             }
             
+            QueryQuestionCommentCategory newCategory = queryComment.getCategory() != null ? commentCategoryMap.get(queryComment.getCategory().getId()) : null;
+            
             QueryQuestionComment newComment = queryQuestionCommentDAO.create(
                 newReply,
                 newQueryPage,
                 copiedParentComment,
-                queryComment.getCategory(),
+                newCategory,
                 queryComment.getComment(),
                 queryComment.getHidden(),
                 queryComment.getCreator(),

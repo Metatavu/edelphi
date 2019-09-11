@@ -156,4 +156,18 @@ public class QueryQuestionCommentController {
     return queryPanel.getId().equals(panel.getId());
   }
 
+  /**
+   * Returns whether comment is from given panel
+   * 
+   * @param category category
+   * @param panel panel
+   * @return whether page is from given panel
+   */
+  public boolean isPanelsCommentCategory(QueryQuestionCommentCategory category, Panel panel) {
+    if (category == null) {
+      return false;
+    }
+    
+    return queryController.isPanelsQuery(category.getQuery(), panel);
+  }
 }

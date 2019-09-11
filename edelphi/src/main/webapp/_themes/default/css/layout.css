@@ -4141,6 +4141,7 @@ label.queryScaleSliderItemLabel {
   margin-top:20px;
 }
 
+#queryEditorShowQueryCommentOptionsLink,
 .queryEditorPreviewShowQueryOptionsLink,
 .queryEditorPreviewShowCommentOptionsLink,
 .queryEditorPreviewShowOptionsLink {

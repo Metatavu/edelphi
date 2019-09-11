@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class QueryQuestionCommentCategory   {
-  private @Valid Long id = null;  private @Valid String name = null;  private @Valid Long queryPageId = null;
+  private @Valid Long id = null;  private @Valid String name = null;  private @Valid Long queryId = null;  private @Valid Long queryPageId = null;
 
   /**
    * Comment category&#x27;s id
@@ -53,7 +53,26 @@ public class QueryQuestionCommentCategory   {
   }
 
   /**
-   * Page&#x27;s id where the comment is
+   * Query&#x27;s id where the comment is
+   **/
+  public QueryQuestionCommentCategory queryId(Long queryId) {
+    this.queryId = queryId;
+    return this;
+  }
+
+  
+  @ApiModelProperty(required = true, value = "Query's id where the comment is")
+  @JsonProperty("queryId")
+  @NotNull
+  public Long getQueryId() {
+    return queryId;
+  }
+  public void setQueryId(Long queryId) {
+    this.queryId = queryId;
+  }
+
+  /**
+   * Query page&#x27;s id or null if category is query scoped
    **/
   public QueryQuestionCommentCategory queryPageId(Long queryPageId) {
     this.queryPageId = queryPageId;
@@ -61,7 +80,7 @@ public class QueryQuestionCommentCategory   {
   }
 
   
-  @ApiModelProperty(value = "Page's id where the comment is")
+  @ApiModelProperty(value = "Query page's id or null if category is query scoped")
   @JsonProperty("queryPageId")
   public Long getQueryPageId() {
     return queryPageId;
@@ -82,12 +101,13 @@ public class QueryQuestionCommentCategory   {
     QueryQuestionCommentCategory queryQuestionCommentCategory = (QueryQuestionCommentCategory) o;
     return Objects.equals(id, queryQuestionCommentCategory.id) &&
         Objects.equals(name, queryQuestionCommentCategory.name) &&
+        Objects.equals(queryId, queryQuestionCommentCategory.queryId) &&
         Objects.equals(queryPageId, queryQuestionCommentCategory.queryPageId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, queryPageId);
+    return Objects.hash(id, name, queryId, queryPageId);
   }
 
   @Override
@@ -97,6 +117,7 @@ public class QueryQuestionCommentCategory   {
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    queryId: ").append(toIndentedString(queryId)).append("\n");
     sb.append("    queryPageId: ").append(toIndentedString(queryPageId)).append("\n");
     sb.append("}");
     return sb.toString();

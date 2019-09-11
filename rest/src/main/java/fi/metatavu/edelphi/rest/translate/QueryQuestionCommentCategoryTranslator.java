@@ -22,6 +22,7 @@ public class QueryQuestionCommentCategoryTranslator extends AbstractTranslator<Q
     result.setId(entity.getId());
     result.setName(entity.getName());
     result.setQueryPageId(entity.getQueryPage() != null ? entity.getQueryPage().getId() : null);
+    result.setQueryId(entity.getQuery() != null ? entity.getQuery().getId() : null);
     
     return result;
   }

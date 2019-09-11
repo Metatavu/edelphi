@@ -72,6 +72,16 @@ export interface IStrings extends LocalizedStringsMethods {
       reportAnIssue: string
     },
     queryEditor: {
+      queryCommentOptions: {
+        title: string,
+        categories: string,
+        addCategory: string,
+        save: string,
+        close: string,
+        deleteCategory: string,
+        deleteCategoryConfirm: string
+      },
+      
       pageCommentOptions: {
         title: string,
         categories: string,

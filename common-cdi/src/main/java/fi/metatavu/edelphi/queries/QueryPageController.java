@@ -288,21 +288,6 @@ public class QueryPageController {
   }
 
   /**
-   * Returns whether comment is from given panel
-   * 
-   * @param category category
-   * @param panel panel
-   * @return whether page is from given panel
-   */
-  public boolean isPanelsCommentCategory(QueryQuestionCommentCategory category, Panel panel) {
-    if (category == null || category.getQueryPage() == null) {
-      return false;
-    }
-    
-    return isPanelsPage(panel, category.getQueryPage());
-  }
-
-  /**
    * Returns whether page is from query
    * 
    * @param query query
@@ -325,17 +310,22 @@ public class QueryPageController {
    * @param creator creator
    * @return created comment category
    */
-  public QueryQuestionCommentCategory createCommentCategory(QueryPage queryPage, String name, User creator) {
-    return queryQuestionCommentCategoryDAO.create(queryPage, name, creator, creator, new Date(), new Date());
+  public QueryQuestionCommentCategory createCommentCategory(Query query, QueryPage queryPage, String name, User creator) {
+    return queryQuestionCommentCategoryDAO.create(query, queryPage, name, creator, creator, new Date(), new Date());
   }
   
   /**
    * Lists page comment categories by page
    * 
    * @param queryPage query page
+   * @param includeQueryScoped whether query scoped categories should be included or not
    * @return comment categories
    */
-  public List<QueryQuestionCommentCategory> listCommentCategoriesByPage(QueryPage queryPage) {
+  public List<QueryQuestionCommentCategory> listCommentCategoriesByPage(QueryPage queryPage, boolean includeQueryScoped) {
+    if (includeQueryScoped) {
+      return queryQuestionCommentCategoryDAO.listByQueryPageOrPageNull(queryPage);
+    }
+    
     return queryQuestionCommentCategoryDAO.listByQueryPage(queryPage);
   }
   
@@ -343,9 +333,14 @@ public class QueryPageController {
    * Lists page comment categories by query
    * 
    * @param queryPage query
+   * @param onlyQueryScoped return only categories without a page
    * @return comment categories
    */
-  public List<QueryQuestionCommentCategory> listCommentCategoriesByQuery(Query query) {
+  public List<QueryQuestionCommentCategory> listCommentCategoriesByQuery(Query query, boolean onlyQueryScoped) {
+    if (onlyQueryScoped) {
+      return queryQuestionCommentCategoryDAO.listByQueryAndPageNull(query);
+    }
+    
     return queryQuestionCommentCategoryDAO.listByQuery(query);
   }
   

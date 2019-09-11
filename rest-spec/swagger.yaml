@@ -598,7 +598,7 @@ paths:
         - name: pageId
           required: false
           in: query
-          description: Filter by query page id
+          description: Filter by query page id. Specify 0 to include all pages in query
           schema:
             type: integer
             format: int64
@@ -1385,6 +1385,7 @@ components:
       type: object
       required:
         - name
+        - queryId
       properties:
         id:
           description: Comment category's id
@@ -1394,8 +1395,12 @@ components:
         name:
           description: Comment category's name
           type: string
+        queryId:
+          description: Query's id where the comment is
+          type: integer
+          format: int64
         queryPageId:
-          description: Page's id where the comment is
+          description: Query page's id or null if category is query scoped
           type: integer
           format: int64
 

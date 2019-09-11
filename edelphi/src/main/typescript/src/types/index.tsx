@@ -70,6 +70,30 @@ export interface EnableQueryNextCommandEventData {
   
 } 
 
+export interface EditQueryCommentOptionsEventData {
+  pageDatas: EditPageLegacyPageData[]
+}
+
+/**
+ * Command page data for legacy command
+ */
+export interface EditPageLegacyPageData {
+  hasAnswers: "true" | "false",
+  id: number,
+  number: number,
+  options: {
+    caption: string,
+    name: string,
+    editor: string
+  }[],
+  title: string,
+  type: string
+}
+
+export interface EditPageLegacyPageEventData {
+  pageData: EditPageLegacyPageData
+}
+
 /**
  * Command detail for enable query event
  */
@@ -87,40 +111,32 @@ export interface EnableQueryNextCommandEventDetail {
 }
 
 /**
- * Command event for save query answers event
+ * Command detail for enable query event
  */
-export interface CommandEvent extends CustomEvent {
-  detail: DisableQueryNextCommandEventDetail |EnableQueryNextCommandEventDetail
-} 
-
-/**
- * Command page data for legacy command
- */
-export interface EditPageLegacyCommandPageData {
-  hasAnswers: "true" | "false",
-  id: number,
-  number: number,
-  options: {
-    caption: string,
-    name: string,
-    editor: string
-  }[],
-  title: string,
-  type: string
+export interface EditQueryCommentOptionsEventDataDetail {
+  command: "edit-query-comment-options",
+  data: EditQueryCommentOptionsEventData
 }
 
 /**
  * Command payload for comment options command
  */
-export interface EditPageCommentOptionsCommand {
-  type: "edit-page-comment-options",
-  pageData: EditPageLegacyCommandPageData
+export interface EditPageCommentOptionsEventDataDetail {
+  command: "edit-page-comment-options",
+  data: EditPageLegacyPageEventData
 }
 
 /**
  * Command payload for live2d options command
  */
-export interface EditPageLive2dOptionsCommand {
-  type: "edit-page-live2d-options",
-  pageData: EditPageLegacyCommandPageData
+export interface EditPageLive2dOptionsEventDataDetail {
+  command: "edit-page-live2d-options",
+  data: EditPageLegacyPageEventData
 }
+
+/**
+ * Command event for save query answers event
+ */
+export interface CommandEvent extends CustomEvent {
+  detail: DisableQueryNextCommandEventDetail | EnableQueryNextCommandEventDetail | EditQueryCommentOptionsEventDataDetail | EditPageCommentOptionsEventDataDetail | EditPageLive2dOptionsEventDataDetail
+} 
