@@ -16,19 +16,34 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 
 import fi.metatavu.edelphi.dao.panels.PanelExpertiseGroupUserDAO;
+import fi.metatavu.edelphi.dao.querydata.QueryQuestionAnswerDAO;
+import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
+import fi.metatavu.edelphi.dao.querydata.QueryQuestionMultiOptionAnswerDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionNumericAnswerDAO;
+import fi.metatavu.edelphi.dao.querydata.QueryQuestionOptionAnswerDAO;
+import fi.metatavu.edelphi.dao.querydata.QueryQuestionOptionGroupOptionAnswerDAO;
+import fi.metatavu.edelphi.dao.querydata.QueryQuestionTextAnswerDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
+import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseGroup;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionMultiOptionAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionNumericAnswer;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionAnswer;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionGroupOptionAnswer;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionTextAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
+import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection;
+import fi.metatavu.edelphi.domainmodel.querymeta.QueryField;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryNumericField;
 import fi.metatavu.edelphi.domainmodel.resources.Folder;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
+import fi.metatavu.edelphi.resources.ResourceController;
 
 /**
  * Controller for query replies
@@ -45,6 +60,9 @@ public class QueryReplyController {
   private Logger logger;
 
   @Inject
+  private ResourceController resourceController;
+
+  @Inject
   private QueryFieldDAO queryFieldDAO;
 
   @Inject
@@ -58,7 +76,25 @@ public class QueryReplyController {
   
   @Inject
   private PanelExpertiseGroupUserDAO expertiseGroupUserDAO;
+  
+  @Inject
+  private QueryQuestionCommentDAO queryQuestionCommentDAO;
+  
+  @Inject
+  private QueryQuestionAnswerDAO queryQuestionAnswerDAO;
+  
+  @Inject
+  private QueryQuestionTextAnswerDAO queryQuestionTextAnswerDAO;
 
+  @Inject
+  private QueryQuestionOptionAnswerDAO queryQuestionOptionAnswerDAO;
+  
+  @Inject
+  private QueryQuestionMultiOptionAnswerDAO queryQuestionMultiOptionAnswerDAO;
+  
+  @Inject
+  private QueryQuestionOptionGroupOptionAnswerDAO queryQuestionOptionGroupOptionAnswerDAO;
+  
   /**
    * Finds a query answer data object by id
    * 
@@ -146,6 +182,54 @@ public class QueryReplyController {
     }
     
     return Collections.emptyList();
+  }
+  
+  /**
+   * Deletes query page replies
+   * 
+   * @param queryPage query page
+   * @param user deleting user
+   */
+  public void deleteQueryPageReplies(QueryPage queryPage, User user) {
+    logger.warn("RemoveAnswersQueryPage - userId: {}, queryPageId: {}", user.getId(), queryPage.getId());
+    Panel panel = resourceController.getResourcePanel(queryPage.getQuerySection().getQuery());
+    removeAnswers(queryPage, panel.getCurrentStamp());
+  }
+  
+  /**
+   * Deletes query section replies
+   * 
+   * @param querySection query section
+   * @param user deleting user
+   */
+  public void deleteQuerySectionReplies(QuerySection querySection, User user) {
+    logger.warn("RemoveAnswersQuerySection - userId: {}, querySectionId: {}", user.getId(), querySection.getId());
+    Panel panel = resourceController.getResourcePanel(querySection.getQuery());
+    removeAnswers(querySection, panel.getCurrentStamp());
+  }
+  
+  /**
+   * Deletes query replies
+   * 
+   * @param query query
+   * @param user deleting user
+   */
+  public void deleteQueryReplies(Query query, User user) {
+    logger.warn("RemoveAnswersQuery - userId: {}, queryId: {}", user.getId(), query.getId());
+    
+    Panel panel = resourceController.getResourcePanel(query);
+    List<QueryReply> replies = queryReplyDAO.listByQueryAndStamp(query, panel.getCurrentStamp());
+    for (QueryReply reply : replies) {
+      queryReplyDAO.archive(reply, user);
+    }
+    
+    List<QueryPage> queryPages = queryPageDAO.listByQuery(query);
+    for (QueryPage queryPage : queryPages) {
+      List<QueryQuestionComment> comments = queryQuestionCommentDAO.listByQueryPageAndStamp(queryPage, panel.getCurrentStamp());
+      for (QueryQuestionComment comment : comments) {
+        queryQuestionCommentDAO.archive(comment);
+      }
+    }
   }
 
   /**
@@ -280,6 +364,69 @@ public class QueryReplyController {
       return queryQuestionNumericAnswerDAO.create(queryReply, queryField, value, now, now);
     } else {
       return queryQuestionNumericAnswerDAO.updateData(numericAnswer, value);
+    }
+  }
+  
+  /**
+   * Deletes answers from query section
+   * 
+   * @param querySection query section
+   * @param stamp panel stamp
+   */
+  private void removeAnswers(QuerySection querySection, PanelStamp stamp) {
+    List<QueryPage> queryPages = queryPageDAO.listByQuerySection(querySection);
+    for (QueryPage queryPage : queryPages) {
+      removeAnswers(queryPage, stamp);
+    }
+  }
+
+  /**
+   * Removes query page replies
+   * 
+   * @param queryPage query page
+   * @param stamp panel stamp
+   */
+  private void removeAnswers(QueryPage queryPage, PanelStamp stamp) {
+    List<QueryField> queryFields = queryFieldDAO.listByQueryPage(queryPage);
+    for (QueryField queryField : queryFields) {
+      switch (queryField.getType()) {
+        case TEXT:
+          List<QueryQuestionTextAnswer> textAnswers = queryQuestionTextAnswerDAO.listByQueryField(queryField);
+          for (QueryQuestionTextAnswer textAnswer : textAnswers) {
+            queryQuestionTextAnswerDAO.delete(textAnswer);
+            queryQuestionAnswerDAO.delete(textAnswer);
+          }
+          break;
+        case NUMERIC:
+        case NUMERIC_SCALE:
+          List<QueryQuestionNumericAnswer> numericAnswers = queryQuestionNumericAnswerDAO.listByQueryField(queryField);
+          for (QueryQuestionNumericAnswer numericAnswer : numericAnswers) {
+            queryQuestionNumericAnswerDAO.delete(numericAnswer);
+            queryQuestionAnswerDAO.delete(numericAnswer);
+          }
+          break;
+        case OPTIONFIELD:
+          List<QueryQuestionOptionGroupOptionAnswer> optionGroupAnswers = queryQuestionOptionGroupOptionAnswerDAO.listByQueryField(queryField);
+          for (QueryQuestionOptionGroupOptionAnswer optionGroupAnswer : optionGroupAnswers) {
+            queryQuestionOptionGroupOptionAnswerDAO.delete(optionGroupAnswer);
+          }
+          List<QueryQuestionMultiOptionAnswer> multiAnswers = queryQuestionMultiOptionAnswerDAO.listByQueryField(queryField);
+          for (QueryQuestionMultiOptionAnswer multiAnswer : multiAnswers) {
+            queryQuestionMultiOptionAnswerDAO.delete(multiAnswer);
+            queryQuestionAnswerDAO.delete(multiAnswer);
+          }
+          List<QueryQuestionOptionAnswer> optionAnswers = queryQuestionOptionAnswerDAO.listByQueryField(queryField);
+          for (QueryQuestionOptionAnswer optionAnswer : optionAnswers) {
+            queryQuestionOptionAnswerDAO.delete(optionAnswer);
+            queryQuestionAnswerDAO.delete(optionAnswer);
+          }
+          break;
+      }
+    }
+    
+    List<QueryQuestionComment> comments = queryQuestionCommentDAO.listByQueryPageAndStamp(queryPage, stamp);
+    for (QueryQuestionComment comment : comments) {
+      queryQuestionCommentDAO.archive(comment);
     }
   }
   

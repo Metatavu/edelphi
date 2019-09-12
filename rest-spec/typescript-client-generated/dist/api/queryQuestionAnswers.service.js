@@ -8,6 +8,36 @@ var QueryQuestionAnswersService = /** @class */ (function () {
         this.basePath = basePath;
     }
     /**
+     * Deletes query question answers
+     * @summary Delete query question answers
+     * @param panelId panel id
+     * @param queryId Delete answers by query
+     * @param queryPageId Delete answers by query page
+     * @param querySectionId Delete answers by query section
+    */
+    QueryQuestionAnswersService.prototype.deleteQueryQuestionAnswers = function (panelId, queryId, queryPageId, querySectionId) {
+        var uri = new URI(this.basePath + "/panels/" + encodeURIComponent(String(panelId)) + "/queryQuestionAnswers");
+        if (queryId !== undefined && queryId !== null) {
+            uri.addQuery('queryId', queryId);
+        }
+        if (queryPageId !== undefined && queryPageId !== null) {
+            uri.addQuery('queryPageId', queryPageId);
+        }
+        if (querySectionId !== undefined && querySectionId !== null) {
+            uri.addQuery('querySectionId', querySectionId);
+        }
+        var options = {
+            method: "delete",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + this.token
+            }
+        };
+        return fetch(uri.toString(), options).then(function (response) {
+            return api_1.ApiUtils.handleResponse(response);
+        });
+    };
+    /**
      * Finds query question answer by id
      * @summary Find query question answer.
      * @param panelId panel id

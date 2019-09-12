@@ -192,9 +192,16 @@ QueryEditorBlockController = Class.create(BlockController, {
         pageDatas: this._pageDatas
       });
     }.bindAsEventListener(this));
-    
+
+    var removeQueryAnswersLink = $('queryEditorRemoveQueryAnswers');
+    removeQueryAnswersLink.on("click", function () {
+      triggerReactCommand("remove-query-answers", {
+      });
+    }.bindAsEventListener(this));
+
     if ("NEW" == this.getBlockElement().down('input[name="queryId"]').value) {
-	  commentOptionsLink.hide();
+      commentOptionsLink.hide();
+      removeQueryAnswersLink.hide();
     }
     
     this._initializePages();

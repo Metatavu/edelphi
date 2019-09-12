@@ -15,6 +15,39 @@ export class QueryQuestionAnswersService {
 
 
   /**
+   * Deletes query question answers
+   * @summary Delete query question answers
+   * @param panelId panel id
+   * @param queryId Delete answers by query
+   * @param queryPageId Delete answers by query page
+   * @param querySectionId Delete answers by query section
+  */
+  public deleteQueryQuestionAnswers(panelId: number, queryId?: number, queryPageId?: number, querySectionId?: number, ):Promise<any> {
+    const uri = new URI(`${this.basePath}/panels/${encodeURIComponent(String(panelId))}/queryQuestionAnswers`);
+    if (queryId !== undefined && queryId !== null) {
+        uri.addQuery('queryId', <any>queryId);
+    }
+    if (queryPageId !== undefined && queryPageId !== null) {
+        uri.addQuery('queryPageId', <any>queryPageId);
+    }
+    if (querySectionId !== undefined && querySectionId !== null) {
+        uri.addQuery('querySectionId', <any>querySectionId);
+    }
+    const options = {
+      method: "delete",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${this.token}`
+      }
+    };
+
+    return fetch(uri.toString(), options).then((response) => {
+      return ApiUtils.handleResponse(response);
+    });
+  }
+
+
+  /**
    * Finds query question answer by id
    * @summary Find query question answer.
    * @param panelId panel id

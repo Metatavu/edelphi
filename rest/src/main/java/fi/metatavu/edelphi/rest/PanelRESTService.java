@@ -26,6 +26,7 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageType;
+import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.mqtt.MqttController;
@@ -38,6 +39,7 @@ import fi.metatavu.edelphi.queries.QueryQuestionAnswer;
 import fi.metatavu.edelphi.queries.QueryQuestionAnswerData;
 import fi.metatavu.edelphi.queries.QueryQuestionLive2dAnswerData;
 import fi.metatavu.edelphi.queries.QueryReplyController;
+import fi.metatavu.edelphi.queries.QuerySectionController;
 import fi.metatavu.edelphi.rest.api.PanelsApi;
 import fi.metatavu.edelphi.rest.model.QueryPageLive2DAnswersVisibleOption;
 import fi.metatavu.edelphi.rest.model.QueryPageLive2DOptions;
@@ -77,6 +79,9 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Inject
   private QueryController queryController;
+
+  @Inject
+  private QuerySectionController querySectionController;
 
   @Inject  
   private UserController userController;
@@ -429,6 +434,66 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     return createOk(queryReplyController.listQueryQuestionAnswers(queryPage, stamp, query, panel.getRootFolder(), user).stream()
       .map(queryQuestionAnswerTranslator::translate)
       .collect(Collectors.toList()));
+  }
+
+  @Override
+  @RolesAllowed("user")  
+  public Response deleteQueryQuestionAnswers(Long panelId, Long queryId, Long queryPageId, Long querySectionId) {
+    User loggedUser = getLoggedUser();
+    
+    if (queryId == null && queryPageId == null && querySectionId == null) {
+      return createBadRequest("queryId, queryPageId or querySectionId needs to be specified");
+    }
+    
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    if (queryId != null) {
+      Query query = queryController.findQueryById(queryId);
+      if (queryController.isQueryArchived(query)) {
+        return createBadRequest(String.format("Invalid query id %d", queryId));
+      }
+      
+      if (!queryController.isPanelsQuery(query, panel)) {
+        return createBadRequest("Panel and query mismatch");
+      }
+      
+      queryReplyController.deleteQueryReplies(query, loggedUser);
+    }
+    
+    if (queryPageId != null) {
+      QueryPage queryPage = queryController.findQueryPageById(queryPageId);
+      if (queryController.isQueryPageArchived(queryPage)) {
+        return createBadRequest(String.format("Invalid query page id %d", queryPageId));
+      }
+      
+      if (!queryPageController.isPanelsPage(panel, queryPage)) {
+        return createBadRequest("Panel and page mismatch");
+      }
+      
+      queryReplyController.deleteQueryPageReplies(queryPage, loggedUser);
+    }
+    
+    if (querySectionId != null) {
+      QuerySection querySection = querySectionController.findQuerySectionById(querySectionId);
+      if (querySection == null) {
+        return createBadRequest(String.format("Invalid query section id %d", querySectionId));
+      }
+      
+      if (!querySectionController.isPanelsQuerySection(querySection, panel)) {
+        return createBadRequest("Panel and section mismatch");
+      }
+
+      queryReplyController.deleteQuerySectionReplies(querySection, loggedUser);
+    }
+    
+    return createNoContent();
   }
 
   @Override
