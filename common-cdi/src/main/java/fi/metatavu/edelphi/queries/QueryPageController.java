@@ -403,6 +403,34 @@ public class QueryPageController {
     
     return scatterValues;
   }
+
+  /**
+   * Returns whether query page is archived
+   * 
+   * @param queryPage query page
+   * @return whether query page is archived
+   */
+  public boolean isQueryPageArchived(QueryPage queryPage) {
+    return queryPage == null || queryPage.getArchived();
+  }
+
+  /**
+   * Returns whether query page is visible
+   * 
+   * @param queryPage query page
+   * @return whether query page is visible
+   */
+  public boolean isQueryPageVisible(QueryPage queryPage) {
+    if (isQueryPageArchived(queryPage)) {
+      return false;
+    }
+    
+    if (!queryPage.getVisible()) {
+      return false;
+    }
+    
+    return queryPage.getQuerySection().getVisible();
+  }
   
   /**
    * Parses serialized string into a map
