@@ -1,16 +1,19 @@
 import * as React from "react";
 import * as actions from "../../actions";
-import { StoreState, AccessToken, CommandEvent, EditPageLegacyPageData } from "../../types";
+import { StoreState, CommandEvent, EditPageLegacyPageData } from "../../types";
 import { connect } from "react-redux";
 import PanelAdminQueryPageCommentOptionsEditor from "./panel-admin-query-page-comment-options-editor";
 import PanelAdminQueryCommentOptionsEditor from "./panel-admin-query-comment-options-editor";
 import PanelAdminQueryPageLive2dOptionsEditor from "./panel-admin-query-page-live2d-options-editor";
+import { Confirm } from "semantic-ui-react";
+import strings from "../../localization/strings";
+import Api from "edelphi-client";
 
 /**
  * Interface representing component properties
  */
 interface Props {
-  accessToken?: AccessToken,
+  accessToken: string,
   panelId: number,
   queryId: number
 }
@@ -21,13 +24,12 @@ interface Props {
 interface State {
   queryCommentOptionsOpen: boolean,
   queryCommentOptionsHasAnswers: boolean,
+  removeQueryAnswersOpen: boolean,
   pageCommentOptionsOpen: boolean,
   pageLive2dOptionsOpen: boolean,
   pageData?: EditPageLegacyPageData,
   pageId: number
 }
-
-// const COMMANDS: Command[] = [ "edit-page-comment-options", "edit-page-live2d-options" ];
 
 /**
  * React component for comment editor
@@ -44,6 +46,7 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
     this.state = {
       queryCommentOptionsOpen: false,
       queryCommentOptionsHasAnswers: false,
+      removeQueryAnswersOpen: false,
       pageCommentOptionsOpen: false,
       pageLive2dOptionsOpen: false,
       pageId: 0
@@ -79,7 +82,21 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
         { this.renderQueryCommentOptionsEditor() }
         { this.renderPageCommentOptionsEditor() }
         { this.renderLive2dOptionsEditor() }
+        { this.renderRemoveQueryAnswersDialog() }
       </div>
+    );
+  }
+
+  /**
+   * Renders remove query answer confirm dialog
+   */
+  private renderRemoveQueryAnswersDialog = () => {
+    return (
+      <Confirm 
+        content={ strings.panelAdmin.queryEditor.removeQueryAnswersConfirm } 
+        open={ this.state.removeQueryAnswersOpen }
+        onConfirm={ this.onRemoveQueryAnswersDialogConfirm }
+        onCancel={ this.onRemoveQueryAnswersDialogCancel }/>
     );
   }
 
@@ -113,6 +130,11 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
           pageId: event.detail.data.pageData.id,
           pageData: event.detail.data.pageData,
           pageLive2dOptionsOpen: true
+        });
+      break;
+      case "remove-query-answers":
+        this.setState({
+          removeQueryAnswersOpen: true
         });
       break;
     }
@@ -155,6 +177,38 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
   }
 
   /**
+   * Removes query answers
+   */
+  private removeQueryAnswers = async () => {
+    const queryQuestionAnswersService = this.getQueryQuestionAnswersService();
+    await queryQuestionAnswersService.deleteQueryQuestionAnswers(this.props.panelId, this.props.queryId, undefined, undefined);
+  }
+
+  /**
+   * Returns query question answers service
+   * 
+   * @returns query question answers service
+   */
+  private getQueryQuestionAnswersService = () => {
+    return Api.getQueryQuestionAnswersService(this.props.accessToken);
+  }
+
+  /**
+   * Event handler for remove query answers dialog confirm
+   */
+  private onRemoveQueryAnswersDialogConfirm = async () => {
+    this.setState({ removeQueryAnswersOpen: false }); 
+    await this.removeQueryAnswers();
+  }
+
+  /**
+   * Event handler for remove query answers dialog cancel
+   */
+  private onRemoveQueryAnswersDialogCancel = () => {
+    this.setState({ removeQueryAnswersOpen: false }); 
+  }
+
+  /**
    * Event handler for comment option close event
    */
   private onQueryCommentOptionsEditorClose = () => {
@@ -190,7 +244,7 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
  */
 function mapStateToProps(state: StoreState) {
   return {
-    accessToken: state.accessToken
+    accessToken: state.accessToken ? state.accessToken.token : null,
   };
 }
 

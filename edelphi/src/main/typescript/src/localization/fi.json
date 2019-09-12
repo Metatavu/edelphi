@@ -67,6 +67,7 @@
       "reportAnIssue": "Virhe- ja kehitysehdotuslomake"
     },
     "queryEditor": {
+      "removeQueryAnswersConfirm": "Oletko aivan varma, että haluat poistaa kaikki vastaukset tästä kyselystä?",
       "queryCommentOptions": {
         "title": "Kommenttiasetukset",
         "categories": "Kategoriat",

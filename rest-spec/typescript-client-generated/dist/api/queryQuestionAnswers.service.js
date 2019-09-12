@@ -13,9 +13,9 @@ var QueryQuestionAnswersService = /** @class */ (function () {
      * @param panelId panel id
      * @param queryId Delete answers by query
      * @param queryPageId Delete answers by query page
-     * @param queryReplyId Delete answers by query reply
+     * @param querySectionId Delete answers by query section
     */
-    QueryQuestionAnswersService.prototype.deleteQueryQuestionAnswers = function (panelId, queryId, queryPageId, queryReplyId) {
+    QueryQuestionAnswersService.prototype.deleteQueryQuestionAnswers = function (panelId, queryId, queryPageId, querySectionId) {
         var uri = new URI(this.basePath + "/panels/" + encodeURIComponent(String(panelId)) + "/queryQuestionAnswers");
         if (queryId !== undefined && queryId !== null) {
             uri.addQuery('queryId', queryId);
@@ -23,8 +23,8 @@ var QueryQuestionAnswersService = /** @class */ (function () {
         if (queryPageId !== undefined && queryPageId !== null) {
             uri.addQuery('queryPageId', queryPageId);
         }
-        if (queryReplyId !== undefined && queryReplyId !== null) {
-            uri.addQuery('queryReplyId', queryReplyId);
+        if (querySectionId !== undefined && querySectionId !== null) {
+            uri.addQuery('querySectionId', querySectionId);
         }
         var options = {
             method: "delete",

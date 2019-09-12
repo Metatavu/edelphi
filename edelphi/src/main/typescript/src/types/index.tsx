@@ -74,6 +74,10 @@ export interface EditQueryCommentOptionsEventData {
   pageDatas: EditPageLegacyPageData[]
 }
 
+export interface RemoveQueryAnswersEventData {
+  
+}
+
 /**
  * Command page data for legacy command
  */
@@ -135,8 +139,16 @@ export interface EditPageLive2dOptionsEventDataDetail {
 }
 
 /**
+ * Command payload for remove query answers
+ */
+export interface RemoveQueryAnswersEventDataDetail {
+  command: "remove-query-answers",
+  data: RemoveQueryAnswersEventData
+}
+
+/**
  * Command event for save query answers event
  */
 export interface CommandEvent extends CustomEvent {
-  detail: DisableQueryNextCommandEventDetail | EnableQueryNextCommandEventDetail | EditQueryCommentOptionsEventDataDetail | EditPageCommentOptionsEventDataDetail | EditPageLive2dOptionsEventDataDetail
+  detail: DisableQueryNextCommandEventDetail | EnableQueryNextCommandEventDetail | EditQueryCommentOptionsEventDataDetail | EditPageCommentOptionsEventDataDetail | EditPageLive2dOptionsEventDataDetail | RemoveQueryAnswersEventDataDetail
 } 

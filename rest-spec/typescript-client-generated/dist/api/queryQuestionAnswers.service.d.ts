@@ -9,9 +9,9 @@ export declare class QueryQuestionAnswersService {
      * @param panelId panel id
      * @param queryId Delete answers by query
      * @param queryPageId Delete answers by query page
-     * @param queryReplyId Delete answers by query reply
+     * @param querySectionId Delete answers by query section
     */
-    deleteQueryQuestionAnswers(panelId: number, queryId?: number, queryPageId?: number, queryReplyId?: number): Promise<any>;
+    deleteQueryQuestionAnswers(panelId: number, queryId?: number, queryPageId?: number, querySectionId?: number): Promise<any>;
     /**
      * Finds query question answer by id
      * @summary Find query question answer.

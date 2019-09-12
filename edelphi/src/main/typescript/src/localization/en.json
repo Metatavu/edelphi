@@ -67,6 +67,7 @@
       "reportAnIssue": "Report an Issue"
     },
     "queryEditor": {
+      "removeQueryAnswersConfirm": "Are you sure that you want to remove all answers from this query?",
       "queryCommentOptions": {
         "title": "Comment options",
         "categories": "Categories",
