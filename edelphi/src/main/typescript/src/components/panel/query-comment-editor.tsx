@@ -6,6 +6,7 @@ import { connect } from "react-redux";
 import { QueryQuestionCommentsService } from "edelphi-client/dist/api/api";
 import Api, { QueryQuestionCommentCategory } from "edelphi-client";
 import strings from "../../localization/strings";
+import ErrorDialog from "../error-dialog";
 
 /**
  * Interface representing component properties
@@ -29,7 +30,8 @@ interface State {
   loading: boolean,
   commentId?: number,
   changed: boolean,
-  loaded: boolean
+  loaded: boolean,
+  error?: Error
 }
 
 /**
@@ -74,6 +76,10 @@ class QueryCommentEditor extends React.Component<Props, State> {
    * Component render method
    */
   public render() {
+    if (this.state.error) {
+      return <ErrorDialog error={ this.state.error } onClose={ () => this.setState({ error: undefined }) } /> 
+    }
+    
     return (
       <div className="queryCommentEditor">
         <h2 className="querySubTitle">{ this.props.category ? this.props.category.name : strings.panel.query.commentEditor.title }</h2>
@@ -143,34 +149,41 @@ class QueryCommentEditor extends React.Component<Props, State> {
       saving: true
     });
 
-    const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken.token);
+    try {
+      const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken.token);
 
-    let comment = null;
-    const categoryId = this.props.category ? this.props.category.id : 0;
+      let comment = null;
+      const categoryId = this.props.category ? this.props.category.id : 0;
 
-    if (!this.state.commentId) {
-      comment = await queryQuestionCommentsService.createQueryQuestionComment({
-        contents: this.state.contents,
-        hidden: false,
-        queryPageId: this.props.pageId,
-        queryReplyId: this.props.queryReplyId,
-        categoryId: categoryId
-      }, this.props.panelId);
-    } else {
-      comment = await queryQuestionCommentsService.updateQueryQuestionComment({
-        contents: this.state.contents,
-        hidden: false,
-        queryPageId: this.props.pageId,
-        queryReplyId: this.props.queryReplyId,
-        categoryId: categoryId
-      }, this.props.panelId, this.state.commentId);
+      if (!this.state.commentId) {
+        comment = await queryQuestionCommentsService.createQueryQuestionComment({
+          contents: this.state.contents,
+          hidden: false,
+          queryPageId: this.props.pageId,
+          queryReplyId: this.props.queryReplyId,
+          categoryId: categoryId
+        }, this.props.panelId);
+      } else {
+        comment = await queryQuestionCommentsService.updateQueryQuestionComment({
+          contents: this.state.contents,
+          hidden: false,
+          queryPageId: this.props.pageId,
+          queryReplyId: this.props.queryReplyId,
+          categoryId: categoryId
+        }, this.props.panelId, this.state.commentId);
+      }
+
+      this.setState({
+        commentId: comment.id,
+        contents: comment.contents,
+        saving: false
+      });
+    } catch (e) {
+      this.setState({
+        error: e,
+        saving: false
+      });
     }
-
-    this.setState({
-      commentId: comment.id,
-      contents: comment.contents,
-      saving: false
-    });
   }
 
   /**
