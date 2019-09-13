@@ -16,8 +16,15 @@ export interface IStrings extends LocalizedStringsMethods {
 
   errorDialog: {
     header: string,
-    errorOccurred: string,
+    reloadPage: string,
+    unsavedContents: string,
+    reportIssue: string,
+    technicalDetails: string,
+    time: string,
+    url: string,
+    errorMessage: string,
     close: string
+    reload: string,
   },
 
   panel: {

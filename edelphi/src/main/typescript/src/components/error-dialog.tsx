@@ -1,6 +1,7 @@
 import * as React from "react";
-import { Modal, Header, Button } from "semantic-ui-react";
+import { Modal, Button, Icon } from "semantic-ui-react";
 import strings from "../localization/strings";
+import * as moment from "moment";
 
 /**
  * Interface representing component properties
@@ -31,26 +32,80 @@ export default class ErrorDialog extends React.Component<Props, State> {
     super(props);
     this.state = { };
   }
-  
+
   /** 
    * Component render method
    */
   public render() {
     return (
-      <Modal open={ true } basic size='small'>
-        <Header content={ strings.errorDialog.header } />
-        <Modal.Content>
-          <p>
-            { strings.errorDialog.errorOccurred } { this.props.error.message }
-          </p>
-        </Modal.Content>
-        <Modal.Actions>
-          <Button onClick={ this.props.onClose }>
-            { strings.errorDialog.close }
-          </Button>
-        </Modal.Actions>
-      </Modal>
+      <Modal size="large" open={ true }>
+          <Modal.Header><Icon name="exclamation" color="red" /> { strings.errorDialog.header }</Modal.Header>
+          <Modal.Content>
+            <p> { strings.errorDialog.reloadPage } </p>
+            <p> { strings.errorDialog.unsavedContents } </p>
+            <p> { strings.errorDialog.reportIssue } </p>
+            <p>
+              { strings.errorDialog.technicalDetails }<br/>
+              <br/>
+              { strings.formatString(strings.errorDialog.time, this.getTime()) }<br/>
+              { strings.formatString(strings.errorDialog.url, this.getURL()) }<br/>
+              { strings.errorDialog.errorMessage }<br/>
+              <br/>
+              <pre style={{ fontSize: "10px" }}>{ this.getErrorMessage() }</pre>
+            </p>
+          </Modal.Content>
+          <Modal.Actions>
+            <Button
+              positive
+              icon='redo alternate'
+              labelPosition='right'
+              onClick={ this.onReloadClick }
+              content={ strings.errorDialog.reload }
+            />
+            <Button
+              secondary
+              icon='checkmark'
+              labelPosition='right'
+              onClick={ this.props.onClose }
+              content={ strings.errorDialog.close }
+            />
+          </Modal.Actions>
+        </Modal>
     );
+  }
+
+  /**
+   * Returns current time
+   * 
+   * @returns current time
+   */
+  private getTime = () => {
+    return moment().format();
+  }
+
+  /**
+   * Returns current window URL
+   * 
+   * @returns current window URL
+   */
+  private getURL = () => {
+    return window.location.href;
+  }
+
+  /**
+   * Returns an error message
+   * 
+   * @returns an error message
+   */
+  private getErrorMessage = () => {
+    return this.props.error.message || "";
+  }
+
+  /**
+   * Reload button click event handler
+   */
+  private onReloadClick = () => {
+    window.location.reload(true);
   }
 
 }
