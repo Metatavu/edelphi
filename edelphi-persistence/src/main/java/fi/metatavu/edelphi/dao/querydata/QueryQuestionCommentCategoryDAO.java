@@ -7,16 +7,12 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory_;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
-import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage_;
-import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection;
-import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection_;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
@@ -32,14 +28,16 @@ public class QueryQuestionCommentCategoryDAO extends GenericDAO<QueryQuestionCom
    * Creates new QueryQuestionCommentCategory
    * 
    * @param id id
+   * @param query query
    * @param queryPage queryPage
    * @param name name
    * @param creator creator's id
    * @param lastModifier last modifier's id
    * @return created queryQuestionCommentCategory
    */
-  public QueryQuestionCommentCategory create(QueryPage queryPage, String name, User creator, User lastModifier, Date created, Date lastModified) {
+  public QueryQuestionCommentCategory create(Query query, QueryPage queryPage, String name, User creator, User lastModifier, Date created, Date lastModified) {
     QueryQuestionCommentCategory queryQuestionCommentCategory = new QueryQuestionCommentCategory();
+    queryQuestionCommentCategory.setQuery(query);
     queryQuestionCommentCategory.setQueryPage(queryPage);
     queryQuestionCommentCategory.setName(name);
     queryQuestionCommentCategory.setCreator(creator);
@@ -83,6 +81,29 @@ public class QueryQuestionCommentCategoryDAO extends GenericDAO<QueryQuestionCom
   }
   
   /**
+   * Lists query question comment categories by query page
+   * 
+   * @param queryPage query page
+   * @return query question comment categories by query page
+   */
+  public List<QueryQuestionCommentCategory> listByQueryPageOrPageNull(QueryPage queryPage) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryQuestionCommentCategory> criteria = criteriaBuilder.createQuery(QueryQuestionCommentCategory.class);
+    Root<QueryQuestionCommentCategory> root = criteria.from(QueryQuestionCommentCategory.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.or(
+        criteriaBuilder.equal(root.get(QueryQuestionCommentCategory_.queryPage), queryPage),
+        criteriaBuilder.isNull(root.get(QueryQuestionCommentCategory_.queryPage))
+      )
+    );
+    
+    return entityManager.createQuery(criteria).getResultList(); 
+  }
+  
+  /**
    * Lists query question comment categories by query
    * 
    * @param query query
@@ -94,12 +115,32 @@ public class QueryQuestionCommentCategoryDAO extends GenericDAO<QueryQuestionCom
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
     CriteriaQuery<QueryQuestionCommentCategory> criteria = criteriaBuilder.createQuery(QueryQuestionCommentCategory.class);
     Root<QueryQuestionCommentCategory> root = criteria.from(QueryQuestionCommentCategory.class);
-    Join<QueryQuestionCommentCategory, QueryPage> queryPageJoin = root.join(QueryQuestionCommentCategory_.queryPage);
-    Join<QueryPage, QuerySection> querySectionJoin = queryPageJoin.join(QueryPage_.querySection);
     
     criteria.select(root);
     criteria.where(
-      criteriaBuilder.equal(querySectionJoin.get(QuerySection_.query), query)
+      criteriaBuilder.equal(root.get(QueryQuestionCommentCategory_.query), query)
+    );
+    
+    return entityManager.createQuery(criteria).getResultList(); 
+  }
+  
+  /**
+   * Lists query question comment categories by query and page null
+   * 
+   * @param query query
+   * @return query question comment categories by query and page null
+   */
+  public List<QueryQuestionCommentCategory> listByQueryAndPageNull(Query query) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryQuestionCommentCategory> criteria = criteriaBuilder.createQuery(QueryQuestionCommentCategory.class);
+    Root<QueryQuestionCommentCategory> root = criteria.from(QueryQuestionCommentCategory.class);
+    
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(QueryQuestionCommentCategory_.query), query),
+      criteriaBuilder.isNull(root.get(QueryQuestionCommentCategory_.queryPage))
     );
     
     return entityManager.createQuery(criteria).getResultList(); 

@@ -194,7 +194,7 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
           <Table.HeaderCell/>
           {
             this.state.panelExpertiseClasses.map((expertiseClass) => {
-              return (<Table.HeaderCell>{ expertiseClass.name }</Table.HeaderCell>)
+              return (<Table.HeaderCell textAlign='center'>{ expertiseClass.name }</Table.HeaderCell>)
             })
           }
         </Table.Row>
@@ -232,7 +232,9 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
 
     return (
       <Table.Cell onClick={ () => this.onExpertiseGroupClick(expertiseGroupId) } textAlign='center'>
-        <Icon name="check" color={ checked  ? "green" : "grey" } />
+        {
+          <Icon name={ checked ? "check square outline" : "square outline" } />
+        }
       </Table.Cell>
     );
   }
@@ -350,7 +352,7 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
   private loadCommentCategories = async () => {
     try {
       const queryQuestionCommentCategoriesService = this.getQueryQuestionCommentCategoriesService();
-      return await queryQuestionCommentCategoriesService.listQueryQuestionCommentCategories(this.props.panelId, undefined, this.props.queryId);
+      return await queryQuestionCommentCategoriesService.listQueryQuestionCommentCategories(this.props.panelId, 0, this.props.queryId);
     } catch (e) {
       return [];
     }

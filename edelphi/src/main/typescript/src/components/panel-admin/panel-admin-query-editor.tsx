@@ -1,15 +1,19 @@
 import * as React from "react";
 import * as actions from "../../actions";
-import { StoreState, AccessToken, Command, EditPageCommentOptionsCommand, EditPageLegacyCommandPageData, EditPageLive2dOptionsCommand } from "../../types";
+import { StoreState, CommandEvent, EditPageLegacyPageData } from "../../types";
 import { connect } from "react-redux";
 import PanelAdminQueryPageCommentOptionsEditor from "./panel-admin-query-page-comment-options-editor";
+import PanelAdminQueryCommentOptionsEditor from "./panel-admin-query-comment-options-editor";
 import PanelAdminQueryPageLive2dOptionsEditor from "./panel-admin-query-page-live2d-options-editor";
+import { Confirm } from "semantic-ui-react";
+import strings from "../../localization/strings";
+import Api from "edelphi-client";
 
 /**
  * Interface representing component properties
  */
 interface Props {
-  accessToken?: AccessToken,
+  accessToken: string,
   panelId: number,
   queryId: number
 }
@@ -18,13 +22,14 @@ interface Props {
  * Interface representing component state
  */
 interface State {
+  queryCommentOptionsOpen: boolean,
+  queryCommentOptionsHasAnswers: boolean,
+  removeQueryAnswersOpen: boolean,
   pageCommentOptionsOpen: boolean,
   pageLive2dOptionsOpen: boolean,
-  pageData?: EditPageLegacyCommandPageData,
+  pageData?: EditPageLegacyPageData,
   pageId: number
 }
-
-const COMMANDS: Command[] = [ "edit-page-comment-options", "edit-page-live2d-options" ];
 
 /**
  * React component for comment editor
@@ -39,6 +44,9 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
+      queryCommentOptionsOpen: false,
+      queryCommentOptionsHasAnswers: false,
+      removeQueryAnswersOpen: false,
       pageCommentOptionsOpen: false,
       pageLive2dOptionsOpen: false,
       pageId: 0
@@ -50,6 +58,20 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
    */
   public async componentDidMount() {
   }
+
+  /**
+   * Component will mount life-cycle event
+   */
+  public componentWillMount() {
+    document.addEventListener("react-command", this.onReactCommand);  
+  }
+  
+  /**
+   * Component will unmount life-cycle event
+   */
+  public async componentWillUnmount() {
+    document.removeEventListener("react-command", this.onReactCommand);
+  }
   
   /** 
    * Component render method
@@ -57,22 +79,90 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
   public render() {
     return (
       <div>
-        { this.renderCommentOptionsEditor() }
+        { this.renderQueryCommentOptionsEditor() }
+        { this.renderPageCommentOptionsEditor() }
         { this.renderLive2dOptionsEditor() }
-        { this.renderCommandLinks() }
+        { this.renderRemoveQueryAnswersDialog() }
       </div>
     );
   }
 
   /**
-   * Renders comment options editor
+   * Renders remove query answer confirm dialog
    */
-  private renderCommentOptionsEditor() {
+  private renderRemoveQueryAnswersDialog = () => {
+    return (
+      <Confirm 
+        content={ strings.panelAdmin.queryEditor.removeQueryAnswersConfirm } 
+        open={ this.state.removeQueryAnswersOpen }
+        onConfirm={ this.onRemoveQueryAnswersDialogConfirm }
+        onCancel={ this.onRemoveQueryAnswersDialogCancel }/>
+    );
+  }
+
+  /**
+   * Event handler for react command events
+   * 
+   * @param event event
+   */
+  private onReactCommand = async (event: CommandEvent) => {
+    switch (event.detail.command) {
+      case "edit-query-comment-options":
+        const pageDatas = event.detail.data.pageDatas;
+        const hasAnswers = !!pageDatas.find(pageData => {
+          return "true" == pageData.hasAnswers;
+        });
+
+        this.setState({
+          queryCommentOptionsOpen: true,
+          queryCommentOptionsHasAnswers: hasAnswers
+        });
+      break;
+      case "edit-page-comment-options":
+        this.setState({
+          pageId: event.detail.data.pageData.id,
+          pageData: event.detail.data.pageData,
+          pageCommentOptionsOpen: true
+        });
+      break;
+      case "edit-page-live2d-options":
+        this.setState({
+          pageId: event.detail.data.pageData.id,
+          pageData: event.detail.data.pageData,
+          pageLive2dOptionsOpen: true
+        });
+      break;
+      case "remove-query-answers":
+        this.setState({
+          removeQueryAnswersOpen: true
+        });
+      break;
+    }
+  }
+
+  /**
+   * Renders query comment options editor
+   */
+  private renderQueryCommentOptionsEditor() {
+    return (
+      <PanelAdminQueryCommentOptionsEditor 
+        panelId={ this.props.panelId} 
+        open={ this.state.queryCommentOptionsOpen } 
+        queryId={ this.props.queryId } 
+        hasAnswers={ this.state.queryCommentOptionsHasAnswers }
+        onClose={ this.onQueryCommentOptionsEditorClose }/>
+    );
+  }
+
+  /**
+   * Renders page comment options editor
+   */
+  private renderPageCommentOptionsEditor() {
     if (!this.state.pageData) {
       return null;
     }
 
-    return <PanelAdminQueryPageCommentOptionsEditor pageData={ this.state.pageData } open={ this.state.pageCommentOptionsOpen } pageId={ this.state.pageId } panelId={ this.props.panelId} queryId={ this.props.queryId } onClose={ this.onCommentOptionsEditorClose }/>
+    return <PanelAdminQueryPageCommentOptionsEditor pageData={ this.state.pageData } open={ this.state.pageCommentOptionsOpen } pageId={ this.state.pageId } panelId={ this.props.panelId} queryId={ this.props.queryId } onClose={ this.onPageCommentOptionsEditorClose }/>
   }
 
   /**
@@ -87,22 +177,50 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
   }
 
   /**
-   * Renders legacy "command" links
+   * Removes query answers
    */
-  private renderCommandLinks = () => {
-    return (<div style={{ display: "none" }}> 
-      {
-        COMMANDS.map((command: Command) => {
-          return <a key={ command } id={ "panel-admin-query-editor-" + command } onClick={ this.onCommandTriggerClick }></a>
-        })
-      }
-    </div>);
+  private removeQueryAnswers = async () => {
+    const queryQuestionAnswersService = this.getQueryQuestionAnswersService();
+    await queryQuestionAnswersService.deleteQueryQuestionAnswers(this.props.panelId, this.props.queryId, undefined, undefined);
+  }
+
+  /**
+   * Returns query question answers service
+   * 
+   * @returns query question answers service
+   */
+  private getQueryQuestionAnswersService = () => {
+    return Api.getQueryQuestionAnswersService(this.props.accessToken);
+  }
+
+  /**
+   * Event handler for remove query answers dialog confirm
+   */
+  private onRemoveQueryAnswersDialogConfirm = async () => {
+    this.setState({ removeQueryAnswersOpen: false }); 
+    await this.removeQueryAnswers();
+  }
+
+  /**
+   * Event handler for remove query answers dialog cancel
+   */
+  private onRemoveQueryAnswersDialogCancel = () => {
+    this.setState({ removeQueryAnswersOpen: false }); 
   }
 
   /**
    * Event handler for comment option close event
    */
-  private onCommentOptionsEditorClose = () => {
+  private onQueryCommentOptionsEditorClose = () => {
+    this.setState({
+      queryCommentOptionsOpen: false
+    });
+  }
+
+  /**
+   * Event handler for comment option close event
+   */
+  private onPageCommentOptionsEditorClose = () => {
     this.setState({
       pageCommentOptionsOpen: false
     });
@@ -117,67 +235,6 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
     });
   }
 
-  /**
-   * Event handler for handling "commands" triggered from legacy UI
-   * 
-   * @param event
-   */
-  private onCommandTriggerClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    const target: Element = event.target as Element;
-    const data = target.getAttribute("data-data");
-    const command: Command = target.id.substring("panel-admin-query-editor-".length) as Command;
-    this.onCommandTrigger(command, data ? JSON.parse(data) : {});
-  }
-
-  /**
-   * Event handler for handling command trigger
-   * 
-   * @param command command
-   * @param data data
-   */
-  private onCommandTrigger(command: Command, data: any) {
-    switch (command) {
-      case "edit-page-comment-options":
-        this.onPageCommentOptionsCommandTrigger({
-          type: command,
-          pageData: data.pageData
-        });
-      break;
-      case "edit-page-live2d-options":
-        this.onPageLive2dOptionsCommandTrigger({
-          type: command,
-          pageData: data.pageData
-        });
-      break;
-    }
-  }
-
-  /**
-   * Event handler for handling EditPageCommentOptionsCommand -command
-   * 
-   * @param command command
-   */
-  private onPageCommentOptionsCommandTrigger(command: EditPageCommentOptionsCommand) {
-    this.setState({
-      pageId: command.pageData.id,
-      pageData: command.pageData,
-      pageCommentOptionsOpen: true
-    });
-  }
-
-  /**
-   * Event handler for handling EditPageLive2dOptionsCommand -command
-   * 
-   * @param command command
-   */
-  private onPageLive2dOptionsCommandTrigger(command: EditPageLive2dOptionsCommand) {
-    this.setState({
-      pageId: command.pageData.id,
-      pageData: command.pageData,
-      pageLive2dOptionsOpen: true
-    });
-  }
-
 }
 
 /**
@@ -187,7 +244,7 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
  */
 function mapStateToProps(state: StoreState) {
   return {
-    accessToken: state.accessToken
+    accessToken: state.accessToken ? state.accessToken.token : null,
   };
 }
 

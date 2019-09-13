@@ -3370,4 +3370,19 @@
     <sql>UPDATE queryquestioncomment c, queryquestioncomment p SET c.category_id = p.category_id WHERE c.parentComment_id = p.id</sql>
   </changeSet>
   
+  <changeSet id="query-scoped-comment-categories" author="antti.leppa">
+    <addColumn tableName="QueryQuestionCommentCategory">
+      <column name="query_id" type="BIGINT"/>
+    </addColumn>
+    
+    <sql>UPDATE QueryQuestionCommentCategory c, QuerySection qs, QueryPage qp SET c.query_id = qs.query_id WHERE qp.id = c.queryPage_id AND qs.id = qp.querySection_id</sql>
+    
+    <addForeignKeyConstraint constraintName="FK_QUERY_QUESTION_COMMENT_CATEGORY_QUERY_ID" referencedTableName="Query" baseColumnNames="query_id" baseTableName="QueryQuestionCommentCategory" referencedColumnNames="id" />
+    <addNotNullConstraint tableName="QueryQuestionCommentCategory" columnName="query_id" columnDataType="BIGINT"/>
+  </changeSet>
+  
+  <changeSet id="query-comment-categories-page-nullable" author="antti.leppa">
+    <dropNotNullConstraint tableName="QueryQuestionCommentCategory" columnName="queryPage_id" columnDataType="BIGINT"/>
+  </changeSet>
+  
 </databaseChangeLog>

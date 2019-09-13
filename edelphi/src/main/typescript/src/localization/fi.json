@@ -10,11 +10,18 @@
   },
 
   "errorDialog": {
-    "header": "Virhe",
-    "errorOccurred": "Seuraava virhe tapahtui: ",
-    "close": "Sulje"
+    "header": "Kommunikaatiossa serverin kanssa tapahtui odottamaton virhe.",
+    "reloadPage": "Kokeile ladata sivu uudelleen.",
+    "unsavedContents": "Huomaathan, että tallentamattomat sisällöt häviävät uudelleenladattaessa. Mikäli sinulla on sivulla tallentamattomia sisältöjä, voit sulkea tämän ilmoituksen ja kopioida sisällöt leikepöydälle ennen uudelleenlatausta.",
+    "reportIssue": "Mikäli ongelma jatkuu, ota sähköpostilla yhteyttä osoitteeseen issues@edelphi.org. Liitä tekniset lisätiedot osaksi sähköpostia nopeutttaaksesi ongelan selvittelyä.",
+    "technicalDetails": "Teknisiä lisätietoja:",
+    "time": "Aika: {0}",
+    "url": "Osoite: {0}",
+    "errorMessage": "Virheilmoitus: ",
+    "close": "Sulje",
+    "reload": "Lataa uudelleen"
   },
-  
+
   "panel": {
     "query": {
       "previous": "Edellinen",
@@ -67,6 +74,17 @@
       "reportAnIssue": "Virhe- ja kehitysehdotuslomake"
     },
     "queryEditor": {
+      "removeQueryAnswersConfirm": "Oletko aivan varma, että haluat poistaa kaikki vastaukset tästä kyselystä?",
+      "queryCommentOptions": {
+        "title": "Kommenttiasetukset",
+        "categories": "Kategoriat",
+        "addCategory": "Lisää kategoria",
+        "save": "Tallenna",
+        "close": "Sulje",
+        "deleteCategory": "Poista",
+        "deleteCategoryConfirm": "Oletko varma?"
+      },
+
       "pageCommentOptions": {
         "title": "Kommenttiasetukset",
         "categories": "Kategoriat",

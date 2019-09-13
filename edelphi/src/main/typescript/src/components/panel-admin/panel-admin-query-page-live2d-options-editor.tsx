@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as actions from "../../actions";
 import * as _ from "lodash";
-import { StoreState, AccessToken, EditPageLegacyCommandPageData } from "../../types";
+import { StoreState, AccessToken, EditPageLegacyPageData } from "../../types";
 import { connect } from "react-redux";
 import { Modal, Button, Loader, Dimmer, DropdownItemProps, Form, Select, DropdownProps } from "semantic-ui-react";
 import Api, { QueryPageLive2DAnswersVisibleOption } from "edelphi-client";
@@ -17,7 +17,7 @@ interface Props {
   panelId: number,
   queryId: number,
   open: boolean,
-  pageData: EditPageLegacyCommandPageData,
+  pageData: EditPageLegacyPageData,
   onClose: () => void
 }
 

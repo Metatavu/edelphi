@@ -1,6 +1,8 @@
 package fi.metatavu.edelphi.rest;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -91,19 +93,29 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
     
     if (options.getQueryPageIds() != null && !options.getQueryPageIds().isEmpty()) {
       queryPageIds = options.getQueryPageIds();
+      Map<Long, QueryPage> pages = new HashMap<>();
+      
       for (int i = 0; i < queryPageIds.size(); i++) {
         Long queryPageId = queryPageIds.get(i);
         QueryPage queryPage = queryPageController.findQueryPage(queryPageId);
-        if (queryPage == null) {
+        
+        if (queryPage == null || queryPageController.isQueryPageArchived(queryPage)) {
           return createBadRequest(String.format("Invalid query page id %d", queryPageId));
         }
         
         if (!queryPageController.isQuerysPage(query, queryPage)) {
           return createBadRequest(String.format("Query page %d is not from query", queryPageId, query.getId()));
         }
+        
+        pages.put(queryPageId, queryPage);        
       }
+      
+      queryPageIds = queryPageIds.stream().filter(queryPageId -> {
+        QueryPage queryPage = pages.get(queryPageId);
+        return queryPageController.isQueryPageVisible(queryPage);
+      }).collect(Collectors.toList());
     } else {
-      List<QueryPage> queryPages = queryController.listQueryPages(query, null);
+      List<QueryPage> queryPages = queryController.listQueryPages(query, true);
       queryPageIds = queryPages.stream().map(QueryPage::getId).collect(Collectors.toList());
     }
     

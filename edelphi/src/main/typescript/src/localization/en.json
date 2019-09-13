@@ -10,9 +10,16 @@
   },
 
   "errorDialog": {
-    "header": "Error",
-    "errorOccurred": "Error occurred:",
-    "close": "Close"
+    "header": "An unexpected error occurred while communicating with the server.",
+    "reloadPage": "Try reloading the page.",
+    "unsavedContents": "Please note that unsaved content will not be saved when reloading. If you have unsaved content on this page, you can close this message and copy the content to the clipboard before reloading.",
+    "reportIssue": "If the problem persists, contact issues@edelphi.org by email. Please include technical details in to the email to speed up resolution of the problem.",
+    "technicalDetails": "technical details:",
+    "time": "Time: {0}",
+    "url": "URL: {0}",
+    "errorMessage": "Error message: ",
+    "close": "Close",
+    "reload": "Reload"
   },
 
   "panel": {
@@ -67,6 +74,17 @@
       "reportAnIssue": "Report an Issue"
     },
     "queryEditor": {
+      "removeQueryAnswersConfirm": "Are you sure that you want to remove all answers from this query?",
+      "queryCommentOptions": {
+        "title": "Comment options",
+        "categories": "Categories",
+        "addCategory": "Add a category",
+        "save": "Save",
+        "close": "Close",
+        "deleteCategory": "Delete",
+        "deleteCategoryConfirm": "Are you sure?"
+      },
+
       "pageCommentOptions": {
         "title": "Comment options",
         "categories": "Categories",
@@ -76,6 +94,7 @@
         "deleteCategory": "Delete",
         "deleteCategoryConfirm": "Are you sure?"
       },
+
       "pageLive2dOptions": {
         "title": "Live 2d options",
         "save": "Save",

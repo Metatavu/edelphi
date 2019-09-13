@@ -26,6 +26,7 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageType;
+import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.mqtt.MqttController;
@@ -38,6 +39,7 @@ import fi.metatavu.edelphi.queries.QueryQuestionAnswer;
 import fi.metatavu.edelphi.queries.QueryQuestionAnswerData;
 import fi.metatavu.edelphi.queries.QueryQuestionLive2dAnswerData;
 import fi.metatavu.edelphi.queries.QueryReplyController;
+import fi.metatavu.edelphi.queries.QuerySectionController;
 import fi.metatavu.edelphi.rest.api.PanelsApi;
 import fi.metatavu.edelphi.rest.model.QueryPageLive2DAnswersVisibleOption;
 import fi.metatavu.edelphi.rest.model.QueryPageLive2DOptions;
@@ -77,6 +79,9 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Inject
   private QueryController queryController;
+
+  @Inject
+  private QuerySectionController querySectionController;
 
   @Inject  
   private UserController userController;
@@ -433,6 +438,66 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Override
   @RolesAllowed("user")  
+  public Response deleteQueryQuestionAnswers(Long panelId, Long queryId, Long queryPageId, Long querySectionId) {
+    User loggedUser = getLoggedUser();
+    
+    if (queryId == null && queryPageId == null && querySectionId == null) {
+      return createBadRequest("queryId, queryPageId or querySectionId needs to be specified");
+    }
+    
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    if (queryId != null) {
+      Query query = queryController.findQueryById(queryId);
+      if (queryController.isQueryArchived(query)) {
+        return createBadRequest(String.format("Invalid query id %d", queryId));
+      }
+      
+      if (!queryController.isPanelsQuery(query, panel)) {
+        return createBadRequest("Panel and query mismatch");
+      }
+      
+      queryReplyController.deleteQueryReplies(query, loggedUser);
+    }
+    
+    if (queryPageId != null) {
+      QueryPage queryPage = queryController.findQueryPageById(queryPageId);
+      if (queryController.isQueryPageArchived(queryPage)) {
+        return createBadRequest(String.format("Invalid query page id %d", queryPageId));
+      }
+      
+      if (!queryPageController.isPanelsPage(panel, queryPage)) {
+        return createBadRequest("Panel and page mismatch");
+      }
+      
+      queryReplyController.deleteQueryPageReplies(queryPage, loggedUser);
+    }
+    
+    if (querySectionId != null) {
+      QuerySection querySection = querySectionController.findQuerySectionById(querySectionId);
+      if (querySection == null) {
+        return createBadRequest(String.format("Invalid query section id %d", querySectionId));
+      }
+      
+      if (!querySectionController.isPanelsQuerySection(querySection, panel)) {
+        return createBadRequest("Panel and section mismatch");
+      }
+
+      queryReplyController.deleteQuerySectionReplies(querySection, loggedUser);
+    }
+    
+    return createNoContent();
+  }
+
+  @Override
+  @RolesAllowed("user")  
   public Response upsertQueryQuestionAnswer(fi.metatavu.edelphi.rest.model.QueryQuestionAnswer body, Long panelId, String answerId) {
     QueryQuestionAnswer<?> answerData = queryReplyController.findQueryQuestionAnswerData(answerId);
     if (answerData == null) {
@@ -554,16 +619,22 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createForbidden("Forbidden");
     }
     
+    Long queryId = body.getQueryId();
     Long queryPageId = body.getQueryPageId();
     String name = body.getName();
     User loggedUser = getLoggedUser();
     
-    QueryPage queryPage = queryPageController.findQueryPage(queryPageId);
-    if (queryPage == null) {
-      return createNotFound();
+    Query query = queryController.findQueryById(queryId);
+    if (query == null) {
+      return createBadRequest(String.format("Invalid query id %d", queryId));
     }
     
-    return createOk(queryQuestionCommentCategoryTranslator.translate(queryPageController.createCommentCategory(queryPage, name, loggedUser)));
+    QueryPage queryPage = queryPageId != null ? queryPageController.findQueryPage(queryPageId) : null;
+    if (queryPageId != null && queryPage == null) {
+      return createBadRequest(String.format("Invalid query page id %d", queryPageId));
+    }
+    
+    return createOk(queryQuestionCommentCategoryTranslator.translate(queryPageController.createCommentCategory(query, queryPage, name, loggedUser)));
   }
 
   @Override
@@ -579,7 +650,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     }
     
     fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category = queryPageController.findCommentCategory(categoryId);
-    if (!queryPageController.isPanelsCommentCategory(category, panel)) {
+    if (!queryQuestionCommentController.isPanelsCommentCategory(category, panel)) {
       return createBadRequest("Panel and comment mismatch");
     }
     
@@ -601,7 +672,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     }
     
     fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category = queryPageController.findCommentCategory(categoryId);
-    if (!queryPageController.isPanelsCommentCategory(category, panel)) {
+    if (!queryQuestionCommentController.isPanelsCommentCategory(category, panel)) {
       return createBadRequest("Panel and comment mismatch");
     }
     
@@ -620,24 +691,14 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createForbidden("Forbidden");
     }
     
-    if (pageId == null && queryId == null) {
+    if ((pageId == null || pageId == 0) && queryId == null) {
       return createBadRequest("Either pageId or queryId is required");
     }
     
+    boolean includeAllPages = pageId != null && pageId == 0;
     List<fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory> commentCategories = null;
     
-    if (queryId != null) {
-      Query query = queryController.findQueryById(queryId);
-      if (query == null) {
-        return createBadRequest(String.format("Invalid query id %d", queryId));
-      }
-      
-      if (!queryController.isPanelsQuery(query, panel)) {
-        return createBadRequest("Panel and query mismatch");
-      }
-      
-      commentCategories = queryPageController.listCommentCategoriesByQuery(query);
-    } else if (pageId != null) {
+    if (pageId != null && !includeAllPages) {
       QueryPage queryPage = queryPageController.findQueryPage(pageId);
       if (queryPage == null) {
         return createNotFound();
@@ -647,7 +708,18 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
         return createBadRequest("Panel and page mismatch");
       }
       
-      commentCategories = queryPageController.listCommentCategoriesByPage(queryPage);
+      commentCategories = queryPageController.listCommentCategoriesByPage(queryPage, false);
+    } else if (queryId != null) {
+      Query query = queryController.findQueryById(queryId);
+      if (query == null) {
+        return createBadRequest(String.format("Invalid query id %d", queryId));
+      }
+      
+      if (!queryController.isPanelsQuery(query, panel)) {
+        return createBadRequest("Panel and query mismatch");
+      }
+      
+      commentCategories = queryPageController.listCommentCategoriesByQuery(query, !includeAllPages);
     }
     
     return createOk(commentCategories.stream().map(queryQuestionCommentCategoryTranslator::translate).collect(Collectors.toList()));
@@ -671,7 +743,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createNotFound(String.format("Category %d not found", categoryId));
     }
 
-    if (!queryPageController.isPanelsCommentCategory(category, panel)) {
+    if (!queryQuestionCommentController.isPanelsCommentCategory(category, panel)) {
       return createBadRequest("Panel and comment mismatch");
     }
 

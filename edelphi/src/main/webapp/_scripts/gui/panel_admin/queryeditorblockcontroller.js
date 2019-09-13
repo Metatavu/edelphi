@@ -51,9 +51,22 @@ var QueryEditorCollage2DPageEditor;
 var QueryEditorLiveQuestionPreview;
 var QueryEditorLive2DThesisPageEditor;
 
+/**
+ * Trigger event from legacy code into ReactJs
+ * 
+ * @param string command
+ * @param object event data 
+ */
 function triggerReactCommand(command, data) {
-  $("panel-admin-query-editor-" + command).setAttribute('data-data', JSON.stringify(data));
-  $("panel-admin-query-editor-" + command).click();
+  var event = new CustomEvent('react-command', { 
+    bubbles: true,
+    detail: {
+      command: command,
+      data: data || {}
+    }
+  });
+
+  document.dispatchEvent(event);
 }
 
 QueryEditorUtils = {
@@ -171,6 +184,25 @@ QueryEditorBlockController = Class.create(BlockController, {
     });
     
     this._tabControl.element.observe('ui:tabs:change', this._tabChangeListener);
+
+    var commentOptionsLink = $('queryEditorShowQueryCommentOptionsLink');
+    
+    commentOptionsLink.on("click", function () {
+      triggerReactCommand("edit-query-comment-options", { 
+        pageDatas: this._pageDatas
+      });
+    }.bindAsEventListener(this));
+
+    var removeQueryAnswersLink = $('queryEditorRemoveQueryAnswers');
+    removeQueryAnswersLink.on("click", function () {
+      triggerReactCommand("remove-query-answers", {
+      });
+    }.bindAsEventListener(this));
+
+    if ("NEW" == this.getBlockElement().down('input[name="queryId"]').value) {
+      commentOptionsLink.hide();
+      removeQueryAnswersLink.hide();
+    }
     
     this._initializePages();
   },

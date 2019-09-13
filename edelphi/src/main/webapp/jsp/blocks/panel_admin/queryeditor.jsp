@@ -62,6 +62,15 @@
 	        <jsp:param name="option.CLOSED" value="${stateClosedText}"/>
 	        <jsp:param name="value" value="${empty(query.state) ? 'EDIT' : query.state}"/>
           </jsp:include>
+          
+          <div>
+            <a id="queryEditorShowQueryCommentOptionsLink" href="javascript:void(null)"><fmt:message key="panelAdmin.block.query.commentOptionsLink"/></a>
+          </div>
+
+          <div>
+            <a id="queryEditorRemoveQueryAnswers" href="javascript:void(null)"><fmt:message key="panelAdmin.block.query.removeQueryAnswers"/></a>
+          </div>
+          
         </div>
 
         <div id="panelAdminQueryEditorPagesTab">

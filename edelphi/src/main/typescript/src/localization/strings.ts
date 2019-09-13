@@ -16,8 +16,15 @@ export interface IStrings extends LocalizedStringsMethods {
 
   errorDialog: {
     header: string,
-    errorOccurred: string,
+    reloadPage: string,
+    unsavedContents: string,
+    reportIssue: string,
+    technicalDetails: string,
+    time: string,
+    url: string,
+    errorMessage: string,
     close: string
+    reload: string,
   },
 
   panel: {
@@ -72,6 +79,18 @@ export interface IStrings extends LocalizedStringsMethods {
       reportAnIssue: string
     },
     queryEditor: {
+      removeQueryAnswersConfirm: string,
+
+      queryCommentOptions: {
+        title: string,
+        categories: string,
+        addCategory: string,
+        save: string,
+        close: string,
+        deleteCategory: string,
+        deleteCategoryConfirm: string
+      },
+      
       pageCommentOptions: {
         title: string,
         categories: string,

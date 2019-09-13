@@ -19,7 +19,11 @@ export interface QueryQuestionCommentCategory {
      */
     name: string;
     /**
-     * Page's id where the comment is
+     * Query's id where the comment is
+     */
+    queryId: number;
+    /**
+     * Query page's id or null if category is query scoped
      */
     queryPageId?: number;
 }
@@ -33,7 +37,11 @@ export interface QueryQuestionCommentCategoryOpt {
      */
     name?: string;
     /**
-     * Page's id where the comment is
+     * Query's id where the comment is
+     */
+    queryId?: number;
+    /**
+     * Query page's id or null if category is query scoped
      */
     queryPageId?: number;
 }

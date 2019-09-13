@@ -4,6 +4,15 @@ export declare class QueryQuestionAnswersService {
     private basePath;
     constructor(basePath: string, token: string);
     /**
+     * Deletes query question answers
+     * @summary Delete query question answers
+     * @param panelId panel id
+     * @param queryId Delete answers by query
+     * @param queryPageId Delete answers by query page
+     * @param querySectionId Delete answers by query section
+    */
+    deleteQueryQuestionAnswers(panelId: number, queryId?: number, queryPageId?: number, querySectionId?: number): Promise<any>;
+    /**
      * Finds query question answer by id
      * @summary Find query question answer.
      * @param panelId panel id

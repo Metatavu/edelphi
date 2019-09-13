@@ -14,13 +14,13 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.queries.QueryPageController;
@@ -107,9 +107,20 @@ public class Live2dReportPageHtmlProvider extends AbstractReportPageHtmlProvider
         document.getElementById("description").html(description);
       }
       
-      document.getElementById("comments-title").html(reportMessages.getText(locale, "reports.page.commentsTitle"));
-      document.getElementById("comments").html(renderComments(locale, panelStamp, queryPage, scatterValues, labelX, labelY, optionsX, optionsY, commentCategoryIds));
-      
+      List<QueryQuestionCommentCategory> categories = queryPageController.listCommentCategoriesByPage(queryPage, true);
+      if (categories.isEmpty()) {
+        String title = reportMessages.getText(locale, "reports.page.commentsTitle");
+        String comments = renderComments(locale, panelStamp, queryPage, scatterValues, labelX, labelY, optionsX, optionsY, commentCategoryIds);
+        document.getElementById("comments").append(renderCommentList(title, comments));
+      } else {
+        List<QueryQuestionCommentCategory> filteredCategories = categories.stream().filter(category -> commentCategoryIds == null || ArrayUtils.contains(commentCategoryIds, category.getId())).collect(Collectors.toList());
+        for (QueryQuestionCommentCategory category : filteredCategories) {
+          String title = category.getName();
+          String comments = renderComments(locale, panelStamp, queryPage, scatterValues, labelX, labelY, optionsX, optionsY, new Long[] { category.getId() });
+          document.getElementById("comments").append(renderCommentList(title, comments));
+        }
+      }
+
       document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);    
       document.outputSettings().escapeMode(org.jsoup.nodes.Entities.EscapeMode.xhtml);
 
@@ -118,7 +129,7 @@ public class Live2dReportPageHtmlProvider extends AbstractReportPageHtmlProvider
       throw new ReportException(e);
     }
   }
-  
+
   /**
    * Renders reports
    * 
@@ -204,7 +215,7 @@ public class Live2dReportPageHtmlProvider extends AbstractReportPageHtmlProvider
     
     return questionComments.stream()
       .filter(comment -> comment.getCategory() != null)
-      .filter(comment -> { boolean r = ArrayUtils.contains(commentCategoryIds, comment.getCategory().getId()); System.out.println("" + comment.getCategory().getId() + ":" + r  ); return r; })
+      .filter(comment -> ArrayUtils.contains(commentCategoryIds, comment.getCategory().getId()))
       .collect(Collectors.toList());
   }
 
@@ -215,6 +226,30 @@ public class Live2dReportPageHtmlProvider extends AbstractReportPageHtmlProvider
    */
   private List<QueryQuestionComment> listRootComments(PanelStamp panelStamp, QueryPage queryPage) {
     return queryQuestionCommentDAO.listRootCommentsByQueryPageAndStampOrderByCreated(queryPage, panelStamp); 
+  }
+  
+  /**
+   * Renders a report comment 
+   * 
+   * @param title title
+   * @param comments comments HTML
+   * @return comment list HTML
+   * @throws ReportException
+   */
+  private String renderCommentList(String title, String comments) throws ReportException {
+    try (InputStream htmlStream = getClass().getClassLoader().getResourceAsStream("report-comment-list.html")) {
+      Document document = Jsoup.parse(htmlStream, "UTF-8", "");
+      
+      document.getElementById("comments-title").html(title);
+      document.getElementById("comments").html(comments);
+
+      document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);    
+      document.outputSettings().escapeMode(org.jsoup.nodes.Entities.EscapeMode.xhtml);
+
+      return document.body().outerHtml();
+    } catch (IOException e) {
+      throw new ReportException(e);
+    }
   }
   
   /**
