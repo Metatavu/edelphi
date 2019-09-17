@@ -6,9 +6,9 @@ import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.pages.panel.PanelPageController;
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 
-public class CommentViewPageController extends PanelPageController {
+public class LiveViewPageController extends PanelPageController {
 
-  public CommentViewPageController() {
+  public LiveViewPageController() {
     super();
     setAccessAction(DelfoiActionName.MANAGE_PANEL, DelfoiActionScope.PANEL);
   }
@@ -20,7 +20,7 @@ public class CommentViewPageController extends PanelPageController {
 
   @Override
   public void processPageRequest(PageRequestContext pageRequestContext) {
-    pageRequestContext.setIncludeJSP("/jsp/pages/panel/admin/commentview.jsp");
+    pageRequestContext.setIncludeJSP("/jsp/pages/panel/admin/liveview.jsp");
   }
 
 }

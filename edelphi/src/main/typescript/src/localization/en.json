@@ -106,12 +106,14 @@
         }
       }
     },
-    "commentView": {
+    "liveView": {
       "querySelectLabel": "Query",
       "pageSelectLabel": "Page",
       "categorySelectLabel": "Category",
       "defaultCategory": "Default",
-      "replyCount": "{0} replies"
+      "replyCount": "{0} replies",
+      "answersTab": "Answers",
+      "commentsTab": "Comments"
     },
     "reports": {
       "title": "Query Results",

@@ -15,6 +15,7 @@ $container-width: 75vw;
   height: calc(-3px + #{$container-width} / 4);
   padding: 10px;
   box-shadow: 0px 0px 8px rgba(0,0,0,0.1);
+  overflow-y: scroll;
 }
 
 .comment {

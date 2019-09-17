@@ -105,12 +105,14 @@
         }
       }
     },
-    "commentView": {
+    "liveView": {
       "querySelectLabel": "Kysely",
       "pageSelectLabel": "Sivu",
       "categorySelectLabel": "Kategoria",
       "defaultCategory": "Oletus",
-      "replyCount": "{0} vastausta"
+      "replyCount": "{0} vastausta",
+      "answersTab": "Vastaukset",
+      "commentsTab": "Kommentit"
     },
     "reports": {
       "title": "Kyselyn tulokset",
