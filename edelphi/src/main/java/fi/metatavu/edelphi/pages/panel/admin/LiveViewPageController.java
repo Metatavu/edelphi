@@ -15,7 +15,7 @@ public class LiveViewPageController extends PanelPageController {
   
   @Override
   public Feature getFeature() {
-    return Feature.ACCESS_COMMENT_VIEW;
+    return Feature.ACCESS_LIVE_VIEW;
   }
 
   @Override
