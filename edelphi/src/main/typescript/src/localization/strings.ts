@@ -114,7 +114,7 @@ export interface IStrings extends LocalizedStringsMethods {
     liveView: {
       querySelectLabel: string,
       pageSelectLabel: string,
-      categorySelectLabel: string,
+      commentCategorySelectLabel: string,
       defaultCategory: string,
       replyCount: string,
       answersTab: string,

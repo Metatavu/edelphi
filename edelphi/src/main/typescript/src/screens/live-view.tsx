@@ -378,7 +378,7 @@ class LiveView extends React.Component<Props, State> {
               <Form.Group widths='equal'>
                 <Form.Select fluid label={ strings.panelAdmin.liveView.querySelectLabel } value={ this.state.queryId } onChange={ this.onQueryChange } options={ queryOptions }/>
                 <Form.Select fluid disabled={ !this.state.queryId } label={ strings.panelAdmin.liveView.pageSelectLabel } value={ this.state.pageId } onChange={ this.onPageChange } options={ pageOptions }/>
-                <Form.Select fluid disabled={ !this.state.pageId } label={ strings.panelAdmin.liveView.categorySelectLabel } value={ this.state.categoryId } onChange={ this.onCategoryChange } options={ categoryOptions }/>
+                <Form.Select fluid disabled={ !this.state.pageId } label={ strings.panelAdmin.liveView.commentCategorySelectLabel } value={ this.state.categoryId } onChange={ this.onCategoryChange } options={ categoryOptions }/>
               </Form.Group>
             </Form>
           </Container>

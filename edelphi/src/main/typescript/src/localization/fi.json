@@ -108,7 +108,7 @@
     "liveView": {
       "querySelectLabel": "Kysely",
       "pageSelectLabel": "Sivu",
-      "categorySelectLabel": "Kategoria",
+      "commentCategorySelectLabel": "Kommenttikategoria",
       "defaultCategory": "Oletus",
       "replyCount": "{0} vastausta",
       "answersTab": "Vastaukset",

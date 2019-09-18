@@ -109,7 +109,7 @@
     "liveView": {
       "querySelectLabel": "Query",
       "pageSelectLabel": "Page",
-      "categorySelectLabel": "Category",
+      "commentCategorySelectLabel": "Comment category",
       "defaultCategory": "Default",
       "replyCount": "{0} replies",
       "answersTab": "Answers",
