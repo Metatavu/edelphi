@@ -1,5 +1,8 @@
 import { QueryPageStatistics } from "../types";
 
+/**
+ * Utilities for calculating statistics
+ */
 export default class StatisticsUtils {
 
   /**
@@ -9,28 +12,37 @@ export default class StatisticsUtils {
    * @returns statistics
    */
   public static getStatistics(values: number[]): QueryPageStatistics {
+    const sorted = (values || []).sort((a, b) => a - b);
+
     return {
       answerCount: values.length,
-      q1: this.getQuantile(values, 1),
-      q2: this.getQuantile(values, 2),
-      q3: this.getQuantile(values, 3)
+      q1: this.getQuantile(sorted, 1),
+      q2: this.getQuantile(sorted, 2),
+      q3: this.getQuantile(sorted, 3)
     };
   }
 
   /**
-   * Returns quantile over base value.
+   * Returns quantile
    * 
+   * @param sorted sorted array of values
    * @param quantile quantile index
-   * @param base quantile base
-   * @return quantile over base value.
+   * @return quantile
    */
-  private static getQuantile(values: number[], quantile: number) {
-    if (!values || values.length == 0) {
-      return null;
+  private static getQuantile(sorted: number[], quantile: number) {
+    if (sorted.length == 0) {
+      return 0;
     }
 
-    const index = Math.round((quantile / 4) * (values.length - 1));
-    return values[index];
+    const index = Math.round((quantile / 4) * (sorted.length - 1));
+    const base = Math.floor(index);
+
+    const rest = index - base;
+    if ((sorted[base + 1] !== undefined)) {
+      return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
+    } else {
+      return sorted[base];
+    }
   }
   
 }
