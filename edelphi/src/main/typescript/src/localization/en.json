@@ -113,7 +113,8 @@
       "defaultCategory": "Default",
       "replyCount": "{0} replies",
       "answersTab": "Answers",
-      "commentsTab": "Comments"
+      "commentsTab": "Comments",
+      "selectQueryAndPage": "Select a query and a page"
     },
     "reports": {
       "title": "Query Results",

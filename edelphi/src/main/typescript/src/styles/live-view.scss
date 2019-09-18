@@ -6,6 +6,24 @@ $container-width: 75vw;
   width: $container-width !important;
 }
 
+.ui.button {
+
+  &.answers-fullscreen-button {
+    float: right;
+    margin-top: -14px;
+  }
+
+  &.comments-fullscreen-button {
+    float: right
+  }
+
+}
+
+.instructions {
+  text-align: center;
+  font-size: 18px;
+}
+
 .controls {
   margin-top: 20px;
 }
@@ -48,7 +66,6 @@ $container-width: 75vw;
 
 .comments-list-axis-x,
 .comments-list-axis-y {
-  border-bottom: 1px solid #DDE7ED;
   color: #0099FF;
   font-size: 19px;
   padding: 0 0 10px;

@@ -118,7 +118,8 @@ export interface IStrings extends LocalizedStringsMethods {
       defaultCategory: string,
       replyCount: string,
       answersTab: string,
-      commentsTab: string
+      commentsTab: string,
+      selectQueryAndPage: string
     },
     reports: {
       title: string,

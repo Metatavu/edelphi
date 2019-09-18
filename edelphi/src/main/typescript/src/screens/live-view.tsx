@@ -63,6 +63,11 @@ interface CommentAndAnswer {
 }
 
 /**
+ * Amount of pixels to use a minimum window margin for graph
+ */
+const GRAPH_WINDOW_OFFSET = 40;
+
+/**
  * React component for comment editor
  */
 class LiveView extends React.Component<Props, State> {
@@ -182,11 +187,26 @@ class LiveView extends React.Component<Props, State> {
         <div style={{ width: "100%", height:"100%" }}>
           <Grid>
             { this.renderControls() }
-            { this.renderTabs() }
+            { this.renderView() }
           </Grid>
         </div>
       </PanelAdminLayout>
     );
+  }
+
+  /**
+   * Renders a view
+   */
+  private renderView = () => {
+    if (!this.state.queryId || !this.state.pageId) {
+      return (
+        <Container> 
+          <p className="instructions">{ strings.panelAdmin.liveView.selectQueryAndPage }</p>
+        </Container>
+      );
+    }
+
+    return this.renderTabs();
   }
 
   /**
@@ -293,7 +313,7 @@ class LiveView extends React.Component<Props, State> {
     }
 
     return (
-      <Button icon style={{ float: "right", marginTop: "-10px" }} onClick={ this.onAnswersFullscreenButtonClick }>
+      <Button icon className="answers-fullscreen-button" onClick={ this.onAnswersFullscreenButtonClick }>
         <Icon name={ this.state.answersFullscreen ? "compress" : "expand" }/>
       </Button>
     );
@@ -308,7 +328,7 @@ class LiveView extends React.Component<Props, State> {
     }
 
     return (
-      <Button icon style={{ float: "right", marginTop: "-10px" }} onClick={ this.onCommentsFullscreenButtonClick }>
+      <Button icon className="comments-fullscreen-button" onClick={ this.onCommentsFullscreenButtonClick }>
         <Icon name={ this.state.commentsFullscreen ? "compress" : "expand" }/>
       </Button>
     );
@@ -886,8 +906,10 @@ class LiveView extends React.Component<Props, State> {
    */
   private recalculateChartSize = () => {
     if (this.chartContainerRef) {
+      const maxSize = Math.min(window.innerWidth, window.innerHeight) - GRAPH_WINDOW_OFFSET;
+
       this.setState({
-        chartSize: this.chartContainerRef.offsetWidth
+        chartSize: Math.min(this.chartContainerRef.offsetWidth, maxSize)
       });
     }
   }

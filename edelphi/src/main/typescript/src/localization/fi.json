@@ -112,7 +112,8 @@
       "defaultCategory": "Oletus",
       "replyCount": "{0} vastausta",
       "answersTab": "Vastaukset",
-      "commentsTab": "Kommentit"
+      "commentsTab": "Kommentit",
+      "selectQueryAndPage": "Valitse kysely sekä sivu"
     },
     "reports": {
       "title": "Kyselyn tulokset",
