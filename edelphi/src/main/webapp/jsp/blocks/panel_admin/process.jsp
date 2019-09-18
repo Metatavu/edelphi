@@ -43,10 +43,10 @@
         </div>
       </ed:feature>
 
-      <ed:feature featurePage="panel/admin/commentview.page">
+      <ed:feature featurePage="panel/admin/liveview.page">
         <div class="panelAdminProcessRow">
-          <div class="panelAdminGenericTitle"><a href="commentview.page?panelId=${panel.id}"><fmt:message key="panel.admin.dashboard.panelProcessCommentViewAction" /></a></div>
-          <div class="panelAdminGenericDescription"><fmt:message key="panel.admin.dashboard.panelProcessCommentViewDescription" /></div>
+          <div class="panelAdminGenericTitle"><a href="liveview.page?panelId=${panel.id}"><fmt:message key="panel.admin.dashboard.panelProcessLiveViewAction" /></a></div>
+          <div class="panelAdminGenericDescription"><fmt:message key="panel.admin.dashboard.panelProcessLiveViewDescription" /></div>
         </div>
       </ed:feature>
     </div>

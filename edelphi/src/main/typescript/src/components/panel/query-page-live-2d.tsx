@@ -1,13 +1,15 @@
 import * as React from "react";
 import * as actions from "../../actions";
-import { StoreState, AccessToken, QueryQuestionAnswerNotification } from "../../types";
+import { StoreState, AccessToken, QueryQuestionAnswerNotification, QueryPageStatistics, QueryLive2dAnswer } from "../../types";
 import { connect } from "react-redux";
-import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Cell, AxisDomain, ZAxis, Label } from 'recharts';
-import Api, { QueryQuestionLive2dAnswerData, QueryPageLive2DColor, QueryPage, QueryPageLive2DOptions } from "edelphi-client";
+import Api, { QueryQuestionLive2dAnswerData, QueryPage } from "edelphi-client";
 import { mqttConnection, OnMessageCallback } from "../../mqtt";
 import { Loader, Dimmer, Segment, Grid } from "semantic-ui-react";
 import strings from "../../localization/strings";
 import ErrorDialog from "../error-dialog";
+import Live2dQueryStatistics from "../generic/live2d-query-statistics";
+import StatisticsUtils from "../../statistics/statistics-utils";
+import Live2dQueryChart from "../generic/live2d-query-chart";
 
 /**
  * Interface representing component properties
@@ -21,46 +23,26 @@ interface Props {
 }
 
 /**
- * Interface representing a single user answer 
- */
-interface Answer {
-  x: number,
-  y: number,
-  z: number,
-  id: string
-}
-
-interface Statistics {
-  answerCount: number,
-  q1: number | null,
-  q2: number | null,
-  q3: number | null
-}
-
-/**
  * Interface representing component state
  */
 interface State {
   contents?: string,
   loaded: boolean,
   commentId?: number
-  values: Answer[],
+  values: QueryLive2dAnswer[],
   page?: QueryPage,
   error?: Error,
-  statisticsX: Statistics,
-  statisticsY: Statistics
+  statisticsX: QueryPageStatistics,
+  statisticsY: QueryPageStatistics,
+  chartSize: number | null
 }
-
-const LABEL_BOX_WIDTH = 20;
-const LABEL_BOX_HEIGHT = 20;
-const LABEL_MARGIN = 17;
 
 /**
  * React component for live 2d chart
  */
 class QueryPageLive2d extends React.Component<Props, State> {
 
-  private wrapperDiv: HTMLDivElement | null;
+  private chartContainerRef: HTMLDivElement | null;
   private queryQuestionAnswersListener: OnMessageCallback;
   private savedAt: number = 0;
   private saving: boolean = false;
@@ -75,21 +57,11 @@ class QueryPageLive2d extends React.Component<Props, State> {
     this.state = {
       loaded: false,
       values: [],
-      statisticsX: {
-        answerCount: 0,
-        q1: null,
-        q2: null,
-        q3: null
-      },
-      statisticsY: {
-        answerCount: 0,
-        q1: null,
-        q2: null,
-        q3: null
-      }
+      statisticsX: StatisticsUtils.getStatistics([]),
+      statisticsY: StatisticsUtils.getStatistics([]),
+      chartSize: null
     };
 
-    this.wrapperDiv = null;
     this.queryQuestionAnswersListener = this.onQueryQuestionAnswerNotification.bind(this);
   }
   
@@ -105,12 +77,15 @@ class QueryPageLive2d extends React.Component<Props, State> {
    */
   public componentWillUnmount() {
     mqttConnection.unsubscribe("queryquestionanswers", this.queryQuestionAnswersListener);
+    window.removeEventListener("resize", this.onWindowResize);
   }
   
   /**
    * Component did update life-cycle event
    */
   public async componentDidMount() {
+    window.addEventListener("resize", this.onWindowResize);
+
     try {
       await this.load();
 
@@ -161,7 +136,7 @@ class QueryPageLive2d extends React.Component<Props, State> {
       <Grid>
         <Grid.Row>
           <Grid.Column width={ 10 }>
-            <div style={{margin:"auto"}} ref={ (element) => this.setWrapperDiv(element) }>
+            <div style={{margin:"auto"}} ref={ (element) => this.setChartWrapperDiv(element) }>
               { this.renderChart() }
             </div>
           </Grid.Column>          
@@ -170,7 +145,7 @@ class QueryPageLive2d extends React.Component<Props, State> {
           </Grid.Column>
         </Grid.Row>
       </Grid>
-      );
+    );
   }
 
   /**
@@ -181,42 +156,42 @@ class QueryPageLive2d extends React.Component<Props, State> {
       error: error
     });
   }
+  
+  /**
+   * Ref callback for chart wrapper div
+   */
+  private setChartWrapperDiv(element: HTMLDivElement | null) {
+    this.chartContainerRef = element;
+
+    if (this.chartContainerRef && !this.state.chartSize) {
+      this.setState({
+        chartSize: this.chartContainerRef.offsetWidth
+      });
+    }
+  }
 
   /**
    * Renders statistics
    */
   private renderStatistics = () => {
     return (
-      <Grid>
-        <Grid.Row>
-          <Grid.Column>
-            <h3> { strings.panel.query.live2d.statistics.title } </h3>
-          </Grid.Column>
-        </Grid.Row>
-
-        <Grid.Row>
-          <Grid.Column>
-            <h4> { strings.panel.query.live2d.statistics.axisX } </h4>
-          </Grid.Column>
-        </Grid.Row>
-
-        { this.renderStatistic(strings.panel.query.live2d.statistics.answerCount, this.state.statisticsX.answerCount ) }
-        { this.renderStatistic(strings.panel.query.live2d.statistics.lowerQuartile, this.state.statisticsX.q1 ) }
-        { this.renderStatistic(strings.panel.query.live2d.statistics.median, this.state.statisticsX.q2 ) }
-        { this.renderStatistic(strings.panel.query.live2d.statistics.upperQuartile, this.state.statisticsX.q3 ) }
-
-        <Grid.Row>
-          <Grid.Column>
-            <h4> { strings.panel.query.live2d.statistics.axisY } </h4>
-          </Grid.Column>
-        </Grid.Row>
-
-        { this.renderStatistic(strings.panel.query.live2d.statistics.answerCount, this.state.statisticsY.answerCount ) }
-        { this.renderStatistic(strings.panel.query.live2d.statistics.lowerQuartile, this.state.statisticsY.q1 ) }
-        { this.renderStatistic(strings.panel.query.live2d.statistics.median, this.state.statisticsY.q2 ) }
-        { this.renderStatistic(strings.panel.query.live2d.statistics.upperQuartile, this.state.statisticsY.q3 ) }
-      </Grid>
+      <Live2dQueryStatistics statisticsX={ this.state.statisticsX } statisticsY={ this.state.statisticsY } />
     );
+  }
+
+  private renderChart() {
+    if (!this.state.loaded || !this.state.page || !this.state.chartSize) {
+      return null;
+    }
+
+    const values = this.getValuesVisible() ? this.state.values : [];
+
+    return <Live2dQueryChart 
+      page={ this.state.page } 
+      values={ values } 
+      chartSize={ this.state.chartSize }
+      onScatterChartClick={ this.onScatterChartClick } 
+      onScatterChartMouseDown={ this.onScatterChartMouseDown }/>
   }
 
   /**
@@ -225,8 +200,8 @@ class QueryPageLive2d extends React.Component<Props, State> {
    * @param values answers
    * @returns statistics for x-axis
    */
-  private getStatisticsX(values: Answer[]): Statistics {
-    return this.getStatistics(values.map((value: Answer) => {
+  private getStatisticsX(values: QueryLive2dAnswer[]): QueryPageStatistics {
+    return StatisticsUtils.getStatistics(values.map((value: QueryLive2dAnswer) => {
       return value.x;
     }));
   }
@@ -237,173 +212,10 @@ class QueryPageLive2d extends React.Component<Props, State> {
    * @param values answers
    * @returns statistics for y-axis
    */
-  private getStatisticsY(values: Answer[]): Statistics {
-    return this.getStatistics(values.map((value: Answer) => {
+  private getStatisticsY(values: QueryLive2dAnswer[]): QueryPageStatistics {
+    return StatisticsUtils.getStatistics(values.map((value: QueryLive2dAnswer) => {
       return value.y;
     }));
-  }
-
-  /**
-   * Calculates statistics for array of values
-   * 
-   * @param values values
-   * @returns statistics
-   */
-  private getStatistics(values: number[]): Statistics {
-    return {
-      answerCount: values.length,
-      q1: this.getQuantile(values, 1),
-      q2: this.getQuantile(values, 2),
-      q3: this.getQuantile(values, 3)
-    };
-  }
-
-  /**
-   * Returns quantile over base value.
-   * 
-   * @param quantile quantile index
-   * @param base quantile base
-   * @return quantile over base value.
-   */
-  private getQuantile(values: number[], quantile: number) {
-    if (!values || values.length == 0) {
-      return null;
-    }
-
-    const index = Math.round((quantile / 4) * (values.length - 1));
-    return values[index];
-  }
-
-  /**
-   * Renders a statistics row
-   */
-  private renderStatistic = (label: string, value: number | null) => {
-    return (
-      <Grid.Row>
-        <Grid.Column width={ 8 }>
-          <label> { label } </label>
-        </Grid.Column>
-        <Grid.Column width={ 8 }>
-          <b> { value === null ? "NA" : value.toFixed(2) } </b>
-        </Grid.Column>
-      </Grid.Row>
-    );
-  }
-
-  /**
-   * Renders chart component
-   */
-  private renderChart() {
-    if (!this.state.loaded || !this.state.page || !this.wrapperDiv) {
-      return null;
-    }
-
-    const pageOptions = this.state.page.queryOptions as QueryPageLive2DOptions;
-    if (!pageOptions.axisX || !pageOptions.axisY) {
-      return null;
-    }
-
-    const optionsX = pageOptions.axisX.options || [];
-    const optionsY = pageOptions.axisY.options || [];
-
-    const domainX: [ AxisDomain, AxisDomain ] = [ 0, optionsX.length - 1 ];
-    const domainY: [ AxisDomain, AxisDomain ] = [ 0, optionsY.length - 1 ];
-    const colorY = ( pageOptions.axisY ? pageOptions.axisY.color : undefined ) || "RED";
-    const size = this.wrapperDiv.offsetWidth;
-    const colorX = ( pageOptions.axisX ? pageOptions.axisX.color : undefined ) || "GREEN";
-    const data = this.getValuesVisible() ? this.state.values : [];
-
-    return (
-      <ScatterChart onClick={ this.onScatterChartClick } onMouseDown={ this.onScatterChartMouseDown } width={ size } height={ size } margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-        <XAxis type="number" domain={ domainX } dataKey={'x'} tickCount={ optionsX.length } tickFormatter={ (value) => this.formatTick(value, optionsX) }>
-          <Label content={ this.renderAxisXLabelContents }/>
-        </XAxis>
-        <YAxis type="number" domain={ domainY } dataKey={'y'} tickCount={ optionsY.length } tickFormatter={ (value) => this.formatTick(value, optionsY) }>
-          <Label content={ this.renderAxisYLabelContents }/>
-        </YAxis>
-        <ZAxis type="number" range={[500, 1000]} dataKey={'z'} />
-        <CartesianGrid />
-        <Scatter data={ data } fill={'#fff'}>
-          {
-            data.map((entry, index) => {
-              return <Cell key={`cell-${index}`} fill={this.getColor(colorX, colorY, entry.x || 0, entry.y || 0, optionsX.length, optionsY.length)} />
-            })
-          }
-        </Scatter>
-      </ScatterChart>
-    );
-  }
-
-  /**
-   * Formats tick value
-   * 
-   * @param value value
-   * @param options options
-   * @return formatted tick
-   */
-  private formatTick = (value: any, options: string[]) => {
-    const index: number = value;
-    return options[index];
-  }
-
-  /**
-   * Renders x-axis label contents
-   */
-  private renderAxisXLabelContents = (props: any) => {
-    if (!this.state.page) {
-      return null;
-    }
-
-    const pageOptions = this.state.page.queryOptions as QueryPageLive2DOptions;
-    const colorX = ( pageOptions.axisX ? pageOptions.axisX.color : undefined ) || "GREEN";
-    const labelX = pageOptions.axisX ? pageOptions.axisX.label : undefined;
-
-    const { viewBox } = props;
-
-    const offsetTop = LABEL_BOX_HEIGHT * 1.5;
-    const x = ((viewBox.width / 2) + viewBox.x) - (LABEL_BOX_WIDTH / 2);
-
-    return (
-      <g transform={ `translate(${x} ${ viewBox.y + offsetTop })` }>
-        <rect height={ LABEL_BOX_HEIGHT } width={ LABEL_BOX_WIDTH } style={{ fill: colorX }} />
-        <text className="recharts-text recharts-label" textAnchor="start"><tspan dx={ LABEL_BOX_WIDTH + LABEL_MARGIN } dy={ offsetTop / 2 }>{ labelX }</tspan></text>
-      </g>
-    );
-  }
-
-  /**
-   * Renders y-axis label contents
-   */
-  private renderAxisYLabelContents = (props: any) => {
-    if (!this.state.page) {
-      return null;
-    }
-
-    const pageOptions = this.state.page.queryOptions as QueryPageLive2DOptions;
-    const colorY = ( pageOptions.axisY ? pageOptions.axisY.color : undefined ) || "RED";
-    const label = pageOptions.axisY ? pageOptions.axisY.label : undefined;
-
-    const { viewBox } = props;
-
-    const offsetTop = LABEL_BOX_HEIGHT * 1.5;
-    const x = viewBox.x;
-    const y = ((viewBox.height / 2) + viewBox.y) - (LABEL_BOX_HEIGHT / 2);
-
-    return (
-      <g transform={ `translate(${x} ${y})` }>
-        <rect height={ LABEL_BOX_HEIGHT } width={ LABEL_BOX_WIDTH } style={{ fill: colorY }} />
-        <text transform={ "rotate(-90, 0, 0)" } className="recharts-text recharts-label" textAnchor="start"><tspan dx={ LABEL_MARGIN } dy={ offsetTop / 2 }>{ label }</tspan></text>
-      </g>
-    );
-  }
-  
-  /**
-   * Ref callback for wrapper div
-   */
-  private setWrapperDiv(element: HTMLDivElement | null) {
-    if (element) {
-      this.wrapperDiv = element;
-    }
   }
 
   /**
@@ -448,7 +260,7 @@ class QueryPageLive2d extends React.Component<Props, State> {
     const queryQuestionAnswersService = Api.getQueryQuestionAnswersService(this.props.accessToken.token);
     const answers = await queryQuestionAnswersService.listQueryQuestionAnswers(this.props.panelId, this.props.queryId, this.props.pageId);
 
-    const values: Answer[] = answers.map((answer) => {
+    const values: QueryLive2dAnswer[] = answers.map((answer) => {
       return {
         x: answer.data.x,
         y: answer.data.y,
@@ -462,54 +274,6 @@ class QueryPageLive2d extends React.Component<Props, State> {
       statisticsX: this.getStatisticsX(values),
       statisticsY: this.getStatisticsY(values)
     });
-  }
-
-  /**
-   * Converts value from range to new range
-   * 
-   * @param {Number} value value
-   * @param {Number} fromLow from low
-   * @param {Number} fromHigh from high
-   * @param {Number} toLow to low
-   * @param {Number} toHigh to high
-   * @return new value
-   */
-  private convertToRange(value: number, fromLow: number, fromHigh: number, toLow: number, toHigh: number): number {
-    const fromLength = fromHigh - fromLow;
-    const toRange = toHigh - toLow;
-    const newValue = toRange / (fromLength / value);
-
-    if (newValue < toLow) {
-      return toLow;
-    } else if (newValue > toHigh) {
-      return toHigh;
-    }
-
-    return newValue;
-  }
-
-  /**
-   * Returns color for given point in coordinates
-   * 
-   * @param colorX color for x-axis
-   * @param colorY color for y-axis
-   * @param x x
-   * @param y y
-   * @param maxX max x 
-   * @param maxY max y
-   */
-  private getColor(colorX: QueryPageLive2DColor, colorY: QueryPageLive2DColor, x: number, y: number, maxX: number, maxY: number) {
-    const cX = colorX || 'RED';
-    const cY = colorY || 'BLUE';
-    const bColor = 100;
-    const xColor = Math.floor(this.convertToRange(x, 0, maxX, 0, 255));
-    const yColor = Math.floor(this.convertToRange(y, 0, maxY, 0, 255));
-
-    const r = cX === 'RED' ? xColor : cY === 'RED' ? yColor : bColor;
-    const g = cX === 'GREEN' ? xColor : cY === 'GREEN' ? yColor : bColor;
-    const b = cX === 'BLUE' ? xColor : cY === 'BLUE' ? yColor : bColor;
-
-    return `rgb(${r}, ${g}, ${b})`;
   }
 
   /**
@@ -649,6 +413,17 @@ class QueryPageLive2d extends React.Component<Props, State> {
   }
 
   /**
+   * Recalculates a chart size
+   */
+  private recalculateChartSize = () => {
+    if (this.chartContainerRef) {
+      this.setState({
+        chartSize: this.chartContainerRef.offsetWidth
+      });
+    }
+  }
+
+  /**
    * Event handler for handling scatter click events
    * 
    * @param data event data
@@ -700,6 +475,13 @@ class QueryPageLive2d extends React.Component<Props, State> {
         this.updateAnswer(answer.id!, answer.data.x, answer.data.y);
       break;
     }
+  }
+
+  /**
+   * Event handler for window resize events
+   */
+  private onWindowResize = () => {
+    this.recalculateChartSize();
   }
 }
 

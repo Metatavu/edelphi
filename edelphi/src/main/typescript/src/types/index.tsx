@@ -48,6 +48,26 @@ export interface QueryQuestionAnswerNotification {
 }
 
 /**
+ * Interface representing a query page statistics
+ */
+export interface QueryPageStatistics {
+  answerCount: number,
+  q1: number | null,
+  q2: number | null,
+  q3: number | null
+}
+
+/**
+ * Interface representing a single user answer 
+ */
+export interface QueryLive2dAnswer {
+  x: number,
+  y: number,
+  z: number,
+  id: string
+}
+
+/**
  * Command
  */
 export type Command = "edit-page-comment-options" | "edit-page-live2d-options" | "enable-query-next" | "disable-query-next";
