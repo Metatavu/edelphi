@@ -1566,6 +1566,7 @@ components:
       enum:
         - PDF
         - CSV
+        - PNG
         - GOOGLE_SHEET
         - GOOGLE_DOCUMENT
           
@@ -1574,6 +1575,7 @@ components:
       enum:
         - TEXT
         - SPREADSHEET
+        - IMAGES
     
     ReportDelivery:
       type: object
