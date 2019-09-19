@@ -15,7 +15,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum ReportType {
   TEXT("TEXT"),
-    SPREADSHEET("SPREADSHEET");
+    SPREADSHEET("SPREADSHEET"),
+    IMAGES("IMAGES");
 
   private String value;
 
