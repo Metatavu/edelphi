@@ -183,6 +183,8 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
         return requestSpreadsheetReport(reportFormat, properties);
       case TEXT:
         return requestTextReport(reportFormat, properties);
+      case IMAGES:
+        return requestImageReport(reportFormat, properties);
     }
     
     return 0;
@@ -223,6 +225,25 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
         return jobOperator.start("textReportPdfJob", properties);
       case GOOGLE_DOCUMENT:
         return jobOperator.start("textReportGoogleDocumentJob", properties);
+      default:
+      break;
+    }
+
+    return 0;
+  }
+
+  /**
+   * Requests an image report
+   * 
+   * @param properties properties
+   * @return job id
+   */
+  private long requestImageReport(ReportFormat reportFormat, Properties properties) {
+    JobOperator jobOperator = BatchRuntime.getJobOperator();
+    
+    switch (reportFormat) {
+      case PNG:
+        return jobOperator.start("imageReportPngJob", properties);
       default:
       break;
     }
