@@ -188,7 +188,9 @@ class Reports extends React.Component<Props, State> {
         onExportReportContentsPdfClick={ this.onExportReportContentsPdfClick } 
         onExportReportSpreadsheetCsvClick={ this.onExportReportSpreadsheetCsvClick }
         onExportReportSpreadsheetGoogleSheetsClick={ this.onExportReportSpreadsheetGoogleSheetClick }
-        onExportReportContentsGoogleDocumentClick={ this.onExportReportContentsGoogleDocumentClick }/>
+        onExportReportContentsGoogleDocumentClick={ this.onExportReportContentsGoogleDocumentClick }
+        onExportReportImagesPngClick={ this.onExportReportImagesPngClick }
+        />
     );
   }
 
@@ -322,6 +324,13 @@ class Reports extends React.Component<Props, State> {
    */
   private onExportReportContentsGoogleDocumentClick  = async () => {
     await this.requestReport("TEXT", "GOOGLE_DOCUMENT");
+  } 
+
+  /**
+   * Event handler for export images as PNGs click
+   */
+  private onExportReportImagesPngClick  = async () => {
+    await this.requestReport("IMAGES", "PNG");
   } 
 
 }
