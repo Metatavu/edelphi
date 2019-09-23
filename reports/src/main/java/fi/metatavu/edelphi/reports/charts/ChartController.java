@@ -58,7 +58,7 @@ public class ChartController {
    * @throws ReportException
    */
   @SuppressWarnings ({"squid:S3776"})
-  public String createLive2dChart(Locale locale, QueryPage queryPage, List<QueryReply> queryReplies, List<ScatterValue> scatterValues, String labelX, String labelY, List<String> optionsX, List<String> optionsY) throws ReportException {
+  public XYChart createLive2dChart(Locale locale, QueryPage queryPage, List<QueryReply> queryReplies, List<ScatterValue> scatterValues, String labelX, String labelY, List<String> optionsX, List<String> optionsY) throws ReportException {
     // Create Chart
     
     XYChart chart = new XYChartBuilder().width(GRAPH_WIDTH).height(GRAPH_HEIGHT).title(queryPage.getTitle()).xAxisTitle(labelX).yAxisTitle(labelY).build();
@@ -103,25 +103,7 @@ public class ChartController {
     addStraightLineSerie(chart, "xaxis", 0, maxY / 2, maxX, maxY / 2);
     addStraightLineSerie(chart, "yaxis", maxX / 2, 0, maxX / 2, maxY);
     
-    return printGraphPNG(chart);
-  }
-  
-  /**
-   * Adds a straight line series into a chart
-   * 
-   * @param chart chart
-   * @param label label
-   * @param x1 x1
-   * @param y1 xy
-   * @param x2 x2
-   * @param y2 y2
-   */
-  private void addStraightLineSerie(XYChart chart, String label, double x1, double y1, double x2, double y2) {
-    XYSeries axisSeriesLiability = chart.addSeries(label, new double[] { x1, x2 }, new double[] { y1, y2 });
-    axisSeriesLiability.setXYSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Line);
-    axisSeriesLiability.setMarker(SeriesMarkers.NONE);
-    axisSeriesLiability.setLineWidth(2f);
-    axisSeriesLiability.setLineColor(Color.gray);
+    return chart;
   }
   
   /**
@@ -131,8 +113,7 @@ public class ChartController {
    * @return HTML
    * @throws ReportException thrown when graph printing fails
    */
-  @SuppressWarnings("unused")
-  private String printGraphSVG(XYChart chart) throws ReportException {
+  public String printGraphSVG(XYChart chart) throws ReportException {
     try {
       byte[] chartData = renderChartSVG(chart);
 
@@ -151,13 +132,13 @@ public class ChartController {
   }
 
   /**
-   * Prints graph
+   * Render chart as HTML img PNG
    * 
    * @param chart chart
    * @return HTML
    * @throws ReportException thrown when graph printing fails
    */
-  private String printGraphPNG(XYChart chart) throws ReportException {
+  public String printGraphPNG(XYChart chart) throws ReportException {
     try {
       byte[] chartData = renderChartPNG(chart);
       return String.format("<img src=\"data:image/png;base64,%s\" width=\"%s\" height=\"%s\"/>", Base64.encodeBase64String(chartData), GRAPH_WIDTH, GRAPH_HEIGHT);
@@ -173,8 +154,7 @@ public class ChartController {
    * @return SVG
    * @throws IOException thrown when chart rendering fails
    */
-  @SuppressWarnings("unused")
-  private byte[] renderChartSVG(XYChart chart) throws IOException {
+  public byte[] renderChartSVG(XYChart chart) throws IOException {
     Processor processor = new SVGProcessor();
     Graphics2D vg2d = new VectorGraphics2D();
     CommandSequence commands = ((VectorGraphics2D) vg2d).getCommands();
@@ -196,8 +176,26 @@ public class ChartController {
    * @return SVG
    * @throws IOException thrown when chart rendering fails
    */
-  private byte[] renderChartPNG(XYChart chart) throws IOException {
+  public byte[] renderChartPNG(XYChart chart) throws IOException {
     return BitmapEncoder.getBitmapBytes(chart, BitmapFormat.PNG);
+  }
+  
+  /**
+   * Adds a straight line series into a chart
+   * 
+   * @param chart chart
+   * @param label label
+   * @param x1 x1
+   * @param y1 xy
+   * @param x2 x2
+   * @param y2 y2
+   */
+  private void addStraightLineSerie(XYChart chart, String label, double x1, double y1, double x2, double y2) {
+    XYSeries axisSeriesLiability = chart.addSeries(label, new double[] { x1, x2 }, new double[] { y1, y2 });
+    axisSeriesLiability.setXYSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Line);
+    axisSeriesLiability.setMarker(SeriesMarkers.NONE);
+    axisSeriesLiability.setLineWidth(2f);
+    axisSeriesLiability.setLineColor(Color.gray);
   }
 
   /**
