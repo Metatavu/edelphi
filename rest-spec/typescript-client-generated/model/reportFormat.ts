@@ -11,11 +11,12 @@
  */
 
 
-export type ReportFormat = 'PDF' | 'CSV' | 'GOOGLE_SHEET' | 'GOOGLE_DOCUMENT';
+export type ReportFormat = 'PDF' | 'CSV' | 'PNG' | 'GOOGLE_SHEET' | 'GOOGLE_DOCUMENT';
 
 export const ReportFormat = {
     PDF: 'PDF' as ReportFormat,
     CSV: 'CSV' as ReportFormat,
+    PNG: 'PNG' as ReportFormat,
     GOOGLESHEET: 'GOOGLE_SHEET' as ReportFormat,
     GOOGLEDOCUMENT: 'GOOGLE_DOCUMENT' as ReportFormat
 };
