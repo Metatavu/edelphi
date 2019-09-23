@@ -19,7 +19,7 @@
         
   <step id="zip" next="email">
     <chunk item-count="2">
-      <reader ref="imageReportChartReader"/>
+      <reader ref="binaryFileReader"/>
       <writer ref="zipWriter"/>
     </chunk>
   </step>

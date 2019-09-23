@@ -1,43 +1,46 @@
-package fi.metatavu.edelphi.reports.image.batch;
+package fi.metatavu.edelphi.reports.batch;
 
 import java.io.Serializable;
 import java.util.List;
 
+import javax.batch.runtime.context.JobContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.slf4j.Logger;
 
 import fi.metatavu.edelphi.batch.TypedItemReader;
-import fi.metatavu.edelphi.reports.batch.BinaryFile;
 
 /**
- * Batch item reader for reading images from image report batch context
+ * Batch item reader for reading images user transient data
  * 
  * @author Antti Leppä
  */
 @Named
-public class ImageReportChartReader extends TypedItemReader<BinaryFile> {
+public class BinaryFileReader extends TypedItemReader<BinaryFile> {
   
   @Inject
   private Logger logger;
 
   @Inject
-  private ImageReportBatchContext imageReportBatchContext;
+  private JobContext jobContext;
   
   private int index;
   
+  private List<BinaryFile> images;
+  
+  @SuppressWarnings("unchecked")
   @Override
   public void open(Serializable checkpoint) throws Exception {
     super.open(checkpoint);
+    images = (List<BinaryFile>) jobContext.getTransientUserData();
     index = 0;
-    logger.info("Reading {} chart images for report", imageReportBatchContext.getImages().size());
+    logger.info("Reading {} chart images for report", images.size());
   }
 
   @Override
   public BinaryFile read() throws Exception {
     try {
-      List<BinaryFile> images = imageReportBatchContext.getImages();
       int imageCount = images.size();
       
       if (this.index < imageCount) {

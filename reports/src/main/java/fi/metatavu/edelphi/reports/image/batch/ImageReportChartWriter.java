@@ -1,8 +1,11 @@
 package fi.metatavu.edelphi.reports.image.batch;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import javax.batch.runtime.context.JobContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -34,9 +37,9 @@ public class ImageReportChartWriter extends TypedItemWriter<QueryPage> {
 
   @Inject
   private PanelController panelController;
-  
+
   @Inject
-  private ImageReportBatchContext imageReportBatchContext;
+  private JobContext jobContext;
   
   @Inject
   @JobProperty
@@ -58,12 +61,28 @@ public class ImageReportChartWriter extends TypedItemWriter<QueryPage> {
   @JobProperty
   private Long[] queryReplyIds;
   
+  private List<BinaryFile> images;
+  
+  @Override
+  public void open(Serializable checkpoint) throws Exception {
+    super.open(checkpoint);
+    
+    images = new ArrayList<>();
+  }
+
+  @Override
+  public void close() throws Exception {
+    jobContext.setTransientUserData(images);
+    
+    super.close();
+  }
+  
   @Override
   public void write(List<QueryPage> items) throws Exception {
     logger.info("Writing {} report chart images", items.size());
     
     for (QueryPage queryPage : items) {
-      imageReportBatchContext.addImage(createPageReportImage(queryPage));
+      images.add(createPageReportImage(queryPage));
     }
   }
   
