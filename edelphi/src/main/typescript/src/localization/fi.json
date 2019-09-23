@@ -13,7 +13,7 @@
     "header": "Kommunikaatiossa serverin kanssa tapahtui odottamaton virhe.",
     "reloadPage": "Kokeile ladata sivu uudelleen.",
     "unsavedContents": "Huomaathan, että tallentamattomat sisällöt häviävät uudelleenladattaessa. Mikäli sinulla on sivulla tallentamattomia sisältöjä, voit sulkea tämän ilmoituksen ja kopioida sisällöt leikepöydälle ennen uudelleenlatausta.",
-    "reportIssue": "Mikäli ongelma jatkuu, ota sähköpostilla yhteyttä osoitteeseen issues@edelphi.org. Liitä tekniset lisätiedot osaksi sähköpostia nopeutttaaksesi ongelan selvittelyä.",
+    "reportIssue": "Mikäli ongelma jatkuu, ota sähköpostilla yhteyttä osoitteeseen issues@edelphi.org. Liitä tekniset lisätiedot osaksi sähköpostia nopeuttaaksesi ongelan selvittelyä.",
     "technicalDetails": "Teknisiä lisätietoja:",
     "time": "Aika: {0}",
     "url": "Osoite: {0}",

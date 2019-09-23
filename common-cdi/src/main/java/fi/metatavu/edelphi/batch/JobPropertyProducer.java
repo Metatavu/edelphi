@@ -143,6 +143,10 @@ public class JobPropertyProducer {
    * @return job property
    */
   private String getStepProperty(String name) {
+    if (stepContext == null) {
+      return null;
+    }
+    
     Properties properties = stepContext.getProperties();
     return (String) properties.get(name);
   }

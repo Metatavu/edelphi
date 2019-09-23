@@ -1,4 +1,9 @@
 <job id="imageReportPngJob" xmlns="http://xmlns.jcp.org/xml/ns/javaee" version="1.0">
+  
+  <listeners>
+    <listener ref="reportStatusListener" />
+  </listeners>
+  
   <properties>
     <property name="queryId" value="#{jobParameters['queryId']}" />
     <property name="pageIds" value="#{jobParameters['pageIds']}" />
