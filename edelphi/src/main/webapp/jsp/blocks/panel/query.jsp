@@ -5,7 +5,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
-<div class="queryBlock" id="panelQueryBlock">
+<div class="queryBlock" id="panelQueryBlock" style="max-width: calc(100vw - 20px)">
   <form action="${pageContext.request.contextPath}/queries/saveanswers.json">
     <c:set var="titleText" scope="page">
       <fmt:message key="panel.block.query.title">

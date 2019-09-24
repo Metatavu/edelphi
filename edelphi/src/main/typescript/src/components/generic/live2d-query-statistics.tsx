@@ -68,7 +68,7 @@ export default class Live2dQueryStatistics extends React.Component<Props, State>
         <Grid.Column width={ 8 }>
           <label> { label } </label>
         </Grid.Column>
-        <Grid.Column width={ 8 }>
+        <Grid.Column width={ 8 } className="text-right">
           <b> { value === null ? "NA" : value.toFixed(2) } </b>
         </Grid.Column>
       </Grid.Row>
