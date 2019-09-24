@@ -9,8 +9,9 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-export declare type ReportType = 'TEXT' | 'SPREADSHEET';
+export declare type ReportType = 'TEXT' | 'SPREADSHEET' | 'IMAGES';
 export declare const ReportType: {
     TEXT: ReportType;
     SPREADSHEET: ReportType;
+    IMAGES: ReportType;
 };

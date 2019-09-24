@@ -14,6 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReportFormat = {
     PDF: 'PDF',
     CSV: 'CSV',
+    PNG: 'PNG',
     GOOGLESHEET: 'GOOGLE_SHEET',
     GOOGLEDOCUMENT: 'GOOGLE_DOCUMENT'
 };

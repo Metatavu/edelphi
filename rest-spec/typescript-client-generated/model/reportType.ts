@@ -11,9 +11,10 @@
  */
 
 
-export type ReportType = 'TEXT' | 'SPREADSHEET';
+export type ReportType = 'TEXT' | 'SPREADSHEET' | 'IMAGES';
 
 export const ReportType = {
     TEXT: 'TEXT' as ReportType,
-    SPREADSHEET: 'SPREADSHEET' as ReportType
+    SPREADSHEET: 'SPREADSHEET' as ReportType,
+    IMAGES: 'IMAGES' as ReportType
 };

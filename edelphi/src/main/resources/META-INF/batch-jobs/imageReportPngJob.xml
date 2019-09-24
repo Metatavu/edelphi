@@ -1,4 +1,4 @@
-<job id="textReportGoogleDocumentJob" xmlns="http://xmlns.jcp.org/xml/ns/javaee" version="1.0">
+<job id="imageReportPngJob" xmlns="http://xmlns.jcp.org/xml/ns/javaee" version="1.0">
   
   <listeners>
     <listener ref="reportStatusListener" />
@@ -13,19 +13,29 @@
     <property name="deliveryEmail" value="#{jobParameters['deliveryEmail']}" />
     <property name="expertiseGroupIds" value="#{jobParameters['expertiseGroupIds']}" />
     <property name="queryReplyIds" value="#{jobParameters['queryReplyIds']}" />
-    <property name="commentCategoryIds" value="#{jobParameters['commentCategoryIds']}" />
   </properties>
         
-  <step id="pages" next="print">
+  <step id="pages" next="zip">
     <chunk item-count="2">
       <reader ref="queryPageReader"/>
-      <processor ref="textReportPageHtmlProcessor"/>
-      <writer ref="textReportPageHtmlWriter"/>
-    </chunk>    
+      <writer ref="imageReportChartWriter"/>
+    </chunk>
+  </step>
+        
+  <step id="zip" next="email">
+    <chunk item-count="2">
+      <reader ref="binaryFileReader"/>
+      <writer ref="zipWriter"/>
+    </chunk>
   </step>
 
-  <step id="print">
-    <batchlet ref="textReportGoogleDocumentPrinter" />
+  <step id="email">
+    <properties>
+      <property name="emailSubjectLocale" value="reports.imagePng.mail.subject"/>
+      <property name="emailContentLocale" value="reports.imagePng.mail.content"/>
+    </properties>
+    
+    <batchlet ref="fileSenderBatchlet"/>
   </step>
 
 </job> 

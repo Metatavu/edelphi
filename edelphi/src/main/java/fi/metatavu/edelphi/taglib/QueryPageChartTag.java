@@ -244,9 +244,9 @@ public class QueryPageChartTag extends BodyTagSupport implements ParamParent {
     
     StringBuilder html = new StringBuilder();
     if (dynamicSize) {
-      html.append(String.format("<img src=\"%s\" width=\"100%%\"/>", url));
+      html.append(String.format("<img class=\"report-image\" src=\"%s\" width=\"100%%\"/>", url));
     } else {
-      html.append(String.format("<img src=\"%s\" width=\"%s\" height=\"%s\"/>", url, width, height));
+      html.append(String.format("<img class=\"report-image\" src=\"%s\" width=\"%s\" height=\"%s\"/>", url, width, height));
     }
     
     html.append("<br/>");

@@ -9,10 +9,11 @@
  * https://github.com/swagger-api/swagger-codegen.git
  * Do not edit the class manually.
  */
-export declare type ReportFormat = 'PDF' | 'CSV' | 'GOOGLE_SHEET' | 'GOOGLE_DOCUMENT';
+export declare type ReportFormat = 'PDF' | 'CSV' | 'PNG' | 'GOOGLE_SHEET' | 'GOOGLE_DOCUMENT';
 export declare const ReportFormat: {
     PDF: ReportFormat;
     CSV: ReportFormat;
+    PNG: ReportFormat;
     GOOGLESHEET: ReportFormat;
     GOOGLEDOCUMENT: ReportFormat;
 };

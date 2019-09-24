@@ -13,5 +13,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReportType = {
     TEXT: 'TEXT',
-    SPREADSHEET: 'SPREADSHEET'
+    SPREADSHEET: 'SPREADSHEET',
+    IMAGES: 'IMAGES'
 };

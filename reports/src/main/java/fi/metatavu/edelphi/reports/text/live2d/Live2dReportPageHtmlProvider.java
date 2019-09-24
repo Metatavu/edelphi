@@ -93,7 +93,7 @@ public class Live2dReportPageHtmlProvider extends AbstractReportPageHtmlProvider
       
       List<ScatterValue> scatterValues = queryPageController.getLive2dScatterValues(queryPage, queryReplies);
 
-      String chartHtml = chartController.createLive2dChart(locale, queryPage, queryReplies, scatterValues, labelX, labelY, optionsX, optionsY);
+      String chartHtml = chartController.printGraphPNG(chartController.createLive2dChart(locale, queryPage, queryReplies, scatterValues, labelX, labelY, optionsX, optionsY));
       
       document.getElementById("title").html(queryPage.getTitle());
       
