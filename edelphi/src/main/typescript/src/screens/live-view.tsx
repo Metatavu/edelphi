@@ -52,6 +52,7 @@ interface State {
   statisticsX: QueryPageStatistics,
   statisticsY: QueryPageStatistics,
   chartSize: number | null
+  commentCellExpanded: number | null
 }
 
 /**
@@ -100,7 +101,8 @@ class LiveView extends React.Component<Props, State> {
       commentsFullscreen: false,
       statisticsX: StatisticsUtils.getStatistics([]),
       statisticsY: StatisticsUtils.getStatistics([]),
-      chartSize: null
+      chartSize: null,
+      commentCellExpanded: null
     };
 
     this.chartContainerRef = null;
@@ -407,6 +409,12 @@ class LiveView extends React.Component<Props, State> {
         return commentAnswer && commentAnswer.answer && commentAnswer.comment;
       }) as CommentAndAnswer[];
 
+    if (this.state.commentCellExpanded) {
+      const y = Math.floor(this.state.commentCellExpanded / 2);
+      const x = this.state.commentCellExpanded - (y * 2);
+      return this.renderCommentCell(commentAnswers, x, y);
+    }
+
     return (
       <Grid className="comments-grid">  
         {
@@ -446,16 +454,32 @@ class LiveView extends React.Component<Props, State> {
     const cellCommentAnswers = commentAnswers.filter((commentAnswer) => {
       const answer = commentAnswer.answer;
       return answer.data.x >= bounds.x1 && answer.data.x <= bounds.x2 && answer.data.y >= bounds.y1 && answer.data.y <= bounds.y2;
-
     });
+
+    const commentListClasses = ["comments-list"];
+    if (this.state.commentCellExpanded) {
+      commentListClasses.push("comments-list-expanded");
+    }
 
     return (
       <Grid.Column key={`cell-${x}-${y}`} className="comment-list-cell" width={ 8 }>
-        <div className="comments-list">
+        <div className={ commentListClasses.join(" ") }>
+          { this.renderExpandCommentCellButton(x, y) }
           { this.renderComments(cellCommentAnswers, x, y) }
         </div>
       </Grid.Column>
     );
+  }
+
+  /**
+   * Renders expand comment cell button
+   */
+  private renderExpandCommentCellButton = (x: number, y: number) => {
+    return (
+      <Button icon className="expand-comments-button" onClick={ () => this.onExpandCommentCellButtonClick(x, y) }>
+        <Icon name={ this.state.commentCellExpanded ? "compress" : "expand" }/>
+      </Button>
+    ); 
   }
 
   /**
@@ -1024,6 +1048,18 @@ class LiveView extends React.Component<Props, State> {
     });
 
     await this.loadData();
+  }
+
+  /**
+   * Event handler for comment cell expand button click
+   * 
+   * @param x cell x index
+   * @param y cell y index
+   */
+  private onExpandCommentCellButtonClick = (x: number, y: number) => {
+    this.setState({
+      commentCellExpanded: this.state.commentCellExpanded ? null : (y * 2) + x
+    });
   }
 
   /**
