@@ -38,6 +38,11 @@ interface State {
 }
 
 /**
+ * Amount of pixels to use a minimum window margin for graph
+ */
+const GRAPH_WINDOW_OFFSET = 40;
+
+/**
  * React component for live 2d chart
  */
 class QueryPageLive2d extends React.Component<Props, State> {
@@ -135,12 +140,12 @@ class QueryPageLive2d extends React.Component<Props, State> {
     return (
       <Grid>
         <Grid.Row>
-          <Grid.Column width={ 10 }>
+          <Grid.Column mobile={ 16 } computer={ 10 }>
             <div style={{margin:"auto"}} ref={ (element) => this.setChartWrapperDiv(element) }>
               { this.renderChart() }
             </div>
           </Grid.Column>          
-          <Grid.Column  width={ 6 }>
+          <Grid.Column mobile={ 16 } computer={ 6 }>
             { this.renderStatistics() }
           </Grid.Column>
         </Grid.Row>
@@ -164,8 +169,10 @@ class QueryPageLive2d extends React.Component<Props, State> {
     this.chartContainerRef = element;
 
     if (this.chartContainerRef && !this.state.chartSize) {
+      const maxSize = Math.min(window.innerWidth, window.innerHeight) - GRAPH_WINDOW_OFFSET;
+
       this.setState({
-        chartSize: this.chartContainerRef.offsetWidth
+        chartSize: Math.min(this.chartContainerRef.offsetWidth, maxSize)
       });
     }
   }
@@ -417,8 +424,10 @@ class QueryPageLive2d extends React.Component<Props, State> {
    */
   private recalculateChartSize = () => {
     if (this.chartContainerRef) {
+      const maxSize = Math.min(window.innerWidth, window.innerHeight) - GRAPH_WINDOW_OFFSET;
+
       this.setState({
-        chartSize: this.chartContainerRef.offsetWidth
+        chartSize: Math.min(this.chartContainerRef.offsetWidth, maxSize)
       });
     }
   }
