@@ -68,7 +68,6 @@ public class ReportStatusListener extends AbstractJobListener {
         sendFailureNotificationEmail();
       break;
       default:
-        logger.error("Report unexpected report batch status {}", jobContext.getBatchStatus());
       break;
     }
   }
