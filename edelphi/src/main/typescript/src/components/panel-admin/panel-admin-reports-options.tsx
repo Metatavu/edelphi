@@ -334,7 +334,7 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
         </div>
         <h3> { strings.panelAdmin.reports.exportCharts } </h3>
         <div>
-          <a href="#" onClick={ this.onExportReportImagesPngClick }> { strings.panelAdmin.reports.exportChartsPNG } </a>
+          <a href="#" className="disabled" onClick={ this.onExportReportImagesPngClick }> { strings.panelAdmin.reports.exportChartsPNG } </a>
         </div>
         <h3> { strings.panelAdmin.reports.exportData } </h3>
         <div>
@@ -426,7 +426,7 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
    */
   private onExportReportImagesPngClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     event.preventDefault();
-    this.props.onExportReportImagesPngClick();
+    // this.props.onExportReportImagesPngClick();
   } 
   
   /**
