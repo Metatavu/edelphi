@@ -1,18 +1,21 @@
 import * as React from "react";
 import * as actions from "../actions";
 import * as _ from "lodash";
-import { StoreState, AccessToken, QueryQuestionCommentNotification, QueryQuestionAnswerNotification } from "../types";
+import { StoreState, AccessToken, QueryQuestionCommentNotification, QueryQuestionAnswerNotification, QueryPageStatistics, QueryLive2dAnswer } from "../types";
 import { connect } from "react-redux";
-import { Grid, DropdownItemProps, DropdownProps, Form, Container, Icon, Transition, SemanticShorthandCollection, BreadcrumbSectionProps } from "semantic-ui-react";
+import { Grid, DropdownItemProps, DropdownProps, Form, Container, Icon, Transition, SemanticShorthandCollection, BreadcrumbSectionProps, Button, Tab } from "semantic-ui-react";
 import PanelAdminLayout from "../components/generic/panel-admin-layout";
 import Api, { Panel, QueryQuestionComment, Query, QueryPage, QueryQuestionAnswer, QueryQuestionCommentCategory, User } from "edelphi-client";
-import "../styles/comment-view.scss";
+import "../styles/live-view.scss";
 import { mqttConnection, OnMessageCallback } from "../mqtt";
 import { QueryQuestionCommentsService, QueriesService, PanelsService, QueryPagesService, QueryQuestionAnswersService, QueryQuestionCommentCategoriesService, UsersService } from "edelphi-client/dist/api/api";
 import * as queryString from "query-string";
 import * as moment from "moment";
 import getLanguage from "../localization/language";
 import strings from "../localization/strings";
+import StatisticsUtils from "../statistics/statistics-utils";
+import Live2dQueryStatistics from "../components/generic/live2d-query-statistics";
+import Live2dQueryChart from "../components/generic/live2d-query-chart";
 
 /**
  * Interface representing component properties
@@ -29,6 +32,7 @@ interface State {
   panel?: Panel,
   loggedUser?: User,
   answers: QueryQuestionAnswer[],
+  chartValues: QueryLive2dAnswer[],
   comments: QueryQuestionComment[],
   categories: QueryQuestionCommentCategory[],
   pages: QueryPage[],
@@ -42,22 +46,37 @@ interface State {
   redirectTo?: string,
   rootMap:  { [ key: number ]: QueryQuestionComment[] },
   parentMap: { [ key: number ]: QueryQuestionComment[] },
-  repliesOpen: number[] 
+  repliesOpen: number[],
+  answersFullscreen: boolean,
+  commentsFullscreen: boolean,
+  statisticsX: QueryPageStatistics,
+  statisticsY: QueryPageStatistics,
+  chartSize: number | null
+  commentCellExpanded: number | null
 }
 
+/**
+ * Interface representing a answer and it's comment pair
+ */
 interface CommentAndAnswer {
   answer: QueryQuestionAnswer;
   comment: QueryQuestionComment;
 }
 
 /**
+ * Amount of pixels to use a minimum window margin for graph
+ */
+const GRAPH_WINDOW_OFFSET = 40;
+
+/**
  * React component for comment editor
  */
-class CommentView extends React.Component<Props, State> {
+class LiveView extends React.Component<Props, State> {
 
+  private chartContainerRef: HTMLDivElement | null;
   private queryQuestionCommentsListener: OnMessageCallback;
   private queryQuestionAnswersListener: OnMessageCallback;
-
+  
   /**
    * Constructor
    * 
@@ -67,6 +86,7 @@ class CommentView extends React.Component<Props, State> {
     super(props);
     this.state = {
       answers: [],
+      chartValues: [],
       comments: [],
       queries: [],
       pages: [],
@@ -76,9 +96,16 @@ class CommentView extends React.Component<Props, State> {
       rootMap: { },
       pageMaxX: 6,
       pageMaxY: 6,
-      repliesOpen: []
+      repliesOpen: [],
+      answersFullscreen: false,
+      commentsFullscreen: false,
+      statisticsX: StatisticsUtils.getStatistics([]),
+      statisticsY: StatisticsUtils.getStatistics([]),
+      chartSize: null,
+      commentCellExpanded: null
     };
 
+    this.chartContainerRef = null;
     this.queryQuestionCommentsListener = this.onQueryQuestionCommentNotification.bind(this);
     this.queryQuestionAnswersListener = this.onQueryQuestionAnswerNotification.bind(this);
   }
@@ -89,6 +116,7 @@ class CommentView extends React.Component<Props, State> {
   public async componentDidMount() {
     mqttConnection.subscribe("queryquestioncomments", this.queryQuestionCommentsListener);
     mqttConnection.subscribe("queryquestionanswers", this.queryQuestionAnswersListener);
+    window.addEventListener("resize", this.onWindowResize);
 
     const queryParams = queryString.parse(this.props.location.search);
     
@@ -116,6 +144,7 @@ class CommentView extends React.Component<Props, State> {
   public componentWillUnmount() {
     mqttConnection.unsubscribe("queryquestionanswers", this.queryQuestionAnswersListener);
     mqttConnection.unsubscribe("queryquestioncomments", this.queryQuestionCommentsListener);
+    window.removeEventListener("resize", this.onWindowResize);
   }
 
   /**
@@ -147,12 +176,20 @@ class CommentView extends React.Component<Props, State> {
       { key: "commentview", content: this.state.panel.name, active: true }      
     ];
 
+    if (this.state.commentsFullscreen) {
+      return this.renderCommentsView();
+    }
+
+    if (this.state.answersFullscreen) {
+      return this.renderAnswersView();
+    }
+
     return (
       <PanelAdminLayout loggedUser={ this.state.loggedUser } breadcrumbs={ breadcrumbs } loading={ this.state.loading } panel={ this.state.panel } redirectTo={ this.state.redirectTo }>
         <div style={{ width: "100%", height:"100%" }}>
           <Grid>
             { this.renderControls() }
-            { this.renderCommentView() }
+            { this.renderView() }
           </Grid>
         </div>
       </PanelAdminLayout>
@@ -160,26 +197,142 @@ class CommentView extends React.Component<Props, State> {
   }
 
   /**
+   * Renders a view
+   */
+  private renderView = () => {
+    if (!this.state.queryId || !this.state.pageId) {
+      return (
+        <Container> 
+          <p className="instructions">{ strings.panelAdmin.liveView.selectQueryAndPage }</p>
+        </Container>
+      );
+    }
+
+    return this.renderTabs();
+  }
+
+  /**
+   * Renders tabs
+   */
+  private renderTabs = () => {
+    const panes = [{
+      menuItem: strings.panelAdmin.liveView.answersTab,
+      render: () => <Tab.Pane> { this.renderAnswersView() } </Tab.Pane>
+    }, {
+      menuItem: strings.panelAdmin.liveView.commentsTab,
+      render: () => <Tab.Pane> { this.renderCommentsView() } </Tab.Pane>
+    }];
+
+    return (
+      <Grid.Row>
+        <Grid.Column>
+          <Container> 
+            <Tab menu={{ color: "orange", pointing: true }} panes={panes}/>
+          </Container>
+        </Grid.Column>
+      </Grid.Row>
+    );
+  }
+
+  /**
+   * Renders answers view
+   */
+  private renderAnswersView = () => {
+    return (
+      <Grid style={{ marginTop: this.isFullscreen() ? "30px" : "0px" }}>
+        <Grid.Row>
+          <Grid.Column width={ 10 }>
+            <div style={{margin:"auto"}} ref={ (element) => this.setChartWrapperDiv(element) }>
+              { this.renderChart() }
+            </div>
+          </Grid.Column>          
+          <Grid.Column  width={ 6 }>
+            { this.renderAnswersFullscreenButton() }
+            { this.renderStatistics() }
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>
+    );
+  }
+
+  /**
+   * Renders statistics
+   */
+  private renderStatistics = () => {
+    return (
+      <Live2dQueryStatistics statisticsX={ this.state.statisticsX } statisticsY={ this.state.statisticsY } />
+    );
+  }
+  
+  /**
+   * Renders chart component
+   */
+  private renderChart() {
+    if (!this.state.chartSize) {
+      return null;
+    }
+
+    const page = this.state.pages.find((page) => {
+      return page.id == this.state.pageId;
+    });
+
+    return (
+      <Live2dQueryChart values={ this.state.chartValues } page={ page } chartSize={ this.state.chartSize }/>
+    );
+  }
+
+  /**
    * Renders comment view
    */
-  private renderCommentView = () => {
+  private renderCommentsView = () => {
     const page = this.state.pages.find((page) => {
       return page.id == this.state.pageId;
     });
 
     const xLabel = page && page.queryOptions.axisX ? page.queryOptions.axisX.label : "";
     const yLabel = page && page.queryOptions.axisY ? page.queryOptions.axisY.label : "";
-
+    
     return (
-      <Container className="comments-container">
+      <Container className="comments-container" style={{ marginTop: this.isFullscreen() ? "30px" : "0px" }}>
         <div className="comments-list-axis-x-container">
+          { this.renderCommentsFullscreenButton() }
           <div className="comments-list-axis-x"> { xLabel } </div>
         </div>
         <div className="comments-list-axis-y-container">
           <div className="comments-list-axis-y"> { yLabel } </div>
         </div>
-        { this.renderGrid() }
+        { this.renderCommentGrid() }
       </Container>
+    );
+  }
+
+  /**
+   * Renders button for toggling answers fullscreen mode
+   */
+  private renderAnswersFullscreenButton = () => {
+    if (!this.state.queryId) {
+      return null;
+    }
+
+    return (
+      <Button icon className="answers-fullscreen-button" onClick={ this.onAnswersFullscreenButtonClick }>
+        <Icon name={ this.state.answersFullscreen ? "compress" : "expand" }/>
+      </Button>
+    );
+  }
+
+  /**
+   * Renders button for toggling comments fullscreen mode
+   */
+  private renderCommentsFullscreenButton = () => {
+    if (!this.state.queryId) {
+      return null;
+    }
+
+    return (
+      <Button icon className="comments-fullscreen-button" onClick={ this.onCommentsFullscreenButtonClick }>
+        <Icon name={ this.state.commentsFullscreen ? "compress" : "expand" }/>
+      </Button>
     );
   }
 
@@ -187,6 +340,10 @@ class CommentView extends React.Component<Props, State> {
    * Renders controls for the view
    */
   private renderControls = () => {
+    if (this.state.commentsFullscreen) {
+      return null;
+    }
+
     const queryOptions: DropdownItemProps[] = this.state.queries.map((query) => {
       return {
         key: query.id,
@@ -206,7 +363,7 @@ class CommentView extends React.Component<Props, State> {
     const categoryOptions: DropdownItemProps[] = !this.state.categories.length ? [{
       key: "default",
       value: 0,
-      text: strings.panelAdmin.commentView.defaultCategory
+      text: strings.panelAdmin.liveView.defaultCategory
     }] : this.state.categories.map((category) => {
       return {
         key: category.id,
@@ -221,9 +378,9 @@ class CommentView extends React.Component<Props, State> {
           <Container> 
             <Form className="controls">
               <Form.Group widths='equal'>
-                <Form.Select fluid label={ strings.panelAdmin.commentView.querySelectLabel } value={ this.state.queryId } onChange={ this.onQueryChange } options={ queryOptions }/>
-                <Form.Select fluid disabled={ !this.state.queryId } label={ strings.panelAdmin.commentView.pageSelectLabel } value={ this.state.pageId } onChange={ this.onPageChange } options={ pageOptions }/>
-                <Form.Select fluid disabled={ !this.state.pageId } label={ strings.panelAdmin.commentView.categorySelectLabel } value={ this.state.categoryId } onChange={ this.onCategoryChange } options={ categoryOptions }/>
+                <Form.Select fluid label={ strings.panelAdmin.liveView.querySelectLabel } value={ this.state.queryId } onChange={ this.onQueryChange } options={ queryOptions }/>
+                <Form.Select fluid disabled={ !this.state.queryId } label={ strings.panelAdmin.liveView.pageSelectLabel } value={ this.state.pageId } onChange={ this.onPageChange } options={ pageOptions }/>
+                <Form.Select fluid disabled={ !this.state.pageId } label={ strings.panelAdmin.liveView.commentCategorySelectLabel } value={ this.state.categoryId } onChange={ this.onCategoryChange } options={ categoryOptions }/>
               </Form.Group>
             </Form>
           </Container>
@@ -233,9 +390,9 @@ class CommentView extends React.Component<Props, State> {
   } 
 
   /**
-   * Renders comment grid
+   * Renders comments view grid
    */
-  private renderGrid = () => {
+  private renderCommentGrid = () => {
     const commentAnswers: CommentAndAnswer[] = this.state.comments
       .filter((comment) => {
         return !comment.parentId;
@@ -252,6 +409,12 @@ class CommentView extends React.Component<Props, State> {
         return commentAnswer && commentAnswer.answer && commentAnswer.comment;
       }) as CommentAndAnswer[];
 
+    if (this.state.commentCellExpanded) {
+      const y = Math.floor(this.state.commentCellExpanded / 2);
+      const x = this.state.commentCellExpanded - (y * 2);
+      return this.renderCommentCell(commentAnswers, x, y);
+    }
+
     return (
       <Grid className="comments-grid">  
         {
@@ -259,7 +422,7 @@ class CommentView extends React.Component<Props, State> {
             return (
               <Grid.Row className="comment-list-row" key={y}> 
                 { [0, 1].map((x) => {
-                  return this.renderCell(commentAnswers, x, y);
+                  return this.renderCommentCell(commentAnswers, x, y);
                 }) }
               </Grid.Row>
             );
@@ -270,13 +433,13 @@ class CommentView extends React.Component<Props, State> {
   }
 
   /**
-   * Renders single cell
+   * Renders single comments view cell
    * 
    * @param commentAnswers comments and answers
    * @param x cell x index
    * @param y cell y index
    */
-  private renderCell(commentAnswers: CommentAndAnswer[], x: number, y: number) {
+  private renderCommentCell(commentAnswers: CommentAndAnswer[], x: number, y: number) {
     if (!this.state.pageMaxX || !this.state.pageMaxY) {
       return null;
     }
@@ -291,16 +454,32 @@ class CommentView extends React.Component<Props, State> {
     const cellCommentAnswers = commentAnswers.filter((commentAnswer) => {
       const answer = commentAnswer.answer;
       return answer.data.x >= bounds.x1 && answer.data.x <= bounds.x2 && answer.data.y >= bounds.y1 && answer.data.y <= bounds.y2;
-
     });
+
+    const commentListClasses = ["comments-list"];
+    if (this.state.commentCellExpanded) {
+      commentListClasses.push("comments-list-expanded");
+    }
 
     return (
       <Grid.Column key={`cell-${x}-${y}`} className="comment-list-cell" width={ 8 }>
-        <div className="comments-list">
+        <div className={ commentListClasses.join(" ") }>
+          { this.renderExpandCommentCellButton(x, y) }
           { this.renderComments(cellCommentAnswers, x, y) }
         </div>
       </Grid.Column>
     );
+  }
+
+  /**
+   * Renders expand comment cell button
+   */
+  private renderExpandCommentCellButton = (x: number, y: number) => {
+    return (
+      <Button icon className="expand-comments-button" onClick={ () => this.onExpandCommentCellButtonClick(x, y) }>
+        <Icon name={ this.state.commentCellExpanded ? "compress" : "expand" }/>
+      </Button>
+    ); 
   }
 
   /**
@@ -316,7 +495,7 @@ class CommentView extends React.Component<Props, State> {
         <div key={`comment-${x}-${y}-${comment.id}`} className="comment">
           <div className="comment-created">{ this.formatDate(comment.created) }</div>
           <div className="comment-contents">{ this.renderCommentContents(comment) }</div>
-          { this.renderReplies(comment, x, y) }
+          { this.renderCommentReplies(comment, x, y) }
         </div>
       );
     });
@@ -329,7 +508,7 @@ class CommentView extends React.Component<Props, State> {
    * @param x cell x index
    * @param y cell y index
    */
-  private renderReplies = (comment: QueryQuestionComment, x: number, y: number) => {
+  private renderCommentReplies = (comment: QueryQuestionComment, x: number, y: number) => {
     const childComments = this.state.rootMap[comment.id!] || [];
 
     if (!childComments.length) {
@@ -355,7 +534,7 @@ class CommentView extends React.Component<Props, State> {
       <div>
         <div className="comment-replies-toggle" key={`replies-${x}-${y}-${comment.id}`} onClick={ onClick }>
           { repliesOpen ? <Icon name="minus" size="small" color="green"/> : <Icon name="plus" size="small" color="green"/> }
-          { strings.formatString(strings.panelAdmin.commentView.replyCount, childComments.length) }
+          { strings.formatString(strings.panelAdmin.liveView.replyCount, childComments.length) }
         </div>
         <div className="comment-replies">
           <Transition.Group animation="fade" duration={ 300 }>
@@ -455,11 +634,79 @@ class CommentView extends React.Component<Props, State> {
         comments: comments,
         answers: answers
       });
+
+      this.recalculateChartValues();
     }
 
     this.setState({
       loading: false
     });
+  }
+
+  /**
+   * Recalculates chart values
+   */
+  private recalculateChartValues = () => {
+    const chartValues: QueryLive2dAnswer[] = this.state.answers.map((answer) => {
+      return {
+        x: answer.data.x,
+        y: answer.data.y,
+        z: 500,
+        id: answer.id!
+      };
+    });
+    
+    this.setState({
+      chartValues: chartValues,
+      statisticsX: this.getStatisticsX(chartValues),
+      statisticsY: this.getStatisticsY(chartValues)
+    });
+  }
+
+  /**
+   * Calculates statistics for x-axis
+   * 
+   * @param values answers
+   * @returns statistics for x-axis
+   */
+  private getStatisticsX(values: QueryLive2dAnswer[]): QueryPageStatistics {
+    return StatisticsUtils.getStatistics(values.map((value: QueryLive2dAnswer) => {
+      return value.x;
+    }));
+  }
+
+  /**
+   * Calculates statistics for y-axis
+   * 
+   * @param values answers
+   * @returns statistics for y-axis
+   */
+  private getStatisticsY(values: QueryLive2dAnswer[]): QueryPageStatistics {
+    return StatisticsUtils.getStatistics(values.map((value: QueryLive2dAnswer) => {
+      return value.y;
+    }));
+  }
+
+  /**
+   * Returns whether component is currently in fullscreen mode
+   * 
+   * @returns whether component is currently in fullscreen mode
+   */
+  private isFullscreen = () => {
+    return this.state.commentsFullscreen || this.state.answersFullscreen;
+  }
+  
+  /**
+   * Ref callback for chart wrapper div
+   */
+  private setChartWrapperDiv(element: HTMLDivElement | null) {
+    this.chartContainerRef = element;
+
+    if (this.chartContainerRef && !this.state.chartSize) {
+      this.setState({
+        chartSize: this.chartContainerRef.offsetWidth
+      });
+    }
   }
 
   /**
@@ -537,8 +784,10 @@ class CommentView extends React.Component<Props, State> {
   }
 
   /**
+   * Formats a date into a human readable string
    * 
-   * @param date 
+   * @param date date
+   * @return human readable string
    */
   private formatDate(date?: Date | string): string {
     if (date) {
@@ -551,9 +800,9 @@ class CommentView extends React.Component<Props, State> {
   /**
    * Updates an answer into state
    * 
-   * @param answer 
+   * @param answer answer
    */
-  private updateAnswer(answer: QueryQuestionAnswer) {
+  private updateAnswer = async (answer: QueryQuestionAnswer) => {
     if (this.state.pageId != answer.queryPageId) {
       return;
     }
@@ -573,9 +822,11 @@ class CommentView extends React.Component<Props, State> {
       answers.push(answer);
     }
 
-    this.setState({
+    await this.setStateAsync({
       answers: answers
     });
+
+    this.recalculateChartValues();
   }
 
   /**
@@ -673,6 +924,53 @@ class CommentView extends React.Component<Props, State> {
       rootMap: rootMap
     });
   }
+
+  /**
+   * Recalculates a chart size
+   */
+  private recalculateChartSize = () => {
+    if (this.chartContainerRef) {
+      const maxSize = Math.min(window.innerWidth, window.innerHeight) - GRAPH_WINDOW_OFFSET;
+
+      this.setState({
+        chartSize: Math.min(this.chartContainerRef.offsetWidth, maxSize)
+      });
+    }
+  }
+
+  /**
+   * Sets state and returns a promise for the change
+   * 
+   * @param state state
+   */
+  private setStateAsync<K extends keyof State>(state: (Pick<State, K>)): Promise<void> {
+    return new Promise((resolve) => {
+      this.setState(state, resolve);  
+    });
+  }
+
+  /**
+   * Event handler for answers fullscreen button click
+   */
+  private onAnswersFullscreenButtonClick = async () => {
+    await this.setStateAsync({
+      answersFullscreen: !this.state.answersFullscreen
+    });
+
+    this.recalculateChartSize();
+  }
+  
+
+  /**
+   * Event handler for comments fullscreen button click
+   */
+  private onCommentsFullscreenButtonClick = async () => {
+    await this.setState({
+      commentsFullscreen: !this.state.commentsFullscreen
+    });
+
+    this.recalculateChartSize();
+  }
   
   /**
    * Handles query question comment notification MQTT message
@@ -725,17 +1023,6 @@ class CommentView extends React.Component<Props, State> {
   }
 
   /**
-   * Sets state and returns a promise for the change
-   * 
-   * @param state state
-   */
-  private setStateAsync<K extends keyof State>(state: (Pick<State, K>)): Promise<void> {
-    return new Promise((resolve) => {
-      this.setState(state, resolve);  
-    });
-  }
-
-  /**
    * Event handler for page change event
    * 
    * @param event event
@@ -763,6 +1050,25 @@ class CommentView extends React.Component<Props, State> {
     await this.loadData();
   }
 
+  /**
+   * Event handler for comment cell expand button click
+   * 
+   * @param x cell x index
+   * @param y cell y index
+   */
+  private onExpandCommentCellButtonClick = (x: number, y: number) => {
+    this.setState({
+      commentCellExpanded: this.state.commentCellExpanded ? null : (y * 2) + x
+    });
+  }
+
+  /**
+   * Event handler for window resize events
+   */
+  private onWindowResize = () => {
+    this.recalculateChartSize();
+  }
+
 }
 
 /**
@@ -786,4 +1092,4 @@ function mapDispatchToProps(dispatch: React.Dispatch<actions.AppAction>) {
   return { };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(CommentView);
+export default connect(mapStateToProps, mapDispatchToProps)(LiveView);

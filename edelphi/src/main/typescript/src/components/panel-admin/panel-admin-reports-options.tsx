@@ -26,7 +26,8 @@ interface Props {
   onExportReportContentsPdfClick: () => void,
   onExportReportSpreadsheetCsvClick: () => void,
   onExportReportSpreadsheetGoogleSheetsClick: () => void,
-  onExportReportContentsGoogleDocumentClick: () => void
+  onExportReportContentsGoogleDocumentClick: () => void,
+  onExportReportImagesPngClick: () => void
 }
 
 /**
@@ -333,7 +334,7 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
         </div>
         <h3> { strings.panelAdmin.reports.exportCharts } </h3>
         <div>
-          <a href="#" className="disabled"> { strings.panelAdmin.reports.exportChartsPNG } </a>
+          <a href="#" className="disabled" onClick={ this.onExportReportImagesPngClick }> { strings.panelAdmin.reports.exportChartsPNG } </a>
         </div>
         <h3> { strings.panelAdmin.reports.exportData } </h3>
         <div>
@@ -420,6 +421,14 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
     this.props.onExportReportSpreadsheetGoogleSheetsClick();
   }  
 
+  /**
+   * Event handler for export as PNG click
+   */
+  private onExportReportImagesPngClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    event.preventDefault();
+    // this.props.onExportReportImagesPngClick();
+  } 
+  
   /**
    * Event for page filter selected change
    */

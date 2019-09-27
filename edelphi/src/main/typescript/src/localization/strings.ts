@@ -111,12 +111,15 @@ export interface IStrings extends LocalizedStringsMethods {
         }
       }
     },
-    commentView: {
+    liveView: {
       querySelectLabel: string,
       pageSelectLabel: string,
-      categorySelectLabel: string,
+      commentCategorySelectLabel: string,
       defaultCategory: string,
-      replyCount: string
+      replyCount: string,
+      answersTab: string,
+      commentsTab: string,
+      selectQueryAndPage: string
     },
     reports: {
       title: string,

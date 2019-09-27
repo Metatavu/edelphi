@@ -2233,11 +2233,11 @@
       },
       "ReportFormat" : {
         "type" : "string",
-        "enum" : [ "PDF", "CSV", "GOOGLE_SHEET", "GOOGLE_DOCUMENT" ]
+        "enum" : [ "PDF", "CSV", "PNG", "GOOGLE_SHEET", "GOOGLE_DOCUMENT" ]
       },
       "ReportType" : {
         "type" : "string",
-        "enum" : [ "TEXT", "SPREADSHEET" ]
+        "enum" : [ "TEXT", "SPREADSHEET", "IMAGES" ]
       },
       "ReportDelivery" : {
         "type" : "object",

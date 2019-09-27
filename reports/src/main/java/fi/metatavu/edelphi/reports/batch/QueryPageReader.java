@@ -37,11 +37,15 @@ public class QueryPageReader extends TypedItemReader<QueryPage> {
   public void open(Serializable checkpoint) throws Exception {
     super.open(checkpoint);
     index = 0;
-    logger.info("Reading {} query pages for report", pageIds.length);
+    logger.info("Reading {} query pages for report", pageIds != null ? pageIds.length : 0);
   }
 
   @Override
   public QueryPage read() throws Exception {
+    if (this.pageIds == null) {
+      return null;
+    }
+    
     try {
       if (this.index < this.pageIds.length) {
         Long pageId = this.pageIds[this.index];

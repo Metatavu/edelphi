@@ -106,12 +106,15 @@
         }
       }
     },
-    "commentView": {
+    "liveView": {
       "querySelectLabel": "Query",
       "pageSelectLabel": "Page",
-      "categorySelectLabel": "Category",
+      "commentCategorySelectLabel": "Comment category",
       "defaultCategory": "Default",
-      "replyCount": "{0} replies"
+      "replyCount": "{0} replies",
+      "answersTab": "Answers",
+      "commentsTab": "Comments",
+      "selectQueryAndPage": "Select a query and a page"
     },
     "reports": {
       "title": "Query Results",

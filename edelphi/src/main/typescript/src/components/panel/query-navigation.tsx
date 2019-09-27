@@ -117,8 +117,8 @@ class QueryNavigation extends React.Component<Props, State> {
       <Grid style={{ marginTop: "10px", borderTop: "1px solid #000" }}>
         { this.renderDisabledMessage() }
         <Grid.Row>
-          <Grid.Column width={ 5 }></Grid.Column>
-          <Grid.Column width={ 6 }>
+          <Grid.Column width={ 5 } only={"computer"}></Grid.Column>
+          <Grid.Column computer={ 6 } mobile={ 16 }>
             <Grid>
               <Grid.Row>
                 <Grid.Column width={ 6 } style={{ textAlign: "center" }}> 
@@ -147,7 +147,7 @@ class QueryNavigation extends React.Component<Props, State> {
               </Grid.Row>
             </Grid>
             </Grid.Column>
-          <Grid.Column width={ 5 }></Grid.Column>
+          <Grid.Column width={ 5 } only={"computer"}></Grid.Column>
         </Grid.Row>
       </Grid>
     );

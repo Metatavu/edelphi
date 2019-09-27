@@ -6,8 +6,30 @@ $container-width: 75vw;
   width: $container-width !important;
 }
 
+.ui.button {
+
+  &.answers-fullscreen-button {
+    float: right;
+    margin-top: -14px;
+  }
+
+  &.comments-fullscreen-button {
+    float: right;
+  }
+
+}
+
+.instructions {
+  text-align: center;
+  font-size: 18px;
+}
+
 .controls {
   margin-top: 20px;
+}
+
+.expand-comments-button {
+  float: right;
 }
 
 .comments-list {
@@ -15,6 +37,11 @@ $container-width: 75vw;
   height: calc(-3px + #{$container-width} / 4);
   padding: 10px;
   box-shadow: 0px 0px 8px rgba(0,0,0,0.1);
+  overflow-y: scroll;
+
+  &.comments-list-expanded {
+    height: calc(-3px + #{$container-width} / 2);
+  }
 }
 
 .comment {
@@ -47,7 +74,6 @@ $container-width: 75vw;
 
 .comments-list-axis-x,
 .comments-list-axis-y {
-  border-bottom: 1px solid #DDE7ED;
   color: #0099FF;
   font-size: 19px;
   padding: 0 0 10px;

@@ -1,0 +1,58 @@
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+@media (max-width: 767px) { 
+
+  .text-mobile-left {
+    text-align: left;
+  }
+
+  .text-mobile-center {
+    text-align: center;
+  }
+
+  .text-mobile-right {
+    text-align: right;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) { 
+
+  .text-tablet-left {
+    text-align: left;
+  }
+
+  .text-tablet-center {
+    text-align: center;
+  }
+
+  .text-tablet-right {
+    text-align: right;
+  }
+
+}
+
+@media (min-width: 992px) { 
+
+  .text-computer-left {
+    text-align: left;
+  }
+
+  .text-computer-center {
+    text-align: center;
+  }
+
+  .text-computer-right {
+    text-align: right;
+  }
+
+}
