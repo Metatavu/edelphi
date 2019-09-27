@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,7 +62,8 @@ public class GoogleDriveUtils {
 	  
     KeycloakAuthenticationStrategy keycloakAuthenticationProvider = (KeycloakAuthenticationStrategy) AuthenticationProviderFactory.getInstance().createAuthenticationProvider(keycloakAuthSource);
 	  OAuthAccessToken brokerToken = keycloakAuthenticationProvider.getBrokerToken(requestContext, "google");
-    if (brokerToken == null) {
+	  
+	  if (brokerToken == null || brokerToken.getExpires().before(new Date())) {
       requestGoogleLogin(requestContext, keycloakAuthSource);
       return null;
     } else {
