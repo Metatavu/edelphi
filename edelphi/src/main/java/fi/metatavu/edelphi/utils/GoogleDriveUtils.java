@@ -59,16 +59,26 @@ public class GoogleDriveUtils {
 	    return null;
 	  }
 	  
+    OAuthAccessToken brokerToken = getBrokerToken(requestContext, keycloakAuthSource);
+    if (brokerToken != null) {
+      GoogleCredential credential = getCredential(brokerToken);
+      try {
+        credential.refreshToken();
+        return new Drive.Builder(TRANSPORT, JSON_FACTORY, credential).build();
+      } catch (IOException e) {
+        logger.log(Level.WARNING, "Failed to refresh Google Access Token", e);
+      }      
+    }
+    
+    requestGoogleLogin(requestContext, keycloakAuthSource);
+    return null;
+	}
+
+  private static OAuthAccessToken getBrokerToken(RequestContext requestContext, AuthSource keycloakAuthSource) {
     KeycloakAuthenticationStrategy keycloakAuthenticationProvider = (KeycloakAuthenticationStrategy) AuthenticationProviderFactory.getInstance().createAuthenticationProvider(keycloakAuthSource);
 	  OAuthAccessToken brokerToken = keycloakAuthenticationProvider.getBrokerToken(requestContext, "google");
-    if (brokerToken == null) {
-      requestGoogleLogin(requestContext, keycloakAuthSource);
-      return null;
-    } else {
-      GoogleCredential credential = getCredential(brokerToken);
-      return new Drive.Builder(TRANSPORT, JSON_FACTORY, credential).build();
-    }
-	}
+	  return brokerToken;
+  }
 
   private static void requestGoogleLogin(RequestContext requestContext, AuthSource keycloakAuthSource) {
     String currentUrl = RequestUtils.getCurrentUrl(requestContext.getRequest(), true);
@@ -106,10 +116,14 @@ public class GoogleDriveUtils {
       .setJsonFactory(JSON_FACTORY)
       .build();
     
-    if (brokerToken != null) {
+    if (brokerToken != null && brokerToken.getToken() != null) {
       credential.setAccessToken(brokerToken.getToken()); 
     }
     
+    if (brokerToken != null && brokerToken.getRefreshToken() != null) {
+      credential.setRefreshToken(brokerToken.getRefreshToken()); 
+    }
+
     return credential;
   }
 
