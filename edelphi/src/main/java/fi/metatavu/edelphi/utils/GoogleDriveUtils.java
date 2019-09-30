@@ -58,17 +58,34 @@ public class GoogleDriveUtils {
 	    logger.log(Level.SEVERE, "Could not obtain authenticated Drive because keycloak auth source is not configured");
 	    return null;
 	  }
-	  
-    KeycloakAuthenticationStrategy keycloakAuthenticationProvider = (KeycloakAuthenticationStrategy) AuthenticationProviderFactory.getInstance().createAuthenticationProvider(keycloakAuthSource);
-	  OAuthAccessToken brokerToken = keycloakAuthenticationProvider.getBrokerToken(requestContext, "google");
-    if (brokerToken == null) {
-      requestGoogleLogin(requestContext, keycloakAuthSource);
-      return null;
-    } else {
+    
+    OAuthAccessToken brokerToken = getBrokerToken(requestContext, keycloakAuthSource);
+    if (brokerToken != null) {
       GoogleCredential credential = getCredential(brokerToken);
-      return new Drive.Builder(TRANSPORT, JSON_FACTORY, credential).build();
+      try {
+        Drive drive = new Drive.Builder(TRANSPORT, JSON_FACTORY, credential).build();
+        listFiles(drive, 1);
+        return drive;
+      } catch (IOException e) {
+        logger.log(Level.WARNING, "Failed to get Google Access Token", e);
+      }      
     }
-	}
+    
+    requestGoogleLogin(requestContext, keycloakAuthSource);
+    return null;
+  }
+
+	/**
+	 * Returns Google broker token from Keycloak
+	 * 
+	 * @param requestContext request context
+	 * @param keycloakAuthSource Keycloak auth source
+	 * @return Google broker token or null if not found
+	 */
+  private static OAuthAccessToken getBrokerToken(RequestContext requestContext, AuthSource keycloakAuthSource) {
+    KeycloakAuthenticationStrategy keycloakAuthenticationProvider = (KeycloakAuthenticationStrategy) AuthenticationProviderFactory.getInstance().createAuthenticationProvider(keycloakAuthSource);
+    return keycloakAuthenticationProvider.getBrokerToken(requestContext, "google");
+  }
 
   private static void requestGoogleLogin(RequestContext requestContext, AuthSource keycloakAuthSource) {
     String currentUrl = RequestUtils.getCurrentUrl(requestContext.getRequest(), true);
@@ -106,8 +123,12 @@ public class GoogleDriveUtils {
       .setJsonFactory(JSON_FACTORY)
       .build();
     
-    if (brokerToken != null) {
+    if (brokerToken != null && brokerToken.getToken() != null) {
       credential.setAccessToken(brokerToken.getToken()); 
+    }
+
+    if (brokerToken != null && brokerToken.getRefreshToken() != null) {
+      credential.setRefreshToken(brokerToken.getRefreshToken());
     }
     
     return credential;
