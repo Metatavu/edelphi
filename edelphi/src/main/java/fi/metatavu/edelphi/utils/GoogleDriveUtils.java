@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -59,18 +58,27 @@ public class GoogleDriveUtils {
 	    logger.log(Level.SEVERE, "Could not obtain authenticated Drive because keycloak auth source is not configured");
 	    return null;
 	  }
-	  
-    KeycloakAuthenticationStrategy keycloakAuthenticationProvider = (KeycloakAuthenticationStrategy) AuthenticationProviderFactory.getInstance().createAuthenticationProvider(keycloakAuthSource);
-	  OAuthAccessToken brokerToken = keycloakAuthenticationProvider.getBrokerToken(requestContext, "google");
-	  
-	  if (brokerToken == null || brokerToken.getExpires().before(new Date())) {
-      requestGoogleLogin(requestContext, keycloakAuthSource);
-      return null;
-    } else {
+    
+    OAuthAccessToken brokerToken = getBrokerToken(requestContext, keycloakAuthSource);
+    if (brokerToken != null) {
       GoogleCredential credential = getCredential(brokerToken);
-      return new Drive.Builder(TRANSPORT, JSON_FACTORY, credential).build();
+      try {
+        credential.refreshToken();
+        return new Drive.Builder(TRANSPORT, JSON_FACTORY, credential).build();
+      } catch (IOException e) {
+        logger.log(Level.WARNING, "Failed to refresh Google Access Token", e);
+      }      
     }
-	}
+    
+    requestGoogleLogin(requestContext, keycloakAuthSource);
+    return null;
+  }
+
+  private static OAuthAccessToken getBrokerToken(RequestContext requestContext, AuthSource keycloakAuthSource) {
+    KeycloakAuthenticationStrategy keycloakAuthenticationProvider = (KeycloakAuthenticationStrategy) AuthenticationProviderFactory.getInstance().createAuthenticationProvider(keycloakAuthSource);
+    OAuthAccessToken brokerToken = keycloakAuthenticationProvider.getBrokerToken(requestContext, "google");
+    return brokerToken;
+  }
 
   private static void requestGoogleLogin(RequestContext requestContext, AuthSource keycloakAuthSource) {
     String currentUrl = RequestUtils.getCurrentUrl(requestContext.getRequest(), true);
