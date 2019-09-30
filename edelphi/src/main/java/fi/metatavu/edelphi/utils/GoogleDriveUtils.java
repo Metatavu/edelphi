@@ -75,10 +75,16 @@ public class GoogleDriveUtils {
     return null;
   }
 
+	/**
+	 * Returns Google broker token from Keycloak
+	 * 
+	 * @param requestContext request context
+	 * @param keycloakAuthSource Keycloak auth source
+	 * @return Google broker token or null if not found
+	 */
   private static OAuthAccessToken getBrokerToken(RequestContext requestContext, AuthSource keycloakAuthSource) {
     KeycloakAuthenticationStrategy keycloakAuthenticationProvider = (KeycloakAuthenticationStrategy) AuthenticationProviderFactory.getInstance().createAuthenticationProvider(keycloakAuthSource);
-    OAuthAccessToken brokerToken = keycloakAuthenticationProvider.getBrokerToken(requestContext, "google");
-    return brokerToken;
+    return keycloakAuthenticationProvider.getBrokerToken(requestContext, "google");
   }
 
   private static void requestGoogleLogin(RequestContext requestContext, AuthSource keycloakAuthSource) {
