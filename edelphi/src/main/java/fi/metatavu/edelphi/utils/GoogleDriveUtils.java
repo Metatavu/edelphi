@@ -63,10 +63,11 @@ public class GoogleDriveUtils {
     if (brokerToken != null) {
       GoogleCredential credential = getCredential(brokerToken);
       try {
-        credential.refreshToken();
-        return new Drive.Builder(TRANSPORT, JSON_FACTORY, credential).build();
+        Drive drive = new Drive.Builder(TRANSPORT, JSON_FACTORY, credential).build();
+        listFiles(drive, 1);
+        return drive;
       } catch (IOException e) {
-        logger.log(Level.WARNING, "Failed to refresh Google Access Token", e);
+        logger.log(Level.WARNING, "Failed to get Google Access Token", e);
       }      
     }
     
@@ -116,8 +117,12 @@ public class GoogleDriveUtils {
       .setJsonFactory(JSON_FACTORY)
       .build();
     
-    if (brokerToken != null) {
+    if (brokerToken != null && brokerToken.getToken() != null) {
       credential.setAccessToken(brokerToken.getToken()); 
+    }
+
+    if (brokerToken != null && brokerToken.getRefreshToken() != null) {
+      credential.setRefreshToken(brokerToken.getRefreshToken());
     }
     
     return credential;
