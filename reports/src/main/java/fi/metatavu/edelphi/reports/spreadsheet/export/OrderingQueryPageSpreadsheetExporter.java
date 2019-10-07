@@ -13,7 +13,6 @@ import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionNumericAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryNumericField;
-import fi.metatavu.edelphi.queries.QueryPageController;
 import fi.metatavu.edelphi.reports.i18n.ReportMessages;
 import fi.metatavu.edelphi.reports.spreadsheet.SpreadsheetExportContext;
 
@@ -22,9 +21,6 @@ public class OrderingQueryPageSpreadsheetExporter extends AbstractQueryPageSprea
 
   @Inject
   private ReportMessages reportMessages;
-
-  @Inject
-  private QueryPageController queryPageController;
 
   @Inject
   private QueryQuestionNumericAnswerDAO queryQuestionNumericAnswerDAO;
@@ -37,9 +33,8 @@ public class OrderingQueryPageSpreadsheetExporter extends AbstractQueryPageSprea
     List<QueryReply> queryReplies = exportContext.getQueryReplies();
     
     QueryPage queryPage = exportContext.getQueryPage();
-    
-    boolean commentable = queryPageController.getBooleanSetting(queryPage, "thesis.commentable");
-    
+    boolean commentable = isPageCommentable(queryPage);
+
     Locale locale = exportContext.getLocale();
     
     int columnIndex = exportContext.addColumn(queryPage.getTitle());
