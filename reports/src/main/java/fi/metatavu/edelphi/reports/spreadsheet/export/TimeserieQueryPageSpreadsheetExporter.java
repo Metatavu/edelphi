@@ -51,7 +51,7 @@ public class TimeserieQueryPageSpreadsheetExporter extends AbstractQueryPageSpre
     
     QueryPage queryPage = exportContext.getQueryPage();
     
-    boolean commentable = queryPageController.getBooleanSetting(queryPage, "thesis.commentable");
+    boolean commentable = isPageCommentable(queryPage);
     Double minX = queryPageController.getDoubleSetting(queryPage, "time_serie.minX");
     Double maxX = queryPageController.getDoubleSetting(queryPage, "time_serie.maxX");
     Double stepX = queryPageController.getDoubleSetting(queryPage, "time_serie.stepX");

@@ -16,7 +16,6 @@ import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionField;
-import fi.metatavu.edelphi.queries.QueryPageController;
 import fi.metatavu.edelphi.reports.i18n.ReportMessages;
 import fi.metatavu.edelphi.reports.spreadsheet.SpreadsheetExportContext;
 import fi.metatavu.edelphi.reports.spreadsheet.comments.ReportPageCommentProcessor;
@@ -27,9 +26,6 @@ public class Scale1DQueryPageSpreadsheetExporter extends AbstractQueryPageSpread
 
   @Inject
   private ReportMessages reportMessages;
-
-  @Inject
-  private QueryPageController queryPageController;
 
   @Inject
   private QueryFieldDAO queryFieldDAO;
@@ -45,9 +41,8 @@ public class Scale1DQueryPageSpreadsheetExporter extends AbstractQueryPageSpread
     List<QueryReply> queryReplies = exportContext.getQueryReplies();
     
     QueryPage queryPage = exportContext.getQueryPage();
-    
-    boolean commentable = queryPageController.getBooleanSetting(queryPage, "thesis.commentable");
-    
+    boolean commentable = isPageCommentable(queryPage);
+
     String fieldName = getFieldName();
     
     QueryOptionField queryField = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldName);

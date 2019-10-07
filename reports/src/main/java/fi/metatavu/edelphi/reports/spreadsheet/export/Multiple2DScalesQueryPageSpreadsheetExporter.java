@@ -43,9 +43,8 @@ public class Multiple2DScalesQueryPageSpreadsheetExporter extends AbstractQueryP
     List<QueryReply> queryReplies = exportContext.getQueryReplies();
     
     QueryPage queryPage = exportContext.getQueryPage();
-    
-    boolean commentable = queryPageController.getBooleanSetting(queryPage, "thesis.commentable");
-    
+    boolean commentable = isPageCommentable(queryPage);
+  
     List<String> theses = queryPageController.getListSetting(queryPage, THESES_OPTION);
     for (int thesisIndex = 0, thesisCount = theses.size(); thesisIndex < thesisCount; thesisIndex++) {
       String fieldNameX = getFieldName(thesisIndex, "x");
