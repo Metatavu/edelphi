@@ -82,7 +82,10 @@ public class ImageReportChartWriter extends TypedItemWriter<QueryPage> {
     logger.info("Writing {} report chart images", items.size());
     
     for (QueryPage queryPage : items) {
-      images.add(createPageReportImage(queryPage));
+      BinaryFile image = createPageReportImage(queryPage);
+      if (image != null) {
+        images.add(image);
+      }
     }
   }
   
@@ -103,7 +106,7 @@ public class ImageReportChartWriter extends TypedItemWriter<QueryPage> {
     byte[] pngData = imageReportController.getPagePng(exportContext);
     
     if (pngData == null || pngData.length == 0) {
-      throw new ReportException(String.format("Failed to create PNG report queryPage %d", queryPage.getId()));
+      return null;
     }
     
     return new BinaryFile(String.format("%s.png", queryPage.getTitle()), "image/png", pngData);
