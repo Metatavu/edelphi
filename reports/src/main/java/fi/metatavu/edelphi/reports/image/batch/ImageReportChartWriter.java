@@ -1,6 +1,8 @@
 package fi.metatavu.edelphi.reports.image.batch;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -112,7 +114,32 @@ public class ImageReportChartWriter extends TypedItemWriter<QueryPage> {
       return null;
     }
     
-    return new BinaryFile(String.format("%s.png", queryPage.getTitle()), "image/png", pngData);
+    return new BinaryFile(String.format("%s.png", getFileName(queryPage.getTitle())), "image/png", pngData);
+  }
+  
+  /**
+   * Returns a file name for given page name
+   * 
+   * @param name name
+   * @return URL name
+   */
+  private String getFileName(String name) {
+    if (name == null) {
+      return null;
+    }
+    
+    String urlName = name.trim().toLowerCase().replace(' ', '-').replace('/', '-');
+    while (urlName.indexOf("--") > 0) {
+      urlName = urlName.replace("--", "-");
+    }
+    
+    try {
+      urlName = URLEncoder.encode(urlName, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      logger.error("Failed to URLEncode report page name", e);
+    }
+    
+    return urlName;
   }
   
   /**
