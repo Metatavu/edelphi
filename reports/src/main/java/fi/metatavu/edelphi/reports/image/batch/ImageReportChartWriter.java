@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import javax.batch.runtime.context.JobContext;
 import javax.inject.Inject;
@@ -15,6 +16,7 @@ import fi.metatavu.edelphi.batch.JobProperty;
 import fi.metatavu.edelphi.batch.TypedItemWriter;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
+import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageType;
 import fi.metatavu.edelphi.panels.PanelController;
 import fi.metatavu.edelphi.reports.ReportException;
 import fi.metatavu.edelphi.reports.batch.BinaryFile;
@@ -81,7 +83,7 @@ public class ImageReportChartWriter extends TypedItemWriter<QueryPage> {
   public void write(List<QueryPage> items) throws Exception {
     logger.info("Writing {} report chart images", items.size());
     
-    for (QueryPage queryPage : items) {
+    for (QueryPage queryPage : items.stream().filter(this::isSupportingCharts).collect(Collectors.toList())) {
       BinaryFile image = createPageReportImage(queryPage);
       if (image != null) {
         images.add(image);
@@ -106,10 +108,27 @@ public class ImageReportChartWriter extends TypedItemWriter<QueryPage> {
     byte[] pngData = imageReportController.getPagePng(exportContext);
     
     if (pngData == null || pngData.length == 0) {
+      logger.warn("Failed to create PNG report image from page {}", queryPage.getId());
       return null;
     }
     
     return new BinaryFile(String.format("%s.png", queryPage.getTitle()), "image/png", pngData);
+  }
+  
+  /**
+   * Returns whether page supports charts or not
+   * 
+   * @param queryPage query page
+   * @return whether page supports charts or not
+   */
+  private boolean isSupportingCharts(QueryPage queryPage) {
+    QueryPageType pageType = queryPage.getPageType();
+    
+    if (pageType == QueryPageType.TEXT) {
+      return false;
+    }
+    
+    return true;
   }
 
 }
