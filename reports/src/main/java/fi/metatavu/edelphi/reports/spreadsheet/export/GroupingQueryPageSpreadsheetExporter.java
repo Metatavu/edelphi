@@ -17,7 +17,6 @@ import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionField;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOptionGroup;
-import fi.metatavu.edelphi.queries.QueryPageController;
 import fi.metatavu.edelphi.reports.i18n.ReportMessages;
 import fi.metatavu.edelphi.reports.spreadsheet.SpreadsheetExportContext;
 
@@ -26,9 +25,6 @@ public class GroupingQueryPageSpreadsheetExporter extends AbstractQueryPageSprea
 
   @Inject
   private ReportMessages reportMessages;
-
-  @Inject
-  private QueryPageController queryPageController;
 
   @Inject
   private QueryFieldDAO queryFieldDAO;
@@ -50,7 +46,7 @@ public class GroupingQueryPageSpreadsheetExporter extends AbstractQueryPageSprea
     QueryOptionField queryField = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, getFieldName());
     List<QueryOptionFieldOptionGroup> fieldGroups = queryOptionFieldOptionGroupDAO.listByQueryField(queryField);
     
-    boolean commentable = queryPageController.getBooleanSetting(queryPage, "thesis.commentable");
+    boolean commentable = isPageCommentable(queryPage);
     Locale locale = exportContext.getLocale();
     
     for (QueryOptionFieldOptionGroup fieldGroup : fieldGroups) {

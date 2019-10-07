@@ -1,4 +1,4 @@
-package fi.metatavu.edelphi.reports.spreadsheet.export;
+  package fi.metatavu.edelphi.reports.spreadsheet.export;
 
 import java.util.List;
 import java.util.Locale;
@@ -42,7 +42,7 @@ public class MultiSelectQueryPageSpreadsheetExporter extends AbstractQueryPageSp
   public void exportSpreadsheet(SpreadsheetExportContext exportContext) {
     QueryPage queryPage = exportContext.getQueryPage();
     
-    boolean commentable = queryPageController.getBooleanSetting(queryPage, "thesis.commentable");
+    boolean commentable = isPageCommentable(queryPage);
     List<String> options = queryPageController.getListSetting(queryPage, "multiselect.options");
 
     QueryOptionField queryField = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, getFieldName());

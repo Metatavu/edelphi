@@ -16,7 +16,6 @@ import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionNumericAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryNumericField;
-import fi.metatavu.edelphi.queries.QueryPageController;
 import fi.metatavu.edelphi.reports.i18n.ReportMessages;
 import fi.metatavu.edelphi.reports.spreadsheet.SpreadsheetExportContext;
 import fi.metatavu.edelphi.reports.spreadsheet.comments.ReportPageCommentProcessor;
@@ -32,9 +31,6 @@ public class TimelineQueryPageSpreadsheetExporter extends AbstractQueryPageSprea
   private ReportMessages reportMessages;
 
   @Inject
-  private QueryPageController queryPageController;
-
-  @Inject
   private QueryFieldDAO queryFieldDAO;
 
   @Inject
@@ -47,8 +43,7 @@ public class TimelineQueryPageSpreadsheetExporter extends AbstractQueryPageSprea
   public void exportSpreadsheet(SpreadsheetExportContext exportContext) {
     QueryPage queryPage = exportContext.getQueryPage();
     
-    boolean commentable = queryPageController.getBooleanSetting(queryPage, "thesis.commentable");
-
+    boolean commentable = isPageCommentable(queryPage);
     QueryNumericField queryField1 = (QueryNumericField) queryFieldDAO.findByQueryPageAndName(queryPage, TIMELINE_VALUE1);
     QueryNumericField queryField2 = (QueryNumericField) queryFieldDAO.findByQueryPageAndName(queryPage, TIMELINE_VALUE2);
     

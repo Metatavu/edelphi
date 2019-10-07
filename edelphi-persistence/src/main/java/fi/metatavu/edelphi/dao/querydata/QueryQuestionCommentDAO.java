@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
@@ -91,8 +92,11 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
         criteriaBuilder.equal(root.get(QueryQuestionComment_.archived), Boolean.FALSE)
       )
     );
+    
+    TypedQuery<QueryQuestionComment> query = entityManager.createQuery(criteria);
+    query.setMaxResults(1);
 
-    return getSingleResult(entityManager.createQuery(criteria)); 
+    return getSingleResult(query); 
   }
   
   /**
