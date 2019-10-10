@@ -409,7 +409,7 @@ class LiveView extends React.Component<Props, State> {
         return commentAnswer && commentAnswer.answer && commentAnswer.comment;
       }) as CommentAndAnswer[];
 
-    if (this.state.commentCellExpanded) {
+    if (this.state.commentCellExpanded !== null) {
       const y = Math.floor(this.state.commentCellExpanded / 2);
       const x = this.state.commentCellExpanded - (y * 2);
       return this.renderCommentCell(commentAnswers, x, y);
@@ -457,7 +457,7 @@ class LiveView extends React.Component<Props, State> {
     });
 
     const commentListClasses = ["comments-list"];
-    if (this.state.commentCellExpanded) {
+    if (this.state.commentCellExpanded !== null) {
       commentListClasses.push("comments-list-expanded");
     }
 
@@ -477,7 +477,7 @@ class LiveView extends React.Component<Props, State> {
   private renderExpandCommentCellButton = (x: number, y: number) => {
     return (
       <Button icon className="expand-comments-button" onClick={ () => this.onExpandCommentCellButtonClick(x, y) }>
-        <Icon name={ this.state.commentCellExpanded ? "compress" : "expand" }/>
+        <Icon name={ this.state.commentCellExpanded !== null ? "compress" : "expand" }/>
       </Button>
     ); 
   }
@@ -1058,7 +1058,7 @@ class LiveView extends React.Component<Props, State> {
    */
   private onExpandCommentCellButtonClick = (x: number, y: number) => {
     this.setState({
-      commentCellExpanded: this.state.commentCellExpanded ? null : (y * 2) + x
+      commentCellExpanded: this.state.commentCellExpanded !== null ? null : (y * 2) + x
     });
   }
 
