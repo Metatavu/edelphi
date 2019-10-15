@@ -67,10 +67,12 @@ public class ImageReportChartWriter extends TypedItemWriter<QueryPage> {
   
   private List<BinaryFile> images;
   
+  private int index;
+  
   @Override
   public void open(Serializable checkpoint) throws Exception {
     super.open(checkpoint);
-    
+    index = 1;
     images = new ArrayList<>();
   }
 
@@ -84,10 +86,9 @@ public class ImageReportChartWriter extends TypedItemWriter<QueryPage> {
   @Override
   public void write(List<QueryPage> items) throws Exception {
     logger.info("Writing {} report chart images", items.size());
-    int index = 1;
-    
+   
     for (QueryPage queryPage : items.stream().filter(this::isSupportingCharts).collect(Collectors.toList())) {
-      BinaryFile image = createPageReportImage(index, queryPage);
+      BinaryFile image = createPageReportImage(queryPage);
       if (image != null) {
         images.add(image);
         index++;
@@ -103,7 +104,7 @@ public class ImageReportChartWriter extends TypedItemWriter<QueryPage> {
    * @return report image
    * @throws ReportException thrown when image creation fails
    */
-  private BinaryFile createPageReportImage(int index, QueryPage queryPage) throws ReportException {
+  private BinaryFile createPageReportImage(QueryPage queryPage) throws ReportException {
     PanelStamp stamp = panelController.findPanelStampById(stampId);
     if (stamp == null) {
       throw new ReportException(String.format("Could not find panel stamp %d", stampId));
