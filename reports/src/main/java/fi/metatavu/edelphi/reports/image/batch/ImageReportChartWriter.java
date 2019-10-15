@@ -67,10 +67,12 @@ public class ImageReportChartWriter extends TypedItemWriter<QueryPage> {
   
   private List<BinaryFile> images;
   
+  private int index;
+  
   @Override
   public void open(Serializable checkpoint) throws Exception {
     super.open(checkpoint);
-    
+    index = 1;
     images = new ArrayList<>();
   }
 
@@ -84,11 +86,12 @@ public class ImageReportChartWriter extends TypedItemWriter<QueryPage> {
   @Override
   public void write(List<QueryPage> items) throws Exception {
     logger.info("Writing {} report chart images", items.size());
-    
+   
     for (QueryPage queryPage : items.stream().filter(this::isSupportingCharts).collect(Collectors.toList())) {
       BinaryFile image = createPageReportImage(queryPage);
       if (image != null) {
         images.add(image);
+        index++;
       }
     }
   }
@@ -96,6 +99,7 @@ public class ImageReportChartWriter extends TypedItemWriter<QueryPage> {
   /**
    * Creates a report image for a query page
    * 
+   * @param index page index
    * @param queryPage query page
    * @return report image
    * @throws ReportException thrown when image creation fails
@@ -114,7 +118,7 @@ public class ImageReportChartWriter extends TypedItemWriter<QueryPage> {
       return null;
     }
     
-    return new BinaryFile(String.format("%s.png", getFileName(queryPage.getTitle())), "image/png", pngData);
+    return new BinaryFile(String.format("%d-%s.png", index, getFileName(queryPage.getTitle())), "image/png", pngData);
   }
   
   /**
