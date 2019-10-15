@@ -55,7 +55,11 @@ public class TextReportPageHtmlWriter extends TypedItemWriter<String> {
     logger.info("Processing {} report html pages", pageHtmls.size());
     
     for (String pageHtml : pageHtmls) {
-      reportHtmlBatchContext.addPageHtml(processHtml(pageHtml));
+      try {
+        reportHtmlBatchContext.addPageHtml(processHtml(pageHtml));
+      } catch (Exception e) {
+        logger.error("Failed to process report HTML", e);
+      }
     }
   }
 
@@ -92,20 +96,26 @@ public class TextReportPageHtmlWriter extends TypedItemWriter<String> {
    * @throws MimeTypeParseException thrown when downloaded file had invalid mime type
    */
   private String downloadAsDataUrl(URI uri) throws IOException, MimeTypeParseException {
-    URL url = URI.create(baseUrl).resolve(uri).toURL();
-    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-    connection.connect();
-    
-    try (InputStream stream = connection.getInputStream()) {
-      byte[] data = IOUtils.toByteArray(stream);
-      MimeType mimeType = new MimeType(connection.getContentType());
-      StringBuilder dataUrlBuilder = new StringBuilder();
-      dataUrlBuilder.append("data:");
-      dataUrlBuilder.append(mimeType.getBaseType());
-      dataUrlBuilder.append(";base64,");
-      dataUrlBuilder.append(Base64.encodeBase64String(data));
-      return dataUrlBuilder.toString();
+    try {
+      URL url = URI.create(baseUrl).resolve(uri).toURL();
+      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+      connection.connect();
+      
+      try (InputStream stream = connection.getInputStream()) {
+        byte[] data = IOUtils.toByteArray(stream);
+        MimeType mimeType = new MimeType(connection.getContentType());
+        StringBuilder dataUrlBuilder = new StringBuilder();
+        dataUrlBuilder.append("data:");
+        dataUrlBuilder.append(mimeType.getBaseType());
+        dataUrlBuilder.append(";base64,");
+        dataUrlBuilder.append(Base64.encodeBase64String(data));
+        return dataUrlBuilder.toString();
+      }
+    } catch (Exception e) {
+      logger.error("Failed to download URL", e);
     }
+
+    return null;
   }
 
 }
