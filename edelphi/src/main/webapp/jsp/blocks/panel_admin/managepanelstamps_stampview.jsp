@@ -23,13 +23,23 @@
         <jsp:param name="classes" value="panelStampDescription"/>        
         <jsp:param name="name" value="description" />
       </jsp:include>
+
+      <p>
+        <i><fmt:message key="panels.admin.panelStamps.stampViewTemporarilyDisabled"/></i>
+      </p>
       
+      <!--
+
       <jsp:include page="/jsp/fragments/formfield_submit.jsp">
         <jsp:param name="labelLocale" value="panels.admin.panelStamps.stampViewSubmitLabel" />
         <jsp:param name="classes" value="formvalid" />
         <jsp:param name="name" value="save" />
       </jsp:include>
-      
+
+    -->
+
+    <input type="hidden" name="save"/>
+
     </div>
   </div>  
 
