@@ -4137,13 +4137,15 @@ QueryEditorQuestionEditor = Class.create(QueryEditorPageEditor, {
       href: "javascript:void(null);",
       className: "queryEditorPreviewShowOptionsLink"
     }).update(getLocale().getText("panelAdmin.block.query.showOptions"));
-
-    this._queryOptionsLink = new Element("a", {
-      href: "javascript:void(null);",
-      className: "queryEditorPreviewShowQueryOptionsLink" + (this.isNewPage() ? " disabledButton" : ""),
-      title: this.isNewPage() ? getLocale().getText("panelAdmin.block.query.pageSaveRequired") : ""
-    }).update(getLocale().getText("panelAdmin.block.query.showQueryOptions"));
-
+  
+    if (this.getBlockController().getCurrentPageData() && this.getBlockController().getCurrentPageData().type === 'LIVE_2D') {   
+      this._queryOptionsLink = new Element("a", {
+        href: "javascript:void(null);",
+        className: "queryEditorPreviewShowQueryOptionsLink" + (this.isNewPage() ? " disabledButton" : ""),
+        title: this.isNewPage() ? getLocale().getText("panelAdmin.block.query.pageSaveRequired") : ""
+      }).update(getLocale().getText("panelAdmin.block.query.showQueryOptions"));
+    }
+    
     this._commentOptionsLink = new Element("a", {
       href: "javascript:void(null);",
       className: "queryEditorPreviewShowCommentOptionsLink" + (this.isNewPage() ? " disabledButton" : ""),
@@ -4160,22 +4162,27 @@ QueryEditorQuestionEditor = Class.create(QueryEditorPageEditor, {
       });
     }.bindAsEventListener(this));
 
-    this._queryOptionsLink.on("click", function () {
-      if (this.isNewPage()) {
-        return;
-      }
+    if (this._queryOptionsLink) {      
+      this._queryOptionsLink.on("click", function () {
+        if (this.isNewPage()) {
+          return;
+        }
 
-      triggerReactCommand("edit-page-live2d-options", {
-        pageData: this.getBlockController().getCurrentPageData()
-      });
-    }.bindAsEventListener(this));
+        triggerReactCommand("edit-page-live2d-options", {
+          pageData: this.getBlockController().getCurrentPageData()
+        });
+      }.bindAsEventListener(this));
+    }
     
     if (this.isNewPage()) {
       this.getBlockController().addListener("querySaved", this, function () {
-        this._queryOptionsLink.removeAttribute("title");
         this._commentOptionsLink.removeAttribute("title");
-        this._queryOptionsLink.removeClassName("disabledButton");
         this._commentOptionsLink.removeClassName("disabledButton");
+
+        if (this._queryOptionsLink) {
+          this._queryOptionsLink.removeAttribute("title");
+          this._queryOptionsLink.removeClassName("disabledButton");
+        }
       });
     }
 
@@ -4189,7 +4196,11 @@ QueryEditorQuestionEditor = Class.create(QueryEditorPageEditor, {
       });
     
     this._questionContainer.appendChild(this._questionOptionsLink);
-    this._questionContainer.appendChild(this._queryOptionsLink);
+
+    if (this._queryOptionsLink) {
+      this._questionContainer.appendChild(this._queryOptionsLink);
+    }
+
     this._questionContainer.appendChild(this._commentOptionsLink);
     this._questionContainer.appendChild(this._optionsContainer);
     this._optionsContainer.appendChild(this._optionsArrowUpContainer);
@@ -4254,7 +4265,7 @@ QueryEditorQuestionEditor = Class.create(QueryEditorPageEditor, {
     while (this._optionEditors.length > 0) {
       this._optionEditors.pop().deinitialize();
     }
-    
+ 
     var pageData = this.getBlockController().getCurrentPageData();
     if (pageData) {
       var pageOptions = pageData.options;
@@ -4456,7 +4467,7 @@ QueryEditorThesisPageEditor = Class.create(QueryEditorQuestionEditor, {
       case 'THESIS':
         switch (option.name) {
           case 'thesis.text':
-            return this._thesisText.value;
+            return this._thesisText ? this._thesisText.value : null;
           break;
           case 'thesis.description':
             return this._thesisDescriptionEditor.getData();
