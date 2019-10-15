@@ -84,11 +84,13 @@ public class ImageReportChartWriter extends TypedItemWriter<QueryPage> {
   @Override
   public void write(List<QueryPage> items) throws Exception {
     logger.info("Writing {} report chart images", items.size());
+    int index = 1;
     
     for (QueryPage queryPage : items.stream().filter(this::isSupportingCharts).collect(Collectors.toList())) {
-      BinaryFile image = createPageReportImage(queryPage);
+      BinaryFile image = createPageReportImage(index, queryPage);
       if (image != null) {
         images.add(image);
+        index++;
       }
     }
   }
@@ -96,11 +98,12 @@ public class ImageReportChartWriter extends TypedItemWriter<QueryPage> {
   /**
    * Creates a report image for a query page
    * 
+   * @param index page index
    * @param queryPage query page
    * @return report image
    * @throws ReportException thrown when image creation fails
    */
-  private BinaryFile createPageReportImage(QueryPage queryPage) throws ReportException {
+  private BinaryFile createPageReportImage(int index, QueryPage queryPage) throws ReportException {
     PanelStamp stamp = panelController.findPanelStampById(stampId);
     if (stamp == null) {
       throw new ReportException(String.format("Could not find panel stamp %d", stampId));
@@ -114,7 +117,7 @@ public class ImageReportChartWriter extends TypedItemWriter<QueryPage> {
       return null;
     }
     
-    return new BinaryFile(String.format("%s.png", getFileName(queryPage.getTitle())), "image/png", pngData);
+    return new BinaryFile(String.format("%d-%s.png", index, getFileName(queryPage.getTitle())), "image/png", pngData);
   }
   
   /**
