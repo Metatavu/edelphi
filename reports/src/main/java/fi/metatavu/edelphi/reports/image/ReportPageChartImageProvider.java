@@ -1,5 +1,7 @@
 package fi.metatavu.edelphi.reports.image;
 
+import java.util.List;
+
 import fi.metatavu.edelphi.reports.ReportException;
 
 /**
@@ -16,6 +18,6 @@ public interface ReportPageChartImageProvider {
    * @return image data
    * @throws ReportException thrown when report generation fails
    */
-  public byte[] getPng(ImageReportPageContext context) throws ReportException;
+  public List<ChartData> getPageCharts(ImageReportPageContext context) throws ReportException;
 
 }
