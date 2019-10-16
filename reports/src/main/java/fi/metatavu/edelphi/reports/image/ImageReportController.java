@@ -1,5 +1,7 @@
 package fi.metatavu.edelphi.reports.image;
 
+import java.util.List;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -26,14 +28,14 @@ public class ImageReportController {
    * @return generated chart
    * @throws ReportException thrown when report chart generation fails
    */
-  public byte[] getPagePng(ImageReportPageContext exportContext) throws ReportException {
+  public List<ChartData> getPageCharts(ImageReportPageContext exportContext) throws ReportException {
     switch (exportContext.getPage().getPageType()) {
       case LIVE_2D:
-        return live2dReportPageChartImageProvider.getPng(exportContext);
+        return live2dReportPageChartImageProvider.getPageCharts(exportContext);
       default:
     }
     
-    return legacyReportPageChartImageProvider.getPng(exportContext);
+    return legacyReportPageChartImageProvider.getPageCharts(exportContext);
   }
 
 }

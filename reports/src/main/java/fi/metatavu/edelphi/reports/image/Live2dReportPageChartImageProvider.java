@@ -37,9 +37,9 @@ public class Live2dReportPageChartImageProvider extends AbstractReportPageChartI
 
   @Inject
   private QueryPageController queryPageController;
-
+  
   @Override
-  public byte[] getPng(ImageReportPageContext exportContext) throws ReportException {
+  public List<ChartData> getPageCharts(ImageReportPageContext exportContext) throws ReportException {
     QueryPage queryPage = exportContext.getPage();
     Long[] queryReplyIds = exportContext.getQueryReplyIds();
     Locale locale = exportContext.getLocale();
@@ -53,12 +53,17 @@ public class Live2dReportPageChartImageProvider extends AbstractReportPageChartI
     List<String> optionsY = queryPageController.getListSetting(queryPage, OPTIONS_Y);
     
     List<ScatterValue> scatterValues = queryPageController.getLive2dScatterValues(queryPage, queryReplies);
-    
     try {
-      return chartController.renderChartPNG(chartController.createLive2dChart(locale, queryPage, queryReplies, scatterValues, labelX, labelY, optionsX, optionsY));
+      byte[] data = chartController.renderChartPNG(chartController.createLive2dChart(locale, queryPage, queryReplies, scatterValues, labelX, labelY, optionsX, optionsY));
+      if (data == null || data.length == 0) {
+        return Collections.emptyList();
+      }
+      
+      return Collections.singletonList(new ChartData("image/png", data));
     } catch (IOException e) {
       throw new ReportException(e);
     }
+    
   }
   
 }
