@@ -22,6 +22,7 @@ import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageType;
 import fi.metatavu.edelphi.panels.PanelController;
 import fi.metatavu.edelphi.reports.ReportException;
 import fi.metatavu.edelphi.reports.batch.BinaryFile;
+import fi.metatavu.edelphi.reports.image.ChartData;
 import fi.metatavu.edelphi.reports.image.ImageReportController;
 import fi.metatavu.edelphi.reports.image.ImageReportPageContext;
 
@@ -88,9 +89,9 @@ public class ImageReportChartWriter extends TypedItemWriter<QueryPage> {
     logger.info("Writing {} report chart images", items.size());
    
     for (QueryPage queryPage : items.stream().filter(this::isSupportingCharts).collect(Collectors.toList())) {
-      BinaryFile image = createPageReportImage(queryPage);
-      if (image != null) {
-        images.add(image);
+      List<BinaryFile> pageImages = createPageReportImages(queryPage);
+      if (!pageImages.isEmpty()) {
+        images.addAll(pageImages);
         index++;
       }
     }
@@ -104,21 +105,24 @@ public class ImageReportChartWriter extends TypedItemWriter<QueryPage> {
    * @return report image
    * @throws ReportException thrown when image creation fails
    */
-  private BinaryFile createPageReportImage(QueryPage queryPage) throws ReportException {
+  private List<BinaryFile> createPageReportImages(QueryPage queryPage) throws ReportException {
     PanelStamp stamp = panelController.findPanelStampById(stampId);
     if (stamp == null) {
       throw new ReportException(String.format("Could not find panel stamp %d", stampId));
     }
     
     ImageReportPageContext exportContext = new ImageReportPageContext(baseUrl, locale, stamp, expertiseGroupIds, queryReplyIds, queryPage);
-    byte[] pngData = imageReportController.getPagePng(exportContext);
+    List<ChartData> chartDatas = imageReportController.getPageCharts(exportContext);
+    List<BinaryFile> result = new ArrayList<>(chartDatas.size());
     
-    if (pngData == null || pngData.length == 0) {
-      logger.warn("Failed to create PNG report image from page {}", queryPage.getId());
-      return null;
+    for (int imageIndex = 0; imageIndex < chartDatas.size(); imageIndex++) {
+      ChartData chartData = chartDatas.get(imageIndex);
+      if (chartData != null && chartData.getData() != null && chartData.getData().length > 0) {
+        result.add(new BinaryFile(String.format("%d-%d-%s.png", index, imageIndex, getFileName(queryPage.getTitle())), chartData.getContentType(), chartData.getData()));
+      }
     }
     
-    return new BinaryFile(String.format("%d-%s.png", index, getFileName(queryPage.getTitle())), "image/png", pngData);
+    return result;
   }
   
   /**

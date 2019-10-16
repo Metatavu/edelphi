@@ -6,6 +6,8 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -17,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,12 +37,15 @@ import fi.metatavu.edelphi.settings.SettingsController;
  */
 @ApplicationScoped
 public class LegacyReportPageChartImageProvider extends AbstractReportPageChartImageProvider {
+
+  @Inject
+  private Logger logger;
   
   @Inject
   private SettingsController settingsController;
   
   @Override
-  public byte[] getPng(ImageReportPageContext exportContext) throws ReportException {
+  public List<ChartData> getPageCharts(ImageReportPageContext exportContext) throws ReportException {
     try {
       String baseUrl = exportContext.getBaseURL();
       QueryPage queryPage = exportContext.getPage();
@@ -63,11 +69,11 @@ public class LegacyReportPageChartImageProvider extends AbstractReportPageChartI
         }
         
         Elements reportImages = reportPage.select("img.report-image");
-        if (!reportImages.isEmpty()) {
-          return downloadUrlAsByteArray(baseUrl, reportImages.get(0).attr("src"), internalAuthorizationHash);
-        }
         
-        return null;
+        return reportImages.stream()
+          .map(element -> downloadUrlAsByteArray(baseUrl, element.attr("src"), internalAuthorizationHash))
+          .filter(Objects::nonNull)
+          .collect(Collectors.toList());
       }
       
     } catch (IOException e) {
@@ -83,27 +89,34 @@ public class LegacyReportPageChartImageProvider extends AbstractReportPageChartI
    * @return URL as byte array
    * @throws IOException thrown on download failure
    */
-  private byte[] downloadUrlAsByteArray(String baseUrl, String urlString, String internalAuthorizationHash) throws IOException {
-    if (StringUtils.startsWith(urlString,  "data:")) {
-      int base64Index = urlString.indexOf("base64,");
-      return Base64.decodeBase64(urlString.substring(base64Index + 7));
-    } else {
-      URL url = URI.create(baseUrl).resolve(urlString).toURL();
-      
-      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-      try {
-        connection.setRequestProperty("Authorization", "InternalAuthorization " + internalAuthorizationHash);
-        connection.setRequestMethod("GET");
-        connection.setReadTimeout(900000); // 15 minutes; gross overkill but at least eventual termination is guaranteed
-        connection.connect();
+  private ChartData downloadUrlAsByteArray(String baseUrl, String urlString, String internalAuthorizationHash) {
+    try {
+      if (StringUtils.startsWith(urlString,  "data:")) {
+        int base64Index = urlString.indexOf("base64,");
+        String contentType = urlString.substring(5, base64Index);
+        return new ChartData(contentType, Base64.decodeBase64(urlString.substring(base64Index + 7)));
+      } else {
+        URL url = URI.create(baseUrl).resolve(urlString).toURL();
         
-        try (InputStream is = connection.getInputStream()) {
-          return IOUtils.toByteArray(is);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        try {
+          connection.setRequestProperty("Authorization", "InternalAuthorization " + internalAuthorizationHash);
+          connection.setRequestMethod("GET");
+          connection.setReadTimeout(900000); // 15 minutes; gross overkill but at least eventual termination is guaranteed
+          connection.connect();
+          
+          try (InputStream is = connection.getInputStream()) {
+            return new ChartData(connection.getContentType(), IOUtils.toByteArray(is));
+          }
+        } finally {
+          connection.disconnect();
         }
-      } finally {
-        connection.disconnect();
       }
+    } catch (IOException e) {
+      logger.error("Failed to download legacy reports", e);
     }
+    
+    return null;
   }
 
   /**
