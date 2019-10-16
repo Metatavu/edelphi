@@ -38,8 +38,12 @@
 
       <ed:feature featurePage="panel/admin/comparereports.page">
         <div class="panelAdminProcessRow">
+          <div class="panelAdminGenericTitle"><a style="color: #666"><fmt:message key="panel.admin.dashboard.panelProcessCompareReportsAction" /></a></div>
+          <p><i><fmt:message key="panel.admin.dashboard.panelProcessCompareReportsDisabled"/></i></p>
+          <!-- 
           <div class="panelAdminGenericTitle"><a href="comparereports.page?panelId=${panel.id}"><fmt:message key="panel.admin.dashboard.panelProcessCompareReportsAction" /></a></div>
           <div class="panelAdminGenericDescription"><fmt:message key="panel.admin.dashboard.panelProcessCompareReportsDescription" /></div>
+          -->
         </div>
       </ed:feature>
 
