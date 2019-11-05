@@ -19,7 +19,7 @@
   CKEDITOR.config.resize_dir = 'vertical';
   
   CKEDITOR.config.toolbar_materialToolbar = [
-    ['Cut','Copy','Paste','PasteText','-', 'Scayt'],
+    ['Cut','Copy','Paste','PasteText','PasteFromWord','-', 'Scayt'],
     ['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
     ['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],
     ['NumberedList','BulletedList','-','Outdent','Indent','Blockquote'],
@@ -27,7 +27,7 @@
     ['Link','Unlink'],
     ['Image','MediaEmbed','Flash','Table','HorizontalRule','SpecialChar'],
     ['FontSize', 'Format'],
-    ['Maximize', 'ShowBlocks','-','About']
+    ['Maximize', 'ShowBlocks','-','About', 'Source']
   ];
   
   CKEDITOR.config.toolbar_thesisDescriptionToolbar = [
