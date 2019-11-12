@@ -1,6 +1,5 @@
 package fi.metatavu.edelphi.rest;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -10,6 +9,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateful;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -18,14 +18,11 @@ import javax.ws.rs.core.Response;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import fi.metatavu.edelphi.comments.QueryQuestionCommentController;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
-import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageType;
 import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
@@ -42,7 +39,9 @@ import fi.metatavu.edelphi.queries.QueryReplyController;
 import fi.metatavu.edelphi.queries.QuerySectionController;
 import fi.metatavu.edelphi.rest.api.PanelsApi;
 import fi.metatavu.edelphi.rest.model.QueryPageLive2DAnswersVisibleOption;
-import fi.metatavu.edelphi.rest.model.QueryPageLive2DOptions;
+import fi.metatavu.edelphi.rest.model.QueryPageLive2d;
+import fi.metatavu.edelphi.rest.model.QueryPageText;
+import fi.metatavu.edelphi.rest.model.QueryQuestionAnswerLive2d;
 import fi.metatavu.edelphi.rest.model.QueryQuestionComment;
 import fi.metatavu.edelphi.rest.model.QueryQuestionCommentCategory;
 import fi.metatavu.edelphi.rest.mqtt.QueryQuestionAnswerNotification;
@@ -51,8 +50,10 @@ import fi.metatavu.edelphi.rest.translate.PanelExpertiseClassTranslator;
 import fi.metatavu.edelphi.rest.translate.PanelExpertiseGroupTranslator;
 import fi.metatavu.edelphi.rest.translate.PanelInterestClassTranslator;
 import fi.metatavu.edelphi.rest.translate.PanelTranslator;
+import fi.metatavu.edelphi.rest.translate.QueryPageLive2dTranslator;
+import fi.metatavu.edelphi.rest.translate.QueryPageTextTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryPageTranslator;
-import fi.metatavu.edelphi.rest.translate.QueryQuestionAnswerTranslator;
+import fi.metatavu.edelphi.rest.translate.QueryQuestionAnswerLive2dTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryQuestionCommentCategoryTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryQuestionCommentTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryTranslator;
@@ -99,13 +100,19 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   private QueryReplyController queryReplyController;
 
   @Inject
-  private QueryQuestionAnswerTranslator queryQuestionAnswerTranslator;
+  private QueryQuestionAnswerLive2dTranslator queryQuestionAnswerLive2dTranslator;
   
   @Inject
   private QueryPageController queryPageController;
   
   @Inject
   private QueryPageTranslator queryPageTranslator;
+
+  @Inject
+  private QueryPageTextTranslator queryPageTextTranslator;
+
+  @Inject
+  private QueryPageLive2dTranslator queryPageLive2dTranslator;
   
   @Inject
   private PermissionController permissionController;
@@ -130,7 +137,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   
   @Override
   @RolesAllowed("user")
-  public Response createQueryQuestionComment(QueryQuestionComment body, Long panelId) {
+  public Response createQueryQuestionComment(Long panelId, @Valid QueryQuestionComment body) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
@@ -171,7 +178,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     }
         
     String contents = body.getContents();
-    Boolean hidden = body.isisHidden();
+    Boolean hidden = body.getHidden();
     Date created = new Date(System.currentTimeMillis());
     User creator = getLoggedUser();
     Long categoryId = body.getCategoryId();
@@ -320,10 +327,10 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       .map(queryQuestionCommentTranslator::translate)
       .collect(Collectors.toList()));
   }
-
+  
   @Override
   @RolesAllowed("user")  
-  public Response updateQueryQuestionComment(QueryQuestionComment body, Long panelId, Long commentId) {
+  public Response updateQueryQuestionComment(Long panelId, Long commentId, @Valid QueryQuestionComment body) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound(String.format("Panel with id %s not found", panelId));
@@ -345,7 +352,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     }
  
     String contents = body.getContents();
-    Boolean hidden = body.isisHidden();
+    Boolean hidden = body.getHidden();
     Date modified = new Date(System.currentTimeMillis());
     User modifier = getLoggedUser();
     Long categoryId = body.getCategoryId();
@@ -369,10 +376,10 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     
     return createOk(queryQuestionCommentTranslator.translate(updatedComment));
   }
-
+  
   @Override
   @RolesAllowed("user")  
-  public Response findQueryQuestionAnswer(Long panelId, String answerId) {
+  public Response findQueryQuestionAnswerLive2d(Long panelId, String answerId) {
     QueryQuestionAnswer<?> answerData = queryReplyController.findQueryQuestionAnswerData(answerId);
     if (answerData == null) {
       return createNotFound();
@@ -396,7 +403,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createNotFound(String.format("Page %d is not from panel %d", queryPage.getId(), panel.getId()));
     }
        
-    return createOk(queryQuestionAnswerTranslator.translate(answerData));
+    return createOk(queryQuestionAnswerLive2dTranslator.translate(answerData));
   }
 
   @Override
@@ -432,7 +439,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     }
     
     return createOk(queryReplyController.listQueryQuestionAnswers(queryPage, stamp, query, panel.getRootFolder(), user).stream()
-      .map(queryQuestionAnswerTranslator::translate)
+      .map(queryQuestionAnswerLive2dTranslator::translate)
       .collect(Collectors.toList()));
   }
 
@@ -495,10 +502,10 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     
     return createNoContent();
   }
-
+  
   @Override
   @RolesAllowed("user")  
-  public Response upsertQueryQuestionAnswer(fi.metatavu.edelphi.rest.model.QueryQuestionAnswer body, Long panelId, String answerId) {
+  public Response upsertQueryQuestionAnswerLive2d(Long panelId, String answerId, @Valid QueryQuestionAnswerLive2d body) {
     QueryQuestionAnswer<?> answerData = queryReplyController.findQueryQuestionAnswerData(answerId);
     if (answerData == null) {
       return createNotFound();
@@ -518,29 +525,16 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createForbidden("Forbidden");
     }
     
-    QueryPageType pageType = queryPage.getPageType();
+    fi.metatavu.edelphi.rest.model.QueryQuestionLive2dAnswerData data = body.getData();
+    QueryQuestionAnswer<QueryQuestionLive2dAnswerData> answer = queryReplyController.setLive2dAnswer(answerData, data.getX(), data.getY());
+    publishAnswerMqttNotification(QueryQuestionAnswerNotification.Type.UPDATED, panel, answer);
     
-    switch (pageType) {
-      case LIVE_2D:
-        fi.metatavu.edelphi.rest.model.QueryQuestionLive2dAnswerData data;
-        try {
-          data = readQueryQuestionAnswerData(body, fi.metatavu.edelphi.rest.model.QueryQuestionLive2dAnswerData.class);
-        } catch (IOException e) {
-          return createBadRequest("Failed to read data");
-        }
-        
-        QueryQuestionAnswer<QueryQuestionLive2dAnswerData> answer = queryReplyController.setLive2dAnswer(answerData, data.getX(), data.getY());
-        publishAnswerMqttNotification(QueryQuestionAnswerNotification.Type.UPDATED, panel, answer);
-        
-        return createOk(queryQuestionAnswerTranslator.translate(answer));
-      default:
-        return createInternalServerError(String.format("Pages type %s not supported", pageType));
-    }
+    return createOk(queryQuestionAnswerLive2dTranslator.translate(answer));
   }
-
+  
   @Override
   @RolesAllowed("user")  
-  public Response findQueryPage(Long panelId, Long queryPageId) {
+  public Response findQueryPageText(Long panelId, Long queryPageId) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
@@ -559,12 +553,12 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createNotFound(String.format("Page %d is not from panel %d", queryPage.getId(), panel.getId()));
     }
     
-    return createOk(queryPageTranslator.translate(queryPage));
+    return createOk(queryPageTextTranslator.translate(queryPage));
   }
   
   @Override
   @RolesAllowed("user")  
-  public Response updateQueryPage(fi.metatavu.edelphi.rest.model.QueryPage body, Long panelId, Long queryPageId) {
+  public Response updateQueryPageText(Long panelId, Long queryPageId, @Valid QueryPageText body) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
@@ -584,32 +578,70 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createNotFound(String.format("Page %d is not from panel %d", queryPage.getId(), panel.getId()));
     }
     
-    switch (queryPage.getPageType()) {
-      case LIVE_2D:
-        QueryPageLive2DOptions pageLive2DOptions;
-        try {
-          pageLive2DOptions = readQueryPageOptions(body, QueryPageLive2DOptions.class);
-        } catch (IOException e) {
-          return createInternalServerError("Failed to read page options");
-        }
-      
-        QueryPageLive2DAnswersVisibleOption answersVisible = pageLive2DOptions.getAnswersVisible();
-        if (answersVisible == null) {
-          answersVisible = QueryPageLive2DAnswersVisibleOption.IMMEDIATELY;
-        }
-        
-        queryPageController.setSetting(queryPage, QueryPageController.LIVE2D_VISIBLE_OPTION, answersVisible.toString(), loggedUser);        
-      break;
-      default:
-      break;
-    }
+    queryPageController.setSetting(queryPage, QueryPageController.TEXT_CONTENT_OPTION, body.getContent(), loggedUser);  
     
-    return createOk(queryPageTranslator.translate(queryPage));
+    return createOk(queryPageTextTranslator.translate(queryPage));
   }
 
   @Override
   @RolesAllowed("user")  
-  public Response createQueryQuestionCommentCategory(QueryQuestionCommentCategory body, Long panelId) {
+  public Response findQueryPageLive2d(Long panelId, Long queryPageId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.ACCESS_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    QueryPage queryPage = queryPageController.findQueryPage(queryPageId);
+    if (queryPage == null) {
+      return createNotFound();
+    }
+    
+    if (!queryPageController.isPanelsPage(panel, queryPage)) {
+      return createNotFound(String.format("Page %d is not from panel %d", queryPage.getId(), panel.getId()));
+    }
+    
+    return createOk(queryPageLive2dTranslator.translate(queryPage));
+  }
+  
+  @Override
+  @RolesAllowed("user")  
+  public Response updateQueryPageLive2d(Long panelId, Long queryPageId, @Valid QueryPageLive2d body) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    QueryPage queryPage = queryPageController.findQueryPage(queryPageId);
+    if (queryPage == null) {
+      return createNotFound();
+    }
+    
+    if (!queryPageController.isPanelsPage(panel, queryPage)) {
+      return createNotFound(String.format("Page %d is not from panel %d", queryPage.getId(), panel.getId()));
+    }
+    
+    QueryPageLive2DAnswersVisibleOption answersVisible = body.getAnswersVisible();
+    if (answersVisible == null) {
+      answersVisible = QueryPageLive2DAnswersVisibleOption.IMMEDIATELY;
+    }
+    
+    queryPageController.setSetting(queryPage, QueryPageController.LIVE2D_VISIBLE_OPTION, answersVisible.toString(), loggedUser);  
+    
+    return createOk(queryPageLive2dTranslator.translate(queryPage));
+  }
+  
+  @Override
+  @RolesAllowed("user")  
+  public Response createQueryQuestionCommentCategory(Long panelId, @Valid QueryQuestionCommentCategory body) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
@@ -727,7 +759,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Override
   @RolesAllowed("user") 
-  public Response updateQueryQuestionCommentCategory(QueryQuestionCommentCategory body, Long panelId, Long categoryId) {
+  public Response updateQueryQuestionCommentCategory(Long panelId, Long categoryId, @Valid QueryQuestionCommentCategory body) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
@@ -865,34 +897,6 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     }
     
     return createOk(panelController.listPanelUserExpertiseGroups(panel, panel.getCurrentStamp()).stream().map(this.panelExpertiseGroupTranslator::translate).collect(Collectors.toList()));
-  }
-  
-  /**
-   * Reads query question answer data
-   * 
-   * @param payload payload
-   * @param targetClass target class
-   * @param <T> return type
-   * @return read query question answer data
-   * @throws IOException thrown when reading fails
-   */
-  private <T> T readQueryQuestionAnswerData(fi.metatavu.edelphi.rest.model.QueryQuestionAnswer payload, Class<T> targetClass) throws IOException {
-    ObjectMapper objectMapper = new ObjectMapper();
-    return objectMapper.readValue(objectMapper.writeValueAsBytes(payload.getData()), targetClass);
-  }
-
-  /**
-   * Reads query page options
-   * 
-   * @param payload payload
-   * @param targetClass target class
-   * @param <T> return type
-   * @return read query page options
-   * @throws IOException thrown when reading fails
-   */
-  private <T> T readQueryPageOptions(fi.metatavu.edelphi.rest.model.QueryPage payload, Class<T> targetClass) throws IOException {
-    ObjectMapper objectMapper = new ObjectMapper();
-    return objectMapper.readValue(objectMapper.writeValueAsBytes(payload.getQueryOptions()), targetClass);
   }
 
   /**
