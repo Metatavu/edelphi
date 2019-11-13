@@ -1,6 +1,6 @@
 FROM jboss/wildfly:16.0.0.Final
 
-ADD --chown=jboss edelphi/target/*.war /opt/jboss/wildfly/standalone/deployments/app.war
+ADD --chown=jboss target/*.war /opt/jboss/wildfly/standalone/deployments/app.war
 ADD --chown=jboss ./docker/entrypoint.sh /opt/docker/entrypoint.sh 
 ADD --chown=jboss ./docker/host.cli /opt/docker/host.cli
 ADD --chown=jboss ./docker/kubernets-jgroups.cli /opt/docker/kubernets-jgroups.cli
