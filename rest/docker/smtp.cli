@@ -1,0 +1,7 @@
+embed-server --server-config=standalone-full-ha.xml
+
+/subsystem=mail/mail-session=default/server=smtp:write-attribute(name=tls,value=${env.SMTP_TLS})
+/subsystem=mail/mail-session=default/server=smtp:write-attribute(name=username,value=${env.SMTP_USERNAME})
+/subsystem=mail/mail-session=default/server=smtp:write-attribute(name=password,value=${env.SMTP_PASSWORD})
+/socket-binding-group=standard-sockets/remote-destination-outbound-socket-binding=mail-smtp:write-attribute(name=host,value=${env.SMTP_HOST})
+/socket-binding-group=standard-sockets/remote-destination-outbound-socket-binding=mail-smtp:write-attribute(name=port,value=${env.SMTP_PORT})

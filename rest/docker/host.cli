@@ -1,0 +1,2 @@
+embed-server --server-config=standalone-full-ha.xml
+/subsystem=undertow/server=default-server/host=edelphi-api:add(alias=["${env.HOST}"],default-web-module="edelphi-api.war")

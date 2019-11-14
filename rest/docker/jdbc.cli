@@ -1,0 +1,4 @@
+embed-server --server-config=standalone-full-ha.xml
+/subsystem=datasources/jdbc-driver=mariadb:add(driver-name=mariadb, driver-module-name=com.mariadb.jdbc, xa-datasource-class=org.mariadb.jdbc.MySQLDataSource)
+/subsystem=datasources/jdbc-driver=mysql:add(driver-name=mysql, driver-module-name=com.mysql.jdbc, xa-datasource-class=com.mysql.jdbc.jdbc2.optional.MysqlXADataSource)
+data-source add --name=edelphi --jndi-name=java:jboss/datasources/edelphi --enabled=true --jta=true --use-ccm=true --connection-url=jdbc:mysql://${env.DB_HOST}:${env.DB_PORT}/${env.DB_NAME}?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true --driver-name=mysql --user-name=${env.DB_USERNAME} --password=${env.DB_PASSWORD} --check-valid-connection-sql="SELECT 1" --validate-on-match=false --share-prepared-statements=false --max-pool-size=1000
