@@ -3,7 +3,7 @@ import { BrowserRouter, Route } from "react-router-dom";
 import Query from "./screens/panel/query";
 import { CssBaseline } from "@material-ui/core";
 import { ThemeProvider } from "@material-ui/styles";
-import theme from "../styles/theme";
+import theme from "./styles/theme";
 /**
  * Interface representing component properties
  */

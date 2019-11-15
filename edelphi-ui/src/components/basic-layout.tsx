@@ -1,5 +1,6 @@
 import * as React from "react";
-import { WithStyles, withStyles } from "@material-ui/core";
+import { WithStyles, withStyles, Button } from "@material-ui/core";
+import styles from "../styles/basic-layout"
 
 /**
  * Interface representing component properties
@@ -45,8 +46,11 @@ class BasicLayout extends React.Component<Props, State> {
    * Render basic layout
    */
   public render() {
+    const { classes } = this.props;
     return (
-      <div className="content">
+      <div className={ classes.root }>
+        {/* Example button */}
+        {/* <Button variant="contained" color="primary">Oujee</Button> */}
         { this.props.children }
       </div>
     );
