@@ -1,7 +1,5 @@
 package fi.metatavu.edelphi.rest;
 
-import java.util.Properties;
-
 import javax.ejb.Stateful;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;

@@ -46,11 +46,18 @@ import fi.metatavu.edelphi.resources.ResourceController;
 @ApplicationScoped
 public class QueryPageController {
 
+  public static final String TEXT_COMMENTABLE_OPTION = "thesis.commentable";
+  public static final String TEXT_VIEW_DISCUSSIONS_OPTION = "thesis.viewDiscussions";
+  public static final String TEXT_CONTENT_OPTION = "text.content";
+
   public static final String LIVE2D_VISIBLE_OPTION = "live2d.visible";
   public static final String LIVE2D_LABEL_OPTION_TEMPLATE = "live2d.label.%s";
   public static final String LIVE2D_COLOR_OPTION_TEMPLATE = "live2d.color.%s";
   public static final String OPTIONS_OPTION_TEMPLATE = "live2d.options.%s";
   
+  public static final String THESIS_COMMENTABLE_OPTION = "thesis.commentable";
+  public static final String THESIS_VIEW_DISCUSSIONS_OPTION = "thesis.viewDiscussions";
+
   private static final String UTF_8 = "UTF-8";
   private static final String JSON_SERIALIZED_FILTER_START = "/**JSS-";
   private static final String JSON_SERIALIZED_FILTER_END = "-JSS**/";
