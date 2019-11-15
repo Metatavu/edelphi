@@ -5,7 +5,7 @@
   version="6.0">
    
   <context-root></context-root>
-  <virtual-host>edelphi-rest</virtual-host>
+  <virtual-host>edelphi-api</virtual-host>
   <security-domain>keycloak</security-domain> 
   
 </jboss-web>
