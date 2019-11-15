@@ -1,5 +1,4 @@
 import { createMuiTheme, responsiveFontSizes } from "@material-ui/core";
-import { light } from "@material-ui/core/styles/createPalette";
 
 let theme = createMuiTheme();
 theme = responsiveFontSizes(theme);
