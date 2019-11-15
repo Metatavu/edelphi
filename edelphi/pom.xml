@@ -66,30 +66,30 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
     <!-- Singleton Service -->
     
     <wildfly-singleton-service.version>1.1.0</wildfly-singleton-service.version>
-   
+
     <!-- Jsoup -->
-   
-   <jsoup.version>1.10.1</jsoup.version>
-   
-   <streamex.version>0.6.7</streamex.version>
-   <language-detector.version>0.6</language-detector.version>
- 
+
+    <jsoup.version>1.10.1</jsoup.version>
+
+    <streamex.version>0.6.7</streamex.version>
+    <language-detector.version>0.6</language-detector.version>
+
   </properties>
   
   <dependencies>
   
     <dependency> 
-	  <groupId>one.util</groupId> 
-	  <artifactId>streamex</artifactId> 
-	  <version>${streamex.version}</version>
-	</dependency>
+      <groupId>one.util</groupId> 
+      <artifactId>streamex</artifactId> 
+      <version>${streamex.version}</version>
+    </dependency>
 	
-	<dependency>
-		<groupId>com.optimaize.languagedetector</groupId>
-		<artifactId>language-detector</artifactId>
-		<version>${language-detector.version}</version>
-	</dependency>
- 
+    <dependency>
+      <groupId>com.optimaize.languagedetector</groupId>
+      <artifactId>language-detector</artifactId>
+      <version>${language-detector.version}</version>
+    </dependency>
+
     <!-- Transactions -->
     
     <dependency>
