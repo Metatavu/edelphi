@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.BitmapEncoder.BitmapFormat;
 import org.knowm.xchart.XYChart;
@@ -208,7 +209,9 @@ public class ChartController {
     Map<Double, Object> result = new HashMap<>();
     
     for (int i = 0; i < ticks.size(); i++) {
-      result.put(Double.valueOf(i), ticks.get(i));
+      if (StringUtils.isNotBlank(ticks.get(i))) {
+        result.put(Double.valueOf(i), ticks.get(i));
+      }
     }
     
     return result;
