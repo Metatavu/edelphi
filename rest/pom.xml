@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>rest</artifactId>
-  <packaging>war</packaging>
+  <packaging>war</packaging>  
   <name>${project.groupId}:${project.artifactId}</name>
   <description>REST services for eDelphi</description>
   <url>https://github.com/Metatavu/edelphi</url>  
@@ -48,7 +48,29 @@
   </developers>
 
   <properties>
+    <!-- Maven -->
+
     <maven.javadoc.skip>true</maven.javadoc.skip>
+    
+    <!-- Java -->
+    
+    <java.version>11</java.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+        
+    <!-- Keycloak -->
+    
+    <keycloak.version>4.8.3.Final</keycloak.version>
+    
+    <!-- OpenAPI -->
+    
+    <openapitools.jackson-databind-nullable.version>0.2.0</openapitools.jackson-databind-nullable.version>
+    
+    <!-- Test -->
+    
+    <jsonassert.version>1.5.0</jsonassert.version>
+    <rest-assured.version>3.0.3</rest-assured.version>
+
   </properties>
   
   <dependencies>
@@ -170,10 +192,53 @@
       <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
     </dependency>
     
+    <!-- OpenAPI tools -->
+    
+    <dependency>
+      <groupId>org.openapitools</groupId>
+      <artifactId>jackson-databind-nullable</artifactId>
+      <version>${openapitools.jackson-databind-nullable.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.swagger</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>1.5.3</version>
+    </dependency>
+    
+    <!-- Test -->
+    
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    
+    <dependency>
+      <artifactId>jaxrs-functional-test-builder</artifactId>
+      <groupId>fi.metatavu.jaxrs.testbuilder</groupId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.skyscreamer</groupId>
+      <artifactId>jsonassert</artifactId>
+      <version>${jsonassert.version}</version>
+      <scope>test</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <scope>test</scope>
+      <version>${rest-assured.version}</version>
+    </dependency>
+    
   </dependencies>
   
   <build>
     <plugins>
+      <!-- 
       <plugin>
         <groupId>org.openapitools</groupId>
         <artifactId>openapi-generator-maven-plugin</artifactId>
@@ -199,9 +264,224 @@
               </configOptions>
             </configuration>
           </execution>
+          
+          <execution>
+            <id>openapi-generate-java-client</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/../rest-spec/swagger.yaml</inputSpec>
+              <generatorName>java</generatorName>
+              <configOptions>
+                <sourceFolder>src/gen/java/main</sourceFolder>
+                <library>native</library>
+                <dateLibrary>java8</dateLibrary>
+                <java8>true</java8>
+                <invokerPackage>fi.metatavu.edelphi.rest.client</invokerPackage>
+                <useSwaggerAnnotations>false</useSwaggerAnnotations>
+              </configOptions>
+            </configuration>
+          </execution>
         </executions>
-      </plugin>
+      </plugin> -->
     </plugins>
   </build>
+  
+   <profiles>
+    <profile>
+      <id>itests</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>  
+        <!-- Server running mode -->
+
+        <runmode>test</runmode>        
+
+        <!-- Test properties -->
+  
+        <it.port.http>1234</it.port.http>
+        <it.host>localhost</it.host>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <configuration>
+              <images>
+                <image>
+                  <name>mysql:5.6</name>
+                  <alias>test-edelphi-mysql</alias>
+                  <run>
+                    <ports>
+                      <port>3306:3306 </port>
+                    </ports>
+                    <env>
+                      <MYSQL_ROOT_PASSWORD>rootpass</MYSQL_ROOT_PASSWORD>
+                      <MYSQL_DATABASE>edelphidb</MYSQL_DATABASE>
+                      <MYSQL_USER>edelphiuser</MYSQL_USER>
+                      <MYSQL_PASSWORD>edelphipass</MYSQL_PASSWORD>
+                    </env>
+                    <wait>
+                      <log>ready for connections.</log>
+                    </wait>
+                    <cmd>--lower_case_table_names=1</cmd>
+                  </run>
+                </image>
+                <image>
+                  <name>jboss/keycloak:${keycloak.version}</name>
+                  <alias>test-edelphi-keycloak</alias>
+                  <run>
+                    <env>
+                      <KEYCLOAK_USER>admin</KEYCLOAK_USER>
+                      <KEYCLOAK_PASSWORD>admin</KEYCLOAK_PASSWORD>
+                      <!-- 
+                      <KEYCLOAK_IMPORT>/opt/docker/kc.json</KEYCLOAK_IMPORT>
+                     -->
+                    </env>
+                    <volumes>
+                      <bind>
+                        <volume>${project.basedir}/test-volumes/keycloak:/opt/docker</volume>
+                      </bind>
+                    </volumes>
+                    <ports>
+                      <port>8080:8080</port>
+                    </ports>
+                    <wait>
+                      <log>Resuming server</log>
+                      <time>120000</time>
+                    </wait>
+                  </run>
+                </image>
+                <image>
+                  <name>test-edelphi-api</name>
+                  <build>
+                    <dockerFileDir>${project.basedir}</dockerFileDir>
+                    <filter>@</filter>
+                  </build>
+                  <run>
+                    <ports>
+                      <port>1234:8080</port>
+                    </ports>
+                    <links> 
+                      <link>test-edelphi-mysql:test-edelphi-mysql</link>
+                      <link>test-edelphi-keycloak:test-edelphi-keycloak</link>
+                    </links>                    
+                    <env>
+                      <HOST>localhost</HOST>
+                      <CLUSTER_PASSWORD>clusterpass</CLUSTER_PASSWORD>
+                      <DB_HOST>test-edelphi-mysql</DB_HOST>
+                      <DB_PORT>3306</DB_PORT>
+                      <DB_NAME>edelphidb</DB_NAME>
+                      <DB_USERNAME>root</DB_USERNAME>
+                      <DB_PASSWORD>rootpass</DB_PASSWORD>
+                      <KUBERNETES_NAMESPACE>test</KUBERNETES_NAMESPACE>
+                      
+                      <KEYCLOAK_REALM>edelphi</KEYCLOAK_REALM>
+                      <KEYCLOAK_RESOURCE>api</KEYCLOAK_RESOURCE>
+                      <KEYCLOAK_URL>http://test-edelphi-keycloak:8080/auth</KEYCLOAK_URL>
+                      <KEYCLOAK_SECRET>x</KEYCLOAK_SECRET>
+                      
+                      <SMTP_TLS>false</SMTP_TLS>
+                      <SMTP_USERNAME>fake</SMTP_USERNAME>
+                      <SMTP_PASSWORD>false</SMTP_PASSWORD>
+                      <SMTP_HOST>localhost</SMTP_HOST>
+                      <SMTP_PORT>25</SMTP_PORT>
+                    </env>
+                  </run>
+                </image>
+              </images>
+              <showLogs>true</showLogs>
+            </configuration>
+            <executions>
+              <execution>
+                <id>docker-test-edelphi-api-build</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>build</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>docker-test-edelphi-api-start</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>docker-test-edelphi-api-stop</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>stop</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>    
+          
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>wait-maven-plugin</artifactId>
+            <version>1.0</version>
+            <executions>
+              <execution>
+                <id>wait</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>wait</goal>
+                </goals>      
+                <configuration>
+                  <protocol>http</protocol>
+                  <host>localhost</host>
+                  <port>1234</port>
+                  <file>/v1/system/ping</file>
+                  <maxcount>20</maxcount>
+                  <timeout>10000</timeout>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>3.0.0-M3</version>
+            <configuration>
+              <failIfNoTests>true</failIfNoTests>
+              <skipAfterFailureCount>1</skipAfterFailureCount>
+              <argLine>-Xmx2G</argLine>
+              <includes>
+                <include>${it.tests}</include>
+              </includes>
+              <systemPropertyVariables>
+                <java.util.logging.config.file>${project.basedir}/src/test/resources/logging.properties</java.util.logging.config.file>
+                <jboss.home>${wildfly.home}</jboss.home>
+                <module.path>${wildfly.home}/modules</module.path>
+                <it.host>${it.host}</it.host>
+                <it.port.http>${it.port.http}</it.port.http>
+              </systemPropertyVariables>
+            </configuration>
+            <executions>
+              <execution>
+                <id>integration-test</id>
+                <goals>
+                  <goal>integration-test</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>verify</id>
+                <goals>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+        </plugins>
+
+      </build>
+    </profile>  
+  </profiles>
   
 </project>

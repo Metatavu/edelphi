@@ -941,4 +941,28 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     
   }
 
+  @Override
+  public Response createPanel(fi.metatavu.edelphi.rest.model.@Valid Panel panel) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Response deletePanel(Long panelId) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Response listPanels() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Response updatePanel(Long panelId, fi.metatavu.edelphi.rest.model.@Valid Panel panel) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
 }

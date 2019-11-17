@@ -7,6 +7,79 @@ security:
   - bearer:
       []
 paths:
+
+  /panels:
+    get:
+      operationId: listPanels
+      summary: List panels
+      description: List panels
+      tags:
+        - Panels
+      responses:
+        "200":
+          description: Panels
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/Panel"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      operationId: createPanel
+      summary: Create a panel.
+      description: Creates new panel
+      tags:
+        - Panels
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Panel"
+        description: Payload
+        required: true
+      responses:
+        "200":
+          description: Created panel
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Panel"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
                                             
   /panels/{panelId}:
     get:
@@ -30,6 +103,87 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Panel"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updatePanel
+      summary: Updates panel.
+      description: Updates panel
+      tags:
+        - Panels
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Panel"
+        description: Payload
+        required: true
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Updated panel
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Panel"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deletePanel
+      summary: Deletes panel.
+      description: Delets panel
+      tags:
+        - Panels
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: Success
         "400":
           description: Invalid request was sent to the server
           content:
