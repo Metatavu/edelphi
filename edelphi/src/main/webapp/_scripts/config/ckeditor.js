@@ -31,7 +31,7 @@
   ];
   
   CKEDITOR.config.toolbar_thesisDescriptionToolbar = [
-    ['Bold','Italic','Underline'],['Link','Unlink'],['Image','MediaEmbed'],['Table'],['NumberedList','BulletedList']
+    ['Bold','Italic','Underline'],['Link','Unlink'],['Image','MediaEmbed'],['Table'],['NumberedList','BulletedList'], ['Paste','PasteText','PasteFromWord'], ['Source']
   ];
   
   CKEDITOR.config.toolbar_expertiseDescriptionToolbar = [
