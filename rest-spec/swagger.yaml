@@ -7,7 +7,48 @@ security:
   - bearer:
       []
 paths:
-                                            
+
+  /panels:
+    get:
+      operationId: listPanels
+      summary: List panels.
+      description: Lists a panel
+      tags:
+        - Panels
+      parameters:
+        - name: urlName
+          in: query
+          description: panel url name
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A panel list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Panel"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /panels/{panelId}:
     get:
       operationId: findPanel
