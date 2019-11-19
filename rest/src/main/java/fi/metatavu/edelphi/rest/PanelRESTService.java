@@ -797,6 +797,18 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     
     return createOk(panelTranslator.translate(panel));
   }
+  
+  @Override
+  @RolesAllowed("user") 
+  public Response listPanels(String urlName) {
+    User loggedUser = getLoggedUser();
+    
+    List<Panel> panels = panelController.listPanels(urlName).stream()
+      .filter(panel -> permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.ACCESS_PANEL))
+      .collect(Collectors.toList());
+    
+    return createOk(panelTranslator.translate(panels));
+  }
 
   @Override
   @RolesAllowed("user") 

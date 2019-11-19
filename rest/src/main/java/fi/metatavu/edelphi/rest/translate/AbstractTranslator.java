@@ -3,7 +3,9 @@ package fi.metatavu.edelphi.rest.translate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -33,6 +35,16 @@ public abstract class AbstractTranslator<J, R> {
    */
   public abstract R translate(J entity);
 
+  /**
+   * Translates list of entities
+   * 
+   * @param entities list of entities to translate
+   * @return List of translated entities
+   */
+  public List<R> translate(List<J> entities) {
+    return entities.stream().map(this::translate).collect(Collectors.toList());
+  }
+  
   /**
    * Translates date into offset date time
    * 
