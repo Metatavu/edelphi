@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.dao.resources;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
@@ -111,6 +113,40 @@ public class QueryDAO extends GenericDAO<Query> {
     );
     
     return entityManager.createQuery(criteria).getSingleResult();
+  }
+
+  /**
+   * Lists queries
+   * 
+   * @param parentFolder filter by parent folder. Ignored if null is provided
+   * @param urlName filter by URL name. Ignored if null is provided
+   * @param archived filter by archived. Ignored if null is provided
+   * @return list of queries
+   */
+  public List<Query> list(Folder parentFolder, String urlName, Boolean archived) {
+    EntityManager entityManager = getEntityManager(); 
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Query> criteria = criteriaBuilder.createQuery(Query.class);
+    Root<Query> root = criteria.from(Query.class);
+
+    List<Predicate> criterias = new ArrayList<>();
+    
+    if (parentFolder != null) {
+      criterias.add(criteriaBuilder.equal(root.get(Query_.parentFolder), parentFolder));
+    }
+    
+    if (archived != null) {
+      criterias.add(criteriaBuilder.equal(root.get(Query_.archived), archived));
+    }
+    
+    if (urlName != null) {
+      criterias.add(criteriaBuilder.equal(root.get(Query_.urlName), urlName));
+    }
+    
+    criteria.select(root);
+    criteria.where(criteriaBuilder.and(criterias.toArray(new Predicate[0])));
+    
+    return entityManager.createQuery(criteria).getResultList();
   }
   
   public Query updateName(Query query, User modifier, String name, String urlName) {

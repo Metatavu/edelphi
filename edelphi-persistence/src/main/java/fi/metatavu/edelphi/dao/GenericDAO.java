@@ -3,6 +3,7 @@ package fi.metatavu.edelphi.dao;
 import java.lang.reflect.ParameterizedType;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NonUniqueResultException;
@@ -15,6 +16,8 @@ import fi.metatavu.edelphi.domainmodel.base.ModificationTrackedEntity;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 public class GenericDAO<T> {
+  
+  private static Logger logger = Logger.getLogger(GenericDAO.class.getName());
   
   @PersistenceContext
   private EntityManager em;
@@ -115,7 +118,12 @@ public class GenericDAO<T> {
       return em;
     }
     
-    return THREAD_LOCAL.get();
+    EntityManager result = THREAD_LOCAL.get();
+    if (result == null) {
+      logger.severe("Failed to resolve EntityManager");
+    }
+    
+    return result;
   }
   
   public static void setEntityManager(EntityManager entityManager) {

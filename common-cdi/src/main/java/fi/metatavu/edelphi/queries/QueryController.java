@@ -120,8 +120,8 @@ public class QueryController {
    * @param panel panel
    * @return list of panel queries
    */
-  public List<Query> listPanelQueries(Panel panel) {
-    return queryDAO.listByFolderAndArchived(panel.getRootFolder(), Boolean.FALSE);
+  public List<Query> listQueries(Panel panel, String urlName) {
+    return queryDAO.list(panel.getRootFolder(), urlName, Boolean.FALSE);
   }
 
   /**
