@@ -1,14 +1,14 @@
 import * as React from "react";
 import { AxisDomain, ScatterChart, XAxis, YAxis, ZAxis, CartesianGrid, Scatter, Cell, Label } from "recharts";
+import { QueryPageLive2d, QueryPageLive2DColor } from "../../generated/client";
 import { QueryLive2dAnswer } from "../../types";
-import { QueryPage, QueryPageLive2DOptions, QueryPageLive2DColor } from "edelphi-client";
 
 /**
  * Interface representing component properties
  */
 interface Props {
   chartSize: number,
-  page?: QueryPage,
+  page?: QueryPageLive2d,
   values: QueryLive2dAnswer[],
   onScatterChartClick?: (data: any) => Promise<void>
   onScatterChartMouseDown?: (data: any) => Promise<void>
@@ -48,18 +48,20 @@ export default class Live2dQueryChart extends React.Component<Props, State> {
       return null;
     }
 
-    const pageOptions = this.props.page.queryOptions as QueryPageLive2DOptions;
-    if (!pageOptions.axisX || !pageOptions.axisY) {
+    const axisX = this.props.page.axisX;
+    const axisY = this.props.page.axisY;
+
+    if (!axisX || !axisY) {
       return null;
     }
 
-    const optionsX = pageOptions.axisX.options || [];
-    const optionsY = pageOptions.axisY.options || [];
+    const optionsX = axisX.options || [];
+    const optionsY = axisY.options || [];
 
     const domainX: [ AxisDomain, AxisDomain ] = [ 0, optionsX.length - 1 ];
     const domainY: [ AxisDomain, AxisDomain ] = [ 0, optionsY.length - 1 ];
-    const colorY = ( pageOptions.axisY ? pageOptions.axisY.color : undefined ) || "RED";
-    const colorX = ( pageOptions.axisX ? pageOptions.axisX.color : undefined ) || "GREEN";
+    const colorY: QueryPageLive2DColor = ( axisY ? axisY.color : undefined ) || QueryPageLive2DColor.RED;
+    const colorX: QueryPageLive2DColor = ( axisX ? axisX.color : undefined ) || QueryPageLive2DColor.GREEN;
     const data = this.props.values;
 
     return (
@@ -103,9 +105,10 @@ export default class Live2dQueryChart extends React.Component<Props, State> {
       return null;
     }
 
-    const pageOptions = this.props.page.queryOptions as QueryPageLive2DOptions;
-    const colorX = ( pageOptions.axisX ? pageOptions.axisX.color : undefined ) || "GREEN";
-    const labelX = pageOptions.axisX ? pageOptions.axisX.label : undefined;
+    const axisX = this.props.page.axisX;
+
+    const colorX = ( axisX ? axisX.color : undefined ) || "GREEN";
+    const labelX = axisX ? axisX.label : undefined;
 
     const { viewBox } = props;
 
@@ -128,9 +131,10 @@ export default class Live2dQueryChart extends React.Component<Props, State> {
       return null;
     }
 
-    const pageOptions = this.props.page.queryOptions as QueryPageLive2DOptions;
-    const colorY = ( pageOptions.axisY ? pageOptions.axisY.color : undefined ) || "RED";
-    const label = pageOptions.axisY ? pageOptions.axisY.label : undefined;
+    const axisY = this.props.page.axisY;
+
+    const colorY = ( axisY ? axisY.color : undefined ) || "RED";
+    const label = axisY ? axisY.label : undefined;
 
     const { viewBox } = props;
 

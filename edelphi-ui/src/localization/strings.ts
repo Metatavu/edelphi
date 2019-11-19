@@ -1,6 +1,6 @@
 import LocalizedStrings, { 
   LocalizedStringsMethods
-} from "localized-strings";
+} from 'localized-strings';
 
 export interface IStrings extends LocalizedStringsMethods {
 
@@ -11,6 +11,7 @@ export interface IStrings extends LocalizedStringsMethods {
     eDelphi: string,
     welcomeUser: string,
     profileLink: string,
+    profileImageAlt: string,
     logoutLink: string
   },
 

@@ -27,6 +27,10 @@ export interface FindPanelRequest {
     panelId: number;
 }
 
+export interface ListPanelsRequest {
+    urlName?: string;
+}
+
 /**
  * no description
  */
@@ -65,6 +69,42 @@ export class PanelsApi extends runtime.BaseAPI {
      */
     async findPanel(requestParameters: FindPanelRequest): Promise<Panel> {
         const response = await this.findPanelRaw(requestParameters);
+        return await response.value();
+    }
+
+    /**
+     * Lists a panel
+     * List panels.
+     */
+    async listPanelsRaw(requestParameters: ListPanelsRequest): Promise<runtime.ApiResponse<Array<Panel>>> {
+        const queryParameters: runtime.HTTPQuery = {};
+
+        if (requestParameters.urlName !== undefined) {
+            queryParameters['urlName'] = requestParameters.urlName;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["Authorization"] = this.configuration.apiKey("Authorization"); // bearer authentication
+        }
+
+        const response = await this.request({
+            path: `/panels`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        });
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(PanelFromJSON));
+    }
+
+    /**
+     * Lists a panel
+     * List panels.
+     */
+    async listPanels(requestParameters: ListPanelsRequest): Promise<Array<Panel>> {
+        const response = await this.listPanelsRaw(requestParameters);
         return await response.value();
     }
 

@@ -25,6 +25,7 @@ import {
 
 export interface ListQueriesRequest {
     panelId: number;
+    urlName?: string;
 }
 
 /**
@@ -42,6 +43,10 @@ export class QueriesApi extends runtime.BaseAPI {
         }
 
         const queryParameters: runtime.HTTPQuery = {};
+
+        if (requestParameters.urlName !== undefined) {
+            queryParameters['urlName'] = requestParameters.urlName;
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
