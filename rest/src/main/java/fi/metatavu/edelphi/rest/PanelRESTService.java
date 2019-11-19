@@ -408,7 +408,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Override
   @RolesAllowed("user")  
-  public Response listQueryQuestionAnswersLive2d(Long panelId, Long queryId, Long pageId, UUID userId, Long stampId) {
+  public Response listQueryQuestionAnswers(Long panelId, Long queryId, Long pageId, UUID userId, Long stampId) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
