@@ -105,6 +105,11 @@ paths:
           schema:
             type: integer
             format: int64
+        - name: urlName
+          in: query
+          description: query url name
+          schema:
+            type: string
       responses:
         "200":
           description: List of panel queries

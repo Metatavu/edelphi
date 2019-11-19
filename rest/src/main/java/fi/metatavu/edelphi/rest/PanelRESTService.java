@@ -813,7 +813,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Override
   @RolesAllowed("user") 
-  public Response listQueries(Long panelId) {
+  public Response listQueries(Long panelId, String urlName) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
@@ -824,7 +824,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createForbidden("Forbidden");
     }
     
-    List<Query> queries = queryController.listPanelQueries(panel);
+    List<Query> queries = queryController.listQueries(panel, urlName);
     
     return createOk(queries.stream().map(queryTranslator::translate).collect(Collectors.toList()));
   }
