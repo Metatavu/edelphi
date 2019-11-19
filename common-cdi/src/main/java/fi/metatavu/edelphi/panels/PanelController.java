@@ -1,6 +1,8 @@
 package fi.metatavu.edelphi.panels;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -10,11 +12,13 @@ import fi.metatavu.edelphi.dao.panels.PanelStampDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserExpertiseClassDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserExpertiseGroupDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserIntressClassDAO;
+import fi.metatavu.edelphi.dao.resources.FolderDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseClass;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseGroup;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserIntressClass;
+import fi.metatavu.edelphi.domainmodel.resources.Folder;
 
 /**
  * Controller for panels
@@ -23,6 +27,9 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelUserIntressClass;
  */
 @ApplicationScoped
 public class PanelController {
+
+  @Inject
+  private FolderDAO folderDAO;
 
   @Inject
   private PanelDAO panelDAO;
@@ -48,6 +55,47 @@ public class PanelController {
   public Panel findPanelById(Long id) {
     return panelDAO.findById(id);
   }
+  
+  /**
+   * Finds a panel by UrlName
+   * 
+   * @param urlName UrlName
+   * @return panel or null if not found
+   */
+  public Panel findPanelByUrlName(String urlName) {
+    Folder delfoiRootFolder = folderDAO.findById(1l);
+    if (delfoiRootFolder == null) {
+      return null;
+    }
+    
+    Folder panelRootFolder = folderDAO.findByUrlNameAndParentFolderAndArchived(urlName, delfoiRootFolder, Boolean.FALSE);
+    if (panelRootFolder == null) {
+      return null;
+    }
+    
+    return panelDAO.findByRootFolder(panelRootFolder);
+  }
+  
+  /**
+   * Lists panels
+   * 
+   * @param urlName filter list by UrlName. Ignored if null given
+   * @return list of panels
+   */
+  public List<Panel> listPanels(String urlName) {
+    List<Panel> result = null;
+    
+    if (urlName != null) {
+      Panel panel = findPanelByUrlName(urlName); 
+      result = panel != null ? Collections.singletonList(panel) : Collections.emptyList();
+    } else {
+      result = panelDAO.listAll();
+    }
+    
+    return result.stream()
+      .filter(this::isPanelNotArchived)
+      .collect(Collectors.toList());
+  }
 
   /**
    * Finds a panel stamp by id
@@ -72,7 +120,17 @@ public class PanelController {
     
     return false;
   }
-
+  
+  /**
+   * Returns whether panel is archived or not
+   * 
+   * @param panel panel
+   * @return whether panel is archived or not
+   */
+  public boolean isPanelNotArchived(Panel panel) {
+    return !isPanelArchived(panel);
+  }
+  
   /**
    * Returns whether panel stamp is archived or not
    * 
