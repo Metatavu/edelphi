@@ -18,3 +18,4 @@ node_modules
 /keycloak-3.4.3.Final/
 dev
 .classpath
+edelphi-ui/.env

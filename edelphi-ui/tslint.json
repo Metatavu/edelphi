@@ -1,0 +1,26 @@
+{
+  "extends": "tslint:recommended",
+  "defaultSeverity": "warning",
+  "rules": {
+    "max-line-length": {
+      "options": [160]
+    },
+    "import-sources-order": "any",
+    "ordered-imports": false,
+    "object-literal-sort-keys": false,
+    "trailing-comma":false,
+    "interface-name":false,
+    "object-literal-shorthand": false,
+    "eofline": false,
+    "no-empty-interface": false,
+    "no-unused-vars": false,
+    "@typescript-eslint/no-unused-vars": false
+  },
+  "linterOptions": {
+    "exclude": [
+      "config/**/*.js",
+      "node_modules/**/*.ts",
+      "coverage/lcov-report/*.js"
+    ]
+  }
+}
