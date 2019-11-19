@@ -36,13 +36,13 @@ export interface QueryQuestionCommentCategory {
      * @type {number}
      * @memberof QueryQuestionCommentCategory
      */
-    query_id: number;
+    queryId: number;
     /**
      * Query page\'s id or null if category is query scoped
      * @type {number}
      * @memberof QueryQuestionCommentCategory
      */
-    query_page_id?: number;
+    queryPageId?: number;
 }
 
 export function QueryQuestionCommentCategoryFromJSON(json: any): QueryQuestionCommentCategory {
@@ -57,8 +57,8 @@ export function QueryQuestionCommentCategoryFromJSONTyped(json: any, ignoreDiscr
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'name': json['name'],
-        'query_id': json['queryId'],
-        'query_page_id': !exists(json, 'queryPageId') ? undefined : json['queryPageId'],
+        'queryId': json['queryId'],
+        'queryPageId': !exists(json, 'queryPageId') ? undefined : json['queryPageId'],
     };
 }
 
@@ -72,8 +72,8 @@ export function QueryQuestionCommentCategoryToJSON(value?: QueryQuestionCommentC
     return {
         
         'name': value.name,
-        'queryId': value.query_id,
-        'queryPageId': value.query_page_id,
+        'queryId': value.queryId,
+        'queryPageId': value.queryPageId,
     };
 }
 

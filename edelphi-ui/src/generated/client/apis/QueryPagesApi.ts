@@ -30,31 +30,31 @@ import {
 } from '../models';
 
 export interface FindQueryPageLive2dRequest {
-    panel_id: number;
-    query_page_id: number;
+    panelId: number;
+    queryPageId: number;
 }
 
 export interface FindQueryPageTextRequest {
-    panel_id: number;
-    query_page_id: number;
+    panelId: number;
+    queryPageId: number;
 }
 
 export interface ListQueryPagesRequest {
-    panel_id: number;
-    query_id?: number;
-    include_hidden?: boolean;
+    panelId: number;
+    queryId?: number;
+    includeHidden?: boolean;
 }
 
 export interface UpdateQueryPageLive2dRequest {
-    query_page_live2d: QueryPageLive2d;
-    panel_id: number;
-    query_page_id: number;
+    queryPageLive2d: QueryPageLive2d;
+    panelId: number;
+    queryPageId: number;
 }
 
 export interface UpdateQueryPageTextRequest {
-    query_page_text: QueryPageText;
-    panel_id: number;
-    query_page_id: number;
+    queryPageText: QueryPageText;
+    panelId: number;
+    queryPageId: number;
 }
 
 /**
@@ -67,12 +67,12 @@ export class QueryPagesApi extends runtime.BaseAPI {
      * Find live2d query page.
      */
     async findQueryPageLive2dRaw(requestParameters: FindQueryPageLive2dRequest): Promise<runtime.ApiResponse<QueryPageLive2d>> {
-        if (requestParameters.panel_id === null || requestParameters.panel_id === undefined) {
-            throw new runtime.RequiredError('panel_id','Required parameter requestParameters.panel_id was null or undefined when calling findQueryPageLive2d.');
+        if (requestParameters.panelId === null || requestParameters.panelId === undefined) {
+            throw new runtime.RequiredError('panelId','Required parameter requestParameters.panelId was null or undefined when calling findQueryPageLive2d.');
         }
 
-        if (requestParameters.query_page_id === null || requestParameters.query_page_id === undefined) {
-            throw new runtime.RequiredError('query_page_id','Required parameter requestParameters.query_page_id was null or undefined when calling findQueryPageLive2d.');
+        if (requestParameters.queryPageId === null || requestParameters.queryPageId === undefined) {
+            throw new runtime.RequiredError('queryPageId','Required parameter requestParameters.queryPageId was null or undefined when calling findQueryPageLive2d.');
         }
 
         const queryParameters: runtime.HTTPQuery = {};
@@ -84,7 +84,7 @@ export class QueryPagesApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/panels/{panelId}/live2dQueryPages/{queryPageId}`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panel_id))).replace(`{${"queryPageId"}}`, encodeURIComponent(String(requestParameters.query_page_id))),
+            path: `/panels/{panelId}/live2dQueryPages/{queryPageId}`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panelId))).replace(`{${"queryPageId"}}`, encodeURIComponent(String(requestParameters.queryPageId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -107,12 +107,12 @@ export class QueryPagesApi extends runtime.BaseAPI {
      * Find a text query page.
      */
     async findQueryPageTextRaw(requestParameters: FindQueryPageTextRequest): Promise<runtime.ApiResponse<QueryPageText>> {
-        if (requestParameters.panel_id === null || requestParameters.panel_id === undefined) {
-            throw new runtime.RequiredError('panel_id','Required parameter requestParameters.panel_id was null or undefined when calling findQueryPageText.');
+        if (requestParameters.panelId === null || requestParameters.panelId === undefined) {
+            throw new runtime.RequiredError('panelId','Required parameter requestParameters.panelId was null or undefined when calling findQueryPageText.');
         }
 
-        if (requestParameters.query_page_id === null || requestParameters.query_page_id === undefined) {
-            throw new runtime.RequiredError('query_page_id','Required parameter requestParameters.query_page_id was null or undefined when calling findQueryPageText.');
+        if (requestParameters.queryPageId === null || requestParameters.queryPageId === undefined) {
+            throw new runtime.RequiredError('queryPageId','Required parameter requestParameters.queryPageId was null or undefined when calling findQueryPageText.');
         }
 
         const queryParameters: runtime.HTTPQuery = {};
@@ -124,7 +124,7 @@ export class QueryPagesApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/panels/{panelId}/textQueryPages/{queryPageId}`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panel_id))).replace(`{${"queryPageId"}}`, encodeURIComponent(String(requestParameters.query_page_id))),
+            path: `/panels/{panelId}/textQueryPages/{queryPageId}`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panelId))).replace(`{${"queryPageId"}}`, encodeURIComponent(String(requestParameters.queryPageId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -147,18 +147,18 @@ export class QueryPagesApi extends runtime.BaseAPI {
      * Lists query pages.
      */
     async listQueryPagesRaw(requestParameters: ListQueryPagesRequest): Promise<runtime.ApiResponse<Array<QueryPage>>> {
-        if (requestParameters.panel_id === null || requestParameters.panel_id === undefined) {
-            throw new runtime.RequiredError('panel_id','Required parameter requestParameters.panel_id was null or undefined when calling listQueryPages.');
+        if (requestParameters.panelId === null || requestParameters.panelId === undefined) {
+            throw new runtime.RequiredError('panelId','Required parameter requestParameters.panelId was null or undefined when calling listQueryPages.');
         }
 
         const queryParameters: runtime.HTTPQuery = {};
 
-        if (requestParameters.query_id !== undefined) {
-            queryParameters['queryId'] = requestParameters.query_id;
+        if (requestParameters.queryId !== undefined) {
+            queryParameters['queryId'] = requestParameters.queryId;
         }
 
-        if (requestParameters.include_hidden !== undefined) {
-            queryParameters['includeHidden'] = requestParameters.include_hidden;
+        if (requestParameters.includeHidden !== undefined) {
+            queryParameters['includeHidden'] = requestParameters.includeHidden;
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -168,7 +168,7 @@ export class QueryPagesApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/panels/{panelId}/queryPages`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panel_id))),
+            path: `/panels/{panelId}/queryPages`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panelId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -191,16 +191,16 @@ export class QueryPagesApi extends runtime.BaseAPI {
      * Update live2d query page
      */
     async updateQueryPageLive2dRaw(requestParameters: UpdateQueryPageLive2dRequest): Promise<runtime.ApiResponse<QueryPageLive2d>> {
-        if (requestParameters.query_page_live2d === null || requestParameters.query_page_live2d === undefined) {
-            throw new runtime.RequiredError('query_page_live2d','Required parameter requestParameters.query_page_live2d was null or undefined when calling updateQueryPageLive2d.');
+        if (requestParameters.queryPageLive2d === null || requestParameters.queryPageLive2d === undefined) {
+            throw new runtime.RequiredError('queryPageLive2d','Required parameter requestParameters.queryPageLive2d was null or undefined when calling updateQueryPageLive2d.');
         }
 
-        if (requestParameters.panel_id === null || requestParameters.panel_id === undefined) {
-            throw new runtime.RequiredError('panel_id','Required parameter requestParameters.panel_id was null or undefined when calling updateQueryPageLive2d.');
+        if (requestParameters.panelId === null || requestParameters.panelId === undefined) {
+            throw new runtime.RequiredError('panelId','Required parameter requestParameters.panelId was null or undefined when calling updateQueryPageLive2d.');
         }
 
-        if (requestParameters.query_page_id === null || requestParameters.query_page_id === undefined) {
-            throw new runtime.RequiredError('query_page_id','Required parameter requestParameters.query_page_id was null or undefined when calling updateQueryPageLive2d.');
+        if (requestParameters.queryPageId === null || requestParameters.queryPageId === undefined) {
+            throw new runtime.RequiredError('queryPageId','Required parameter requestParameters.queryPageId was null or undefined when calling updateQueryPageLive2d.');
         }
 
         const queryParameters: runtime.HTTPQuery = {};
@@ -214,11 +214,11 @@ export class QueryPagesApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/panels/{panelId}/live2dQueryPages/{queryPageId}`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panel_id))).replace(`{${"queryPageId"}}`, encodeURIComponent(String(requestParameters.query_page_id))),
+            path: `/panels/{panelId}/live2dQueryPages/{queryPageId}`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panelId))).replace(`{${"queryPageId"}}`, encodeURIComponent(String(requestParameters.queryPageId))),
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: QueryPageLive2dToJSON(requestParameters.query_page_live2d),
+            body: QueryPageLive2dToJSON(requestParameters.queryPageLive2d),
         });
 
         return new runtime.JSONApiResponse(response, (jsonValue) => QueryPageLive2dFromJSON(jsonValue));
@@ -238,16 +238,16 @@ export class QueryPagesApi extends runtime.BaseAPI {
      * Update a text query page
      */
     async updateQueryPageTextRaw(requestParameters: UpdateQueryPageTextRequest): Promise<runtime.ApiResponse<QueryPageText>> {
-        if (requestParameters.query_page_text === null || requestParameters.query_page_text === undefined) {
-            throw new runtime.RequiredError('query_page_text','Required parameter requestParameters.query_page_text was null or undefined when calling updateQueryPageText.');
+        if (requestParameters.queryPageText === null || requestParameters.queryPageText === undefined) {
+            throw new runtime.RequiredError('queryPageText','Required parameter requestParameters.queryPageText was null or undefined when calling updateQueryPageText.');
         }
 
-        if (requestParameters.panel_id === null || requestParameters.panel_id === undefined) {
-            throw new runtime.RequiredError('panel_id','Required parameter requestParameters.panel_id was null or undefined when calling updateQueryPageText.');
+        if (requestParameters.panelId === null || requestParameters.panelId === undefined) {
+            throw new runtime.RequiredError('panelId','Required parameter requestParameters.panelId was null or undefined when calling updateQueryPageText.');
         }
 
-        if (requestParameters.query_page_id === null || requestParameters.query_page_id === undefined) {
-            throw new runtime.RequiredError('query_page_id','Required parameter requestParameters.query_page_id was null or undefined when calling updateQueryPageText.');
+        if (requestParameters.queryPageId === null || requestParameters.queryPageId === undefined) {
+            throw new runtime.RequiredError('queryPageId','Required parameter requestParameters.queryPageId was null or undefined when calling updateQueryPageText.');
         }
 
         const queryParameters: runtime.HTTPQuery = {};
@@ -261,11 +261,11 @@ export class QueryPagesApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/panels/{panelId}/textQueryPages/{queryPageId}`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panel_id))).replace(`{${"queryPageId"}}`, encodeURIComponent(String(requestParameters.query_page_id))),
+            path: `/panels/{panelId}/textQueryPages/{queryPageId}`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panelId))).replace(`{${"queryPageId"}}`, encodeURIComponent(String(requestParameters.queryPageId))),
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: QueryPageTextToJSON(requestParameters.query_page_text),
+            body: QueryPageTextToJSON(requestParameters.queryPageText),
         });
 
         return new runtime.JSONApiResponse(response, (jsonValue) => QueryPageTextFromJSON(jsonValue));

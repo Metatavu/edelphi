@@ -37,7 +37,7 @@ export interface Query {
      * @type {boolean}
      * @memberof Query
      */
-    allow_edit_reply?: boolean;
+    allowEditReply?: boolean;
     /**
      * 
      * @type {Date}
@@ -61,7 +61,7 @@ export interface Query {
      * @type {string}
      * @memberof Query
      */
-    url_name?: string;
+    urlName?: string;
     /**
      * 
      * @type {boolean}
@@ -79,13 +79,13 @@ export interface Query {
      * @type {string}
      * @memberof Query
      */
-    readonly creator_id?: string;
+    readonly creatorId?: string;
     /**
      * Comment\'s last modifier id
      * @type {string}
      * @memberof Query
      */
-    readonly last_modifier_id?: string;
+    readonly lastModifierId?: string;
     /**
      * Comment\'s creation time
      * @type {Date}
@@ -97,7 +97,7 @@ export interface Query {
      * @type {Date}
      * @memberof Query
      */
-    readonly last_modified?: Date;
+    readonly lastModified?: Date;
 }
 
 export function QueryFromJSON(json: any): Query {
@@ -111,17 +111,17 @@ export function QueryFromJSONTyped(json: any, ignoreDiscriminator: boolean): Que
     return {
         
         'id': !exists(json, 'id') ? undefined : json['id'],
-        'allow_edit_reply': !exists(json, 'allowEditReply') ? undefined : json['allowEditReply'],
+        'allowEditReply': !exists(json, 'allowEditReply') ? undefined : json['allowEditReply'],
         'closes': !exists(json, 'closes') ? undefined : (new Date(json['closes'])),
         'state': !exists(json, 'state') ? undefined : QueryStateFromJSON(json['state']),
         'name': !exists(json, 'name') ? undefined : json['name'],
-        'url_name': !exists(json, 'urlName') ? undefined : json['urlName'],
+        'urlName': !exists(json, 'urlName') ? undefined : json['urlName'],
         'visible': !exists(json, 'visible') ? undefined : json['visible'],
         'description': !exists(json, 'description') ? undefined : json['description'],
-        'creator_id': !exists(json, 'creatorId') ? undefined : json['creatorId'],
-        'last_modifier_id': !exists(json, 'lastModifierId') ? undefined : json['lastModifierId'],
+        'creatorId': !exists(json, 'creatorId') ? undefined : json['creatorId'],
+        'lastModifierId': !exists(json, 'lastModifierId') ? undefined : json['lastModifierId'],
         'created': !exists(json, 'created') ? undefined : (new Date(json['created'])),
-        'last_modified': !exists(json, 'lastModified') ? undefined : (new Date(json['lastModified'])),
+        'lastModified': !exists(json, 'lastModified') ? undefined : (new Date(json['lastModified'])),
     };
 }
 
@@ -134,11 +134,11 @@ export function QueryToJSON(value?: Query | null): any {
     }
     return {
         
-        'allowEditReply': value.allow_edit_reply,
+        'allowEditReply': value.allowEditReply,
         'closes': value.closes === undefined ? undefined : (value.closes.toISOString()),
         'state': QueryStateToJSON(value.state),
         'name': value.name,
-        'urlName': value.url_name,
+        'urlName': value.urlName,
         'visible': value.visible,
         'description': value.description,
     };

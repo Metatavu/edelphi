@@ -30,13 +30,13 @@ export interface PanelExpertiseGroup {
      * @type {number}
      * @memberof PanelExpertiseGroup
      */
-    interest_class_id: number;
+    interestClassId: number;
     /**
      * 
      * @type {number}
      * @memberof PanelExpertiseGroup
      */
-    expertise_class_id: number;
+    expertiseClassId: number;
 }
 
 export function PanelExpertiseGroupFromJSON(json: any): PanelExpertiseGroup {
@@ -50,8 +50,8 @@ export function PanelExpertiseGroupFromJSONTyped(json: any, ignoreDiscriminator:
     return {
         
         'id': !exists(json, 'id') ? undefined : json['id'],
-        'interest_class_id': json['interestClassId'],
-        'expertise_class_id': json['expertiseClassId'],
+        'interestClassId': json['interestClassId'],
+        'expertiseClassId': json['expertiseClassId'],
     };
 }
 
@@ -64,8 +64,8 @@ export function PanelExpertiseGroupToJSON(value?: PanelExpertiseGroup | null): a
     }
     return {
         
-        'interestClassId': value.interest_class_id,
-        'expertiseClassId': value.expertise_class_id,
+        'interestClassId': value.interestClassId,
+        'expertiseClassId': value.expertiseClassId,
     };
 }
 

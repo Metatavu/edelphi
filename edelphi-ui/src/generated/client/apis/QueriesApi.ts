@@ -24,7 +24,7 @@ import {
 } from '../models';
 
 export interface ListQueriesRequest {
-    panel_id: number;
+    panelId: number;
 }
 
 /**
@@ -37,8 +37,8 @@ export class QueriesApi extends runtime.BaseAPI {
      * Lists queries in a panel.
      */
     async listQueriesRaw(requestParameters: ListQueriesRequest): Promise<runtime.ApiResponse<Array<Query>>> {
-        if (requestParameters.panel_id === null || requestParameters.panel_id === undefined) {
-            throw new runtime.RequiredError('panel_id','Required parameter requestParameters.panel_id was null or undefined when calling listQueries.');
+        if (requestParameters.panelId === null || requestParameters.panelId === undefined) {
+            throw new runtime.RequiredError('panelId','Required parameter requestParameters.panelId was null or undefined when calling listQueries.');
         }
 
         const queryParameters: runtime.HTTPQuery = {};
@@ -50,7 +50,7 @@ export class QueriesApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/panels/{panelId}/queries`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panel_id))),
+            path: `/panels/{panelId}/queries`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panelId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,

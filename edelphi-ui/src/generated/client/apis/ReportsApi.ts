@@ -24,7 +24,7 @@ import {
 } from '../models';
 
 export interface CreateReportRequestRequest {
-    report_request: ReportRequest;
+    reportRequest: ReportRequest;
 }
 
 /**
@@ -37,8 +37,8 @@ export class ReportsApi extends runtime.BaseAPI {
      * Creates a report request
      */
     async createReportRequestRaw(requestParameters: CreateReportRequestRequest): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.report_request === null || requestParameters.report_request === undefined) {
-            throw new runtime.RequiredError('report_request','Required parameter requestParameters.report_request was null or undefined when calling createReportRequest.');
+        if (requestParameters.reportRequest === null || requestParameters.reportRequest === undefined) {
+            throw new runtime.RequiredError('reportRequest','Required parameter requestParameters.reportRequest was null or undefined when calling createReportRequest.');
         }
 
         const queryParameters: runtime.HTTPQuery = {};
@@ -56,7 +56,7 @@ export class ReportsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: ReportRequestToJSON(requestParameters.report_request),
+            body: ReportRequestToJSON(requestParameters.reportRequest),
         });
 
         return new runtime.VoidApiResponse(response);

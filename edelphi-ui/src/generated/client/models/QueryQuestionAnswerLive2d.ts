@@ -45,13 +45,13 @@ export interface QueryQuestionAnswerLive2d {
      * @type {number}
      * @memberof QueryQuestionAnswerLive2d
      */
-    query_page_id: number;
+    queryPageId: number;
     /**
      * 
      * @type {number}
      * @memberof QueryQuestionAnswerLive2d
      */
-    query_reply_id: number;
+    queryReplyId: number;
     /**
      * 
      * @type {QueryQuestionLive2dAnswerData}
@@ -71,8 +71,8 @@ export function QueryQuestionAnswerLive2dFromJSONTyped(json: any, ignoreDiscrimi
     return {
         
         'id': !exists(json, 'id') ? undefined : json['id'],
-        'query_page_id': json['queryPageId'],
-        'query_reply_id': json['queryReplyId'],
+        'queryPageId': json['queryPageId'],
+        'queryReplyId': json['queryReplyId'],
         'data': QueryQuestionLive2dAnswerDataFromJSON(json['data']),
     };
 }
@@ -86,8 +86,8 @@ export function QueryQuestionAnswerLive2dToJSON(value?: QueryQuestionAnswerLive2
     }
     return {
         
-        'queryPageId': value.query_page_id,
-        'queryReplyId': value.query_reply_id,
+        'queryPageId': value.queryPageId,
+        'queryReplyId': value.queryReplyId,
         'data': QueryQuestionLive2dAnswerDataToJSON(value.data),
     };
 }

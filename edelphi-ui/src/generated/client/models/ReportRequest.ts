@@ -43,19 +43,19 @@ export interface ReportRequest {
      * @type {number}
      * @memberof ReportRequest
      */
-    panel_id: number;
+    panelId: number;
     /**
      * 
      * @type {number}
      * @memberof ReportRequest
      */
-    query_id: number;
+    queryId: number;
     /**
      * Panel stamp id. Defaults to current stamp
      * @type {number}
      * @memberof ReportRequest
      */
-    stamp_id?: number;
+    stampId?: number;
     /**
      * 
      * @type {ReportType}
@@ -92,9 +92,9 @@ export function ReportRequestFromJSONTyped(json: any, ignoreDiscriminator: boole
     }
     return {
         
-        'panel_id': json['panelId'],
-        'query_id': json['queryId'],
-        'stamp_id': !exists(json, 'stampId') ? undefined : json['stampId'],
+        'panelId': json['panelId'],
+        'queryId': json['queryId'],
+        'stampId': !exists(json, 'stampId') ? undefined : json['stampId'],
         'type': ReportTypeFromJSON(json['type']),
         'format': ReportFormatFromJSON(json['format']),
         'delivery': !exists(json, 'delivery') ? undefined : ReportDeliveryFromJSON(json['delivery']),
@@ -111,9 +111,9 @@ export function ReportRequestToJSON(value?: ReportRequest | null): any {
     }
     return {
         
-        'panelId': value.panel_id,
-        'queryId': value.query_id,
-        'stampId': value.stamp_id,
+        'panelId': value.panelId,
+        'queryId': value.queryId,
+        'stampId': value.stampId,
         'type': ReportTypeToJSON(value.type),
         'format': ReportFormatToJSON(value.format),
         'delivery': ReportDeliveryToJSON(value.delivery),

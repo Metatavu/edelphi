@@ -57,7 +57,7 @@ export interface QueryPageLive2d {
      * @type {number}
      * @memberof QueryPageLive2d
      */
-    page_number: number;
+    pageNumber: number;
     /**
      * 
      * @type {string}
@@ -75,25 +75,25 @@ export interface QueryPageLive2d {
      * @type {QueryPageCommentOptions}
      * @memberof QueryPageLive2d
      */
-    comment_options: QueryPageCommentOptions;
+    commentOptions: QueryPageCommentOptions;
     /**
      * 
      * @type {QueryPageLive2DAnswersVisibleOption}
      * @memberof QueryPageLive2d
      */
-    answers_visible?: QueryPageLive2DAnswersVisibleOption;
+    answersVisible?: QueryPageLive2DAnswersVisibleOption;
     /**
      * 
      * @type {QueryPageLive2DAxis}
      * @memberof QueryPageLive2d
      */
-    axis_x?: QueryPageLive2DAxis;
+    axisX?: QueryPageLive2DAxis;
     /**
      * 
      * @type {QueryPageLive2DAxis}
      * @memberof QueryPageLive2d
      */
-    axis_y?: QueryPageLive2DAxis;
+    axisY?: QueryPageLive2DAxis;
 }
 
 export function QueryPageLive2dFromJSON(json: any): QueryPageLive2d {
@@ -107,13 +107,13 @@ export function QueryPageLive2dFromJSONTyped(json: any, ignoreDiscriminator: boo
     return {
         
         'id': !exists(json, 'id') ? undefined : json['id'],
-        'page_number': json['pageNumber'],
+        'pageNumber': json['pageNumber'],
         'title': json['title'],
         'type': QueryPageTypeFromJSON(json['type']),
-        'comment_options': QueryPageCommentOptionsFromJSON(json['commentOptions']),
-        'answers_visible': !exists(json, 'answersVisible') ? undefined : QueryPageLive2DAnswersVisibleOptionFromJSON(json['answersVisible']),
-        'axis_x': !exists(json, 'axisX') ? undefined : QueryPageLive2DAxisFromJSON(json['axisX']),
-        'axis_y': !exists(json, 'axisY') ? undefined : QueryPageLive2DAxisFromJSON(json['axisY']),
+        'commentOptions': QueryPageCommentOptionsFromJSON(json['commentOptions']),
+        'answersVisible': !exists(json, 'answersVisible') ? undefined : QueryPageLive2DAnswersVisibleOptionFromJSON(json['answersVisible']),
+        'axisX': !exists(json, 'axisX') ? undefined : QueryPageLive2DAxisFromJSON(json['axisX']),
+        'axisY': !exists(json, 'axisY') ? undefined : QueryPageLive2DAxisFromJSON(json['axisY']),
     };
 }
 
@@ -126,13 +126,13 @@ export function QueryPageLive2dToJSON(value?: QueryPageLive2d | null): any {
     }
     return {
         
-        'pageNumber': value.page_number,
+        'pageNumber': value.pageNumber,
         'title': value.title,
         'type': QueryPageTypeToJSON(value.type),
-        'commentOptions': QueryPageCommentOptionsToJSON(value.comment_options),
-        'answersVisible': QueryPageLive2DAnswersVisibleOptionToJSON(value.answers_visible),
-        'axisX': QueryPageLive2DAxisToJSON(value.axis_x),
-        'axisY': QueryPageLive2DAxisToJSON(value.axis_y),
+        'commentOptions': QueryPageCommentOptionsToJSON(value.commentOptions),
+        'answersVisible': QueryPageLive2DAnswersVisibleOptionToJSON(value.answersVisible),
+        'axisX': QueryPageLive2DAxisToJSON(value.axisX),
+        'axisY': QueryPageLive2DAxisToJSON(value.axisY),
     };
 }
 

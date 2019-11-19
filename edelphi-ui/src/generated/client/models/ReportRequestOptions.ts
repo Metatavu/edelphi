@@ -24,25 +24,25 @@ export interface ReportRequestOptions {
      * @type {Array<number>}
      * @memberof ReportRequestOptions
      */
-    query_page_ids?: Array<number>;
+    queryPageIds?: Array<number>;
     /**
      * Include only speficied expertise group ids
      * @type {Array<number>}
      * @memberof ReportRequestOptions
      */
-    expertise_group_ids?: Array<number>;
+    expertiseGroupIds?: Array<number>;
     /**
      * Include only comments from speficied comment category ids
      * @type {Array<number>}
      * @memberof ReportRequestOptions
      */
-    comment_category_ids?: Array<number>;
+    commentCategoryIds?: Array<number>;
     /**
      * Show 2d answers as 1d graphs instead of 2d graphs
      * @type {boolean}
      * @memberof ReportRequestOptions
      */
-    show2d_as1d?: boolean;
+    show2dAs1d?: boolean;
 }
 
 export function ReportRequestOptionsFromJSON(json: any): ReportRequestOptions {
@@ -55,10 +55,10 @@ export function ReportRequestOptionsFromJSONTyped(json: any, ignoreDiscriminator
     }
     return {
         
-        'query_page_ids': !exists(json, 'queryPageIds') ? undefined : json['queryPageIds'],
-        'expertise_group_ids': !exists(json, 'expertiseGroupIds') ? undefined : json['expertiseGroupIds'],
-        'comment_category_ids': !exists(json, 'commentCategoryIds') ? undefined : json['commentCategoryIds'],
-        'show2d_as1d': !exists(json, 'show2dAs1d') ? undefined : json['show2dAs1d'],
+        'queryPageIds': !exists(json, 'queryPageIds') ? undefined : json['queryPageIds'],
+        'expertiseGroupIds': !exists(json, 'expertiseGroupIds') ? undefined : json['expertiseGroupIds'],
+        'commentCategoryIds': !exists(json, 'commentCategoryIds') ? undefined : json['commentCategoryIds'],
+        'show2dAs1d': !exists(json, 'show2dAs1d') ? undefined : json['show2dAs1d'],
     };
 }
 
@@ -71,10 +71,10 @@ export function ReportRequestOptionsToJSON(value?: ReportRequestOptions | null):
     }
     return {
         
-        'queryPageIds': value.query_page_ids,
-        'expertiseGroupIds': value.expertise_group_ids,
-        'commentCategoryIds': value.comment_category_ids,
-        'show2dAs1d': value.show2d_as1d,
+        'queryPageIds': value.queryPageIds,
+        'expertiseGroupIds': value.expertiseGroupIds,
+        'commentCategoryIds': value.commentCategoryIds,
+        'show2dAs1d': value.show2dAs1d,
     };
 }
 

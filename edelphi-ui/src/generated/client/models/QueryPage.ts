@@ -41,7 +41,7 @@ export interface QueryPage {
      * @type {number}
      * @memberof QueryPage
      */
-    page_number: number;
+    pageNumber: number;
     /**
      * 
      * @type {string}
@@ -59,7 +59,7 @@ export interface QueryPage {
      * @type {QueryPageCommentOptions}
      * @memberof QueryPage
      */
-    comment_options: QueryPageCommentOptions;
+    commentOptions: QueryPageCommentOptions;
 }
 
 export function QueryPageFromJSON(json: any): QueryPage {
@@ -73,10 +73,10 @@ export function QueryPageFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     return {
         
         'id': !exists(json, 'id') ? undefined : json['id'],
-        'page_number': json['pageNumber'],
+        'pageNumber': json['pageNumber'],
         'title': json['title'],
         'type': QueryPageTypeFromJSON(json['type']),
-        'comment_options': QueryPageCommentOptionsFromJSON(json['commentOptions']),
+        'commentOptions': QueryPageCommentOptionsFromJSON(json['commentOptions']),
     };
 }
 
@@ -89,10 +89,10 @@ export function QueryPageToJSON(value?: QueryPage | null): any {
     }
     return {
         
-        'pageNumber': value.page_number,
+        'pageNumber': value.pageNumber,
         'title': value.title,
         'type': QueryPageTypeToJSON(value.type),
-        'commentOptions': QueryPageCommentOptionsToJSON(value.comment_options),
+        'commentOptions': QueryPageCommentOptionsToJSON(value.commentOptions),
     };
 }
 

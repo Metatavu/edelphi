@@ -18,38 +18,35 @@ import {
     ErrorResponse,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
-    QueryQuestionAnswer,
-    QueryQuestionAnswerFromJSON,
-    QueryQuestionAnswerToJSON,
     QueryQuestionAnswerLive2d,
     QueryQuestionAnswerLive2dFromJSON,
     QueryQuestionAnswerLive2dToJSON,
 } from '../models';
 
 export interface DeleteQueryQuestionAnswersRequest {
-    panel_id: number;
-    query_id?: number;
-    query_page_id?: number;
-    query_section_id?: number;
+    panelId: number;
+    queryId?: number;
+    queryPageId?: number;
+    querySectionId?: number;
 }
 
 export interface FindQueryQuestionAnswerLive2dRequest {
-    panel_id: number;
-    answer_id: string;
+    panelId: number;
+    answerId: string;
 }
 
-export interface ListQueryQuestionAnswersRequest {
-    panel_id: number;
-    query_id?: number;
-    page_id?: number;
-    user_id?: string;
-    stamp_id?: number;
+export interface ListQueryQuestionAnswersLive2dRequest {
+    panelId: number;
+    queryId?: number;
+    pageId?: number;
+    userId?: string;
+    stampId?: number;
 }
 
 export interface UpsertQueryQuestionAnswerLive2dRequest {
-    query_question_answer_live2d: QueryQuestionAnswerLive2d;
-    panel_id: number;
-    answer_id: string;
+    queryQuestionAnswerLive2d: QueryQuestionAnswerLive2d;
+    panelId: number;
+    answerId: string;
 }
 
 /**
@@ -62,22 +59,22 @@ export class QueryQuestionAnswersApi extends runtime.BaseAPI {
      * Delete query question answers
      */
     async deleteQueryQuestionAnswersRaw(requestParameters: DeleteQueryQuestionAnswersRequest): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.panel_id === null || requestParameters.panel_id === undefined) {
-            throw new runtime.RequiredError('panel_id','Required parameter requestParameters.panel_id was null or undefined when calling deleteQueryQuestionAnswers.');
+        if (requestParameters.panelId === null || requestParameters.panelId === undefined) {
+            throw new runtime.RequiredError('panelId','Required parameter requestParameters.panelId was null or undefined when calling deleteQueryQuestionAnswers.');
         }
 
         const queryParameters: runtime.HTTPQuery = {};
 
-        if (requestParameters.query_id !== undefined) {
-            queryParameters['queryId'] = requestParameters.query_id;
+        if (requestParameters.queryId !== undefined) {
+            queryParameters['queryId'] = requestParameters.queryId;
         }
 
-        if (requestParameters.query_page_id !== undefined) {
-            queryParameters['queryPageId'] = requestParameters.query_page_id;
+        if (requestParameters.queryPageId !== undefined) {
+            queryParameters['queryPageId'] = requestParameters.queryPageId;
         }
 
-        if (requestParameters.query_section_id !== undefined) {
-            queryParameters['querySectionId'] = requestParameters.query_section_id;
+        if (requestParameters.querySectionId !== undefined) {
+            queryParameters['querySectionId'] = requestParameters.querySectionId;
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -87,7 +84,7 @@ export class QueryQuestionAnswersApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/panels/{panelId}/queryQuestionAnswers`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panel_id))),
+            path: `/panels/{panelId}/queryQuestionAnswers`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panelId))),
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
@@ -109,12 +106,12 @@ export class QueryQuestionAnswersApi extends runtime.BaseAPI {
      * Find query question answer.
      */
     async findQueryQuestionAnswerLive2dRaw(requestParameters: FindQueryQuestionAnswerLive2dRequest): Promise<runtime.ApiResponse<QueryQuestionAnswerLive2d>> {
-        if (requestParameters.panel_id === null || requestParameters.panel_id === undefined) {
-            throw new runtime.RequiredError('panel_id','Required parameter requestParameters.panel_id was null or undefined when calling findQueryQuestionAnswerLive2d.');
+        if (requestParameters.panelId === null || requestParameters.panelId === undefined) {
+            throw new runtime.RequiredError('panelId','Required parameter requestParameters.panelId was null or undefined when calling findQueryQuestionAnswerLive2d.');
         }
 
-        if (requestParameters.answer_id === null || requestParameters.answer_id === undefined) {
-            throw new runtime.RequiredError('answer_id','Required parameter requestParameters.answer_id was null or undefined when calling findQueryQuestionAnswerLive2d.');
+        if (requestParameters.answerId === null || requestParameters.answerId === undefined) {
+            throw new runtime.RequiredError('answerId','Required parameter requestParameters.answerId was null or undefined when calling findQueryQuestionAnswerLive2d.');
         }
 
         const queryParameters: runtime.HTTPQuery = {};
@@ -126,7 +123,7 @@ export class QueryQuestionAnswersApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/panels/{panelId}/live2dQueryQuestionAnswers/{answerId}`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panel_id))).replace(`{${"answerId"}}`, encodeURIComponent(String(requestParameters.answer_id))),
+            path: `/panels/{panelId}/live2dQueryQuestionAnswers/{answerId}`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panelId))).replace(`{${"answerId"}}`, encodeURIComponent(String(requestParameters.answerId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -145,30 +142,30 @@ export class QueryQuestionAnswersApi extends runtime.BaseAPI {
     }
 
     /**
-     * Lists query question answers
-     * Lists query question answers
+     * Lists query question live2d answers
+     * Lists query question live2d answers
      */
-    async listQueryQuestionAnswersRaw(requestParameters: ListQueryQuestionAnswersRequest): Promise<runtime.ApiResponse<Array<QueryQuestionAnswer>>> {
-        if (requestParameters.panel_id === null || requestParameters.panel_id === undefined) {
-            throw new runtime.RequiredError('panel_id','Required parameter requestParameters.panel_id was null or undefined when calling listQueryQuestionAnswers.');
+    async listQueryQuestionAnswersLive2dRaw(requestParameters: ListQueryQuestionAnswersLive2dRequest): Promise<runtime.ApiResponse<Array<QueryQuestionAnswerLive2d>>> {
+        if (requestParameters.panelId === null || requestParameters.panelId === undefined) {
+            throw new runtime.RequiredError('panelId','Required parameter requestParameters.panelId was null or undefined when calling listQueryQuestionAnswersLive2d.');
         }
 
         const queryParameters: runtime.HTTPQuery = {};
 
-        if (requestParameters.query_id !== undefined) {
-            queryParameters['queryId'] = requestParameters.query_id;
+        if (requestParameters.queryId !== undefined) {
+            queryParameters['queryId'] = requestParameters.queryId;
         }
 
-        if (requestParameters.page_id !== undefined) {
-            queryParameters['pageId'] = requestParameters.page_id;
+        if (requestParameters.pageId !== undefined) {
+            queryParameters['pageId'] = requestParameters.pageId;
         }
 
-        if (requestParameters.user_id !== undefined) {
-            queryParameters['userId'] = requestParameters.user_id;
+        if (requestParameters.userId !== undefined) {
+            queryParameters['userId'] = requestParameters.userId;
         }
 
-        if (requestParameters.stamp_id !== undefined) {
-            queryParameters['stampId'] = requestParameters.stamp_id;
+        if (requestParameters.stampId !== undefined) {
+            queryParameters['stampId'] = requestParameters.stampId;
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -178,21 +175,21 @@ export class QueryQuestionAnswersApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/panels/{panelId}/queryQuestionAnswers`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panel_id))),
+            path: `/panels/{panelId}/live2dQueryQuestionAnswers`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panelId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
         });
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(QueryQuestionAnswerFromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(QueryQuestionAnswerLive2dFromJSON));
     }
 
     /**
-     * Lists query question answers
-     * Lists query question answers
+     * Lists query question live2d answers
+     * Lists query question live2d answers
      */
-    async listQueryQuestionAnswers(requestParameters: ListQueryQuestionAnswersRequest): Promise<Array<QueryQuestionAnswer>> {
-        const response = await this.listQueryQuestionAnswersRaw(requestParameters);
+    async listQueryQuestionAnswersLive2d(requestParameters: ListQueryQuestionAnswersLive2dRequest): Promise<Array<QueryQuestionAnswerLive2d>> {
+        const response = await this.listQueryQuestionAnswersLive2dRaw(requestParameters);
         return await response.value();
     }
 
@@ -201,16 +198,16 @@ export class QueryQuestionAnswersApi extends runtime.BaseAPI {
      * Creates or updates query question answer
      */
     async upsertQueryQuestionAnswerLive2dRaw(requestParameters: UpsertQueryQuestionAnswerLive2dRequest): Promise<runtime.ApiResponse<QueryQuestionAnswerLive2d>> {
-        if (requestParameters.query_question_answer_live2d === null || requestParameters.query_question_answer_live2d === undefined) {
-            throw new runtime.RequiredError('query_question_answer_live2d','Required parameter requestParameters.query_question_answer_live2d was null or undefined when calling upsertQueryQuestionAnswerLive2d.');
+        if (requestParameters.queryQuestionAnswerLive2d === null || requestParameters.queryQuestionAnswerLive2d === undefined) {
+            throw new runtime.RequiredError('queryQuestionAnswerLive2d','Required parameter requestParameters.queryQuestionAnswerLive2d was null or undefined when calling upsertQueryQuestionAnswerLive2d.');
         }
 
-        if (requestParameters.panel_id === null || requestParameters.panel_id === undefined) {
-            throw new runtime.RequiredError('panel_id','Required parameter requestParameters.panel_id was null or undefined when calling upsertQueryQuestionAnswerLive2d.');
+        if (requestParameters.panelId === null || requestParameters.panelId === undefined) {
+            throw new runtime.RequiredError('panelId','Required parameter requestParameters.panelId was null or undefined when calling upsertQueryQuestionAnswerLive2d.');
         }
 
-        if (requestParameters.answer_id === null || requestParameters.answer_id === undefined) {
-            throw new runtime.RequiredError('answer_id','Required parameter requestParameters.answer_id was null or undefined when calling upsertQueryQuestionAnswerLive2d.');
+        if (requestParameters.answerId === null || requestParameters.answerId === undefined) {
+            throw new runtime.RequiredError('answerId','Required parameter requestParameters.answerId was null or undefined when calling upsertQueryQuestionAnswerLive2d.');
         }
 
         const queryParameters: runtime.HTTPQuery = {};
@@ -224,11 +221,11 @@ export class QueryQuestionAnswersApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/panels/{panelId}/live2dQueryQuestionAnswers/{answerId}`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panel_id))).replace(`{${"answerId"}}`, encodeURIComponent(String(requestParameters.answer_id))),
+            path: `/panels/{panelId}/live2dQueryQuestionAnswers/{answerId}`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panelId))).replace(`{${"answerId"}}`, encodeURIComponent(String(requestParameters.answerId))),
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: QueryQuestionAnswerLive2dToJSON(requestParameters.query_question_answer_live2d),
+            body: QueryQuestionAnswerLive2dToJSON(requestParameters.queryQuestionAnswerLive2d),
         });
 
         return new runtime.JSONApiResponse(response, (jsonValue) => QueryQuestionAnswerLive2dFromJSON(jsonValue));

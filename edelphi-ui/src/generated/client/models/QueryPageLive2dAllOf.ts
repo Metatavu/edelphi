@@ -35,19 +35,19 @@ export interface QueryPageLive2dAllOf {
      * @type {QueryPageLive2DAnswersVisibleOption}
      * @memberof QueryPageLive2dAllOf
      */
-    answers_visible?: QueryPageLive2DAnswersVisibleOption;
+    answersVisible?: QueryPageLive2DAnswersVisibleOption;
     /**
      * 
      * @type {QueryPageLive2DAxis}
      * @memberof QueryPageLive2dAllOf
      */
-    axis_x?: QueryPageLive2DAxis;
+    axisX?: QueryPageLive2DAxis;
     /**
      * 
      * @type {QueryPageLive2DAxis}
      * @memberof QueryPageLive2dAllOf
      */
-    axis_y?: QueryPageLive2DAxis;
+    axisY?: QueryPageLive2DAxis;
 }
 
 export function QueryPageLive2dAllOfFromJSON(json: any): QueryPageLive2dAllOf {
@@ -60,9 +60,9 @@ export function QueryPageLive2dAllOfFromJSONTyped(json: any, ignoreDiscriminator
     }
     return {
         
-        'answers_visible': !exists(json, 'answersVisible') ? undefined : QueryPageLive2DAnswersVisibleOptionFromJSON(json['answersVisible']),
-        'axis_x': !exists(json, 'axisX') ? undefined : QueryPageLive2DAxisFromJSON(json['axisX']),
-        'axis_y': !exists(json, 'axisY') ? undefined : QueryPageLive2DAxisFromJSON(json['axisY']),
+        'answersVisible': !exists(json, 'answersVisible') ? undefined : QueryPageLive2DAnswersVisibleOptionFromJSON(json['answersVisible']),
+        'axisX': !exists(json, 'axisX') ? undefined : QueryPageLive2DAxisFromJSON(json['axisX']),
+        'axisY': !exists(json, 'axisY') ? undefined : QueryPageLive2DAxisFromJSON(json['axisY']),
     };
 }
 
@@ -75,9 +75,9 @@ export function QueryPageLive2dAllOfToJSON(value?: QueryPageLive2dAllOf | null):
     }
     return {
         
-        'answersVisible': QueryPageLive2DAnswersVisibleOptionToJSON(value.answers_visible),
-        'axisX': QueryPageLive2DAxisToJSON(value.axis_x),
-        'axisY': QueryPageLive2DAxisToJSON(value.axis_y),
+        'answersVisible': QueryPageLive2DAnswersVisibleOptionToJSON(value.answersVisible),
+        'axisX': QueryPageLive2DAxisToJSON(value.axisX),
+        'axisY': QueryPageLive2DAxisToJSON(value.axisY),
     };
 }
 

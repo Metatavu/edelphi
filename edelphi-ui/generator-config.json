@@ -2,5 +2,5 @@
   "typescriptThreePlus": true,
   "supportsES6": true,
   "prependFormOrBodyParameters": true,
-  "modelPropertyNaming": "snake_case"
+  "modelPropertyNaming": "camelCase"
 }

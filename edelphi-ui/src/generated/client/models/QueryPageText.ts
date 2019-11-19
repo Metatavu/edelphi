@@ -49,7 +49,7 @@ export interface QueryPageText {
      * @type {number}
      * @memberof QueryPageText
      */
-    page_number: number;
+    pageNumber: number;
     /**
      * 
      * @type {string}
@@ -67,7 +67,7 @@ export interface QueryPageText {
      * @type {QueryPageCommentOptions}
      * @memberof QueryPageText
      */
-    comment_options: QueryPageCommentOptions;
+    commentOptions: QueryPageCommentOptions;
     /**
      * 
      * @type {string}
@@ -87,10 +87,10 @@ export function QueryPageTextFromJSONTyped(json: any, ignoreDiscriminator: boole
     return {
         
         'id': !exists(json, 'id') ? undefined : json['id'],
-        'page_number': json['pageNumber'],
+        'pageNumber': json['pageNumber'],
         'title': json['title'],
         'type': QueryPageTypeFromJSON(json['type']),
-        'comment_options': QueryPageCommentOptionsFromJSON(json['commentOptions']),
+        'commentOptions': QueryPageCommentOptionsFromJSON(json['commentOptions']),
         'content': !exists(json, 'content') ? undefined : json['content'],
     };
 }
@@ -104,10 +104,10 @@ export function QueryPageTextToJSON(value?: QueryPageText | null): any {
     }
     return {
         
-        'pageNumber': value.page_number,
+        'pageNumber': value.pageNumber,
         'title': value.title,
         'type': QueryPageTypeToJSON(value.type),
-        'commentOptions': QueryPageCommentOptionsToJSON(value.comment_options),
+        'commentOptions': QueryPageCommentOptionsToJSON(value.commentOptions),
         'content': value.content,
     };
 }

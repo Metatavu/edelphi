@@ -24,7 +24,7 @@ import {
 } from '../models';
 
 export interface FindUserRequest {
-    user_id: string;
+    userId: string;
 }
 
 /**
@@ -37,8 +37,8 @@ export class UsersApi extends runtime.BaseAPI {
      * Find user
      */
     async findUserRaw(requestParameters: FindUserRequest): Promise<runtime.ApiResponse<User>> {
-        if (requestParameters.user_id === null || requestParameters.user_id === undefined) {
-            throw new runtime.RequiredError('user_id','Required parameter requestParameters.user_id was null or undefined when calling findUser.');
+        if (requestParameters.userId === null || requestParameters.userId === undefined) {
+            throw new runtime.RequiredError('userId','Required parameter requestParameters.userId was null or undefined when calling findUser.');
         }
 
         const queryParameters: runtime.HTTPQuery = {};
@@ -50,7 +50,7 @@ export class UsersApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/users/{userId}`.replace(`{${"userId"}}`, encodeURIComponent(String(requestParameters.user_id))),
+            path: `/users/{userId}`.replace(`{${"userId"}}`, encodeURIComponent(String(requestParameters.userId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,

@@ -30,19 +30,19 @@ export interface User {
      * @type {string}
      * @memberof User
      */
-    first_name?: string;
+    firstName?: string;
     /**
      * 
      * @type {string}
      * @memberof User
      */
-    last_name?: string;
+    lastName?: string;
     /**
      * 
      * @type {string}
      * @memberof User
      */
-    profile_image_url?: string;
+    profileImageUrl?: string;
 }
 
 export function UserFromJSON(json: any): User {
@@ -56,9 +56,9 @@ export function UserFromJSONTyped(json: any, ignoreDiscriminator: boolean): User
     return {
         
         'id': !exists(json, 'id') ? undefined : json['id'],
-        'first_name': !exists(json, 'firstName') ? undefined : json['firstName'],
-        'last_name': !exists(json, 'lastName') ? undefined : json['lastName'],
-        'profile_image_url': !exists(json, 'profileImageUrl') ? undefined : json['profileImageUrl'],
+        'firstName': !exists(json, 'firstName') ? undefined : json['firstName'],
+        'lastName': !exists(json, 'lastName') ? undefined : json['lastName'],
+        'profileImageUrl': !exists(json, 'profileImageUrl') ? undefined : json['profileImageUrl'],
     };
 }
 
@@ -71,9 +71,9 @@ export function UserToJSON(value?: User | null): any {
     }
     return {
         
-        'firstName': value.first_name,
-        'lastName': value.last_name,
-        'profileImageUrl': value.profile_image_url,
+        'firstName': value.firstName,
+        'lastName': value.lastName,
+        'profileImageUrl': value.profileImageUrl,
     };
 }
 

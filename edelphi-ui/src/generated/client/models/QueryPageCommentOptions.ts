@@ -30,7 +30,7 @@ export interface QueryPageCommentOptions {
      * @type {boolean}
      * @memberof QueryPageCommentOptions
      */
-    discussion_visible: boolean;
+    discussionVisible: boolean;
     /**
      * 
      * @type {Array<string>}
@@ -50,7 +50,7 @@ export function QueryPageCommentOptionsFromJSONTyped(json: any, ignoreDiscrimina
     return {
         
         'commentable': json['commentable'],
-        'discussion_visible': json['discussionVisible'],
+        'discussionVisible': json['discussionVisible'],
         'categories': !exists(json, 'categories') ? undefined : json['categories'],
     };
 }
@@ -65,7 +65,7 @@ export function QueryPageCommentOptionsToJSON(value?: QueryPageCommentOptions | 
     return {
         
         'commentable': value.commentable,
-        'discussionVisible': value.discussion_visible,
+        'discussionVisible': value.discussionVisible,
         'categories': value.categories,
     };
 }

@@ -47,7 +47,7 @@ export interface Panel {
      * @type {string}
      * @memberof Panel
      */
-    readonly url_name?: string;
+    readonly urlName?: string;
     /**
      * 
      * @type {string}
@@ -59,7 +59,7 @@ export interface Panel {
      * @type {PanelAccessLevel}
      * @memberof Panel
      */
-    access_level: PanelAccessLevel;
+    accessLevel: PanelAccessLevel;
     /**
      * 
      * @type {PanelState}
@@ -80,9 +80,9 @@ export function PanelFromJSONTyped(json: any, ignoreDiscriminator: boolean): Pan
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'name': json['name'],
-        'url_name': !exists(json, 'urlName') ? undefined : json['urlName'],
+        'urlName': !exists(json, 'urlName') ? undefined : json['urlName'],
         'description': !exists(json, 'description') ? undefined : json['description'],
-        'access_level': PanelAccessLevelFromJSON(json['accessLevel']),
+        'accessLevel': PanelAccessLevelFromJSON(json['accessLevel']),
         'state': PanelStateFromJSON(json['state']),
     };
 }
@@ -98,7 +98,7 @@ export function PanelToJSON(value?: Panel | null): any {
         
         'name': value.name,
         'description': value.description,
-        'accessLevel': PanelAccessLevelToJSON(value.access_level),
+        'accessLevel': PanelAccessLevelToJSON(value.accessLevel),
         'state': PanelStateToJSON(value.state),
     };
 }

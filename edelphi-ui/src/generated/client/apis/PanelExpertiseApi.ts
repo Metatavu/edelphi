@@ -30,15 +30,15 @@ import {
 } from '../models';
 
 export interface ListExpertiseClassesRequest {
-    panel_id: number;
+    panelId: number;
 }
 
 export interface ListExpertiseGroupsRequest {
-    panel_id: number;
+    panelId: number;
 }
 
 export interface ListInterestClassesRequest {
-    panel_id: number;
+    panelId: number;
 }
 
 /**
@@ -51,8 +51,8 @@ export class PanelExpertiseApi extends runtime.BaseAPI {
      * List panel expertise classes
      */
     async listExpertiseClassesRaw(requestParameters: ListExpertiseClassesRequest): Promise<runtime.ApiResponse<Array<PanelExpertiseClass>>> {
-        if (requestParameters.panel_id === null || requestParameters.panel_id === undefined) {
-            throw new runtime.RequiredError('panel_id','Required parameter requestParameters.panel_id was null or undefined when calling listExpertiseClasses.');
+        if (requestParameters.panelId === null || requestParameters.panelId === undefined) {
+            throw new runtime.RequiredError('panelId','Required parameter requestParameters.panelId was null or undefined when calling listExpertiseClasses.');
         }
 
         const queryParameters: runtime.HTTPQuery = {};
@@ -64,7 +64,7 @@ export class PanelExpertiseApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/panels/{panelId}/expertiseClasses`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panel_id))),
+            path: `/panels/{panelId}/expertiseClasses`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panelId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -87,8 +87,8 @@ export class PanelExpertiseApi extends runtime.BaseAPI {
      * List panel expertise groups
      */
     async listExpertiseGroupsRaw(requestParameters: ListExpertiseGroupsRequest): Promise<runtime.ApiResponse<Array<PanelExpertiseGroup>>> {
-        if (requestParameters.panel_id === null || requestParameters.panel_id === undefined) {
-            throw new runtime.RequiredError('panel_id','Required parameter requestParameters.panel_id was null or undefined when calling listExpertiseGroups.');
+        if (requestParameters.panelId === null || requestParameters.panelId === undefined) {
+            throw new runtime.RequiredError('panelId','Required parameter requestParameters.panelId was null or undefined when calling listExpertiseGroups.');
         }
 
         const queryParameters: runtime.HTTPQuery = {};
@@ -100,7 +100,7 @@ export class PanelExpertiseApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/panels/{panelId}/expertiseGroups`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panel_id))),
+            path: `/panels/{panelId}/expertiseGroups`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panelId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -123,8 +123,8 @@ export class PanelExpertiseApi extends runtime.BaseAPI {
      * List panel interest classes
      */
     async listInterestClassesRaw(requestParameters: ListInterestClassesRequest): Promise<runtime.ApiResponse<Array<PanelInterestClass>>> {
-        if (requestParameters.panel_id === null || requestParameters.panel_id === undefined) {
-            throw new runtime.RequiredError('panel_id','Required parameter requestParameters.panel_id was null or undefined when calling listInterestClasses.');
+        if (requestParameters.panelId === null || requestParameters.panelId === undefined) {
+            throw new runtime.RequiredError('panelId','Required parameter requestParameters.panelId was null or undefined when calling listInterestClasses.');
         }
 
         const queryParameters: runtime.HTTPQuery = {};
@@ -136,7 +136,7 @@ export class PanelExpertiseApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/panels/{panelId}/interestClasses`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panel_id))),
+            path: `/panels/{panelId}/interestClasses`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panelId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,

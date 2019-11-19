@@ -24,30 +24,30 @@ import {
 } from '../models';
 
 export interface CreateQueryQuestionCommentCategoryRequest {
-    query_question_comment_category: QueryQuestionCommentCategory;
-    panel_id: number;
+    queryQuestionCommentCategory: QueryQuestionCommentCategory;
+    panelId: number;
 }
 
 export interface DeleteQueryQuestionCommentCategoryRequest {
-    panel_id: number;
-    category_id: number;
+    panelId: number;
+    categoryId: number;
 }
 
 export interface FindQueryQuestionCommentCategoryRequest {
-    panel_id: number;
-    category_id: number;
+    panelId: number;
+    categoryId: number;
 }
 
 export interface ListQueryQuestionCommentCategoriesRequest {
-    panel_id: number;
-    page_id?: number;
-    query_id?: number;
+    panelId: number;
+    pageId?: number;
+    queryId?: number;
 }
 
 export interface UpdateQueryQuestionCommentCategoryRequest {
-    query_question_comment_category: QueryQuestionCommentCategory;
-    panel_id: number;
-    category_id: number;
+    queryQuestionCommentCategory: QueryQuestionCommentCategory;
+    panelId: number;
+    categoryId: number;
 }
 
 /**
@@ -60,12 +60,12 @@ export class QueryQuestionCommentCategoriesApi extends runtime.BaseAPI {
      * Create query question category
      */
     async createQueryQuestionCommentCategoryRaw(requestParameters: CreateQueryQuestionCommentCategoryRequest): Promise<runtime.ApiResponse<QueryQuestionCommentCategory>> {
-        if (requestParameters.query_question_comment_category === null || requestParameters.query_question_comment_category === undefined) {
-            throw new runtime.RequiredError('query_question_comment_category','Required parameter requestParameters.query_question_comment_category was null or undefined when calling createQueryQuestionCommentCategory.');
+        if (requestParameters.queryQuestionCommentCategory === null || requestParameters.queryQuestionCommentCategory === undefined) {
+            throw new runtime.RequiredError('queryQuestionCommentCategory','Required parameter requestParameters.queryQuestionCommentCategory was null or undefined when calling createQueryQuestionCommentCategory.');
         }
 
-        if (requestParameters.panel_id === null || requestParameters.panel_id === undefined) {
-            throw new runtime.RequiredError('panel_id','Required parameter requestParameters.panel_id was null or undefined when calling createQueryQuestionCommentCategory.');
+        if (requestParameters.panelId === null || requestParameters.panelId === undefined) {
+            throw new runtime.RequiredError('panelId','Required parameter requestParameters.panelId was null or undefined when calling createQueryQuestionCommentCategory.');
         }
 
         const queryParameters: runtime.HTTPQuery = {};
@@ -79,11 +79,11 @@ export class QueryQuestionCommentCategoriesApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/panels/{panelId}/queryQuestionCommentCategories`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panel_id))),
+            path: `/panels/{panelId}/queryQuestionCommentCategories`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panelId))),
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: QueryQuestionCommentCategoryToJSON(requestParameters.query_question_comment_category),
+            body: QueryQuestionCommentCategoryToJSON(requestParameters.queryQuestionCommentCategory),
         });
 
         return new runtime.JSONApiResponse(response, (jsonValue) => QueryQuestionCommentCategoryFromJSON(jsonValue));
@@ -103,12 +103,12 @@ export class QueryQuestionCommentCategoriesApi extends runtime.BaseAPI {
      * Delete query question category
      */
     async deleteQueryQuestionCommentCategoryRaw(requestParameters: DeleteQueryQuestionCommentCategoryRequest): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.panel_id === null || requestParameters.panel_id === undefined) {
-            throw new runtime.RequiredError('panel_id','Required parameter requestParameters.panel_id was null or undefined when calling deleteQueryQuestionCommentCategory.');
+        if (requestParameters.panelId === null || requestParameters.panelId === undefined) {
+            throw new runtime.RequiredError('panelId','Required parameter requestParameters.panelId was null or undefined when calling deleteQueryQuestionCommentCategory.');
         }
 
-        if (requestParameters.category_id === null || requestParameters.category_id === undefined) {
-            throw new runtime.RequiredError('category_id','Required parameter requestParameters.category_id was null or undefined when calling deleteQueryQuestionCommentCategory.');
+        if (requestParameters.categoryId === null || requestParameters.categoryId === undefined) {
+            throw new runtime.RequiredError('categoryId','Required parameter requestParameters.categoryId was null or undefined when calling deleteQueryQuestionCommentCategory.');
         }
 
         const queryParameters: runtime.HTTPQuery = {};
@@ -120,7 +120,7 @@ export class QueryQuestionCommentCategoriesApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/panels/{panelId}/queryQuestionCommentCategories/{categoryId}`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panel_id))).replace(`{${"categoryId"}}`, encodeURIComponent(String(requestParameters.category_id))),
+            path: `/panels/{panelId}/queryQuestionCommentCategories/{categoryId}`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panelId))).replace(`{${"categoryId"}}`, encodeURIComponent(String(requestParameters.categoryId))),
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
@@ -142,12 +142,12 @@ export class QueryQuestionCommentCategoriesApi extends runtime.BaseAPI {
      * Find query question category
      */
     async findQueryQuestionCommentCategoryRaw(requestParameters: FindQueryQuestionCommentCategoryRequest): Promise<runtime.ApiResponse<QueryQuestionCommentCategory>> {
-        if (requestParameters.panel_id === null || requestParameters.panel_id === undefined) {
-            throw new runtime.RequiredError('panel_id','Required parameter requestParameters.panel_id was null or undefined when calling findQueryQuestionCommentCategory.');
+        if (requestParameters.panelId === null || requestParameters.panelId === undefined) {
+            throw new runtime.RequiredError('panelId','Required parameter requestParameters.panelId was null or undefined when calling findQueryQuestionCommentCategory.');
         }
 
-        if (requestParameters.category_id === null || requestParameters.category_id === undefined) {
-            throw new runtime.RequiredError('category_id','Required parameter requestParameters.category_id was null or undefined when calling findQueryQuestionCommentCategory.');
+        if (requestParameters.categoryId === null || requestParameters.categoryId === undefined) {
+            throw new runtime.RequiredError('categoryId','Required parameter requestParameters.categoryId was null or undefined when calling findQueryQuestionCommentCategory.');
         }
 
         const queryParameters: runtime.HTTPQuery = {};
@@ -159,7 +159,7 @@ export class QueryQuestionCommentCategoriesApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/panels/{panelId}/queryQuestionCommentCategories/{categoryId}`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panel_id))).replace(`{${"categoryId"}}`, encodeURIComponent(String(requestParameters.category_id))),
+            path: `/panels/{panelId}/queryQuestionCommentCategories/{categoryId}`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panelId))).replace(`{${"categoryId"}}`, encodeURIComponent(String(requestParameters.categoryId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -182,18 +182,18 @@ export class QueryQuestionCommentCategoriesApi extends runtime.BaseAPI {
      * Lists query question categories
      */
     async listQueryQuestionCommentCategoriesRaw(requestParameters: ListQueryQuestionCommentCategoriesRequest): Promise<runtime.ApiResponse<Array<QueryQuestionCommentCategory>>> {
-        if (requestParameters.panel_id === null || requestParameters.panel_id === undefined) {
-            throw new runtime.RequiredError('panel_id','Required parameter requestParameters.panel_id was null or undefined when calling listQueryQuestionCommentCategories.');
+        if (requestParameters.panelId === null || requestParameters.panelId === undefined) {
+            throw new runtime.RequiredError('panelId','Required parameter requestParameters.panelId was null or undefined when calling listQueryQuestionCommentCategories.');
         }
 
         const queryParameters: runtime.HTTPQuery = {};
 
-        if (requestParameters.page_id !== undefined) {
-            queryParameters['pageId'] = requestParameters.page_id;
+        if (requestParameters.pageId !== undefined) {
+            queryParameters['pageId'] = requestParameters.pageId;
         }
 
-        if (requestParameters.query_id !== undefined) {
-            queryParameters['queryId'] = requestParameters.query_id;
+        if (requestParameters.queryId !== undefined) {
+            queryParameters['queryId'] = requestParameters.queryId;
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -203,7 +203,7 @@ export class QueryQuestionCommentCategoriesApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/panels/{panelId}/queryQuestionCommentCategories`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panel_id))),
+            path: `/panels/{panelId}/queryQuestionCommentCategories`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panelId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -226,16 +226,16 @@ export class QueryQuestionCommentCategoriesApi extends runtime.BaseAPI {
      * Update query question category
      */
     async updateQueryQuestionCommentCategoryRaw(requestParameters: UpdateQueryQuestionCommentCategoryRequest): Promise<runtime.ApiResponse<QueryQuestionCommentCategory>> {
-        if (requestParameters.query_question_comment_category === null || requestParameters.query_question_comment_category === undefined) {
-            throw new runtime.RequiredError('query_question_comment_category','Required parameter requestParameters.query_question_comment_category was null or undefined when calling updateQueryQuestionCommentCategory.');
+        if (requestParameters.queryQuestionCommentCategory === null || requestParameters.queryQuestionCommentCategory === undefined) {
+            throw new runtime.RequiredError('queryQuestionCommentCategory','Required parameter requestParameters.queryQuestionCommentCategory was null or undefined when calling updateQueryQuestionCommentCategory.');
         }
 
-        if (requestParameters.panel_id === null || requestParameters.panel_id === undefined) {
-            throw new runtime.RequiredError('panel_id','Required parameter requestParameters.panel_id was null or undefined when calling updateQueryQuestionCommentCategory.');
+        if (requestParameters.panelId === null || requestParameters.panelId === undefined) {
+            throw new runtime.RequiredError('panelId','Required parameter requestParameters.panelId was null or undefined when calling updateQueryQuestionCommentCategory.');
         }
 
-        if (requestParameters.category_id === null || requestParameters.category_id === undefined) {
-            throw new runtime.RequiredError('category_id','Required parameter requestParameters.category_id was null or undefined when calling updateQueryQuestionCommentCategory.');
+        if (requestParameters.categoryId === null || requestParameters.categoryId === undefined) {
+            throw new runtime.RequiredError('categoryId','Required parameter requestParameters.categoryId was null or undefined when calling updateQueryQuestionCommentCategory.');
         }
 
         const queryParameters: runtime.HTTPQuery = {};
@@ -249,11 +249,11 @@ export class QueryQuestionCommentCategoriesApi extends runtime.BaseAPI {
         }
 
         const response = await this.request({
-            path: `/panels/{panelId}/queryQuestionCommentCategories/{categoryId}`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panel_id))).replace(`{${"categoryId"}}`, encodeURIComponent(String(requestParameters.category_id))),
+            path: `/panels/{panelId}/queryQuestionCommentCategories/{categoryId}`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panelId))).replace(`{${"categoryId"}}`, encodeURIComponent(String(requestParameters.categoryId))),
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: QueryQuestionCommentCategoryToJSON(requestParameters.query_question_comment_category),
+            body: QueryQuestionCommentCategoryToJSON(requestParameters.queryQuestionCommentCategory),
         });
 
         return new runtime.JSONApiResponse(response, (jsonValue) => QueryQuestionCommentCategoryFromJSON(jsonValue));

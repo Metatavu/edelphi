@@ -30,13 +30,13 @@ export interface QueryQuestionAnswer {
      * @type {number}
      * @memberof QueryQuestionAnswer
      */
-    query_page_id: number;
+    queryPageId: number;
     /**
      * 
      * @type {number}
      * @memberof QueryQuestionAnswer
      */
-    query_reply_id: number;
+    queryReplyId: number;
 }
 
 export function QueryQuestionAnswerFromJSON(json: any): QueryQuestionAnswer {
@@ -50,8 +50,8 @@ export function QueryQuestionAnswerFromJSONTyped(json: any, ignoreDiscriminator:
     return {
         
         'id': !exists(json, 'id') ? undefined : json['id'],
-        'query_page_id': json['queryPageId'],
-        'query_reply_id': json['queryReplyId'],
+        'queryPageId': json['queryPageId'],
+        'queryReplyId': json['queryReplyId'],
     };
 }
 
@@ -64,8 +64,8 @@ export function QueryQuestionAnswerToJSON(value?: QueryQuestionAnswer | null): a
     }
     return {
         
-        'queryPageId': value.query_page_id,
-        'queryReplyId': value.query_reply_id,
+        'queryPageId': value.queryPageId,
+        'queryReplyId': value.queryReplyId,
     };
 }
 

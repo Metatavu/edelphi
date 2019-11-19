@@ -30,13 +30,13 @@ export interface QueryQuestionComment {
      * @type {number}
      * @memberof QueryQuestionComment
      */
-    category_id?: number;
+    categoryId?: number;
     /**
      * Parent comment\'s id
      * @type {number}
      * @memberof QueryQuestionComment
      */
-    parent_id?: number;
+    parentId?: number;
     /**
      * Whether the comment has been hided by the manager
      * @type {boolean}
@@ -48,13 +48,13 @@ export interface QueryQuestionComment {
      * @type {number}
      * @memberof QueryQuestionComment
      */
-    query_page_id: number;
+    queryPageId: number;
     /**
      * Comment\'s query reply id
      * @type {number}
      * @memberof QueryQuestionComment
      */
-    query_reply_id: number;
+    queryReplyId: number;
     /**
      * Comment\'s contents
      * @type {string}
@@ -66,13 +66,13 @@ export interface QueryQuestionComment {
      * @type {string}
      * @memberof QueryQuestionComment
      */
-    readonly creator_id?: string;
+    readonly creatorId?: string;
     /**
      * Comment\'s last modifier id
      * @type {string}
      * @memberof QueryQuestionComment
      */
-    readonly last_modifier_id?: string;
+    readonly lastModifierId?: string;
     /**
      * Comment\'s creation time
      * @type {Date}
@@ -84,7 +84,7 @@ export interface QueryQuestionComment {
      * @type {Date}
      * @memberof QueryQuestionComment
      */
-    readonly last_modified?: Date;
+    readonly lastModified?: Date;
 }
 
 export function QueryQuestionCommentFromJSON(json: any): QueryQuestionComment {
@@ -98,16 +98,16 @@ export function QueryQuestionCommentFromJSONTyped(json: any, ignoreDiscriminator
     return {
         
         'id': !exists(json, 'id') ? undefined : json['id'],
-        'category_id': !exists(json, 'categoryId') ? undefined : json['categoryId'],
-        'parent_id': !exists(json, 'parentId') ? undefined : json['parentId'],
+        'categoryId': !exists(json, 'categoryId') ? undefined : json['categoryId'],
+        'parentId': !exists(json, 'parentId') ? undefined : json['parentId'],
         'hidden': !exists(json, 'hidden') ? undefined : json['hidden'],
-        'query_page_id': json['queryPageId'],
-        'query_reply_id': json['queryReplyId'],
+        'queryPageId': json['queryPageId'],
+        'queryReplyId': json['queryReplyId'],
         'contents': !exists(json, 'contents') ? undefined : json['contents'],
-        'creator_id': !exists(json, 'creatorId') ? undefined : json['creatorId'],
-        'last_modifier_id': !exists(json, 'lastModifierId') ? undefined : json['lastModifierId'],
+        'creatorId': !exists(json, 'creatorId') ? undefined : json['creatorId'],
+        'lastModifierId': !exists(json, 'lastModifierId') ? undefined : json['lastModifierId'],
         'created': !exists(json, 'created') ? undefined : (new Date(json['created'])),
-        'last_modified': !exists(json, 'lastModified') ? undefined : (new Date(json['lastModified'])),
+        'lastModified': !exists(json, 'lastModified') ? undefined : (new Date(json['lastModified'])),
     };
 }
 
@@ -120,11 +120,11 @@ export function QueryQuestionCommentToJSON(value?: QueryQuestionComment | null):
     }
     return {
         
-        'categoryId': value.category_id,
-        'parentId': value.parent_id,
+        'categoryId': value.categoryId,
+        'parentId': value.parentId,
         'hidden': value.hidden,
-        'queryPageId': value.query_page_id,
-        'queryReplyId': value.query_reply_id,
+        'queryPageId': value.queryPageId,
+        'queryReplyId': value.queryReplyId,
         'contents': value.contents,
     };
 }
