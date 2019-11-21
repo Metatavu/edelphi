@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.rest;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -408,7 +409,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Override
   @RolesAllowed("user")  
-  public Response listQueryQuestionAnswers(Long panelId, Long queryId, Long pageId, UUID userId, Long stampId) {
+  public Response listQueryQuestionAnswersLive2d(Long panelId, Long queryId, Long pageId, UUID userId, Long stampId) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
@@ -796,6 +797,18 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     }
     
     return createOk(panelTranslator.translate(panel));
+  }
+  
+  @Override
+  @RolesAllowed("user") 
+  public Response listPanels(String urlName) {
+    User loggedUser = getLoggedUser();
+    
+    List<Panel> panels = panelController.listPanels(urlName).stream()
+      .filter(panel -> permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.ACCESS_PANEL))
+      .collect(Collectors.toList());
+    
+    return createOk(panelTranslator.translate(panels));
   }
 
   @Override

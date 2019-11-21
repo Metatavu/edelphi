@@ -51,6 +51,9 @@ public class PermissionController {
   
   @Inject
   private PanelUserRoleActionDAO panelUserRoleActionDAO;
+
+  @Inject
+  private PanelUserDAO panelUserDAO;
   
   /**
    * Returns whether user has required delfoi action access
@@ -121,7 +124,6 @@ public class PermissionController {
    */
   private UserRole getPanelRole(User user, Panel panel) {
     if (panel != null) {
-      PanelUserDAO panelUserDAO = new PanelUserDAO();
       PanelUser panelUser = panelUserDAO.findByPanelAndUserAndStamp(panel, user, panel.getCurrentStamp());
       return panelUser == null ? getEveryoneRole() : panelUser.getRole();
     }

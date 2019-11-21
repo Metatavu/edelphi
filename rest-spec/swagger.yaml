@@ -11,18 +11,24 @@ paths:
   /panels:
     get:
       operationId: listPanels
-      summary: List panels
-      description: List panels
+      summary: List panels.
+      description: Lists a panel
       tags:
         - Panels
+      parameters:
+        - name: urlName
+          in: query
+          description: panel url name
+          schema:
+            type: string
       responses:
         "200":
-          description: Panels
+          description: A panel list
           content:
             application/json:
               schema:
                 type: array
-                items: 
+                items:
                   $ref: "#/components/schemas/Panel"
         "400":
           description: Invalid request was sent to the server
@@ -80,7 +86,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-                                            
+
   /panels/{panelId}:
     get:
       operationId: findPanel
@@ -247,10 +253,68 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
     
   /panels/{panelId}/queryQuestionAnswers:
+    delete:
+      operationId: deleteQueryQuestionAnswers
+      summary: Delete query question answers
+      description: Deletes query question answers
+      tags:
+        - QueryQuestionAnswers
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: queryId
+          required: false
+          in: query
+          description: Delete answers by query
+          schema:
+            type: integer
+            format: int64
+        - name: queryPageId
+          required: false
+          in: query
+          description: Delete answers by query page
+          schema:
+            type: integer
+            format: int64
+        - name: querySectionId
+          required: false
+          in: query
+          description: Delete answers by query section
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: Success
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /panels/{panelId}/live2dQueryQuestionAnswers:
     get:
-      operationId: listQueryQuestionAnswers
-      summary: Lists query question answers
-      description: Lists query question answers
+      operationId: listQueryQuestionAnswersLive2d
+      summary: Lists query question live2d answers
+      description: Lists query question live2d answers
       tags:
         - QueryQuestionAnswers
       parameters:
@@ -297,63 +361,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/QueryQuestionAnswer"
-        "400":
-          description: Invalid request was sent to the server
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "403":
-          description: Attempted to make a call with unauthorized client
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-    delete:
-      operationId: deleteQueryQuestionAnswers
-      summary: Delete query question answers
-      description: Deletes query question answers
-      tags:
-        - QueryQuestionAnswers
-      parameters:
-        - name: panelId
-          required: true
-          in: path
-          description: panel id
-          schema:
-            type: integer
-            format: int64
-        - name: queryId
-          required: false
-          in: query
-          description: Delete answers by query
-          schema:
-            type: integer
-            format: int64
-        - name: queryPageId
-          required: false
-          in: query
-          description: Delete answers by query page
-          schema:
-            type: integer
-            format: int64
-        - name: querySectionId
-          required: false
-          in: query
-          description: Delete answers by query section
-          schema:
-            type: integer
-            format: int64
-      responses:
-        "204":
-          description: Success
+                  $ref: "#/components/schemas/QueryQuestionAnswerLive2d"
         "400":
           description: Invalid request was sent to the server
           content:
