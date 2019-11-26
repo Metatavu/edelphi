@@ -62,6 +62,7 @@
     
     <!-- Test -->
     
+    <jaxrs-functional-test-builder.version>1.0.4</jaxrs-functional-test-builder.version>
     <jsonassert.version>1.5.0</jsonassert.version>
     <rest-assured.version>4.1.2</rest-assured.version>
 
@@ -266,7 +267,7 @@
     <dependency>
       <artifactId>jaxrs-functional-test-builder</artifactId>
       <groupId>fi.metatavu.jaxrs.testbuilder</groupId>
-      <version>1.0.0-SNAPSHOT</version>
+      <version>${jaxrs-functional-test-builder.version}</version>
     </dependency>
     
     <dependency>
