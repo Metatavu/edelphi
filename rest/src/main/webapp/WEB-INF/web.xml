@@ -13,14 +13,14 @@
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>ping</web-resource-name>
-      <url-pattern>/api/v1/system/ping</url-pattern>
+      <url-pattern>/v1/system/ping</url-pattern>
     </web-resource-collection>
   </security-constraint>
   
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>api</web-resource-name>
-      <url-pattern>/api/v1/*</url-pattern>
+      <url-pattern>/v1/*</url-pattern>
     </web-resource-collection>
     <auth-constraint>
       <role-name>*</role-name>

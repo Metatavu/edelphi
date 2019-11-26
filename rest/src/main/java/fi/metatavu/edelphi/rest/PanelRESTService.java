@@ -1,6 +1,5 @@
 package fi.metatavu.edelphi.rest;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -21,7 +20,10 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 
 import fi.metatavu.edelphi.comments.QueryQuestionCommentController;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
+import fi.metatavu.edelphi.domainmodel.panels.PanelAccessLevel;
+import fi.metatavu.edelphi.domainmodel.panels.PanelSettingsTemplate;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
+import fi.metatavu.edelphi.domainmodel.panels.PanelState;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection;
@@ -783,6 +785,19 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     return createOk(queryQuestionCommentCategoryTranslator.translate(queryPageController.updateCommentCategory(category, body.getName(), loggedUser)));
   }
 
+  /* Panels */
+  
+  @Override
+  @RolesAllowed("user") 
+  public Response createPanel(fi.metatavu.edelphi.rest.model.@Valid Panel body) {
+    String name = body.getName();
+    User loggedUser = getLoggedUser();
+    PanelSettingsTemplate defaultPanelSettingsTemplate = panelController.findDefaultPanelSettingsTemplate();
+    Panel panel = panelController.createPanel(getLocale(), name, body.getDescription(), defaultPanelSettingsTemplate, loggedUser);
+    
+    return createOk(panelTranslator.translate(panel));
+  }
+  
   @Override
   @RolesAllowed("user") 
   public Response findPanel(Long panelId) {
@@ -809,6 +824,45 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       .collect(Collectors.toList());
     
     return createOk(panelTranslator.translate(panels));
+  }
+
+  @Override
+  @RolesAllowed("user") 
+  public Response updatePanel(Long panelId, fi.metatavu.edelphi.rest.model.@Valid Panel body) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    PanelAccessLevel accessLevel = getEnum(PanelAccessLevel.class, body.getAccessLevel());
+    PanelState state = getEnum(PanelState.class, body.getState());
+    
+    panelController.updatePanel(panel, body.getName(), body.getDescription(), accessLevel, state, loggedUser);
+    
+    return createOk(panelTranslator.translate(panel));
+  }
+  
+  @Override
+  @RolesAllowed("user") 
+  public Response deletePanel(Long panelId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    panelController.deletePanel(panel);
+    
+    return createNoContent();
   }
 
   @Override
@@ -952,30 +1006,6 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
         page.getId(), 
         answerId));
     
-  }
-
-  @Override
-  public Response createPanel(fi.metatavu.edelphi.rest.model.@Valid Panel panel) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public Response deletePanel(Long panelId) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public Response listPanels() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public Response updatePanel(Long panelId, fi.metatavu.edelphi.rest.model.@Valid Panel panel) {
-    // TODO Auto-generated method stub
-    return null;
   }
 
 }

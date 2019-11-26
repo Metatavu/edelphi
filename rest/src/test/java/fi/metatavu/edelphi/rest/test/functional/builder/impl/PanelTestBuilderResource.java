@@ -12,16 +12,16 @@ import org.openapitools.client.model.Panel;
 import org.openapitools.client.model.PanelAccessLevel;
 import org.openapitools.client.model.PanelState;
 
-import fi.metatavu.edelphi.rest.client.ApiException;
-import fi.metatavu.edelphi.rest.test.functional.builder.TestBuilder;
-import fi.metatavu.jaxrs.test.functional.builder.client.ApiClient;
+import feign.FeignException;
+import fi.metatavu.edelphi.rest.client.ApiClient;
+import fi.metatavu.jaxrs.test.functional.builder.AbstractTestBuilder;
 
 /**
  * Test builder resource for panels
  * 
  * @author Antti Leppä
  */
-public class PanelTestBuilderResource extends fi.metatavu.jaxrs.test.functional.builder.AbstractApiTestBuilderResource<Panel, PanelsApi> {
+public class PanelTestBuilderResource extends ApiTestBuilderResource<Panel, PanelsApi> {
   
   /**
    * Constructor
@@ -29,7 +29,7 @@ public class PanelTestBuilderResource extends fi.metatavu.jaxrs.test.functional.
    * @param testBuilder test builder
    * @param apiClient initialized API client
    */
-  public PanelTestBuilderResource(TestBuilder testBuilder, ApiClient apiClient) {
+  public PanelTestBuilderResource(AbstractTestBuilder testBuilder, ApiClient apiClient) {
     super(testBuilder, apiClient);
   }
   
@@ -39,7 +39,7 @@ public class PanelTestBuilderResource extends fi.metatavu.jaxrs.test.functional.
    * @return created panel
    * @throws ApiException 
    */
-  public Panel create() throws ApiException {
+  public Panel create() {
     return create("default name", "default desc", PanelState.IN_PROGRESS, PanelAccessLevel.OPEN);
   }
   
@@ -52,7 +52,7 @@ public class PanelTestBuilderResource extends fi.metatavu.jaxrs.test.functional.
    * @param accessLevel 
    * @throws ApiException 
    */
-  public Panel create(String name, String description, PanelState state, PanelAccessLevel accessLevel) throws ApiException {
+  public Panel create(String name, String description, PanelState state, PanelAccessLevel accessLevel) {
     Panel panel = new Panel();
     panel.setName(name);
     panel.setAccessLevel(accessLevel);
@@ -69,18 +69,19 @@ public class PanelTestBuilderResource extends fi.metatavu.jaxrs.test.functional.
    * @return found panel
    * @throws ApiException 
    */
-  public Panel findPanel(Long panelId) throws ApiException {
+  public Panel findPanel(Long panelId) {
     return getApi().findPanel(panelId);
   }
   
   /**
    * Lists panels
    * 
+   * @param urlName filter by URL name. Ignored if null is provided
    * @return found panels
    * @throws ApiException 
    */
-  public List<Panel> listPanels() throws ApiException {
-    return getApi().listPanels();
+  public List<Panel> listPanels(String urlName) {
+    return getApi().listPanels(urlName);
   }
 
   /**
@@ -89,7 +90,7 @@ public class PanelTestBuilderResource extends fi.metatavu.jaxrs.test.functional.
    * @param body body payload
    * @throws ApiException 
    */
-  public Panel updatePanel(Panel body) throws ApiException {
+  public Panel updatePanel(Panel body) {
     return getApi().updatePanel(body.getId(), body);
   }
   
@@ -99,7 +100,7 @@ public class PanelTestBuilderResource extends fi.metatavu.jaxrs.test.functional.
    * @param panel panel to be deleted
    * @throws ApiException 
    */
-  public void delete(Panel panel) throws ApiException {
+  public void delete(Panel panel) {
     getApi().deletePanel(panel.getId());  
     
     removeCloseable(closable -> {
@@ -115,11 +116,12 @@ public class PanelTestBuilderResource extends fi.metatavu.jaxrs.test.functional.
   /**
    * Asserts panel count within the system
    * 
+   * @param urlName filter by URL name. Ignored if null is provided
    * @param expected expected count
    * @throws ApiException 
    */
-  public void assertCount(int expected) throws ApiException {
-    assertEquals(expected, getApi().listPanels().size());
+  public void assertCount(int expected, String urlName) {
+    assertEquals(expected, getApi().listPanels(urlName).size());
   }
   
   /**
@@ -132,8 +134,8 @@ public class PanelTestBuilderResource extends fi.metatavu.jaxrs.test.functional.
     try {
       getApi().findPanel(panelId);
       fail(String.format("Expected find to fail with status %d", expectedStatus));
-    } catch (ApiException e) {
-      assertEquals(expectedStatus, e.getCode());
+    } catch (FeignException e) {  
+      assertEquals(expectedStatus, e.status());
     }
   }
 
@@ -148,8 +150,8 @@ public class PanelTestBuilderResource extends fi.metatavu.jaxrs.test.functional.
     try {
       create(name, description, state, accessLevel);
       fail(String.format("Expected create to fail with status %d", expectedStatus));
-    } catch (ApiException e) {
-      assertEquals(expectedStatus, e.getCode());
+    } catch (FeignException e) {
+      assertEquals(expectedStatus, e.status());
     }
   }
 
@@ -163,8 +165,8 @@ public class PanelTestBuilderResource extends fi.metatavu.jaxrs.test.functional.
     try {
       updatePanel(panel);
       fail(String.format("Expected update to fail with status %d", expectedStatus));
-    } catch (ApiException e) {
-      assertEquals(expectedStatus, e.getCode());
+    } catch (FeignException e) {
+      assertEquals(expectedStatus, e.status());
     }
   }
   
@@ -178,8 +180,8 @@ public class PanelTestBuilderResource extends fi.metatavu.jaxrs.test.functional.
     try {
       getApi().deletePanel(panel.getId());
       fail(String.format("Expected delete to fail with status %d", expectedStatus));
-    } catch (ApiException e) {
-      assertEquals(expectedStatus, e.getCode());
+    } catch (FeignException e) {
+      assertEquals(expectedStatus, e.status());
     }
   }
   
@@ -187,13 +189,14 @@ public class PanelTestBuilderResource extends fi.metatavu.jaxrs.test.functional.
    * Asserts list status fails with given status code
    * 
    * @param expectedStatus expected status code
+   * @param urlName filter by URL name. Ignored if null is provided
    */
-  public void assertListFailStatus(int expectedStatus) {
+  public void assertListFailStatus(int expectedStatus, String urlName) {
     try {
-      getApi().listPanels();
+      getApi().listPanels(urlName);
       fail(String.format("Expected list to fail with status %d", expectedStatus));
-    } catch (ApiException e) {
-      assertEquals(expectedStatus, e.getCode());
+    } catch (FeignException e) {
+      assertEquals(expectedStatus, e.status());
     }
   }
 
@@ -210,7 +213,7 @@ public class PanelTestBuilderResource extends fi.metatavu.jaxrs.test.functional.
   }
 
   @Override
-  public void clean(Panel panel) throws ApiException {
+  public void clean(Panel panel) {
     getApi().deletePanel(panel.getId());  
   }
 

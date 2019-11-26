@@ -22,6 +22,7 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelUser;
 import fi.metatavu.edelphi.domainmodel.users.SuperUser;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserRole;
+import fi.metatavu.edelphi.settings.SettingsController;
 
 /**
  * Controller for permissions
@@ -32,10 +33,11 @@ import fi.metatavu.edelphi.domainmodel.users.UserRole;
 @ApplicationScoped
 public class PermissionController {
   
-  private static final long DELFOI_ID = 1l;
-  
   @Inject
   private Logger logger;
+
+  @Inject
+  private SettingsController settingsController;
   
   @Inject
   private SystemUserRoleDAO systemUserRoleDAO;
@@ -197,7 +199,7 @@ public class PermissionController {
    * @return Delfoi instance
    */
   private Delfoi getDelfoi() {
-    return delfoiDAO.findById(DELFOI_ID);
+    return delfoiDAO.findById(settingsController.getDelfoiId());
   }
   
 }

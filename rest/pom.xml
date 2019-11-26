@@ -51,12 +51,6 @@
     <!-- Maven -->
 
     <maven.javadoc.skip>true</maven.javadoc.skip>
-    
-    <!-- Java -->
-    
-    <java.version>11</java.version>
-    <maven.compiler.source>${java.version}</maven.compiler.source>
-    <maven.compiler.target>${java.version}</maven.compiler.target>
         
     <!-- Keycloak -->
     
@@ -69,7 +63,10 @@
     <!-- Test -->
     
     <jsonassert.version>1.5.0</jsonassert.version>
-    <rest-assured.version>3.0.3</rest-assured.version>
+    <rest-assured.version>4.1.2</rest-assured.version>
+
+    <feign-version>9.4.0</feign-version>
+    <feign-form-version>2.1.0</feign-form-version>
 
   </properties>
   
@@ -206,6 +203,58 @@
       <version>1.5.3</version>
     </dependency>
     
+    <!-- HTTP client: Netflix Feign -->
+    <dependency>
+        <groupId>io.github.openfeign</groupId>
+        <artifactId>feign-core</artifactId>
+        <version>${feign-version}</version>
+    </dependency>
+    <dependency>
+        <groupId>io.github.openfeign</groupId>
+        <artifactId>feign-jackson</artifactId>
+        <version>${feign-version}</version>
+    </dependency>
+    <dependency>
+        <groupId>io.github.openfeign</groupId>
+        <artifactId>feign-slf4j</artifactId>
+        <version>${feign-version}</version>
+    </dependency>
+    <dependency>
+        <groupId>io.github.openfeign.form</groupId>
+        <artifactId>feign-form</artifactId>
+        <version>${feign-form-version}</version>
+    </dependency>
+    
+    <!-- Keycloak -->
+
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-core</artifactId>
+      <version>${keycloak.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-adapter-spi</artifactId>
+      <version>${keycloak.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-adapter-core</artifactId>
+      <version>${keycloak.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-authz-client</artifactId>
+      <version>${keycloak.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    
     <!-- Test -->
     
     <dependency>
@@ -238,7 +287,6 @@
   
   <build>
     <plugins>
-      <!-- 
       <plugin>
         <groupId>org.openapitools</groupId>
         <artifactId>openapi-generator-maven-plugin</artifactId>
@@ -246,6 +294,7 @@
         <executions>
           <execution>
             <id>openapi-generate-jaxrs-spec</id>
+            <phase>generate-sources</phase>
             <goals>
               <goal>generate</goal>
             </goals>
@@ -267,6 +316,7 @@
           
           <execution>
             <id>openapi-generate-java-client</id>
+            <phase>generate-sources</phase>
             <goals>
               <goal>generate</goal>
             </goals>
@@ -275,7 +325,7 @@
               <generatorName>java</generatorName>
               <configOptions>
                 <sourceFolder>src/gen/java/main</sourceFolder>
-                <library>native</library>
+                <library>feign</library>
                 <dateLibrary>java8</dateLibrary>
                 <java8>true</java8>
                 <invokerPackage>fi.metatavu.edelphi.rest.client</invokerPackage>
@@ -284,7 +334,7 @@
             </configuration>
           </execution>
         </executions>
-      </plugin> -->
+      </plugin>
     </plugins>
   </build>
   
@@ -294,10 +344,10 @@
       <activation>
         <activeByDefault>false</activeByDefault>
       </activation>
-      <properties>  
+      <properties>
         <!-- Server running mode -->
 
-        <runmode>test</runmode>        
+        <runmode>TEST</runmode>        
 
         <!-- Test properties -->
   
@@ -337,9 +387,9 @@
                     <env>
                       <KEYCLOAK_USER>admin</KEYCLOAK_USER>
                       <KEYCLOAK_PASSWORD>admin</KEYCLOAK_PASSWORD>
-                      <!-- 
                       <KEYCLOAK_IMPORT>/opt/docker/kc.json</KEYCLOAK_IMPORT>
-                     -->
+                      <KEYCLOAK_LOGLEVEL>INFO</KEYCLOAK_LOGLEVEL>
+                      <ROOT_LOGLEVEL>INFO</ROOT_LOGLEVEL>
                     </env>
                     <volumes>
                       <bind>
@@ -370,6 +420,8 @@
                       <link>test-edelphi-keycloak:test-edelphi-keycloak</link>
                     </links>                    
                     <env>
+                      <runmode>TEST</runmode>
+                    
                       <HOST>localhost</HOST>
                       <CLUSTER_PASSWORD>clusterpass</CLUSTER_PASSWORD>
                       <DB_HOST>test-edelphi-mysql</DB_HOST>
@@ -382,7 +434,7 @@
                       <KEYCLOAK_REALM>edelphi</KEYCLOAK_REALM>
                       <KEYCLOAK_RESOURCE>api</KEYCLOAK_RESOURCE>
                       <KEYCLOAK_URL>http://test-edelphi-keycloak:8080/auth</KEYCLOAK_URL>
-                      <KEYCLOAK_SECRET>x</KEYCLOAK_SECRET>
+                      <KEYCLOAK_SECRET>76f6739f-6fe7-478a-b8f4-2d9ddd98ec5c</KEYCLOAK_SECRET>
                       
                       <SMTP_TLS>false</SMTP_TLS>
                       <SMTP_USERNAME>fake</SMTP_USERNAME>

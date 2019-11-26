@@ -3,6 +3,7 @@ package fi.metatavu.edelphi.rest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.Principal;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -13,6 +14,9 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.keycloak.KeycloakPrincipal;
+import org.keycloak.KeycloakSecurityContext;
+import org.keycloak.representations.AccessToken;
 import org.slf4j.Logger;
 
 import fi.metatavu.edelphi.domainmodel.users.User;
@@ -248,7 +252,42 @@ public abstract class AbstractApi {
       return null;
     }
     
-    return userController.findUserByKeycloakId(userId);
+    User user = userController.findUserByKeycloakId(userId);
+    if (user == null) {
+      user = userController.createUserFromKeycloakToken(getLocale(), getAccessToken());
+    }
+    
+    return user;
+  }
+
+  /**
+   * Returns access token
+   * 
+   * @return access token
+   */
+  protected AccessToken getAccessToken() {
+    KeycloakSecurityContext keycloakSecurityContext = getKeycloakSecurityContext();
+    if (keycloakSecurityContext == null) {
+      return null;
+    }
+    
+    return keycloakSecurityContext.getToken();
+  }
+
+  /**
+   * Returns Keycloak security context from request or null if not available
+   * 
+   * @return Keycloak security context
+   */
+  protected KeycloakSecurityContext getKeycloakSecurityContext() {
+    HttpServletRequest request = getHttpServletRequest();
+    Principal userPrincipal = request.getUserPrincipal();
+    KeycloakPrincipal<?> kcPrincipal = (KeycloakPrincipal<?>) userPrincipal;
+    if (kcPrincipal == null) {
+      return null;
+    }
+    
+    return kcPrincipal.getKeycloakSecurityContext();
   }
   
   /**
@@ -321,5 +360,39 @@ public abstract class AbstractApi {
   protected String getBaseUrl() {
     return String.format("%s://%s:%d", getRequestScheme(), getRequestHost(), getRequestPort());
   }
+  
+  /**
+   * Converts between similar enum values
+   * 
+   * @param <T> return enum type
+   * @param <E> source enum type
+   * @param enumType return enum type class
+   * @param from source enum
+   * @return converted enum
+   */
+  protected <T extends Enum<T>, E extends Enum<?>> T getEnum(Class<T> enumType, E from) {
+    if (from == null) {
+      return null;
+    }
+    
+    return getEnum(enumType, from.name());
+  }
+  
+  /**
+   * Creates enum
+   * 
+   * @param <T> return enum type
+   * @param enumType return enum type class
+   * @param name value
+   * @return enum
+   */
+  protected <T extends Enum<T>> T getEnum(Class<T> enumType, String name) {
+    if (name == null) {
+      return null;
+    }
+    
+    return Enum.valueOf(enumType, name);
+  }
+  
   
 }

@@ -3384,5 +3384,16 @@
   <changeSet id="query-comment-categories-page-nullable" author="antti.leppa">
     <dropNotNullConstraint tableName="QueryQuestionCommentCategory" columnName="queryPage_id" columnDataType="BIGINT"/>
   </changeSet>
+  <!-- 
+  <changeSet id="test-panelsettingstemplate" author="antti.leppa" context="test">
+    <sql>INSERT INTO PanelSettingsTemplate (id, name, description, defaultPanelUserRole_id, accessLevel, state, archived) VALUES (1, 'Default name', 'Default desc', 7, 'OPEN', 'IN_PROGRESS', false)</sql>
+    <sql>DELETE FROM hibernate_sequences WHERE sequence_name in ('PanelSettingsTemplate')</sql>
+    <sql>INSERT INTO hibernate_sequences (sequence_next_hi_value, sequence_name) select max(id) + 1, 'PanelSettingsTemplate' from PanelSettingsTemplate</sql>
+  </changeSet>
+   -->
+   
+  <changeSet id="test-delfoi-actions" author="antti.leppa" context="test">
+    <customChange class="fi.metatavu.edelphi.liquibase.changes.TestDefaultActions"/>
+  </changeSet>
   
 </databaseChangeLog>

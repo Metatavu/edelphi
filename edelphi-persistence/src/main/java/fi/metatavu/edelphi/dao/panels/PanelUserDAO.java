@@ -170,6 +170,29 @@ public class PanelUserDAO extends GenericDAO<PanelUser> {
   }
   
   /**
+   * Lists panel users by panel
+   * 
+   * @param panel panel
+   * @return panel users
+   */
+  public List<PanelUser> listByPanel(Panel panel) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelUser> criteria = criteriaBuilder.createQuery(PanelUser.class);
+    Root<PanelUser> root = criteria.from(PanelUser.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.and(
+        criteriaBuilder.equal(root.get(PanelUser_.panel), panel)
+      )
+    );
+    
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  
+  /**
    * Updates panel user's join type
    * 
    * @param panelUser panel user
