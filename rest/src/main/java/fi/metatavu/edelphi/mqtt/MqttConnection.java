@@ -47,7 +47,9 @@ public class MqttConnection {
    * @throws MqttException thrown when MQTT client construction fails
    */
   private static void publish(MqttSettings settings, String subtopic, byte[] payload, int qos, boolean retained) throws MqttException {
-    getClient(settings).publish(String.format("%s/%s", settings.getTopic(), subtopic), payload, qos, retained);
+    if (settings != null) {
+      getClient(settings).publish(String.format("%s/%s", settings.getTopic(), subtopic), payload, qos, retained);
+    }   
   }
   
   /**

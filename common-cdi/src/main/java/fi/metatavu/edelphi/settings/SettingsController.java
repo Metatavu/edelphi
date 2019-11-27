@@ -32,8 +32,13 @@ public class SettingsController {
    * @return MQTT settings
    */
   public MqttSettings getMqttSettings() {
+    String serverUrl = getSettingValue("mqtt.serverUrl");
+    if (StringUtils.isBlank(serverUrl)) {
+      return null;
+    }
+    
     MqttSettings settings = new MqttSettings();
-    settings.setServerUrl(getSettingValue("mqtt.serverUrl"));
+    settings.setServerUrl(serverUrl);
     settings.setClientUrl(getSettingValue("mqtt.clientUrl"));    
     settings.setTopic(getSettingValue("mqtt.topic"));
     settings.setWildcard(getSettingValue("mqtt.wildcard"));

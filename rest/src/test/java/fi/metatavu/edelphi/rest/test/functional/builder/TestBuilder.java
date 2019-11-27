@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.rest.test.functional.builder;
 
 import java.io.IOException;
 
+import fi.metatavu.edelphi.rest.client.ApiClient;
 import fi.metatavu.edelphi.rest.test.functional.builder.auth.TestBuilderAuthentication;
 import fi.metatavu.jaxrs.test.functional.builder.AbstractTestBuilder;
 import fi.metatavu.jaxrs.test.functional.builder.auth.AccessTokenProvider;
@@ -12,7 +13,7 @@ import fi.metatavu.jaxrs.test.functional.builder.auth.KeycloakAccessTokenProvide
  * 
  * @author Antti Leppä
  */
-public class TestBuilder extends AbstractTestBuilder {
+public class TestBuilder extends AbstractTestBuilder<ApiClient> {
 
   private static final String AUTH_SERVER_HOST = "test-edelphi-keycloak";
   private static final String AUTH_SERVER_URL = String.format("http://%s:8080/auth", AUTH_SERVER_HOST);
@@ -25,7 +26,7 @@ public class TestBuilder extends AbstractTestBuilder {
   private TestBuilderAuthentication admin;
   
   @Override
-  public TestBuilderAuthentication createTestBuilderAuthentication(AbstractTestBuilder testBuilder, AccessTokenProvider accessTokenProvider) {
+  public TestBuilderAuthentication createTestBuilderAuthentication(AbstractTestBuilder<ApiClient> testBuilder, AccessTokenProvider accessTokenProvider) {
     return new TestBuilderAuthentication(testBuilder, accessTokenProvider);
   }
 

@@ -8,7 +8,7 @@ public abstract class ApiTestBuilderResource <T, A extends Api> extends fi.metat
 
   private ApiClient apiClient;
   
-  public ApiTestBuilderResource(AbstractTestBuilder testBuilder, ApiClient apiClient) {
+  public ApiTestBuilderResource(AbstractTestBuilder<ApiClient> testBuilder, ApiClient apiClient) {
     super(testBuilder);
     this.apiClient = apiClient;
   }

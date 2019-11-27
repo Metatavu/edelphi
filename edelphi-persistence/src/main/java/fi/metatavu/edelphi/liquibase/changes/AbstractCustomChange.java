@@ -52,6 +52,36 @@ public abstract class AbstractCustomChange implements CustomTaskChange {
     return null;
   }
 
+
+  /**
+   * Returns next id from hibernate_sequences
+   * 
+   * @param database
+   * @param entity
+   * @return
+   * @throws CustomChangeException
+   */
+  protected long getNextSequenceId(Database database, String entity) throws CustomChangeException {
+    long id = 1;
+    
+    executeDelete(database, "DELETE FROM hibernate_sequences WHERE sequence_name = ?", entity);
+
+    JdbcConnection connection = (JdbcConnection) database.getConnection();
+    try (PreparedStatement statement = connection.prepareStatement(String.format("SELECT max(id) + 1 FROM %s", entity))) {
+      try (ResultSet resultSet = statement.executeQuery()) {
+        if (resultSet.next()) {
+          id = resultSet.getLong(1);
+        }        
+      }
+    } catch (Exception e) {
+      throw new CustomChangeException(e);
+    }
+
+    executeInsert(database, "INSERT INTO hibernate_sequences (sequence_next_hi_value, sequence_name) VALUES (?, ?)", id, entity);
+
+    return id;
+  }
+  
   /**
    * Executes an insert SQL statement into the database
    * 

@@ -33,10 +33,13 @@ import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageSetting;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageSettingKey;
+import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageType;
+import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryNumericField;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.resources.ResourceController;
+import fi.metatavu.edelphi.settings.SettingsController;
 
 /**
  * Controller for query pages
@@ -45,7 +48,7 @@ import fi.metatavu.edelphi.resources.ResourceController;
  */
 @ApplicationScoped
 public class QueryPageController {
-
+  
   public static final String TEXT_COMMENTABLE_OPTION = "thesis.commentable";
   public static final String TEXT_VIEW_DISCUSSIONS_OPTION = "thesis.viewDiscussions";
   public static final String TEXT_CONTENT_OPTION = "text.content";
@@ -53,17 +56,23 @@ public class QueryPageController {
   public static final String LIVE2D_VISIBLE_OPTION = "live2d.visible";
   public static final String LIVE2D_LABEL_OPTION_TEMPLATE = "live2d.label.%s";
   public static final String LIVE2D_COLOR_OPTION_TEMPLATE = "live2d.color.%s";
-  public static final String OPTIONS_OPTION_TEMPLATE = "live2d.options.%s";
+  public static final String LIVE2D_OPTIONS_OPTION_TEMPLATE = "live2d.options.%s";
+  
+  public static final String SCALE1D_OPTIONS = "scale1d.options";
+  public static final String SCALE1D_TYPE = "scale1d.type";
+  public static final String SCALE1D_LABEL = "scale1d.label";
   
   public static final String THESIS_COMMENTABLE_OPTION = "thesis.commentable";
   public static final String THESIS_VIEW_DISCUSSIONS_OPTION = "thesis.viewDiscussions";
 
   private static final String UTF_8 = "UTF-8";
+  
   private static final String JSON_SERIALIZED_FILTER_START = "/**JSS-";
   private static final String JSON_SERIALIZED_FILTER_END = "-JSS**/";
   private static final String LIVE2D_FIELD_NAME_X = "x";
   private static final String LIVE2D_FIELD_NAME_Y = "y";
-  
+
+
   @Inject
   private Logger logger;
 
@@ -88,6 +97,26 @@ public class QueryPageController {
   @Inject
   private QueryQuestionNumericAnswerDAO queryQuestionNumericAnswerDAO;
 
+  @Inject
+  private SettingsController settingsController;
+
+  @Inject
+  private QueryFieldController queryFieldController;
+  
+  /**
+   * Creates new query page
+   * 
+   * @param title title
+   * @param querySection query section
+   * @param queryPageType page type
+   * @param pageNumber page number
+   * @param creator creator
+   * @return query page
+   */
+  public QueryPage createQueryPage(String title, QuerySection querySection, QueryPageType queryPageType, Integer pageNumber, User creator) {
+    return queryPageDAO.create(creator, querySection, queryPageType, pageNumber, title, Boolean.TRUE);
+  }
+  
   /**
    * Finds a query page by id
    * 
@@ -206,10 +235,7 @@ public class QueryPageController {
    * @param modifier modifier
    */
   public void setSetting(QueryPage queryPage, String name, String value, User modifier) {
-    QueryPageSettingDAO queryPageSettingDAO = new QueryPageSettingDAO();
-    QueryPageSettingKeyDAO queryPageSettingKeyDAO = new QueryPageSettingKeyDAO();
     QueryPageSettingKey key = queryPageSettingKeyDAO.findByName(name);
-    QueryPageDAO queryPageDAO = new QueryPageDAO();
     
     if (key == null) {
       key = queryPageSettingKeyDAO.create(name);
@@ -221,12 +247,12 @@ public class QueryPageController {
       if (queryPageSetting != null) {
         queryPageSettingDAO.delete(queryPageSetting);
       }
-    }
-    else {
-      if (queryPageSetting != null) 
+    } else {
+      if (queryPageSetting != null) {
         queryPageSettingDAO.updateValue(queryPageSetting, value);
-      else
+      } else {
         queryPageSettingDAO.create(key, queryPage, value);
+      }
     }
     
     queryPageDAO.updateLastModified(queryPage, new Date(), modifier);
@@ -255,7 +281,7 @@ public class QueryPageController {
   public void setSetting(QueryPage queryPage, String name, NavigableMap<String, String> value, User modifier) {
     setSetting(queryPage, name, serializeMap(value), modifier);
   }
-
+  
   /**
    * Filters JSON value
    *  
@@ -437,6 +463,21 @@ public class QueryPageController {
     }
     
     return queryPage.getQuerySection().getVisible();
+  }
+
+  /**
+   * Deletes query page
+   * 
+   * @param queryPage query page
+   */
+  public void deleteQueryPage(QueryPage queryPage) {
+    if (settingsController.isInTestMode()) {
+      queryFieldController.deleteQueryPageFields(queryPage);
+      queryPageSettingDAO.listByQueryPage(queryPage).forEach(queryPageSettingDAO::delete);
+      queryPageDAO.delete(queryPage);
+    } else {
+      queryPageDAO.archive(queryPage);
+    }
   }
   
   /**

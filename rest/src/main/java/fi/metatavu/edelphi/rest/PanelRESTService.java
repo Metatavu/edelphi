@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.rest;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -26,14 +27,17 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.panels.PanelState;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
+import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageType;
 import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
+import fi.metatavu.edelphi.domainmodel.resources.QueryState;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.mqtt.MqttController;
 import fi.metatavu.edelphi.panels.PanelController;
 import fi.metatavu.edelphi.permissions.DelfoiActionName;
 import fi.metatavu.edelphi.permissions.PermissionController;
 import fi.metatavu.edelphi.queries.QueryController;
+import fi.metatavu.edelphi.queries.QueryFieldController;
 import fi.metatavu.edelphi.queries.QueryPageController;
 import fi.metatavu.edelphi.queries.QueryQuestionAnswer;
 import fi.metatavu.edelphi.queries.QueryQuestionAnswerData;
@@ -43,10 +47,13 @@ import fi.metatavu.edelphi.queries.QuerySectionController;
 import fi.metatavu.edelphi.rest.api.PanelsApi;
 import fi.metatavu.edelphi.rest.model.QueryPageLive2DAnswersVisibleOption;
 import fi.metatavu.edelphi.rest.model.QueryPageLive2d;
+import fi.metatavu.edelphi.rest.model.QueryPageScale1d;
 import fi.metatavu.edelphi.rest.model.QueryPageText;
 import fi.metatavu.edelphi.rest.model.QueryQuestionAnswerLive2d;
+import fi.metatavu.edelphi.rest.model.QueryQuestionAnswerScale1d;
 import fi.metatavu.edelphi.rest.model.QueryQuestionComment;
 import fi.metatavu.edelphi.rest.model.QueryQuestionCommentCategory;
+import fi.metatavu.edelphi.rest.model.QueryQuestionScale1dAnswerData;
 import fi.metatavu.edelphi.rest.mqtt.QueryQuestionAnswerNotification;
 import fi.metatavu.edelphi.rest.mqtt.QueryQuestionCommentNotification;
 import fi.metatavu.edelphi.rest.translate.PanelExpertiseClassTranslator;
@@ -54,11 +61,15 @@ import fi.metatavu.edelphi.rest.translate.PanelExpertiseGroupTranslator;
 import fi.metatavu.edelphi.rest.translate.PanelInterestClassTranslator;
 import fi.metatavu.edelphi.rest.translate.PanelTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryPageLive2dTranslator;
+import fi.metatavu.edelphi.rest.translate.QueryPageScale1dTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryPageTextTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryPageTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryQuestionAnswerLive2dTranslator;
+import fi.metatavu.edelphi.rest.translate.QueryQuestionAnswerScale1dTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryQuestionCommentCategoryTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryQuestionCommentTranslator;
+import fi.metatavu.edelphi.rest.translate.QueryReplyTranslator;
+import fi.metatavu.edelphi.rest.translate.QuerySectionTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryTranslator;
 import fi.metatavu.edelphi.users.UserController;
 
@@ -104,9 +115,15 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Inject
   private QueryQuestionAnswerLive2dTranslator queryQuestionAnswerLive2dTranslator;
+
+  @Inject
+  private QueryQuestionAnswerScale1dTranslator queryQuestionAnswerScale1dTranslator;
   
   @Inject
   private QueryPageController queryPageController;
+
+  @Inject
+  private QueryFieldController queryFieldController;
   
   @Inject
   private QueryPageTranslator queryPageTranslator;
@@ -116,6 +133,9 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Inject
   private QueryPageLive2dTranslator queryPageLive2dTranslator;
+
+  @Inject
+  private QueryPageScale1dTranslator queryPageScale1dTranslator;
   
   @Inject
   private PermissionController permissionController;
@@ -137,6 +157,12 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Inject
   private PanelExpertiseGroupTranslator panelExpertiseGroupTranslator;
+
+  @Inject
+  private QuerySectionTranslator querySectionTranslator;
+
+  @Inject
+  private QueryReplyTranslator queryReplyTranslator;
   
   @Override
   @RolesAllowed("user")
@@ -379,6 +405,179 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     
     return createOk(queryQuestionCommentTranslator.translate(updatedComment));
   }
+
+  @Override
+  @RolesAllowed("user")  
+  public Response deleteQueryQuestionAnswers(Long panelId, Long queryId, Long queryPageId, Long querySectionId) {
+    User loggedUser = getLoggedUser();
+    
+    if (queryId == null && queryPageId == null && querySectionId == null) {
+      return createBadRequest("queryId, queryPageId or querySectionId needs to be specified");
+    }
+    
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    if (queryId != null) {
+      Query query = queryController.findQueryById(queryId);
+      if (queryController.isQueryArchived(query)) {
+        return createBadRequest(String.format("Invalid query id %d", queryId));
+      }
+      
+      if (!queryController.isPanelsQuery(query, panel)) {
+        return createBadRequest("Panel and query mismatch");
+      }
+      
+      queryReplyController.deleteQueryReplies(query, loggedUser);
+    }
+    
+    if (queryPageId != null) {
+      QueryPage queryPage = queryController.findQueryPageById(queryPageId);
+      if (queryController.isQueryPageArchived(queryPage)) {
+        return createBadRequest(String.format("Invalid query page id %d", queryPageId));
+      }
+      
+      if (!queryPageController.isPanelsPage(panel, queryPage)) {
+        return createBadRequest("Panel and page mismatch");
+      }
+      
+      queryReplyController.deleteQueryPageReplies(queryPage, loggedUser);
+    }
+    
+    if (querySectionId != null) {
+      QuerySection querySection = querySectionController.findQuerySectionById(querySectionId);
+      if (querySection == null) {
+        return createBadRequest(String.format("Invalid query section id %d", querySectionId));
+      }
+      
+      if (!querySectionController.isPanelsQuerySection(querySection, panel)) {
+        return createBadRequest("Panel and section mismatch");
+      }
+
+      queryReplyController.deleteQuerySectionReplies(querySection, loggedUser);
+    }
+    
+    return createNoContent();
+  }
+  
+  /* Query page */
+
+  @Override
+  @RolesAllowed("user")  
+  public Response deleteQueryPage(Long panelId, Long queryPageId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    QueryPage queryPage = queryPageController.findQueryPage(queryPageId);
+    if (queryPage == null) {
+      return createNotFound();
+    }
+    
+    if (!queryPageController.isPanelsPage(panel, queryPage)) {
+      return createNotFound(String.format("Page %d is not from panel %d", queryPage.getId(), panel.getId()));
+    }
+    
+    queryPageController.deleteQueryPage(queryPage);
+    
+    return createNoContent();
+  }
+  
+  /** Query page text **/
+  
+  @Override
+  @RolesAllowed("user")  
+  public Response findQueryPageText(Long panelId, Long queryPageId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.ACCESS_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    QueryPage queryPage = queryPageController.findQueryPage(queryPageId);
+    if (queryPage == null) {
+      return createNotFound();
+    }
+    
+    if (!queryPageController.isPanelsPage(panel, queryPage)) {
+      return createNotFound(String.format("Page %d is not from panel %d", queryPage.getId(), panel.getId()));
+    }
+    
+    return createOk(queryPageTextTranslator.translate(queryPage));
+  }
+  
+  @Override
+  @RolesAllowed("user")  
+  public Response updateQueryPageText(Long panelId, Long queryPageId, @Valid QueryPageText body) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    QueryPage queryPage = queryPageController.findQueryPage(queryPageId);
+    if (queryPage == null) {
+      return createNotFound();
+    }
+    
+    if (!queryPageController.isPanelsPage(panel, queryPage)) {
+      return createNotFound(String.format("Page %d is not from panel %d", queryPage.getId(), panel.getId()));
+    }
+    
+    queryPageController.setSetting(queryPage, QueryPageController.TEXT_CONTENT_OPTION, body.getContent(), loggedUser);  
+    
+    return createOk(queryPageTextTranslator.translate(queryPage));
+  }
+  
+  // Live 2d
+
+  @Override
+  @RolesAllowed("user")  
+  public Response upsertQueryQuestionAnswerLive2d(Long panelId, String answerId, @Valid QueryQuestionAnswerLive2d body) {
+    QueryQuestionAnswer<?> answerData = queryReplyController.findQueryQuestionAnswerData(answerId);
+    if (answerData == null) {
+      return createNotFound();
+    }
+    
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.ACCESS_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    QueryPage queryPage = answerData.getQueryPage();
+    if (!queryPageController.isPanelsPage(panel, queryPage)) {
+      return createForbidden("Forbidden");
+    }
+    
+    fi.metatavu.edelphi.rest.model.QueryQuestionLive2dAnswerData data = body.getData();
+    QueryQuestionAnswer<QueryQuestionLive2dAnswerData> answer = queryReplyController.setLive2dAnswer(answerData, data.getX(), data.getY());
+    publishAnswerMqttNotification(QueryQuestionAnswerNotification.Type.UPDATED, panel, answer);
+    
+    return createOk(queryQuestionAnswerLive2dTranslator.translate(answer));
+  }
   
   @Override
   @RolesAllowed("user")  
@@ -448,146 +647,6 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Override
   @RolesAllowed("user")  
-  public Response deleteQueryQuestionAnswers(Long panelId, Long queryId, Long queryPageId, Long querySectionId) {
-    User loggedUser = getLoggedUser();
-    
-    if (queryId == null && queryPageId == null && querySectionId == null) {
-      return createBadRequest("queryId, queryPageId or querySectionId needs to be specified");
-    }
-    
-    Panel panel = panelController.findPanelById(panelId);
-    if (panel == null || panelController.isPanelArchived(panel)) {
-      return createNotFound();
-    }
-
-    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.MANAGE_PANEL)) {
-      return createForbidden("Forbidden");
-    }
-    
-    if (queryId != null) {
-      Query query = queryController.findQueryById(queryId);
-      if (queryController.isQueryArchived(query)) {
-        return createBadRequest(String.format("Invalid query id %d", queryId));
-      }
-      
-      if (!queryController.isPanelsQuery(query, panel)) {
-        return createBadRequest("Panel and query mismatch");
-      }
-      
-      queryReplyController.deleteQueryReplies(query, loggedUser);
-    }
-    
-    if (queryPageId != null) {
-      QueryPage queryPage = queryController.findQueryPageById(queryPageId);
-      if (queryController.isQueryPageArchived(queryPage)) {
-        return createBadRequest(String.format("Invalid query page id %d", queryPageId));
-      }
-      
-      if (!queryPageController.isPanelsPage(panel, queryPage)) {
-        return createBadRequest("Panel and page mismatch");
-      }
-      
-      queryReplyController.deleteQueryPageReplies(queryPage, loggedUser);
-    }
-    
-    if (querySectionId != null) {
-      QuerySection querySection = querySectionController.findQuerySectionById(querySectionId);
-      if (querySection == null) {
-        return createBadRequest(String.format("Invalid query section id %d", querySectionId));
-      }
-      
-      if (!querySectionController.isPanelsQuerySection(querySection, panel)) {
-        return createBadRequest("Panel and section mismatch");
-      }
-
-      queryReplyController.deleteQuerySectionReplies(querySection, loggedUser);
-    }
-    
-    return createNoContent();
-  }
-  
-  @Override
-  @RolesAllowed("user")  
-  public Response upsertQueryQuestionAnswerLive2d(Long panelId, String answerId, @Valid QueryQuestionAnswerLive2d body) {
-    QueryQuestionAnswer<?> answerData = queryReplyController.findQueryQuestionAnswerData(answerId);
-    if (answerData == null) {
-      return createNotFound();
-    }
-    
-    Panel panel = panelController.findPanelById(panelId);
-    if (panel == null || panelController.isPanelArchived(panel)) {
-      return createNotFound();
-    }
-    
-    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.ACCESS_PANEL)) {
-      return createForbidden("Forbidden");
-    }
-    
-    QueryPage queryPage = answerData.getQueryPage();
-    if (!queryPageController.isPanelsPage(panel, queryPage)) {
-      return createForbidden("Forbidden");
-    }
-    
-    fi.metatavu.edelphi.rest.model.QueryQuestionLive2dAnswerData data = body.getData();
-    QueryQuestionAnswer<QueryQuestionLive2dAnswerData> answer = queryReplyController.setLive2dAnswer(answerData, data.getX(), data.getY());
-    publishAnswerMqttNotification(QueryQuestionAnswerNotification.Type.UPDATED, panel, answer);
-    
-    return createOk(queryQuestionAnswerLive2dTranslator.translate(answer));
-  }
-  
-  @Override
-  @RolesAllowed("user")  
-  public Response findQueryPageText(Long panelId, Long queryPageId) {
-    Panel panel = panelController.findPanelById(panelId);
-    if (panel == null || panelController.isPanelArchived(panel)) {
-      return createNotFound();
-    }
-    
-    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.ACCESS_PANEL)) {
-      return createForbidden("Forbidden");
-    }
-    
-    QueryPage queryPage = queryPageController.findQueryPage(queryPageId);
-    if (queryPage == null) {
-      return createNotFound();
-    }
-    
-    if (!queryPageController.isPanelsPage(panel, queryPage)) {
-      return createNotFound(String.format("Page %d is not from panel %d", queryPage.getId(), panel.getId()));
-    }
-    
-    return createOk(queryPageTextTranslator.translate(queryPage));
-  }
-  
-  @Override
-  @RolesAllowed("user")  
-  public Response updateQueryPageText(Long panelId, Long queryPageId, @Valid QueryPageText body) {
-    Panel panel = panelController.findPanelById(panelId);
-    if (panel == null || panelController.isPanelArchived(panel)) {
-      return createNotFound();
-    }
-    
-    User loggedUser = getLoggedUser();
-    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
-      return createForbidden("Forbidden");
-    }
-    
-    QueryPage queryPage = queryPageController.findQueryPage(queryPageId);
-    if (queryPage == null) {
-      return createNotFound();
-    }
-    
-    if (!queryPageController.isPanelsPage(panel, queryPage)) {
-      return createNotFound(String.format("Page %d is not from panel %d", queryPage.getId(), panel.getId()));
-    }
-    
-    queryPageController.setSetting(queryPage, QueryPageController.TEXT_CONTENT_OPTION, body.getContent(), loggedUser);  
-    
-    return createOk(queryPageTextTranslator.translate(queryPage));
-  }
-
-  @Override
-  @RolesAllowed("user")  
   public Response findQueryPageLive2d(Long panelId, Long queryPageId) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
@@ -640,6 +699,223 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     queryPageController.setSetting(queryPage, QueryPageController.LIVE2D_VISIBLE_OPTION, answersVisible.toString(), loggedUser);  
     
     return createOk(queryPageLive2dTranslator.translate(queryPage));
+  }
+  
+  // Scale 1d
+
+  @Override
+  @RolesAllowed("user")  
+  public Response findQueryPageScale1d(Long panelId, Long queryPageId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    QueryPage queryPage = queryPageController.findQueryPage(queryPageId);
+    if (queryPage == null) {
+      return createNotFound();
+    }
+    
+    if (!queryPageController.isPanelsPage(panel, queryPage)) {
+      return createNotFound(String.format("Page %d is not from panel %d", queryPage.getId(), panel.getId()));
+    }
+    
+    return createOk(queryPageScale1dTranslator.translate(queryPage));
+  }
+
+  @Override
+  @RolesAllowed("user")  
+  public Response findQueryQuestionAnswerScale1d(Long panelId, String answerId) {
+    QueryQuestionAnswer<?> answerData = queryReplyController.findQueryQuestionAnswerData(answerId);
+    if (answerData == null) {
+      return createNotFound();
+    }
+    
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.ACCESS_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    QueryPage queryPage = answerData.getQueryPage();
+    if (queryPage == null || (queryPage.getPageType() != QueryPageType.THESIS_SCALE_1D)) {
+      return createNotFound();
+    }
+    
+    if (!queryPageController.isPanelsPage(panel, queryPage)) {
+      return createNotFound(String.format("Page %d is not from panel %d", queryPage.getId(), panel.getId()));
+    }
+       
+    return createOk(queryQuestionAnswerScale1dTranslator.translate(answerData));
+  }
+
+  @Override
+  @RolesAllowed("user")  
+  public Response listQueryQuestionAnswersScale1d(Long panelId, Long queryId, Long pageId, UUID userId, Long stampId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.ACCESS_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    Query query = queryId != null ? queryController.findQueryById(queryId) : null;
+    if (queryId != null && (query == null || queryController.isQueryArchived(query))) {
+      return createBadRequest(String.format("Invalid query id %d", queryId));
+    }
+
+    QueryPage queryPage = pageId != null ? queryController.findQueryPageById(pageId) : null;
+    if (queryPage == null || queryController.isQueryPageArchived(queryPage)) {
+      return createBadRequest(String.format("Invalid query page id %d", pageId));
+    }
+    
+    PanelStamp stamp = stampId != null ? panelController.findPanelStampById(stampId) : null;
+    if (stampId != null && (stamp == null || panelController.isPanelStampArchived(stamp))) {
+      return createBadRequest(String.format("Invalid panel stamp id %d", stampId));
+    }
+    
+    User user = userId != null ? userController.findUserByKeycloakId(userId) : null;
+    if (userId != null && user == null) {
+      return createBadRequest(String.format("Invalid user id %s", userId));
+    }
+    
+    return createOk(queryReplyController.listQueryQuestionAnswers(queryPage, stamp, query, panel.getRootFolder(), user).stream()
+      .map(queryQuestionAnswerScale1dTranslator::translate)
+      .collect(Collectors.toList()));
+  }
+
+  @Override
+  @RolesAllowed("user")  
+  public Response updateQueryPageScale1d(Long panelId, Long queryPageId, @Valid QueryPageScale1d body) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    QueryPage queryPage = queryPageController.findQueryPage(queryPageId);
+    if (queryPage == null) {
+      return createNotFound();
+    }
+    
+    if (!queryPageController.isPanelsPage(panel, queryPage)) {
+      return createNotFound(String.format("Page %d is not from panel %d", queryPage.getId(), panel.getId()));
+    }
+    
+    queryPageController.setSetting(queryPage, QueryPageController.SCALE1D_LABEL, body.getLabel(), loggedUser);  
+    queryPageController.setSetting(queryPage, QueryPageController.SCALE1D_OPTIONS, body.getOptions(), loggedUser);
+    queryPageController.setSetting(queryPage, QueryPageController.SCALE1D_TYPE, body.getAnswerType().toString(), loggedUser);
+    queryFieldController.synchronizeFieldsScale1d(queryPage, body.getOptions(), body.getLabel(), false);
+    
+    return createOk(queryPageScale1dTranslator.translate(queryPage));
+  }
+
+  @Override
+  @RolesAllowed("user")  
+  public Response upsertQueryQuestionAnswerScale1d(Long panelId, String answerId, @Valid QueryQuestionAnswerScale1d body) {
+    QueryQuestionAnswer<?> answerData = queryReplyController.findQueryQuestionAnswerData(answerId);
+    if (answerData == null) {
+      return createNotFound();
+    }
+    
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.ACCESS_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    QueryPage queryPage = answerData.getQueryPage();
+    if (!queryPageController.isPanelsPage(panel, queryPage)) {
+      return createForbidden("Forbidden");
+    }
+    
+    QueryQuestionScale1dAnswerData data = body.getData();
+    String value = data.getValue();
+    
+    QueryQuestionAnswer<fi.metatavu.edelphi.queries.QueryQuestionScale1dAnswerData> answer = queryReplyController.setScale1dAnswer(answerData, value);
+    publishAnswerMqttNotification(QueryQuestionAnswerNotification.Type.UPDATED, panel, answer);
+    
+    return createOk(queryQuestionAnswerScale1dTranslator.translate(answer));
+  }
+  
+  @Override
+  @RolesAllowed("user")  
+  public Response deleteQueryQuestionAnswerScale1d(Long panelId, String answerId) {
+    System.out.println("deleteQueryQuestionAnswerScale1d 1");
+    
+    QueryQuestionAnswer<?> answerData = queryReplyController.findQueryQuestionAnswerData(answerId);
+    if (answerData == null) {
+      return createNotFound();
+    }
+    
+    System.out.println("deleteQueryQuestionAnswerScale1d 2");
+    
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    System.out.println("deleteQueryQuestionAnswerScale1d 3");
+    
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.ACCESS_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+
+    System.out.println("deleteQueryQuestionAnswerScale1d 4");
+    
+    queryReplyController.deleteScale1dAnswer(answerData);
+
+    System.out.println("deleteQueryQuestionAnswerScale1d 5");
+    
+    return createNoContent();
+  }
+
+  @Override
+  @RolesAllowed("user")  
+  public Response createQueryPageScale1d(Long panelId, @Valid QueryPageScale1d body) {
+    String title = body.getTitle();
+    
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    
+    Query query = queryController.findQueryById(body.getQueryId());
+    if (query == null) {
+      return createBadRequest(String.format("Invalid query id %d", body.getQueryId()));
+    }
+
+    QuerySection querySection = querySectionController.findQuerySectionById(body.getQuerySectionId());
+    if (querySection == null || querySection.getArchived()) {
+      return createBadRequest(String.format("Invalid query section id %d", body.getQuerySectionId()));
+    }
+
+    QueryPage queryPage = queryPageController.createQueryPage(title, querySection, QueryPageType.THESIS_SCALE_1D, body.getPageNumber(), loggedUser);
+    queryPageController.setSetting(queryPage, QueryPageController.SCALE1D_LABEL, body.getLabel(), loggedUser);  
+    queryPageController.setSetting(queryPage, QueryPageController.SCALE1D_OPTIONS, body.getOptions(), loggedUser);
+    queryPageController.setSetting(queryPage, QueryPageController.SCALE1D_TYPE, body.getAnswerType().toString(), loggedUser);
+    queryFieldController.synchronizeFieldsScale1d(queryPage, body.getOptions(), body.getLabel(), false);
+    
+    return createOk(queryPageScale1dTranslator.translate(queryPage));
   }
   
   @Override
@@ -865,6 +1141,51 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     return createNoContent();
   }
 
+  /** Queries **/
+  
+  @Override
+  @RolesAllowed("user") 
+  public Response createQuery(Long panelId, fi.metatavu.edelphi.rest.model.@Valid Query body) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    String name = body.getName();
+    Boolean allowEditReply = body.getAllowEditReply();
+    String description = body.getDescription();
+    QueryState state = getEnum(QueryState.class, body.getState());
+    OffsetDateTime closes = body.getCloses();
+    
+    return createOk(queryTranslator.translate(queryController.createQuery(panel.getRootFolder(), name, allowEditReply, description, state, closes, loggedUser)));
+  }
+
+  @Override
+  @RolesAllowed("user") 
+  public Response findQuery(Long panelId, Long queryId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    Query query = queryController.findQueryById(queryId);
+    if (query == null || query.getArchived()) {
+      return createNotFound();
+    }
+    
+    return createOk(queryTranslator.translate(query));
+  }
+  
   @Override
   @RolesAllowed("user") 
   public Response listQueries(Long panelId) {
@@ -882,7 +1203,83 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     
     return createOk(queries.stream().map(queryTranslator::translate).collect(Collectors.toList()));
   }
+ 
+  @Override
+  @RolesAllowed("user") 
+  public Response deleteQuery(Long panelId, Long queryId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    Query query = queryController.findQueryById(queryId);
+    if (query == null || query.getArchived()) {
+      return createNotFound();
+    }
+    
+    queryController.deleteQuery(query);
+    
+    return createNoContent();
+  }
+  
+  /** Query sections **/
 
+  @Override
+  @RolesAllowed("user") 
+  public Response createQuerySection(Long panelId, Long queryId, fi.metatavu.edelphi.rest.model.@Valid QuerySection body) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    Query query = queryController.findQueryById(queryId);
+    if (query == null || query.getArchived()) {
+      return createNotFound();
+    }
+    
+    return createOk(querySectionTranslator.translate(querySectionController.createQuerySection(query, body.getTitle(), body.getSectionNumber(), body.getVisible(), body.getCommentable(), body.getViewDiscussions(), loggedUser)));
+  }
+
+  @Override
+  @RolesAllowed("user") 
+  public Response deleteQuerySection(Long panelId, Long queryId, Long querySectionId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    Query query = queryController.findQueryById(queryId);
+    if (query == null || query.getArchived()) {
+      return createNotFound();
+    }
+    
+    QuerySection querySection = querySectionController.findQuerySectionById(querySectionId);
+    if (querySection == null || querySection.getArchived()) {
+      return createNotFound();
+    }
+    
+    querySectionController.deleteQuerySection(querySection);
+    
+    return createNoContent();
+  }
+  
+  /** Query Pages **/
+  
   @Override
   @RolesAllowed("user") 
   public Response listQueryPages(Long panelId, Long queryId, Boolean includeHidden) {
@@ -916,6 +1313,61 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     List<QueryPage> queryPages = queryController.listQueryPages(query, Boolean.TRUE.equals(includeHidden) ? null : true);
 
     return createOk(queryPages.stream().map(queryPageTranslator::translate).collect(Collectors.toList()));
+  }
+  
+  /** Query replies **/
+
+  @Override
+  @RolesAllowed("user") 
+  public Response createQueryReply(Long panelId, fi.metatavu.edelphi.rest.model.@Valid QueryReply queryReply) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.ACCESS_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    Query query = queryController.findQueryById(queryReply.getQueryId());
+    if (query == null) {
+      return createBadRequest("Invalid query id");
+    }
+    
+    if (!queryController.isPanelsQuery(query, panel)) {
+      return createNotFound();
+    }
+    
+    if (queryController.isQueryArchived(query)) {
+      return createGone();
+    }
+    
+    PanelStamp panelStamp = queryReply.getStampId() == null ? panel.getCurrentStamp() : panelController.findPanelStampById(queryReply.getStampId());
+    return createOk(queryReplyTranslator.translate(queryReplyController.createQueryReply(query, panelStamp, loggedUser)));
+  }
+
+  @Override
+  @RolesAllowed("user") 
+  public Response deleteQueryReply(Long panelId, Long queryReplyId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.ACCESS_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    QueryReply queryReply = queryController.findQueryReplyById(queryReplyId);
+    if (queryReply == null) {
+      return createNotFound();
+    }
+    
+    queryController.deleteQueryReply(queryReply);
+    
+    return createNoContent();
   }
   
   @Override
@@ -1007,5 +1459,5 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
         answerId));
     
   }
-
+  
 }

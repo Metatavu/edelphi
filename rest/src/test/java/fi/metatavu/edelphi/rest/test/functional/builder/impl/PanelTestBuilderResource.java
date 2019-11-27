@@ -29,7 +29,7 @@ public class PanelTestBuilderResource extends ApiTestBuilderResource<Panel, Pane
    * @param testBuilder test builder
    * @param apiClient initialized API client
    */
-  public PanelTestBuilderResource(AbstractTestBuilder testBuilder, ApiClient apiClient) {
+  public PanelTestBuilderResource(AbstractTestBuilder<ApiClient> testBuilder, ApiClient apiClient) {
     super(testBuilder, apiClient);
   }
   

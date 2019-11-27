@@ -3,22 +3,8 @@ package fi.metatavu.edelphi.liquibase.changes;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-//
-//import fi.metatavu.edelphi.dao.actions.DelfoiActionDAO;
-//import fi.metatavu.edelphi.dao.actions.DelfoiUserRoleActionDAO;
-//import fi.metatavu.edelphi.dao.base.DelfoiDAO;
-//import fi.metatavu.edelphi.dao.panels.PanelSettingsTemplateDAO;
-//import fi.metatavu.edelphi.dao.panels.PanelSettingsTemplateRoleDAO;
-//import fi.metatavu.edelphi.dao.panels.PanelUserRoleDAO;
-//import fi.metatavu.edelphi.dao.users.DelfoiUserRoleDAO;
-//import fi.metatavu.edelphi.domainmodel.actions.DelfoiAction;
-//import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.panels.PanelAccessLevel;
-//import fi.metatavu.edelphi.domainmodel.panels.PanelSettingsTemplate;
 import fi.metatavu.edelphi.domainmodel.panels.PanelState;
-//import fi.metatavu.edelphi.domainmodel.panels.PanelUserRole;
-//import fi.metatavu.edelphi.domainmodel.users.DelfoiUserRole;
-//import fi.metatavu.edelphi.domainmodel.users.UserRole;
 import liquibase.database.Database;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.CustomChangeException;
@@ -78,7 +64,7 @@ public class TestDefaultActions extends AbstractCustomChange {
   /**
    * Creates panel settings template
    * 
-   * @param connection database connection
+   * @param database database connection
    * @param name name
    * @param description description
    * @throws CustomChangeException thrown when execution fails
@@ -104,12 +90,36 @@ public class TestDefaultActions extends AbstractCustomChange {
     createDelfoiActionDefaults(database, "CREATE_PANEL", true, true, true, false);
   } 
   
+  /**
+   * Creates panel settings template
+   * 
+   * @param database database connection
+   * @param name name
+   * @param description description
+   * @param state state
+   * @param accessLevel access level
+   * @param panelistRoleId panelistRoleId
+   * @param archived archived
+   * @return id
+   * @throws CustomChangeException thrown when execution fails
+   */
   private Long createPanelSettingsTemplate(Database database, String name, String description, PanelState state, PanelAccessLevel accessLevel, Long panelistRoleId, Boolean archived) throws CustomChangeException {
     Long id = getNextSequenceId(database, "PanelSettingsTemplate");
     executeInsert(database, "INSERT INTO PanelSettingsTemplate (id, name, description, defaultPanelUserRole_id, accessLevel, state, archived) VALUES (?, ?, ?, ?, ?, ?, ?)", id, name, description, panelistRoleId, accessLevel.name(), state.name(), archived);
     return id;
   }
 
+  /**
+   * Creates a panel settings template role
+   * 
+   * @param database
+   * @param panelSettingsTemplateId
+   * @param delfoiActionName
+   * @param administrators
+   * @param panelManagers
+   * @param panelists
+   * @throws CustomChangeException
+   */
   private void createPanelSettingsTemplateRole(Database database, Long panelSettingsTemplateId, String delfoiActionName, boolean administrators, boolean panelManagers, boolean panelists) throws CustomChangeException {
     Long delfoiActionId = findDelfoiActionByName(database, delfoiActionName);
     
@@ -126,6 +136,12 @@ public class TestDefaultActions extends AbstractCustomChange {
     }
   }
 
+  /**
+   * Initializes default permissions
+   * 
+   * @param database
+   * @throws CustomChangeException
+   */
   private void initializeDefaultPermissions(Database database) throws CustomChangeException {
     createDelfoiActionDefaults(database, "CREATE_PANEL", true, true, true, false);
     createDelfoiActionDefaults(database, "MANAGE_BULLETINS", true, true, false, false);
@@ -135,6 +151,17 @@ public class TestDefaultActions extends AbstractCustomChange {
     createDelfoiActionDefaults(database, "MANAGE_DELFOI", true, true, false, false);
   }
   
+  /**
+   * Creates delfoi action defaults
+   * 
+   * @param database
+   * @param delfoiActionName
+   * @param administrators
+   * @param managers
+   * @param users
+   * @param guents
+   * @throws CustomChangeException
+   */
   private void createDelfoiActionDefaults(Database database, String delfoiActionName, boolean administrators, boolean managers, boolean users, boolean guents) throws CustomChangeException {
     Long administratorsRoleId = 2l;
     Long managersId = 3l;
@@ -158,56 +185,41 @@ public class TestDefaultActions extends AbstractCustomChange {
     }
   }
   
+  /**
+   * Creates delfoi action
+   * 
+   * @param database
+   * @param delfoiActionName
+   * @param scope
+   * @throws CustomChangeException
+   */
   private void createDelfoiAction(Database database, String delfoiActionName, String scope) throws CustomChangeException {
     long  delfoiActionId = getNextSequenceId(database, "DelfoiAction");
     executeInsert(database, "INSERT INTO DelfoiAction (id, actionName, scope) VALUES (?, ?, ?)", delfoiActionId, delfoiActionName, scope);
   }
  
+  /**
+   * Creates delfoi user role action
+   * 
+   * @param database
+   * @param delfoiActionName
+   * @param roleId
+   * @throws CustomChangeException
+   */
   private void createDelfoiUserRoleAction(Database database, String delfoiActionName, Long roleId) throws CustomChangeException {
     Long delfoiActionId = findDelfoiActionByName(database, delfoiActionName);
-    long id = getNextSequenceId(database, "UserRoleAction");
-    executeInsert(database, "INSERT INTO UserRoleAction (id, delfoiAction_id, userRole_id) VALUES (?, ?, ?)", id, delfoiActionId, roleId);
+    long id = executeInsert(database, "INSERT INTO UserRoleAction (delfoiAction_id, userRole_id) VALUES (?, ?)", delfoiActionId, roleId);
     executeInsert(database, "INSERT INTO DelfoiUserRoleAction (id, delfoi_id) VALUES (?, ?)", id, 1l);
-    
-//    
-//    DelfoiUserRole userRole = delfoiUserRoleDAO.findById(roleId);
-//    if (userRole == null) {
-//      logger.severe(String.format("Could not find user role %d", roleId));
-//    } else {
-//      createDelfoiAction(delfoiActionName, userRole);
-//    }
-  }
-//  
-//  private void createDelfoiAction(String delfoiActionName, UserRole userRole) {
-//    DelfoiUserRoleActionDAO delfoiUserRoleActionDAO = new DelfoiUserRoleActionDAO();
-//    DelfoiDAO delfoiDAO = new DelfoiDAO();
-//    Delfoi delfoi = delfoiDAO.findById(1l);
-//    DelfoiAction delfoiAction = findDelfoiActionByName(delfoiActionName);
-//    
-//    delfoiUserRoleActionDAO.create(delfoi, delfoiAction, userRole);
-//    
-//  }
-
-  private long getNextSequenceId(Database database, String entity) throws CustomChangeException {
-    executeDelete(database, "DELETE FROM hibernate_sequences WHERE sequence_name = ?", entity);
-
-    JdbcConnection connection = (JdbcConnection) database.getConnection();
-    
-    try (PreparedStatement statement = connection.prepareStatement(String.format("SELECT max(id) + 1 FROM %s", entity))) {
-      try (ResultSet resultSet = statement.executeQuery()) {
-        if (resultSet.next()) {
-          Long id = resultSet.getLong(1);
-          executeInsert(database, "INSERT INTO hibernate_sequences (sequence_next_hi_value, sequence_name) VALUES (?, ?)", id, entity);
-          return id;
-        }
-      }
-    } catch (Exception e) {
-      throw new CustomChangeException(e);
-    }
-
-    return 0;
   }
 
+  /**
+   * Finds a delfoi action by name
+   * 
+   * @param database
+   * @param delfoiActionName
+   * @return
+   * @throws CustomChangeException
+   */
   private Long findDelfoiActionByName(Database database, String delfoiActionName) throws CustomChangeException {
     JdbcConnection connection = (JdbcConnection) database.getConnection();
     
@@ -226,14 +238,29 @@ public class TestDefaultActions extends AbstractCustomChange {
     return null;
   }
   
+  /**
+   * Returns administrator role id
+   * 
+   * @return administrator role id
+   */
   private Long findAdministratorRole() {
     return 2l;
   }
   
+  /**
+   * Returns panelist role id
+   * 
+   * @return panelist role id
+   */
   private Long findPanelistRole() {
     return 7l;
   }
   
+  /**
+   * Returns manager role id
+   * 
+   * @return manager role id
+   */
   private Long findPanelManagerRole() {
     return 6l;
   }
