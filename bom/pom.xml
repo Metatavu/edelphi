@@ -103,7 +103,7 @@
 
     <!-- Paho -->
     
-    <paho.version>1.2.0</paho.version>
+    <paho.version>1.2.1</paho.version>
     
     <!-- Slugify -->
     
