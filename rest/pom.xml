@@ -54,7 +54,7 @@
         
     <!-- Keycloak -->
     
-    <keycloak.version>4.8.3.Final</keycloak.version>
+    <keycloak.version>8.0.0</keycloak.version>
     
     <!-- OpenAPI -->
     
