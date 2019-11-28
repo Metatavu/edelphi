@@ -3393,12 +3393,31 @@
 
     <addAutoIncrement tableName="userroleaction" columnName="id" columnDataType="BIGINT(20)"/>
 
-    <addForeignKeyConstraint constraintName="FK_paneluserroleaction_id" referencedTableName="userroleaction" referencedColumnNames="id" baseTableName="paneluserroleaction" baseColumnNames="id" />
-    <addForeignKeyConstraint constraintName="FK_paneluserroleaction_panel" referencedTableName="userroleaction" referencedColumnNames="id" baseTableName="panel" baseColumnNames="id" />
-    <addForeignKeyConstraint constraintName="FK_delfoiuserroleaction_id" baseColumnNames="id" baseTableName="delfoiuserroleaction" referencedColumnNames="id" referencedTableName="userroleaction" />
-    <addForeignKeyConstraint constraintName="FK_delfoiuserroleaction_panel" baseColumnNames="delfoi_id" baseTableName="delfoiuserroleaction" referencedColumnNames="id" referencedTableName="delfoi" />
+    <addForeignKeyConstraint baseColumnNames="id"
+      baseTableName="paneluserroleaction" constraintName="FK7AA8C77B2A08E6CD"
+      deferrable="false" initiallyDeferred="false" onDelete="NO ACTION"
+      onUpdate="NO ACTION" referencedColumnNames="id"
+      referencedTableName="userroleaction" />
+
+    <addForeignKeyConstraint baseColumnNames="panel_id"
+      baseTableName="paneluserroleaction" constraintName="FK7AA8C77B43CC2035"
+      deferrable="false" initiallyDeferred="false" onDelete="NO ACTION"
+      onUpdate="NO ACTION" referencedColumnNames="id"
+      referencedTableName="panel" />
+
+    <addForeignKeyConstraint baseColumnNames="id"
+      baseTableName="delfoiuserroleaction" constraintName="FK8FB5F0CC2A08E6CD"
+      deferrable="false" initiallyDeferred="false" onDelete="NO ACTION"
+      onUpdate="NO ACTION" referencedColumnNames="id"
+      referencedTableName="userroleaction" />
+
+    <addForeignKeyConstraint baseColumnNames="delfoi_id"
+      baseTableName="delfoiuserroleaction" constraintName="FK8FB5F0CC65DA3ED5"
+      deferrable="false" initiallyDeferred="false" onDelete="NO ACTION"
+      onUpdate="NO ACTION" referencedColumnNames="id"
+      referencedTableName="delfoi" />
   </changeSet>
-   
+
   <changeSet id="test-delfoi-actions" author="antti.leppa" context="test">
     <customChange class="fi.metatavu.edelphi.liquibase.changes.TestDefaultActions"/>
   </changeSet>
