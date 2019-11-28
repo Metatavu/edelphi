@@ -1,5 +1,7 @@
 package fi.metatavu.edelphi.queries;
 
+import java.time.OffsetDateTime;
+import java.util.Date;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -12,8 +14,12 @@ import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection;
+import fi.metatavu.edelphi.domainmodel.resources.Folder;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
+import fi.metatavu.edelphi.domainmodel.resources.QueryState;
+import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.resources.ResourceController;
+import fi.metatavu.edelphi.settings.SettingsController;
 
 /**
  * Query controller
@@ -35,6 +41,28 @@ public class QueryController {
   @Inject
   private ResourceController resourceController;
 
+  @Inject
+  private SettingsController settingsController;
+
+  /**
+   * Creates new query
+   * 
+   * @param parentFolder parent folder
+   * @param name query name
+   * @param allowEditReply whether to allow editing of replies
+   * @param description description
+   * @param state query state
+   * @param closes closes
+   * @param creator creator
+   * @return created query
+   */
+  public Query createQuery(Folder parentFolder, String name, Boolean allowEditReply, String description, QueryState state, OffsetDateTime closes, User creator) {
+    Integer indexNumber = resourceController.getNextIndexNumber(parentFolder);
+    String urlName = resourceController.getUniqueUrlName(name, parentFolder);
+    Date closesDate = closes != null ? Date.from(closes.toInstant()) : null;
+    return queryDAO.create(parentFolder, name, urlName, allowEditReply, description, state, closesDate, indexNumber, creator);
+  }
+
   /**
    * Returns query by id
    * 
@@ -43,6 +71,19 @@ public class QueryController {
    */
   public Query findQueryById(Long queryId) {
     return queryDAO.findById(queryId);
+  }
+
+  /**
+   * Deletes an query
+   * 
+   * @param query
+   */
+  public void deleteQuery(Query query) {
+    if (settingsController.isInTestMode()) {
+      queryDAO.delete(query);
+    } else {
+      queryDAO.archive(query);
+    }
   }
 
   /**
@@ -64,7 +105,20 @@ public class QueryController {
   public QueryReply findQueryReplyById(Long queryReplyId) {
     return queryReplyDAO.findById(queryReplyId);
   }
-
+  
+  /**
+   * Deletes query reply
+   * 
+   * @param queryReply query reply
+   */
+  public void deleteQueryReply(QueryReply queryReply) {
+    if (settingsController.isInTestMode()) {
+      queryReplyDAO.delete(queryReply);
+    } else {
+      queryReplyDAO.archive(queryReply);  
+    }    
+  }
+  
   /**
    * Returns whether query page is archived or not
    * 
@@ -134,5 +188,5 @@ public class QueryController {
   public List<QueryPage> listQueryPages(Query query, Boolean visible) {
     return queryPageDAO.list(query, visible, Boolean.FALSE);
   }
-  
+
 }

@@ -60,7 +60,7 @@ public class QueryPageLive2dTranslator extends AbstractQueryPageTranslator<fi.me
     
     result.setColor(color);
     result.setLabel(queryPageController.getSetting(queryPage, String.format(QueryPageController.LIVE2D_LABEL_OPTION_TEMPLATE, axis)));
-    result.setOptions(queryPageController.getListSetting(queryPage, String.format(QueryPageController.OPTIONS_OPTION_TEMPLATE, axis)));
+    result.setOptions(queryPageController.getListSetting(queryPage, String.format(QueryPageController.LIVE2D_OPTIONS_OPTION_TEMPLATE, axis)));
     
     return result;
   }

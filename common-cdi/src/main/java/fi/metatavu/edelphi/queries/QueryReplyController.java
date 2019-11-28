@@ -26,6 +26,7 @@ import fi.metatavu.edelphi.dao.querydata.QueryQuestionTextAnswerDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
+import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldOptionDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseGroup;
@@ -40,6 +41,9 @@ import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryField;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryNumericField;
+import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionField;
+import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption;
+import fi.metatavu.edelphi.domainmodel.querymeta.QueryTextField;
 import fi.metatavu.edelphi.domainmodel.resources.Folder;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
@@ -55,6 +59,8 @@ public class QueryReplyController {
 
   private static final String LIVE_2D_FIELD_Y = "y";
   private static final String LIVE_2D_FIELD_X = "x";
+  
+  private static final String SCALE_1D_FIELD = "scale1d";
 
   @Inject
   private Logger logger;
@@ -68,6 +74,9 @@ public class QueryReplyController {
   @Inject
   private QueryQuestionNumericAnswerDAO queryQuestionNumericAnswerDAO;
 
+  @Inject
+  private QueryQuestionTextAnswerDAO queryQuestionTextAnswerDAO;
+  
   @Inject
   private QueryPageDAO queryPageDAO;
 
@@ -84,9 +93,6 @@ public class QueryReplyController {
   private QueryQuestionAnswerDAO queryQuestionAnswerDAO;
   
   @Inject
-  private QueryQuestionTextAnswerDAO queryQuestionTextAnswerDAO;
-
-  @Inject
   private QueryQuestionOptionAnswerDAO queryQuestionOptionAnswerDAO;
   
   @Inject
@@ -94,6 +100,21 @@ public class QueryReplyController {
   
   @Inject
   private QueryQuestionOptionGroupOptionAnswerDAO queryQuestionOptionGroupOptionAnswerDAO;
+
+  @Inject
+  private QueryOptionFieldOptionDAO queryOptionFieldOptionDAO;
+
+  /**
+   * Creates new query reply
+   * 
+   * @param query query
+   * @param panelStamp panel stamp
+   * @param creator user
+   * @return created reply
+   */
+  public QueryReply createQueryReply(Query query, PanelStamp panelStamp, User creator) {
+    return queryReplyDAO.create(creator, query, panelStamp, creator); 
+  }
   
   /**
    * Finds a query answer data object by id
@@ -178,6 +199,8 @@ public class QueryReplyController {
     switch (queryPage.getPageType()) {
       case LIVE_2D:
         return listLive2dQueryQuestionAnswers(queryPage, stamp, query, queryParentFolder, user);
+      case THESIS_SCALE_1D:
+        return listScale1dQueryQuestionAnswers(queryPage, stamp, query, queryParentFolder, user);               
       default:
     }
     
@@ -245,6 +268,37 @@ public class QueryReplyController {
     setNumericAnswer(answerData.getQueryPage(), answerData.getQueryReply(), LIVE_2D_FIELD_Y, y);
     return new QueryQuestionAnswer<QueryQuestionLive2dAnswerData>(answerData.getQueryReply(), answerData.getQueryPage(), new QueryQuestionLive2dAnswerData(x, y));
   }
+
+  /**
+   * Sets value for scale 1d query page
+   * 
+   * @param answerData answer data object
+   * @param value new value
+   * @return updated / created answer data
+   */
+  public QueryQuestionAnswer<QueryQuestionScale1dAnswerData> setScale1dAnswer(QueryQuestionAnswer<?> answerData, String value) {
+    setOptionAnswer(answerData.getQueryPage(), answerData.getQueryReply(), SCALE_1D_FIELD, value);
+    return new QueryQuestionAnswer<QueryQuestionScale1dAnswerData>(answerData.getQueryReply(), answerData.getQueryPage(), new QueryQuestionScale1dAnswerData(value));
+  }
+  
+  /**
+   * Delete scale1d answer
+   * 
+   * @param answerData answer
+   */
+  public void deleteScale1dAnswer(QueryQuestionAnswer<?> answerData) {
+    QueryReply queryReply = answerData.getQueryReply();
+    QueryPage queryPage = answerData.getQueryPage();
+    
+    QueryOptionField queryField = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, SCALE_1D_FIELD);
+    QueryQuestionOptionAnswer answer = queryQuestionOptionAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryField);
+    
+    if (answer != null) {
+      queryQuestionAnswerDAO.delete(answer);
+    } else {
+      logger.warn("Could not find answer with queryReply {}, queryPage {}", queryReply.getId(), queryPage.getId());
+    }
+  }
   
   /**
    * Lists query question answers for live 2d queries
@@ -290,6 +344,48 @@ public class QueryReplyController {
   }
   
   /**
+   * Lists query question answers for scale1d queries
+   * 
+   * @param queryPage query page
+   * @param stamp filter by stamp (optional)
+   * @param query filter by query (optional)
+   * @param queryParentFolder filter by query parent folder (optional)
+   * @param user filter by user (optional)
+   * @return found answers
+   */
+  private List<QueryQuestionAnswer<? extends QueryQuestionAnswerData>> listScale1dQueryQuestionAnswers(QueryPage queryPage, PanelStamp stamp, Query query, Folder queryParentFolder, User user) {
+    List<QueryQuestionOptionAnswer> answers = queryQuestionOptionAnswerDAO.list(queryPage, stamp, query, queryParentFolder, user, Boolean.FALSE);
+    
+    Map<Long, QueryQuestionScale1dAnswerData> dataMap = new HashMap<>();
+    Map<Long, QueryReply> replyMap = new HashMap<>();
+    
+    for (QueryQuestionOptionAnswer answer : answers) {
+      QueryReply reply = answer.getQueryReply();
+      Long replyId = reply.getId();
+      if (!dataMap.containsKey(replyId)) {
+        dataMap.put(replyId, new QueryQuestionScale1dAnswerData(null));
+        replyMap.put(replyId, reply);
+      }
+      
+      QueryQuestionScale1dAnswerData answerData = dataMap.get(replyId);
+      String fieldName = answer.getQueryField().getName();
+      
+      if (SCALE_1D_FIELD.equals(fieldName)) {
+        answerData.setValue(answer.getOption().getValue());
+      } else {
+        logger.error("Scale 1d query page contained field {}", fieldName);
+      }
+    }
+    
+    return dataMap.entrySet().stream().map(entry -> {
+      Long replyId = entry.getKey();
+      QueryReply queryReply = replyMap.get(replyId);
+      QueryQuestionScale1dAnswerData data = entry.getValue();
+      return new QueryQuestionAnswer<QueryQuestionAnswerData>(queryReply, queryPage, data);
+    }).collect(Collectors.toList());
+  }
+  
+  /**
    * Returns answer data for a query page
    * 
    * @param queryPage query page
@@ -300,6 +396,8 @@ public class QueryReplyController {
     switch (queryPage.getPageType()) {
       case LIVE_2D:
         return new QueryQuestionLive2dAnswerData(getLive2dAnswerX(queryPage, queryReply), getLive2dAnswerY(queryPage, queryReply));
+      case THESIS_SCALE_1D:
+        return new QueryQuestionScale1dAnswerData(getScale1dAnswer(queryPage, queryReply));
       default:
     }
     
@@ -326,6 +424,17 @@ public class QueryReplyController {
    */
   private Double getLive2dAnswerY(QueryPage queryPage, QueryReply queryReply) {
     return getNumericAnswer(queryPage, queryReply, LIVE_2D_FIELD_Y);
+  }
+
+  /**
+   * Returns answer for a scale1d query
+   * 
+   * @param queryPage query page
+   * @param queryReply query reply
+   * @return value
+   */
+  private String getScale1dAnswer(QueryPage queryPage, QueryReply queryReply) {
+    return getOptionAnswer(queryPage, queryReply, SCALE_1D_FIELD);
   }
 
   /**
@@ -365,6 +474,90 @@ public class QueryReplyController {
     } else {
       return queryQuestionNumericAnswerDAO.updateData(numericAnswer, value);
     }
+  }
+
+  /**
+   * Returns single text answer
+   * 
+   * @param queryPage query page
+   * @param queryReply query reply
+   * @param fieldName field name
+   * @return single string answer or null if not found
+   */
+  @SuppressWarnings("unused")
+  private String getTextAnswer(QueryPage queryPage, QueryReply queryReply, String fieldName) {
+    QueryTextField queryField = (QueryTextField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldName);
+    QueryQuestionTextAnswer textAnswer = queryQuestionTextAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryField);
+    if ((textAnswer != null) && (textAnswer.getData() != null)) {
+      return textAnswer.getData();
+    }
+    
+    return null;
+  }
+  
+  /**
+   * Sets text answer value
+   * 
+   * @param queryPage query page
+   * @param queryReply query reply
+   * @param fieldName field name
+   * @param value value
+   * @return updated answer object
+   */
+  @SuppressWarnings("unused")
+  private QueryQuestionTextAnswer setTextAnswer(QueryPage queryPage, QueryReply queryReply, String fieldName, String value) {
+    QueryNumericField queryField = (QueryNumericField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldName);
+    QueryQuestionTextAnswer textAnswer = queryQuestionTextAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryField);
+    Date now = new Date();
+
+    if (textAnswer == null) {
+      return queryQuestionTextAnswerDAO.create(queryReply, queryField, value, now, now);
+    } else {
+      return queryQuestionTextAnswerDAO.updateData(textAnswer, value);
+    }
+  }
+  
+  /**
+   * Gets option answer value
+   * 
+   * @param queryPage query page
+   * @param queryReply query reply
+   * @param fieldName field name
+   * @return returns option answer
+   */
+  private String getOptionAnswer(QueryPage queryPage, QueryReply queryReply, String fieldName) {
+    QueryOptionField queryField = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldName);
+    return queryQuestionOptionAnswerDAO.findValueByQueryReplyAndQueryField(queryReply, queryField);
+  }
+  
+  /**
+   * Sets option answer value
+   * 
+   * @param queryPage query page
+   * @param queryReply query reply
+   * @param fieldName field name
+   * @param value value
+   * @return updated answer object
+   */
+  private QueryQuestionOptionAnswer setOptionAnswer(QueryPage queryPage, QueryReply queryReply, String fieldName, String value) {
+    QueryOptionField queryField = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldName);
+    Query query = queryPage.getQuerySection().getQuery();
+    
+    QueryOptionFieldOption fieldOption = queryOptionFieldOptionDAO.findByQueryFieldAndValue(queryField, value);
+    if (fieldOption != null) {
+      QueryQuestionOptionAnswer answer = queryQuestionOptionAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryField);
+      if (answer != null) {
+        if (query.getAllowEditReply()) {
+          return queryQuestionOptionAnswerDAO.updateOption(answer, fieldOption);
+        } else {
+          throw new IllegalStateException("Reply editing not allowed");
+        }
+      } else {
+        return queryQuestionOptionAnswerDAO.create(queryReply, queryField, fieldOption);
+      }
+    }
+    
+    return null;
   }
   
   /**

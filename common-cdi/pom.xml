@@ -48,7 +48,7 @@
   </developers>
 
   <properties>
-    <maven.javadoc.skip>true</maven.javadoc.skip>
+    <maven.javadoc.skip>true</maven.javadoc.skip>    
   </properties>
   
   <dependencies>
@@ -150,6 +150,13 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
+    </dependency>
+    
+    <!-- Slugify -->
+    
+    <dependency>
+      <groupId>com.github.slugify</groupId>
+      <artifactId>slugify</artifactId>
     </dependency>
     
     <!-- eDelphi -->

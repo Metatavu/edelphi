@@ -59,10 +59,6 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
   
     <maven.javadoc.skip>true</maven.javadoc.skip>
     
-    <!-- Liquibase -->
-    
-    <liquibase.version>3.5.3</liquibase.version>
-    
     <!-- Singleton Service -->
     
     <wildfly-singleton-service.version>1.1.0</wildfly-singleton-service.version>
@@ -466,12 +462,6 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <scope>provided</scope>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.liquibase</groupId>
-      <artifactId>liquibase-cdi</artifactId>
-      <version>${liquibase.version}</version>
     </dependency>
     
     <!-- Paytrail -->

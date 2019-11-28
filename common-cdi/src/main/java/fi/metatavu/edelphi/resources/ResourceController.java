@@ -5,7 +5,12 @@ import java.util.ArrayList;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.github.slugify.Slugify;
+
 import fi.metatavu.edelphi.dao.panels.PanelDAO;
+import fi.metatavu.edelphi.dao.resources.ResourceDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.resources.Folder;
 import fi.metatavu.edelphi.domainmodel.resources.Resource;
@@ -24,6 +29,9 @@ public class ResourceController {
   
   @Inject
   private PanelDAO panelDAO;
+  
+  @Inject
+  private ResourceDAO resourceDAO;
   
   /**
    * Returns a panel for given resource
@@ -77,6 +85,80 @@ public class ResourceController {
     }
 
     return false;
+  }
+  
+  /**
+   * Returns next available index number for given parent folder
+   * 
+   * @param parentFolder parent folder
+   * @return next available index number
+   */
+  public Integer getNextIndexNumber(Folder parentFolder) {
+    Integer num = resourceDAO.findMaxIndexNumber(parentFolder);
+    if (num != null)
+      return num.intValue() + 1;
+    else
+      return new Integer(0);
+  }
+
+  /**
+   * Creates an URL friendly version of given string
+   * 
+   * @param string string
+   * @return an URL friendly version of given string
+   */
+  public String getUrlName(String string) {
+    Slugify slugify = new Slugify();
+    return slugify.slugify(string);
+  }
+  
+  /**
+   * Returns whether a URL name is available in given folder
+   * 
+   * @param urlName URL name
+   * @param parentFolder parent folder
+   * @return whether a URL name is available in given folder
+   */
+  public boolean isUrlNameAvailable(String urlName, Folder parentFolder) {
+    if (StringUtils.isEmpty(urlName)) {
+      return false;
+    }
+
+    Resource resource = resourceDAO.findByUrlNameAndParentFolder(urlName, parentFolder);
+    return resource == null;
+  }
+
+  /**
+   * Returns whether a URL name is available in given folder
+   * 
+   * @param urlName URL name
+   * @param parentFolder parent folder
+   * @param ownerResource owner resource
+   * @return whether a URL name is available in given folder
+   */
+  public boolean isUrlNameAvailable(String urlName, Folder parentFolder, Resource ownerResource) {
+    if (StringUtils.isEmpty(urlName)) {
+      return false;
+    }
+    
+    Resource resource = resourceDAO.findByUrlNameAndParentFolder(urlName, parentFolder);
+    return resource == null || resource.getId().equals(ownerResource.getId());
+  }
+  
+  /**
+   * Generates a unique name for resource in given folder
+   * 
+   * @param name resource name
+   * @param parentFolder parent folder
+   * @return a unique name for resource 
+   */
+  public String getUniqueUrlName(String name, Folder parentFolder) {
+    int i = 1;
+    String urlName = getUrlName(name);
+    while (!isUrlNameAvailable(urlName, parentFolder)) {
+      urlName = getUrlName(name == null ? ++i + "" : name + " (" + (++i) + ")");
+    }
+    return urlName;
   }
   
 }

@@ -8,7 +8,6 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
-import javax.persistence.TableGenerator;
 
 import fi.metatavu.edelphi.domainmodel.users.UserRole;
 
@@ -16,6 +15,16 @@ import fi.metatavu.edelphi.domainmodel.users.UserRole;
 @Inheritance(strategy=InheritanceType.JOINED)
 @Cacheable
 public abstract class UserRoleAction {
+
+  @Id 
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  
+  @ManyToOne
+  private DelfoiAction delfoiAction;
+  
+  @ManyToOne
+  private UserRole userRole;
 
   /**
    * Returns internal unique id
@@ -41,15 +50,4 @@ public abstract class UserRoleAction {
   public UserRole getUserRole() {
     return userRole;
   }
-
-  @Id 
-  @GeneratedValue(strategy=GenerationType.TABLE, generator="UserRoleAction")  
-  @TableGenerator(name="UserRoleAction", initialValue=1, allocationSize=100, table = "hibernate_sequences", pkColumnName = "sequence_name", valueColumnName = "sequence_next_hi_value")
-  private Long id;
-  
-  @ManyToOne
-  private DelfoiAction delfoiAction;
-  
-  @ManyToOne
-  private UserRole userRole;
 }

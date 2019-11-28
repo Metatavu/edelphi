@@ -3384,5 +3384,23 @@
   <changeSet id="query-comment-categories-page-nullable" author="antti.leppa">
     <dropNotNullConstraint tableName="QueryQuestionCommentCategory" columnName="queryPage_id" columnDataType="BIGINT"/>
   </changeSet>
-  
+
+  <changeSet author="antti.leppa" id="userroleaction-auto-increments">
+    <dropForeignKeyConstraint baseTableName="paneluserroleaction" constraintName="FK7AA8C77B2A08E6CD"/>
+    <dropForeignKeyConstraint baseTableName="paneluserroleaction" constraintName="FK7AA8C77B43CC2035"/>
+    <dropForeignKeyConstraint baseTableName="delfoiuserroleaction" constraintName="FK8FB5F0CC2A08E6CD"/>
+    <dropForeignKeyConstraint baseTableName="delfoiuserroleaction" constraintName="FK8FB5F0CC65DA3ED5"/>
+
+    <addAutoIncrement tableName="userroleaction" columnName="id" columnDataType="BIGINT(20)"/>
+
+    <addForeignKeyConstraint constraintName="FK_paneluserroleaction_id" referencedTableName="userroleaction" referencedColumnNames="id" baseTableName="paneluserroleaction" baseColumnNames="id" />
+    <addForeignKeyConstraint constraintName="FK_paneluserroleaction_panel" referencedTableName="userroleaction" referencedColumnNames="id" baseTableName="panel" baseColumnNames="id" />
+    <addForeignKeyConstraint constraintName="FK_delfoiuserroleaction_id" baseColumnNames="id" baseTableName="delfoiuserroleaction" referencedColumnNames="id" referencedTableName="userroleaction" />
+    <addForeignKeyConstraint constraintName="FK_delfoiuserroleaction_panel" baseColumnNames="delfoi_id" baseTableName="delfoiuserroleaction" referencedColumnNames="id" referencedTableName="delfoi" />
+  </changeSet>
+   
+  <changeSet id="test-delfoi-actions" author="antti.leppa" context="test">
+    <customChange class="fi.metatavu.edelphi.liquibase.changes.TestDefaultActions"/>
+  </changeSet>
+
 </databaseChangeLog>

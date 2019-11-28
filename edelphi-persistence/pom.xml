@@ -25,6 +25,14 @@
     <connection>scm:git:git@github.com:Metatavu/edelphi.git</connection>
     <tag>1.1.0</tag>
   </scm>
+
+  <properties>
+  
+    <!-- Liquibase -->
+    
+    <liquibase.version>3.5.3</liquibase.version>
+    
+  </properties>
   
   <organization>
     <name>Metatavu Oy</name>
@@ -86,6 +94,12 @@
   </build>
   
   <dependencies>    
+    
+    <dependency>
+      <groupId>org.liquibase</groupId>
+      <artifactId>liquibase-cdi</artifactId>
+      <version>${liquibase.version}</version>
+    </dependency>
   
     <dependency>
       <groupId>javax.enterprise</groupId>

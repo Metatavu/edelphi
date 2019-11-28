@@ -48,6 +48,44 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+    post:
+      operationId: createPanel
+      summary: Create a panel.
+      description: Creates new panel
+      tags:
+        - Panels
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Panel"
+        description: Payload
+        required: true
+      responses:
+        "200":
+          description: Created panel
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Panel"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /panels/{panelId}:
     get:
@@ -89,8 +127,135 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updatePanel
+      summary: Updates panel.
+      description: Updates panel
+      tags:
+        - Panels
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Panel"
+        description: Payload
+        required: true
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Updated panel
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Panel"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deletePanel
+      summary: Deletes panel.
+      description: Delets panel
+      tags:
+        - Panels
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: Success
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /panels/{panelId}/queries:
+    post:
+      operationId: createQuery
+      summary: Create query.
+      description: Create new query
+      tags:
+        - Queries
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Query"
+        description: Payload
+        required: true
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Created query
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Query"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
     get:
       operationId: listQueries
       summary: Lists queries in a panel.
@@ -114,6 +279,294 @@ paths:
                 type: array
                 items: 
                   $ref: "#/components/schemas/Query"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+                
+  /panels/{panelId}/queries/{queryId}:
+    get:
+      operationId: findQuery
+      summary: Finds an query.
+      description: Finds query
+      tags:
+        - Queries
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: queryId
+          required: true
+          in: path
+          description: query id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Found query
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Query"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteQuery
+      summary: Deletes an query.
+      description: Deletes query
+      tags:
+        - Queries
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: queryId
+          required: true
+          in: path
+          description: query id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: Success
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+                
+  /panels/{panelId}/queryReplies:
+    post:
+      operationId: createQueryReply
+      summary: Create query reply.
+      description: Create new query reply
+      tags:
+        - QueryReplies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QueryReply"
+        description: Payload
+        required: true
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Created query reply
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryReply"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+                
+  /panels/{panelId}/queryReplies/{queryReplyId}:
+    delete:
+      operationId: deleteQueryReply
+      summary: Deletes an query reply.
+      description: Deletes query reply
+      tags:
+        - QueryReplies
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: queryReplyId
+          required: true
+          in: path
+          description: query reply id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: Success
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+                
+  /panels/{panelId}/queries/{queryId}/sections:
+    post:
+      operationId: createQuerySection
+      summary: Create query section
+      description: Create new query section
+      tags:
+        - QuerySections
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuerySection"
+        description: Payload
+        required: true
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: queryId
+          required: true
+          in: path
+          description: query id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Created query
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuerySection"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+                
+  /panels/{panelId}/queries/{queryId}/sections/{sectionId}:
+    delete:
+      operationId: deleteQuerySection
+      summary: Deletes an query section
+      description: Deletes query section
+      tags:
+        - QuerySections
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: queryId
+          required: true
+          in: path
+          description: query id
+          schema:
+            type: integer
+            format: int64
+        - name: sectionId
+          required: true
+          in: path
+          description: query section id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: Success
         "400":
           description: Invalid request was sent to the server
           content:
@@ -342,6 +795,216 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/QueryQuestionAnswerLive2d"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /panels/{panelId}/scale1dQueryQuestionAnswers:
+    get:
+      operationId: listQueryQuestionAnswersScale1d
+      summary: Lists query question scale1d answers
+      description: Lists query question scale1d answers
+      tags:
+        - QueryQuestionAnswers
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: queryId
+          required: false
+          in: query
+          description: Filter by query id
+          schema:
+            type: integer
+            format: int64
+        - name: pageId
+          required: false
+          in: query
+          description: Filter by query page id
+          schema:
+            type: integer
+            format: int64
+        - name: userId
+          required: false
+          in: query
+          description: Filter by user id
+          schema:
+            type: string
+            format: uuid
+        - name: stampId
+          required: false
+          in: query
+          description: Filter by stamp id. Defaults to current stamp
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: List of query question answers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/QueryQuestionAnswerScale1d"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /panels/{panelId}/scale1dQueryQuestionAnswers/{answerId}:
+    get:
+      operationId: findQueryQuestionAnswerScale1d
+      summary: Find query question answer.
+      description: Finds query question answer by id
+      tags:
+        - QueryQuestionAnswers
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: answerId
+          required: true
+          in: path
+          description: query question answer id
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A queryQuestionAnswer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryQuestionAnswerScale1d"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: upsertQueryQuestionAnswerScale1d
+      summary: Creates or updates query question answer
+      description: Creates or updates query question answer
+      tags:
+        - QueryQuestionAnswers
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: answerId
+          required: true
+          in: path
+          description: query question answer id
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QueryQuestionAnswerScale1d"
+        description: Payload
+        required: true
+      responses:
+        "200":
+          description: Updated query question answer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryQuestionAnswerScale1d"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteQueryQuestionAnswerScale1d
+      summary: Deletes query question answer
+      description: Deletes query question answer
+      tags:
+        - QueryQuestionAnswers
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: answerId
+          required: true
+          in: path
+          description: query question answer id
+          schema:
+            type: string      
+      responses:
+        "204":
+          description: No content to indicate successful delete
         "400":
           description: Invalid request was sent to the server
           content:
@@ -933,6 +1596,50 @@ paths:
           content:
             application/json:
               schema:
+                $ref: "#/components/schemas/ErrorResponse"  
+                         
+  /panels/{panelId}/queryPages/{queryPageId}:
+    delete:
+      operationId: deleteQueryPage
+      summary: Deletes query page
+      description: Deletes query page
+      tags:
+        - QueryPages
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: queryPageId
+          required: true
+          in: path
+          description: query page id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: Success
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
   /panels/{panelId}/textQueryPages/{queryPageId}:
@@ -1136,6 +1843,155 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+
+  /panels/{panelId}/scale1dQueryPages:
+    post:
+      operationId: createQueryPageScale1d
+      summary: Create scale1d query page
+      description: Creates scale1d query page
+      tags:
+        - QueryPages
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QueryPageScale1d"
+        description: Payload
+        required: true
+      responses:
+        "200":
+          description: Created query page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryPageScale1d"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /panels/{panelId}/scale1dQueryPages/{queryPageId}:
+    get:
+      operationId: findQueryPageScale1d
+      summary: Find scale1d query page.
+      description: Finds scale1d query page by id
+      tags:
+        - QueryPages
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: queryPageId
+          required: true
+          in: path
+          description: query page id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: A queryPage
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryPageScale1d"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updateQueryPageScale1d
+      summary: Update scale1d query page
+      description: Updates scale1d query page
+      tags:
+        - QueryPages
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: queryPageId
+          required: true
+          in: path
+          description: query page id
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QueryPageScale1d"
+        description: Payload
+        required: true
+      responses:
+        "200":
+          description: Updated query page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryPageLive2d"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"     
 
   /panels/{panelId}/expertiseClasses:
     get:
@@ -1450,8 +2306,50 @@ components:
           description: Comment's last modification time
           type: string
           format: date-time
-          readOnly: true   
+          readOnly: true
 
+    QuerySection:
+      type: object
+      required:
+        - visible
+        - commentable
+        - viewDiscussions
+        - title
+      properties:
+        id:
+          type: integer
+          format: int64
+          readOnly: true
+        visible:
+          type: boolean
+        commentable:
+          type: boolean
+        viewDiscussions:
+          type: boolean
+        title:
+          type: string
+        sectionNumber:
+          type: integer
+        creatorId:
+          description: Comment's creator id
+          type: string
+          format: uuid
+          readOnly: true
+        lastModifierId:
+          description: Comment's last modifier id
+          type: string
+          format: uuid
+          readOnly: true
+        created:
+          description: Comment's creation time
+          type: string
+          format: date-time
+          readOnly: true
+        lastModified:
+          description: Comment's last modification time
+          type: string
+          format: date-time
+          readOnly: true   
 
     QueryPageType:
       type: string
@@ -1473,6 +2371,8 @@ components:
     QueryPage:
       type: object
       required:
+        - queryId
+        - querySectionId
         - pageNumber
         - type
         - title
@@ -1483,6 +2383,12 @@ components:
           type: integer
           format: int64
           readOnly: true
+        queryId:
+          type: integer
+          format: int64
+        querySectionId:
+          type: integer
+          format: int64
         pageNumber:
           type: integer
           format: int32
@@ -1504,6 +2410,20 @@ components:
               $ref: '#/components/schemas/QueryPageLive2DAxis'
             axisY:
               $ref: '#/components/schemas/QueryPageLive2DAxis'
+
+    QueryPageScale1d:
+      allOf:
+        - $ref: '#/components/schemas/QueryPage'
+        - type: object
+          properties:
+            options:
+              type: array
+              items:
+                type: string
+            answerType:
+              $ref: '#/components/schemas/QueryPageScale1dAnswerType'
+            label:
+              type: string
             
     QueryPageText:
       allOf:
@@ -1527,7 +2447,13 @@ components:
           type: array
           items:
             type: string
-            
+          
+    QueryPageScale1dAnswerType:
+      type: string
+      enum:
+        - RADIO
+        - SLIDER
+
     QueryPageLive2DColor:
       type: string
       enum:
@@ -1551,13 +2477,45 @@ components:
       enum:
         - IMMEDIATELY
         - AFTER_OWN_ANSWER
-
+        
     QueryReply:
+      type: object
+      required:
+        - queryId
       properties:
         id:
+          description: Reply's id
           type: integer
           format: int64
           readOnly: true
+        queryId:
+          description: Query id
+          type: integer
+          format: int64
+        stampId:
+          type: integer
+          format: int64
+          description: Panel stamp id. Defaults to current stamp
+        creatorId:
+          description: Comment's creator id
+          type: string
+          format: uuid
+          readOnly: true
+        lastModifierId:
+          description: Comment's last modifier id
+          type: string
+          format: uuid
+          readOnly: true
+        created:
+          description: Comment's creation time
+          type: string
+          format: date-time
+          readOnly: true
+        lastModified:
+          description: Comment's last modification time
+          type: string
+          format: date-time
+          readOnly: true  
           
     QueryQuestionAnswer:
       required: 
@@ -1584,6 +2542,16 @@ components:
           properties:
             data:
               $ref: '#/components/schemas/QueryQuestionLive2dAnswerData'
+            
+    QueryQuestionAnswerScale1d:
+      allOf:
+        - $ref: '#/components/schemas/QueryQuestionAnswer'
+        - type: object
+          required: 
+            - data
+          properties:
+            data:
+              $ref: '#/components/schemas/QueryQuestionScale1dAnswerData'
               
     QueryQuestionLive2dAnswerData:
       required: 
@@ -1596,6 +2564,13 @@ components:
         y:
           type: number
           format: double
+              
+    QueryQuestionScale1dAnswerData:
+      required: 
+        - value
+      properties:
+        value:
+          type: string
           
     QueryQuestionCommentCategory:
       type: object
@@ -1719,7 +2694,7 @@ components:
           description: Comment's last modification time
           type: string
           format: date-time
-          readOnly: true    
+          readOnly: true   
           
     ReportFormat:
       type: string

@@ -10,7 +10,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
 import javax.sql.DataSource;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import liquibase.integration.cdi.CDILiquibaseConfig;
 import liquibase.integration.cdi.annotations.LiquibaseType;
@@ -30,7 +30,7 @@ public class LiquibaseProducer {
   public CDILiquibaseConfig createConfig() {
     List<String> contextList = new ArrayList<>();
     
-    if ("TEST".equals(System.getProperty("runmode"))) {
+    if ("TEST".equals(getRunMode())) {
       contextList.add("test");
     } else {
       contextList.add("production");
@@ -57,6 +57,20 @@ public class LiquibaseProducer {
   @LiquibaseType
   public ResourceAccessor create() {
     return new ClassLoaderResourceAccessor(getClass().getClassLoader());
+  }
+  
+  /**
+   * Returns system's current run mode
+   * 
+   * @return system's current run mode
+   */
+  private String getRunMode() {
+    String result = System.getProperty("runmode");
+    if (StringUtils.isNotBlank(result)) {
+      return result;
+    }
+    
+    return System.getenv("runmode");
   }
 
 }

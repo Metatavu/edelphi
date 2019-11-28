@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import fi.metatavu.edelphi.settings.MqttSettings;
 import fi.metatavu.edelphi.settings.SettingsController;
 
 /**
@@ -33,7 +34,10 @@ public class MqttController {
    */
   public void publish(String subtopic, Object data) {
     try {
-      MqttConnection.publish(settingsController.getMqttSettings(), subtopic, data);
+      MqttSettings mqttSettings = settingsController.getMqttSettings();
+      if (mqttSettings != null) {
+        MqttConnection.publish(mqttSettings, subtopic, data);
+      }
     } catch (JsonProcessingException | MqttException e) {
       logger.error("Failed to publish MQTT message", e);
     }
