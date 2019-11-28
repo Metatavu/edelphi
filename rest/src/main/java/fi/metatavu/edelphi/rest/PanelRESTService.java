@@ -858,32 +858,22 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   @Override
   @RolesAllowed("user")  
   public Response deleteQueryQuestionAnswerScale1d(Long panelId, String answerId) {
-    System.out.println("deleteQueryQuestionAnswerScale1d 1");
-    
     QueryQuestionAnswer<?> answerData = queryReplyController.findQueryQuestionAnswerData(answerId);
     if (answerData == null) {
       return createNotFound();
     }
-    
-    System.out.println("deleteQueryQuestionAnswerScale1d 2");
     
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
     }
     
-    System.out.println("deleteQueryQuestionAnswerScale1d 3");
-    
     if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.ACCESS_PANEL)) {
       return createForbidden("Forbidden");
     }
 
-    System.out.println("deleteQueryQuestionAnswerScale1d 4");
-    
     queryReplyController.deleteScale1dAnswer(answerData);
 
-    System.out.println("deleteQueryQuestionAnswerScale1d 5");
-    
     return createNoContent();
   }
 

@@ -129,8 +129,6 @@ public class QueryFieldController {
       queryField = queryOptionFieldDAO.create(queryPage, fieldName, mandatory, fieldCaption);
     }
     
-    System.out.println("queryField " + queryField.getId());
-
     synchronizeOptionsFieldOptions(options, queryField);
   }
   
@@ -176,8 +174,6 @@ public class QueryFieldController {
       i++;
     }
     
-    System.out.println("synchronizeOptionsFieldOptions: 3");
-    
     for (String optionValue : oldOptionValues) {
       QueryOptionFieldOption optionFieldOption = queryOptionFieldOptionDAO.findByQueryFieldAndValue(queryField, optionValue);
       if (optionFieldOption != null) {
@@ -189,8 +185,6 @@ public class QueryFieldController {
         }
       }
     }
-    
-    System.out.println("synchronizeOptionsFieldOptions: 4");
   }
   
 }

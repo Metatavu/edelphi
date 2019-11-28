@@ -540,37 +540,22 @@ public class QueryReplyController {
    * @return updated answer object
    */
   private QueryQuestionOptionAnswer setOptionAnswer(QueryPage queryPage, QueryReply queryReply, String fieldName, String value) {
-    System.out.println("1 - Setting answer data value to " + value);
-    
     QueryOptionField queryField = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, fieldName);
     Query query = queryPage.getQuerySection().getQuery();
-
-    System.out.println("1.1 - value: " + value);
-
-    System.out.println("1.1 - queryField id: " + queryField.getId());
-    System.out.println("1.1 - queryField nm: " + queryField.getName());
     
     QueryOptionFieldOption fieldOption = queryOptionFieldOptionDAO.findByQueryFieldAndValue(queryField, value);
     if (fieldOption != null) {
-      System.out.println("2 - fieldOption found");
-      
       QueryQuestionOptionAnswer answer = queryQuestionOptionAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryField);
       if (answer != null) {
-        System.out.println("2 - answer found");
-        
         if (query.getAllowEditReply()) {
           return queryQuestionOptionAnswerDAO.updateOption(answer, fieldOption);
         } else {
           throw new IllegalStateException("Reply editing not allowed");
         }
       } else {
-        System.out.println("2 - answer creationg");
-        
         return queryQuestionOptionAnswerDAO.create(queryReply, queryField, fieldOption);
       }
     }
-    
-    System.out.println("10 - Could not find fieldOption from " + queryField.getId());
     
     return null;
   }

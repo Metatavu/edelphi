@@ -30,8 +30,6 @@ public class LiquibaseProducer {
   public CDILiquibaseConfig createConfig() {
     List<String> contextList = new ArrayList<>();
     
-    System.out.println(getRunMode());
-    
     if ("TEST".equals(getRunMode())) {
       contextList.add("test");
     } else {
