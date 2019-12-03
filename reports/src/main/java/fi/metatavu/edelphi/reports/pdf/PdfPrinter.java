@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -43,7 +45,7 @@ public class PdfPrinter {
    */
   public void printHtmlAsPdf(InputStream htmlStream, OutputStream pdfStream) throws PdfRenderException {
     try {
-      byte[] htmlBytes = IOUtils.toByteArray(htmlStream);
+      byte[] htmlBytes = cleanHtmlAttrs(IOUtils.toByteArray(htmlStream));
       
       ITextRenderer renderer = new ITextRenderer();
       renderer.setDocument(parseDocument(htmlBytes), "");
@@ -126,6 +128,22 @@ public class PdfPrinter {
       tidy.parse(new StringReader(new String(untidy, StandardCharsets.UTF_8)), tidyXHtml);
       return tidyXHtml.toByteArray();
     }
+  }
+  
+  /**
+   * Cleans strange attributes from HTML code
+   * @param html HTML code
+   * @return clean HTML code
+   */
+  private byte[] cleanHtmlAttrs(byte[] html) {
+    if (html == null) {
+      return new byte[0];
+    }
+    
+    String regex = "([A-Za-z-]{1,}\\:\\=\\\"\")";
+    Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
+    Matcher matcher = pattern.matcher(new String(html, StandardCharsets.UTF_8));
+    return matcher.replaceAll("").getBytes(StandardCharsets.UTF_8);
   }
   
 }
