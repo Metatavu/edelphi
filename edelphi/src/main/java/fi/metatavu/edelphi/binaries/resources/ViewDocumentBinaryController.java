@@ -3,6 +3,7 @@ package fi.metatavu.edelphi.binaries.resources;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Locale;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -25,6 +26,8 @@ import fi.metatavu.edelphi.utils.ResourceUtils;
 import fi.metatavu.edelphi.utils.GoogleDriveUtils.DownloadResponse;
 
 public class ViewDocumentBinaryController extends BinaryController {
+
+  private static Logger logger = Logger.getLogger(ViewDocumentBinaryController.class.getName());
 
   @Override
   public void process(BinaryRequestContext binaryRequestContext) {
@@ -73,6 +76,8 @@ public class ViewDocumentBinaryController extends BinaryController {
   					outputFileName = ResourceUtils.getUrlName(file.getName());
     			}
         } catch (GoogleJsonResponseException e) {
+          logger.info("Google export or download failed, falling back to redirect.");
+          
           if (StringUtils.isNotBlank(file.getWebContentLink())) {
             redirectUrl = file.getWebContentLink();
           } else {
