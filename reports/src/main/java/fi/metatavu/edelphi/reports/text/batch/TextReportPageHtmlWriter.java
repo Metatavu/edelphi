@@ -14,6 +14,7 @@ import javax.inject.Named;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Header;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -100,8 +101,16 @@ public class TextReportPageHtmlWriter extends TypedItemWriter<String> {
   private String downloadAsDataUrl(URI uri) throws IOException, MimeTypeParseException {
     try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
       HttpGet request = new HttpGet(URI.create(baseUrl).resolve(uri));
-      
+
       try (CloseableHttpResponse response = httpClient.execute(request)) {
+        int statusCode = response.getStatusLine().getStatusCode();
+        if (statusCode == 308) {
+          Header location = response.getFirstHeader("Location");
+          if (location != null) {
+            return downloadAsDataUrl(URI.create(baseUrl).resolve(location.getValue()));
+          }
+        }
+        
         try (InputStream stream = response.getEntity().getContent()) {
           byte[] data = IOUtils.toByteArray(stream);
           MimeType mimeType = new MimeType(response.getEntity().getContentType().getValue());
