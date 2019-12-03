@@ -147,7 +147,11 @@ public class PdfPrinter {
     String regex = "([A-Za-z-]{1,}\\:\\=\\\"\")";
     Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
     Matcher matcher = pattern.matcher(new String(html, StandardCharsets.UTF_8));
-    return matcher.replaceAll("").getBytes(StandardCharsets.UTF_8);
+    String result = matcher.replaceAll("");
+    
+    logger.info(String.format("Cleaned HTML %s", result));
+    
+    return result.getBytes(StandardCharsets.UTF_8);
   }
   
 }
