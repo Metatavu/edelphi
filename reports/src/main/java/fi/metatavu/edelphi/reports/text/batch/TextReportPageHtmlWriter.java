@@ -2,9 +2,7 @@ package fi.metatavu.edelphi.reports.text.batch;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 
@@ -16,6 +14,10 @@ import javax.inject.Named;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -96,22 +98,20 @@ public class TextReportPageHtmlWriter extends TypedItemWriter<String> {
    * @throws MimeTypeParseException thrown when downloaded file had invalid mime type
    */
   private String downloadAsDataUrl(URI uri) throws IOException, MimeTypeParseException {
-    try {
-      URL url = URI.create(baseUrl).resolve(uri).toURL();
+    try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+      HttpGet request = new HttpGet(URI.create(baseUrl).resolve(uri));
       
-      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-      connection.setInstanceFollowRedirects(true);
-      connection.connect();
-      
-      try (InputStream stream = connection.getInputStream()) {
-        byte[] data = IOUtils.toByteArray(stream);
-        MimeType mimeType = new MimeType(connection.getContentType());
-        StringBuilder dataUrlBuilder = new StringBuilder();
-        dataUrlBuilder.append("data:");
-        dataUrlBuilder.append(mimeType.getBaseType());
-        dataUrlBuilder.append(";base64,");
-        dataUrlBuilder.append(Base64.encodeBase64String(data));
-        return dataUrlBuilder.toString();
+      try (CloseableHttpResponse response = httpClient.execute(request)) {
+        try (InputStream stream = response.getEntity().getContent()) {
+          byte[] data = IOUtils.toByteArray(stream);
+          MimeType mimeType = new MimeType(response.getEntity().getContentType().getValue());
+          StringBuilder dataUrlBuilder = new StringBuilder();
+          dataUrlBuilder.append("data:");
+          dataUrlBuilder.append(mimeType.getBaseType());
+          dataUrlBuilder.append(";base64,");
+          dataUrlBuilder.append(Base64.encodeBase64String(data));
+          return dataUrlBuilder.toString();
+        }
       }
     } catch (Exception e) {
       logger.error("Failed to download URL", e);
