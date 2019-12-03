@@ -3,6 +3,7 @@ package fi.metatavu.edelphi.binaries.resources;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Locale;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
@@ -65,7 +66,7 @@ public class ViewDocumentBinaryController extends BinaryController {
   			
         try {
     			if ("application/vnd.google-apps.presentation".equals(mimeType)) {
-  			    DownloadResponse response = GoogleDriveUtils.exportFile(drive, file, "application/pdf");
+    			  DownloadResponse response = GoogleDriveUtils.exportFile(drive, file, "application/pdf");
             outputData = response.getData();
             outputMime = response.getMimeType();
             outputFileName = ResourceUtils.getUrlName(file.getName()) + ".pdf";
@@ -76,11 +77,14 @@ public class ViewDocumentBinaryController extends BinaryController {
   					outputFileName = ResourceUtils.getUrlName(file.getName());
     			}
         } catch (GoogleJsonResponseException e) {
-          logger.info("Google export or download failed, falling back to redirect.");
-          
           if (StringUtils.isNotBlank(file.getWebContentLink())) {
+            logger.info("Google download failed, falling back to web content redirect.");            
             redirectUrl = file.getWebContentLink();
+          } else if (StringUtils.isNotBlank(file.getWebViewLink())) {
+            logger.info("Google download failed, falling back to web view redirect.");            
+            redirectUrl = file.getWebViewLink();
           } else {
+            logger.log(Level.SEVERE, "Google download failed. File does not provide link there is to do but crash.");
             throw e;
           }
         }
@@ -101,4 +105,5 @@ public class ViewDocumentBinaryController extends BinaryController {
   		}
   	}
   }
+  
 }
