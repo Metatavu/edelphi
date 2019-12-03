@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
@@ -51,25 +52,37 @@ public class ViewDocumentBinaryController extends BinaryController {
   	Drive drive = GoogleDriveUtils.getAdminService();
   	if (drive != null) {
     	try {
-    		byte[] outputData;
-    		String outputMime;
-    		String outputFileName;
+    	  byte[] outputData = null;
+    		String outputMime = null;
+    		String outputFileName = null;
+    		String redirectUrl = null;
     		
   			File file = GoogleDriveUtils.getFile(drive, googleDocument.getResourceId());
   			String mimeType = file.getMimeType();
-  			if ("application/vnd.google-apps.presentation".equals(mimeType)) {
-  				DownloadResponse response = GoogleDriveUtils.exportFile(drive, file, "application/pdf");
-  				outputData = response.getData();
-  				outputMime = response.getMimeType();
-  				outputFileName = ResourceUtils.getUrlName(file.getName()) + ".pdf";
-  			} else {
-				  DownloadResponse response = GoogleDriveUtils.downloadFile(drive, file);
-					outputData = response.getData();
-					outputMime = response.getMimeType();
-					outputFileName = ResourceUtils.getUrlName(file.getName());
-  			}
   			
-  			if (outputData != null && outputMime != null) {
+        try {
+    			if ("application/vnd.google-apps.presentation".equals(mimeType)) {
+  			    DownloadResponse response = GoogleDriveUtils.exportFile(drive, file, "application/pdf");
+            outputData = response.getData();
+            outputMime = response.getMimeType();
+            outputFileName = ResourceUtils.getUrlName(file.getName()) + ".pdf";
+    			} else {
+  				  DownloadResponse response = GoogleDriveUtils.downloadFile(drive, file);
+  					outputData = response.getData();
+  					outputMime = response.getMimeType();
+  					outputFileName = ResourceUtils.getUrlName(file.getName());
+    			}
+        } catch (GoogleJsonResponseException e) {
+          if (StringUtils.isNotBlank(file.getWebContentLink())) {
+            redirectUrl = file.getWebContentLink();
+          } else {
+            throw e;
+          }
+        }
+
+  			if (redirectUrl != null) {
+          binaryRequestContext.setRedirectURL(redirectUrl);
+  			} else if (outputData != null && outputMime != null) {
     			binaryRequestContext.setResponseContent(outputData, outputMime);
     			if (StringUtils.isNotBlank(outputFileName)) {
     				binaryRequestContext.setFileName(outputFileName);
