@@ -138,7 +138,7 @@ public class BinaryRequestContext extends RequestContext {
     }
     
     HttpURLConnection connection = (HttpURLConnection) includeURL.openConnection(); 
-    
+    connection.setInstanceFollowRedirects(true);
     connection.setDoInput(true);
     connection.setDoOutput(true);
     connection.connect();

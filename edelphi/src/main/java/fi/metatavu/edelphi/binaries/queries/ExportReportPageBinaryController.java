@@ -121,6 +121,7 @@ public class ExportReportPageBinaryController extends BinaryController {
 
       URL url = new URL(baseURL + "/panel/admin/report/page.page?chartFormat=PNG&pageId=" + queryPage.getId() + "&panelId=" + panelStamp.getPanel().getId() + "&serializedContext=" + serializedContext);
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+      connection.setInstanceFollowRedirects(true);
       connection.setRequestProperty("Authorization", "InternalAuthorization " + SystemUtils.getSettingValue("system.internalAuthorizationHash"));
       connection.setRequestProperty("Accept-Language", requestContext.getRequest().getLocale().getLanguage());
       connection.setRequestMethod("GET");

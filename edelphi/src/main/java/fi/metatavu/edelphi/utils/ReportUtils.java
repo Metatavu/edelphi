@@ -260,6 +260,7 @@ public class ReportUtils {
     // Read the url...
 
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setInstanceFollowRedirects(true);
     connection.setRequestProperty("Authorization", "InternalAuthorization " + SystemUtils.getSettingValue("system.internalAuthorizationHash"));
     connection.setRequestProperty("Accept-Language", requestContext.getRequest().getLocale().getLanguage());
     connection.setRequestMethod("GET");
@@ -453,6 +454,7 @@ public class ReportUtils {
     // First we need to fetch report as html
 
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setInstanceFollowRedirects(true);
     connection.setRequestProperty("Authorization", "InternalAuthorization " + SystemUtils.getSettingValue("system.internalAuthorizationHash"));
     connection.setRequestProperty("Accept-Language", locale.getLanguage());
     connection.setRequestMethod("GET");
@@ -516,6 +518,7 @@ public class ReportUtils {
     try {
       URL url = uri.toURL();
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+      connection.setInstanceFollowRedirects(true);
       connection.connect();
       
       try (InputStream stream = connection.getInputStream()) {
@@ -538,6 +541,7 @@ public class ReportUtils {
     else {
       URL url = new URL(urlString);
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+      connection.setInstanceFollowRedirects(true);
       connection.setRequestProperty("Authorization", "InternalAuthorization " + SystemUtils.getSettingValue("system.internalAuthorizationHash"));
       connection.setRequestMethod("GET");
       connection.setReadTimeout(900000); // 15 minutes; gross overkill but at least eventual termination is guaranteed
