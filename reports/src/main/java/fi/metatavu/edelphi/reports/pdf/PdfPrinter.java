@@ -126,10 +126,7 @@ public class PdfPrinter {
       tidy.setWraplen(0);
       tidy.setQuoteNbsp(false);
       tidy.parse(new StringReader(new String(untidy, StandardCharsets.UTF_8)), tidyXHtml);
-      byte[] result = tidyXHtml.toByteArray();
-      
-      logger.info(String.format("Tidyied HTML %s", new String(result, StandardCharsets.UTF_8)));
-      
+      byte[] result = tidyXHtml.toByteArray();      
       return result;
     }
   }
@@ -148,8 +145,6 @@ public class PdfPrinter {
     Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
     Matcher matcher = pattern.matcher(new String(html, StandardCharsets.UTF_8));
     String result = matcher.replaceAll("");
-    
-    logger.info(String.format("Cleaned HTML %s", result));
     
     return result.getBytes(StandardCharsets.UTF_8);
   }
