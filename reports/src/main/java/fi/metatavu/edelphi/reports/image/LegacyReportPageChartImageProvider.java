@@ -99,6 +99,8 @@ public class LegacyReportPageChartImageProvider extends AbstractReportPageChartI
         URL url = URI.create(baseUrl).resolve(urlString).toURL();
         
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setInstanceFollowRedirects(true);
+        
         try {
           connection.setRequestProperty("Authorization", "InternalAuthorization " + internalAuthorizationHash);
           connection.setRequestMethod("GET");
