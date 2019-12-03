@@ -111,6 +111,13 @@
       <scope>provided</scope>
     </dependency>
     
+    <!-- JTidy -->
+    
+    <dependency>
+      <groupId>net.sf.jtidy</groupId>
+      <artifactId>jtidy</artifactId>
+    </dependency>
+    
     <!-- Jsoup -->
     
     <dependency>
