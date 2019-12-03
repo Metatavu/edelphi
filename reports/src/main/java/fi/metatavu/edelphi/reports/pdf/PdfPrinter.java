@@ -126,7 +126,11 @@ public class PdfPrinter {
       tidy.setWraplen(0);
       tidy.setQuoteNbsp(false);
       tidy.parse(new StringReader(new String(untidy, StandardCharsets.UTF_8)), tidyXHtml);
-      return tidyXHtml.toByteArray();
+      byte[] result = tidyXHtml.toByteArray();
+      
+      logger.info(String.format("Tidyied HTML %s", new String(result, StandardCharsets.UTF_8)));
+      
+      return result;
     }
   }
   
