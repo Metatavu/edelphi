@@ -98,7 +98,9 @@ public class TextReportPageHtmlWriter extends TypedItemWriter<String> {
   private String downloadAsDataUrl(URI uri) throws IOException, MimeTypeParseException {
     try {
       URL url = URI.create(baseUrl).resolve(uri).toURL();
+      
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+      connection.setInstanceFollowRedirects(true);
       connection.connect();
       
       try (InputStream stream = connection.getInputStream()) {
