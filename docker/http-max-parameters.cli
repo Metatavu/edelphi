@@ -1,3 +1,4 @@
 embed-server --server-config=standalone-full-ha.xml
 /subsystem=undertow/server=default-server/http-listener=default:write-attribute(name=max-parameters,value=50000)
 /subsystem=undertow/server=default-server/http-listener=default:write-attribute(name=max-connections,value=1000)
+/subsystem=batch-jberet/thread-pool=batch:write-attribute(name=max-threads, value=1)
