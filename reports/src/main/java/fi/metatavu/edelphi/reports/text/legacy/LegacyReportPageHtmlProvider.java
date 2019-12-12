@@ -35,8 +35,6 @@ import fi.metatavu.edelphi.settings.SettingsController;
 @ApplicationScoped
 public class LegacyReportPageHtmlProvider extends AbstractReportPageHtmlProvider {
   
-  private static final int MAX_CONCURRENT = 2;
-
   @Inject
   private Logger logger;
   
@@ -55,15 +53,7 @@ public class LegacyReportPageHtmlProvider extends AbstractReportPageHtmlProvider
     concurrent++;
     try { 
       logger.info("Concurrent legacy page downloads: {}", concurrent);
-      
-      while (concurrent > MAX_CONCURRENT) {
-        logger.info("Watining concurrent {} / {} legacy page downloads", concurrent, MAX_CONCURRENT);
-        Thread.sleep(1000);
-      }
-      
       return downloadPageHtml(exportContext);
-    } catch (InterruptedException e) {
-      throw new ReportException(e);
     } finally {
       concurrent--;
     }
