@@ -1,5 +1,5 @@
 eDelphi
-========
+=======
 
 eDelfoi is a research program based on Delphi expert method. It is
 developed in co-operation with Future Research Center of Turku School
