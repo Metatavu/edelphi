@@ -7,6 +7,9 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import javax.ejb.Lock;
+import javax.ejb.LockType;
+import javax.ejb.Singleton;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -31,12 +34,14 @@ import fi.metatavu.edelphi.settings.SettingsController;
  * @author Antti Leppä
  */
 @ApplicationScoped
+@Singleton
 public class LegacyReportPageHtmlProvider extends AbstractReportPageHtmlProvider {
   
   @Inject
   private SettingsController settingsController;
 
   @Override
+  @Lock (LockType.WRITE)
   public String getPageHtml(TextReportPageContext exportContext) throws ReportException {
     try {
       String baseURL = exportContext.getBaseURL();

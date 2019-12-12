@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import javax.ejb.Lock;
-import javax.ejb.LockType;
-import javax.ejb.Singleton;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -23,7 +20,6 @@ import fi.metatavu.edelphi.reports.text.live2d.Live2dReportPageHtmlProvider;
  * @author Antti Leppä
  */
 @ApplicationScoped
-@Singleton
 public class TextReportController {
   
   @Inject
@@ -40,7 +36,6 @@ public class TextReportController {
    * @return report HTML
    * @throws ReportException thrown when report HTML generation fails
    */
-  @Lock (LockType.WRITE)
   public String getHtmlReport(String baseUrl, List<String> bodyContents) throws ReportException {
     try (InputStream htmlStream = getClass().getClassLoader().getResourceAsStream("report.html")) {
       Document document = Jsoup.parse(htmlStream, "UTF-8", baseUrl);
