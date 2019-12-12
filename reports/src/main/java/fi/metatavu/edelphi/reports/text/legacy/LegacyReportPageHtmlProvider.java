@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -14,6 +15,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,10 +36,30 @@ import fi.metatavu.edelphi.settings.SettingsController;
 public class LegacyReportPageHtmlProvider extends AbstractReportPageHtmlProvider {
   
   @Inject
+  private Logger logger;
+  
+  @Inject
   private SettingsController settingsController;
 
+  private int concurrent;
+  
+  @PostConstruct
+  public void init() {
+    concurrent = 0;
+  }
+  
   @Override
   public String getPageHtml(TextReportPageContext exportContext) throws ReportException {
+    concurrent++;
+    try { 
+      logger.info("Concurrent legacy page downloads: {}", concurrent);
+      return downloadPageHtml(exportContext);
+    } finally {
+      concurrent--;
+    }
+  }
+
+  private String downloadPageHtml(TextReportPageContext exportContext) throws ReportException {
     try {
       String baseURL = exportContext.getBaseURL();
       QueryPage queryPage = exportContext.getPage();

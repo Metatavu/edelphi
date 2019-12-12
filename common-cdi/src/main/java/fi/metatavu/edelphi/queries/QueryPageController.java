@@ -323,7 +323,7 @@ public class QueryPageController {
    */
   public List<QueryQuestionCommentCategory> listCommentCategoriesByPage(QueryPage queryPage, boolean includeQueryScoped) {
     if (includeQueryScoped) {
-      return queryQuestionCommentCategoryDAO.listByQueryPageOrPageNull(queryPage);
+      return queryQuestionCommentCategoryDAO.listByQueryPageOrPageQuery(queryPage);
     }
     
     return queryQuestionCommentCategoryDAO.listByQueryPage(queryPage);

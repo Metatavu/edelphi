@@ -17,7 +17,7 @@
   </properties>
         
   <step id="pages" next="print">
-    <chunk item-count="2">
+    <chunk item-count="1">
       <reader ref="queryPageReader"/>
       <processor ref="textReportPageHtmlProcessor"/>
       <writer ref="textReportPageHtmlWriter"/>
