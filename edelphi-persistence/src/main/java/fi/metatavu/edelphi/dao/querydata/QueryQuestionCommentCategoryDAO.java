@@ -81,12 +81,12 @@ public class QueryQuestionCommentCategoryDAO extends GenericDAO<QueryQuestionCom
   }
   
   /**
-   * Lists query question comment categories by query page
+   * Lists query question comment categories by query page including query scoped categories
    * 
    * @param queryPage query page
-   * @return query question comment categories by query page
+   * @return query question comment categories by query page including query scoped categories
    */
-  public List<QueryQuestionCommentCategory> listByQueryPageOrPageNull(QueryPage queryPage) {
+  public List<QueryQuestionCommentCategory> listByQueryPageOrPageQuery(QueryPage queryPage) {
     EntityManager entityManager = getEntityManager();
 
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -96,7 +96,10 @@ public class QueryQuestionCommentCategoryDAO extends GenericDAO<QueryQuestionCom
     criteria.where(
       criteriaBuilder.or(
         criteriaBuilder.equal(root.get(QueryQuestionCommentCategory_.queryPage), queryPage),
-        criteriaBuilder.isNull(root.get(QueryQuestionCommentCategory_.queryPage))
+        criteriaBuilder.and(
+          criteriaBuilder.equal(root.get(QueryQuestionCommentCategory_.query), queryPage.getQuerySection().getQuery()),
+          criteriaBuilder.isNull(root.get(QueryQuestionCommentCategory_.queryPage))
+        )
       )
     );
     
