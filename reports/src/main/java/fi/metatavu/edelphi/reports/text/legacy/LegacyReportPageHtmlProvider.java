@@ -7,9 +7,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import javax.ejb.Lock;
-import javax.ejb.LockType;
-import javax.ejb.Singleton;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -17,6 +15,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,15 +33,43 @@ import fi.metatavu.edelphi.settings.SettingsController;
  * @author Antti Leppä
  */
 @ApplicationScoped
-@Singleton
 public class LegacyReportPageHtmlProvider extends AbstractReportPageHtmlProvider {
+  
+  private static final int MAX_CONCURRENT = 2;
+
+  @Inject
+  private Logger logger;
   
   @Inject
   private SettingsController settingsController;
 
+  private int concurrent;
+  
+  @PostConstruct
+  public void init() {
+    concurrent = 0;
+  }
+  
   @Override
-  @Lock (LockType.WRITE)
   public String getPageHtml(TextReportPageContext exportContext) throws ReportException {
+    concurrent++;
+    try { 
+      logger.info("Concurrent legacy page downloads: {}", concurrent);
+      
+      while (concurrent > MAX_CONCURRENT) {
+        logger.info("Watining concurrent {} / {} legacy page downloads", concurrent, MAX_CONCURRENT);
+        Thread.sleep(1000);
+      }
+      
+      return downloadPageHtml(exportContext);
+    } catch (InterruptedException e) {
+      throw new ReportException(e);
+    } finally {
+      concurrent--;
+    }
+  }
+
+  private String downloadPageHtml(TextReportPageContext exportContext) throws ReportException {
     try {
       String baseURL = exportContext.getBaseURL();
       QueryPage queryPage = exportContext.getPage();
