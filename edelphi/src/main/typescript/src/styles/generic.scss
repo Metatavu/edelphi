@@ -10,6 +10,8 @@ header {
   background-repeat: no-repeat;
   background-position: top left;
   margin-bottom: 50px;
+  min-width: 980px;
+  white-space: nowrap;
 
   .header-title {
     margin-top: 20px;
