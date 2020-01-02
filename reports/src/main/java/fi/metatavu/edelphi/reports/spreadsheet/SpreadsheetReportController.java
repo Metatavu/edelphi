@@ -27,6 +27,7 @@ import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageType;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.queries.QueryPageNumberComparator;
+import fi.metatavu.edelphi.queries.QueryReplyController;
 import fi.metatavu.edelphi.reports.i18n.ReportMessages;
 import fi.metatavu.edelphi.reports.spreadsheet.comments.ReportPageCommentProcessor;
 import fi.metatavu.edelphi.reports.spreadsheet.export.ExpertiseQueryPageSpreadsheetExporter;
@@ -56,6 +57,9 @@ public class SpreadsheetReportController {
 
   @Inject
   private ReportMessages reportMessages; 
+
+  @Inject
+  private QueryReplyController queryReplyController;
   
   @Inject
   private ExpertiseQueryPageSpreadsheetExporter expertiseQueryPageSpreadsheetExporter;
@@ -118,7 +122,7 @@ public class SpreadsheetReportController {
    * @return CSV data
    * @throws IOException thrown when CSV generator failes
    */
-  public byte[] exportDataToCsv(Locale locale, ReplierExportStrategy replierExportStrategy, List<String> columns, Map<QueryReply, Map<Integer, Object>> rows) throws IOException {
+  public byte[] exportDataToCsv(Locale locale, ReplierExportStrategy replierExportStrategy, List<String> columns, Map<Long, Map<Integer, Object>> rows) throws IOException {
     try (
       ByteArrayOutputStream csvStream = new ByteArrayOutputStream();
       OutputStreamWriter streamWriter = new OutputStreamWriter(csvStream, Charset.forName("UTF-8"))) {
@@ -139,7 +143,16 @@ public class SpreadsheetReportController {
       nextLine = new ArrayList<>();
       
       // Rows
-      for (QueryReply queryReply : rows.keySet()) {
+      for (Long queryReplyId : rows.keySet()) {
+        QueryReply queryReply = queryReplyController.findQueryReply(queryReplyId);
+        if (queryReply == null) {
+          if (logger.isErrorEnabled()) {
+            logger.error(String.format("Could not find query reply %d", queryReplyId));
+          }
+          
+          continue;
+        }
+        
         switch (replierExportStrategy) {
           case NONE:
           break;
@@ -154,7 +167,7 @@ public class SpreadsheetReportController {
           break;
         }
         
-        Map<Integer, Object> columnValues = rows.get(queryReply);
+        Map<Integer, Object> columnValues = rows.get(queryReplyId);
   
         for (int columnIndex = 0, columnCount = columns.size(); columnIndex < columnCount; columnIndex++) {
           Object value = columnValues.get(columnIndex);
