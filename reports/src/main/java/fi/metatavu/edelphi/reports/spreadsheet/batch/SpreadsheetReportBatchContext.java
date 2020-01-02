@@ -19,7 +19,7 @@ import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 @JobScoped
 public class SpreadsheetReportBatchContext {
   
-  private Map<QueryReply, Map<Integer, Object>> rows;
+  private Map<Long, Map<Integer, Object>> rows;
   private List<String> columns;
   
   /**
@@ -53,10 +53,10 @@ public class SpreadsheetReportBatchContext {
     int columnIndex = cellValue.getColumnIndex();
     Object value = cellValue.getValue();
     
-    Map<Integer, Object> columnValues = rows.get(queryReply);
+    Map<Integer, Object> columnValues = rows.get(queryReply.getId());
     if (columnValues == null) {
       columnValues = new HashMap<Integer, Object>();
-      rows.put(queryReply, columnValues);
+      rows.put(queryReply.getId(), columnValues);
     }
     
     columnValues.put(columnIndex, value);
@@ -85,7 +85,7 @@ public class SpreadsheetReportBatchContext {
    * 
    * @return rows
    */
-  public Map<QueryReply, Map<Integer, Object>> getRows() {
+  public Map<Long, Map<Integer, Object>> getRows() {
     return rows;
   }
   
@@ -94,7 +94,7 @@ public class SpreadsheetReportBatchContext {
    * 
    * @param rows rows
    */
-  public void setRows(Map<QueryReply, Map<Integer, Object>> rows) {
+  public void setRows(Map<Long, Map<Integer, Object>> rows) {
     this.rows = rows;
   }
   
