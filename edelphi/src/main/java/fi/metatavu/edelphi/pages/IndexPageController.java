@@ -2,6 +2,7 @@ package fi.metatavu.edelphi.pages;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -63,7 +64,7 @@ public class IndexPageController extends PageController {
     
     pageRequestContext.getRequest().setAttribute("selectedLanguage", locale.getLanguage());
     
-    List<Panel> openPanels = panelDAO.listByDelfoiAndAccessLevelAndState(delfoi, PanelAccessLevel.OPEN, PanelState.IN_PROGRESS); 
+    List<Panel> openPanels = panelDAO.listByDelfoiAndAccessLevelInAndState(delfoi, Arrays.asList(PanelAccessLevel.OPEN, PanelAccessLevel.ANONYMOUS), PanelState.IN_PROGRESS); 
     Collections.sort(openPanels, new Comparator<Panel>() {
       @Override
       public int compare(Panel o1, Panel o2) {

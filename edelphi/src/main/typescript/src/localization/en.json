@@ -104,6 +104,16 @@
           "AFTEROWNANSWER": "After own answer",
           "IMMEDIATELY": "Immediately"
         }
+      },
+      
+      "anonymousLoginDialog": {
+        "title": "Anonymous login",
+        "helpText": "It is possible to log in to this query using an anonymous login method.",
+        "hintText": "Users can sign in either by displaying a QR code on their mobile device or by copying a link to their browser. You can also download the image to your own computer and print it, for example",
+        "linkLabel": "Link",
+        "downloadImage": "Download image",
+        "downloadPrintableImage": "Download printable image",
+        "okButton": "Ok"
       }
     },
     "liveView": {

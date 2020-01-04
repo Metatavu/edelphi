@@ -28,12 +28,14 @@
         <jsp:param name="value" value="${panel.description}"/>
       </jsp:include>
       
+      <c:set var="anonymousLocale"><fmt:message key="panel.admin.dashboard.panelSettings.anonymous"/></c:set>
       <c:set var="openLocale"><fmt:message key="panel.admin.dashboard.panelSettings.open"/></c:set>
       <c:set var="closedLocale"><fmt:message key="panel.admin.dashboard.panelSettings.closed"/></c:set>
       <h3><fmt:message key="panel.admin.dashboard.panelSettings.type"></fmt:message></h3>
       <jsp:include page="/jsp/fragments/formfield_radio.jsp">
         <jsp:param name="name" value="panelAccess"/>
-        <jsp:param name="options" value="OPEN,CLOSED"/>
+        <jsp:param name="options" value="ANONYMOUS,OPEN,CLOSED"/>
+        <jsp:param name="option.ANONYMOUS" value="${anonymousLocale}"/>
         <jsp:param name="option.OPEN" value="${openLocale}"/>
         <jsp:param name="option.CLOSED" value="${closedLocale}"/>
         <jsp:param name="value" value="${panel.accessLevel}"/>

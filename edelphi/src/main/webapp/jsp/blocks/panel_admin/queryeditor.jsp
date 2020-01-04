@@ -63,6 +63,12 @@
 	        <jsp:param name="value" value="${empty(query.state) ? 'EDIT' : query.state}"/>
           </jsp:include>
           
+          <c:if test="${param.accessLevel eq 'ANONYMOUS' and param.queryId ne 'NEW'}">
+            <div>
+              <a id="queryEditorAnonymousLoginLink" href="javascript:void(null)"><fmt:message key="panelAdmin.block.query.anonymousLoginLink"/></a>
+            </div>
+          </c:if>
+          
           <div>
             <a id="queryEditorShowQueryCommentOptionsLink" href="javascript:void(null)"><fmt:message key="panelAdmin.block.query.commentOptionsLink"/></a>
           </div>

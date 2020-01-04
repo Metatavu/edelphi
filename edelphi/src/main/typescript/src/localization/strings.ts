@@ -100,6 +100,7 @@ export interface IStrings extends LocalizedStringsMethods {
         deleteCategory: string,
         deleteCategoryConfirm: string
       },
+
       pageLive2dOptions: {
         title: string,
         save: string,
@@ -109,6 +110,16 @@ export interface IStrings extends LocalizedStringsMethods {
           AFTEROWNANSWER: string
           IMMEDIATELY: string
         }
+      },
+
+      anonymousLoginDialog: {
+        title: string,
+        helpText: string
+        hintText: string,
+        linkLabel: string,
+        downloadImage: string,
+        downloadPrintableImage: string,
+        okButton: string
       }
     },
     liveView: {

@@ -46,7 +46,7 @@ public class AnonymousLoginPageController extends PanelPageController {
       throw new AccessDeniedException(requestContext.getRequest().getLocale());
     }
     
-    if (panel.getAccessLevel() != PanelAccessLevel.OPEN) {
+    if (panel.getAccessLevel() != PanelAccessLevel.ANONYMOUS) {
       throw new AccessDeniedException(requestContext.getRequest().getLocale());
     }
     
