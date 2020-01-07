@@ -62,14 +62,19 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
    * Component did update life-cycle event
    */
   public async componentDidMount() {
-    this.setState({
-      anonymousLoginQrCode: await QRCode.toDataURL(this.getAnonymousLoginUrl(), {
+    const [ anonymousLoginQrCode, anonymousLoginQrCodePrintable ] = await Promise.all([
+      QRCode.toDataURL(this.getAnonymousLoginUrl(), {
         margin: 0
       }),
-      anonymousLoginQrCodePrintable: await QRCode.toDataURL(this.getAnonymousLoginUrl(), {
+      QRCode.toDataURL(this.getAnonymousLoginUrl(), {
         margin: 0,
         scale: 12
       })
+    ]);
+
+    this.setState({
+      anonymousLoginQrCode: anonymousLoginQrCode, 
+      anonymousLoginQrCodePrintable: anonymousLoginQrCodePrintable
     });
   }
 
@@ -127,7 +132,7 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
         <Modal.Content>
           <h3>{ strings.panelAdmin.queryEditor.anonymousLoginDialog.helpText }</h3>
           <p>{ strings.panelAdmin.queryEditor.anonymousLoginDialog.hintText }</p>
-          { this.renderAnonymousLoginQrCode() }
+          { this.renderAnonymousLoginDialogContents() }
         </Modal.Content>
         <Modal.Actions>
           <Button color="green" onClick={ this.onAnonymousLoginDialogCloseButtonClick } inverted>
@@ -141,17 +146,56 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
   /**
    * Renders anonymous login QR code 
    */
-  private renderAnonymousLoginQrCode = () => {
+  private renderAnonymousLoginDialogContents = () => {
     return (
       <div>
-        <img src={ this.state.anonymousLoginQrCode } />
+        { this.renderAnonymousLoginQrImage() }
         <div style={{ float: "right" }} >
-          <a href="#" download onClick={ this.onDownloadAnonymousLoginQrCodeClick }>{ strings.panelAdmin.queryEditor.anonymousLoginDialog.downloadImage }</a>
-          <a href="#" style={{ paddingLeft: "5px" }} download onClick={ this.onDownloadPrintableAnonymousLoginQrCodeClick }>{ strings.panelAdmin.queryEditor.anonymousLoginDialog.downloadPrintableImage }</a>
+          { this.renderAnonymousLoginDownloadLink() }
+          { this.renderAnonymousLoginDownloadPrintableLink() }
         </div>
         <label style={{ paddingTop: "5px", paddingBottom: "5px", display: "block" }}>{ strings.panelAdmin.queryEditor.anonymousLoginDialog.linkLabel }</label>
         <input style={{ width: "100%"}} type="url" readOnly value={ this.getAnonymousLoginUrl() } />
       </div>
+    );
+  }
+
+  /**
+   * Renders anonymous login QR image
+   */
+  private renderAnonymousLoginQrImage = () => {
+    if (!this.state.anonymousLoginQrCode) {
+      return null;
+    }
+
+    return (
+      <img src={ this.state.anonymousLoginQrCode } />
+    );
+  }
+
+  /**
+   * Renders anonymous login download QR link
+   */
+  private renderAnonymousLoginDownloadLink = () => {
+    if (!this.state.anonymousLoginQrCode) {
+      return null;
+    }
+
+    return (
+      <a href={ this.state.anonymousLoginQrCode } target="_blank" download="qrcode.png">{ strings.panelAdmin.queryEditor.anonymousLoginDialog.downloadImage }</a>
+    );
+  }
+
+  /**
+   * Renders anonymous login download prinable QR link
+   */
+  private renderAnonymousLoginDownloadPrintableLink = () => {
+    if (!this.state.anonymousLoginQrCodePrintable) {
+      return null;
+    }
+    
+    return (
+      <a href={ this.state.anonymousLoginQrCodePrintable } target="_blank" style={{ paddingLeft: "5px" }} download="qrcodeprintable.png">{ strings.panelAdmin.queryEditor.anonymousLoginDialog.downloadPrintableImage }</a>
     );
   }
 
@@ -261,28 +305,6 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
    */
   private getQueryQuestionAnswersService = () => {
     return Api.getQueryQuestionAnswersService(this.props.accessToken);
-  }
-
-  /**
-   * Event handler for anonymous login QR code download link click
-   */
-  private onDownloadAnonymousLoginQrCodeClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    event.preventDefault();
-
-    if (this.state.anonymousLoginQrCode) {
-      window.open(this.state.anonymousLoginQrCode);
-    }
-  }
-
-  /**
-   * Event handler for anonymous login QR code download printable link click
-   */
-  private onDownloadPrintableAnonymousLoginQrCodeClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    event.preventDefault();
-
-    if (this.state.anonymousLoginQrCode) {
-      window.open(this.state.anonymousLoginQrCodePrintable);
-    }
   }
 
   /**
