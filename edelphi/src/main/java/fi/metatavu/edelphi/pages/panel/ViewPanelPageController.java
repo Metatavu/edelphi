@@ -51,7 +51,8 @@ public class ViewPanelPageController extends PanelPageController {
   @Override
   public void authorize(RequestContext requestContext) {
     Panel panel = RequestUtils.getPanel(requestContext);
-    if (panel != null && panel.getAccessLevel().equals(PanelAccessLevel.OPEN)) {
+
+    if (panel != null && (panel.getAccessLevel().equals(PanelAccessLevel.OPEN) || panel.getAccessLevel().equals(PanelAccessLevel.ANONYMOUS))) {
       Long userId = requestContext.getLoggedUserId();
       if (userId != null) {
         UserDAO userDAO = new UserDAO();

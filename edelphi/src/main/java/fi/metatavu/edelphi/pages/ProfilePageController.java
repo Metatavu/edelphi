@@ -1,6 +1,7 @@
 package fi.metatavu.edelphi.pages;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -105,7 +106,7 @@ public class ProfilePageController extends PageController {
     
     // Open panels
     
-    List<Panel> openPanels = panelDAO.listByDelfoiAndAccessLevelAndState(delfoi, PanelAccessLevel.OPEN, PanelState.IN_PROGRESS); 
+    List<Panel> openPanels = panelDAO.listByDelfoiAndAccessLevelInAndState(delfoi, Arrays.asList(PanelAccessLevel.OPEN, PanelAccessLevel.ANONYMOUS), PanelState.IN_PROGRESS); 
     Collections.sort(openPanels, new PanelComparator());
     pageRequestContext.getRequest().setAttribute("openPanels", openPanels);
     

@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.dao.panels;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -77,7 +78,7 @@ public class PanelDAO extends GenericDAO<Panel> {
     return entityManager.createQuery(criteria).getResultList(); 
   }
 
-  public List<Panel> listByDelfoiAndAccessLevelAndState(Delfoi delfoi, PanelAccessLevel accessLevel, PanelState state) {
+  public List<Panel> listByDelfoiAndAccessLevelInAndState(Delfoi delfoi, Collection<PanelAccessLevel> accessLevels, PanelState state) {
     EntityManager entityManager = getEntityManager();
     
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -87,7 +88,7 @@ public class PanelDAO extends GenericDAO<Panel> {
     criteria.where(
       criteriaBuilder.and(
         criteriaBuilder.equal(root.get(Panel_.delfoi), delfoi),
-        criteriaBuilder.equal(root.get(Panel_.accessLevel), accessLevel),
+        root.get(Panel_.accessLevel).in(accessLevels),
         criteriaBuilder.equal(root.get(Panel_.state), state),
         criteriaBuilder.equal(root.get(Panel_.archived), Boolean.FALSE)
       )

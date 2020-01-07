@@ -52,6 +52,7 @@
           <ed:include page="/jsp/blocks/panel_admin/queryeditor.jsp">
             <ed:param name="queryId" value="NEW"/>
             <ed:param name="parentFolderId" value="${panel.rootFolder.id}"/>
+            <ed:param name="accessLevel" value="${panel.accessLevel}"/>
           </ed:include>
         </div>
       </div>

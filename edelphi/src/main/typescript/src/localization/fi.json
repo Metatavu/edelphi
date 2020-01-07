@@ -94,6 +94,7 @@
         "deleteCategory": "Poista",
         "deleteCategoryConfirm": "Oletko varma?"
       },
+
       "pageLive2dOptions": {
         "title": "Live 2d asetukset",
         "save": "Tallenna",
@@ -103,7 +104,18 @@
           "AFTEROWNANSWER": "Oman vastauksen jälkeen",
           "IMMEDIATELY": "Heti"
         }
+      },
+      
+      "anonymousLoginDialog": {
+        "title": "Anonyymi kirjautuminen",
+        "helpText": "Tähän kyselyyn on mahdollista kirjautua käyttämällä anonyymiä kirjautumistapaa.",
+        "hintText": "Käyttäjät voivat kirjatua joko näyttämällä QR-koodia mobiililaitteellensa tai kopioimalla linkin selaimeensa. Voit myös ladata kuvan omalle koneellesi ja esimerkiksi tulostaa sen",
+        "linkLabel": "Linkki",
+        "downloadImage": "Lataa kuvana",
+        "downloadPrintableImage": "Lataa tulostettava kuva",
+        "okButton": "Ok"
       }
+
     },
     "liveView": {
       "querySelectLabel": "Kysely",

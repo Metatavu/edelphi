@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.pages;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -41,7 +42,7 @@ public class ViewBulletinPageController extends DelfoiPageController {
     Delfoi delfoi = RequestUtils.getDelfoi(pageRequestContext);
     
     pageRequestContext.getRequest().setAttribute("openPanels", 
-        panelDAO.listByDelfoiAndAccessLevelAndState(delfoi, PanelAccessLevel.OPEN, PanelState.IN_PROGRESS));
+        panelDAO.listByDelfoiAndAccessLevelInAndState(delfoi, Arrays.asList(PanelAccessLevel.OPEN, PanelAccessLevel.ANONYMOUS), PanelState.IN_PROGRESS));
 
     User loggedUser = RequestUtils.getUser(pageRequestContext);
     if (loggedUser != null) {

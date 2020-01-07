@@ -182,7 +182,7 @@ QueryEditorBlockController = Class.create(BlockController, {
         connectorUrl: CONTEXTPATH + '/system/ckbrowserconnector.json?panelId=' + panelId
       }
     });
-    
+     
     this._tabControl.element.observe('ui:tabs:change', this._tabChangeListener);
 
     var commentOptionsLink = $('queryEditorShowQueryCommentOptionsLink');
@@ -202,6 +202,13 @@ QueryEditorBlockController = Class.create(BlockController, {
     if ("NEW" == this.getBlockElement().down('input[name="queryId"]').value) {
       commentOptionsLink.hide();
       removeQueryAnswersLink.hide();
+    }
+    
+    var anonymousLoginLink = $('queryEditorAnonymousLoginLink');
+    if (anonymousLoginLink) {
+      anonymousLoginLink.on("click", function () {
+        triggerReactCommand("open-anonymous-login-dialog", { });
+      }.bindAsEventListener(this));
     }
     
     this._initializePages();

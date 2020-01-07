@@ -5,9 +5,10 @@ import { connect } from "react-redux";
 import PanelAdminQueryPageCommentOptionsEditor from "./panel-admin-query-page-comment-options-editor";
 import PanelAdminQueryCommentOptionsEditor from "./panel-admin-query-comment-options-editor";
 import PanelAdminQueryPageLive2dOptionsEditor from "./panel-admin-query-page-live2d-options-editor";
-import { Confirm } from "semantic-ui-react";
+import { Confirm, Modal, Header, Button, Icon } from "semantic-ui-react";
 import strings from "../../localization/strings";
 import Api from "edelphi-client";
+import * as QRCode from "qrcode";
 
 /**
  * Interface representing component properties
@@ -27,8 +28,11 @@ interface State {
   removeQueryAnswersOpen: boolean,
   pageCommentOptionsOpen: boolean,
   pageLive2dOptionsOpen: boolean,
+  anonymousLoginDialogOpen: boolean,
   pageData?: EditPageLegacyPageData,
-  pageId: number
+  pageId: number,
+  anonymousLoginQrCode?: string
+  anonymousLoginQrCodePrintable?: string
 }
 
 /**
@@ -49,6 +53,7 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
       removeQueryAnswersOpen: false,
       pageCommentOptionsOpen: false,
       pageLive2dOptionsOpen: false,
+      anonymousLoginDialogOpen: false,
       pageId: 0
     };
   }
@@ -57,6 +62,15 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
    * Component did update life-cycle event
    */
   public async componentDidMount() {
+    this.setState({
+      anonymousLoginQrCode: await QRCode.toDataURL(this.getAnonymousLoginUrl(), {
+        margin: 0
+      }),
+      anonymousLoginQrCodePrintable: await QRCode.toDataURL(this.getAnonymousLoginUrl(), {
+        margin: 0,
+        scale: 12
+      })
+    });
   }
 
   /**
@@ -83,6 +97,7 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
         { this.renderPageCommentOptionsEditor() }
         { this.renderLive2dOptionsEditor() }
         { this.renderRemoveQueryAnswersDialog() }
+        { this.renderAnonymousLoginDialog() }
       </div>
     );
   }
@@ -97,6 +112,46 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
         open={ this.state.removeQueryAnswersOpen }
         onConfirm={ this.onRemoveQueryAnswersDialogConfirm }
         onCancel={ this.onRemoveQueryAnswersDialogCancel }/>
+    );
+  }
+
+  /**
+   * Renders anonymous login link dialog
+   */
+  private renderAnonymousLoginDialog = () => {
+    return (
+      <Modal
+        open={this.state.anonymousLoginDialogOpen }
+        onClose={ this.onAnonymousLoginDialogClose }>
+        <Header icon="user secret" content={ strings.panelAdmin.queryEditor.anonymousLoginDialog.title } />
+        <Modal.Content>
+          <h3>{ strings.panelAdmin.queryEditor.anonymousLoginDialog.helpText }</h3>
+          <p>{ strings.panelAdmin.queryEditor.anonymousLoginDialog.hintText }</p>
+          { this.renderAnonymousLoginQrCode() }
+        </Modal.Content>
+        <Modal.Actions>
+          <Button color="green" onClick={ this.onAnonymousLoginDialogCloseButtonClick } inverted>
+            <Icon name="checkmark" /> { strings.panelAdmin.queryEditor.anonymousLoginDialog.okButton }
+          </Button>
+        </Modal.Actions>
+      </Modal>
+    );
+  }
+
+  /**
+   * Renders anonymous login QR code 
+   */
+  private renderAnonymousLoginQrCode = () => {
+    return (
+      <div>
+        <img src={ this.state.anonymousLoginQrCode } />
+        <div style={{ float: "right" }} >
+          <a href="#" download onClick={ this.onDownloadAnonymousLoginQrCodeClick }>{ strings.panelAdmin.queryEditor.anonymousLoginDialog.downloadImage }</a>
+          <a href="#" style={{ paddingLeft: "5px" }} download onClick={ this.onDownloadPrintableAnonymousLoginQrCodeClick }>{ strings.panelAdmin.queryEditor.anonymousLoginDialog.downloadPrintableImage }</a>
+        </div>
+        <label style={{ paddingTop: "5px", paddingBottom: "5px", display: "block" }}>{ strings.panelAdmin.queryEditor.anonymousLoginDialog.linkLabel }</label>
+        <input style={{ width: "100%"}} type="url" readOnly value={ this.getAnonymousLoginUrl() } />
+      </div>
     );
   }
 
@@ -135,6 +190,11 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
       case "remove-query-answers":
         this.setState({
           removeQueryAnswersOpen: true
+        });
+      break;
+      case "open-anonymous-login-dialog":
+        this.setState({
+          anonymousLoginDialogOpen: true
         });
       break;
     }
@@ -185,12 +245,62 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
   }
 
   /**
+   * Returns URL for anonymous login
+   * 
+   * @returns URL for anonymous login
+   */
+  private getAnonymousLoginUrl = () => {
+    const location = window.location;
+    return `${location.protocol}//${location.host}/panel/anonymouslogin.page?panelId=${this.props.panelId}&queryId=${this.props.queryId}`;
+  }
+
+  /**
    * Returns query question answers service
    * 
    * @returns query question answers service
    */
   private getQueryQuestionAnswersService = () => {
     return Api.getQueryQuestionAnswersService(this.props.accessToken);
+  }
+
+  /**
+   * Event handler for anonymous login QR code download link click
+   */
+  private onDownloadAnonymousLoginQrCodeClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    event.preventDefault();
+
+    if (this.state.anonymousLoginQrCode) {
+      window.open(this.state.anonymousLoginQrCode);
+    }
+  }
+
+  /**
+   * Event handler for anonymous login QR code download printable link click
+   */
+  private onDownloadPrintableAnonymousLoginQrCodeClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    event.preventDefault();
+
+    if (this.state.anonymousLoginQrCode) {
+      window.open(this.state.anonymousLoginQrCodePrintable);
+    }
+  }
+
+  /**
+   * Event handler for anonymous login dialog close event
+   */
+  private onAnonymousLoginDialogClose = () => {
+    this.setState({
+      anonymousLoginDialogOpen: false
+    });
+  }
+
+  /**
+   * Event handler for anonymous login dialog close button click
+   */
+  private onAnonymousLoginDialogCloseButtonClick = () => {
+    this.setState({
+      anonymousLoginDialogOpen: false
+    });
   }
 
   /**

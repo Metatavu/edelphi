@@ -58,6 +58,7 @@
               <ed:param name="queryId" value="${query.id}"/>
               <ed:param name="queryName" value="${query.name}"/>
               <ed:param name="parentFolderId" value="${panel.rootFolder.id}"/>
+              <ed:param name="accessLevel" value="${panel.accessLevel}"/>
             </ed:include>
           </c:if>
         </div>
