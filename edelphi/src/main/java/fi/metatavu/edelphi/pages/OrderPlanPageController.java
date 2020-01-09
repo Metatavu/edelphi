@@ -121,11 +121,13 @@ public class OrderPlanPageController extends PageController {
     
     PaytrailService paytrailService = PaytrailServiceFactory.createPaytrailService();
     
+    Double price = roundPrice(plan.getPrice() - (compensation != null ? compensation : 0d));
+    
     try {
       paytrailService.addProduct(payment, name, 
           String.format("#%d", plan.getId()), 
           1d, 
-          plan.getPrice() - (compensation != null ? compensation : 0d), 
+          price, 
           getVatPercent(), 
           0d, 
           Product.TYPE_NORMAL);
@@ -219,5 +221,15 @@ public class OrderPlanPageController extends PageController {
     
     return StringUtils.join(result, ",");
   }
-
+  
+  /**
+   * Rounds price to nearest 2 decimal places 
+   * 
+   * @param price price
+   * @return rounded price
+   */
+  private Double roundPrice(Double price) {
+    return Math.round(price * 100.0d) / 100.0d;
+  }
+  
 }
