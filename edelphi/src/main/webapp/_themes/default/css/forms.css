@@ -449,3 +449,67 @@ input.buttonInputComponentInput {
   padding: 0px;
 }
 
+/*  Multiple 1d scales */
+
+.queryMultiple1DScalesQuestionContainer {
+  margin-bottom: 20px;
+}
+
+.queryMultiple1DScalesQuestionContainer table {
+  width: 100%;  
+}
+
+.queryMultiple1DScalesQuestionContainer th {
+  text-align: center;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.queryMultiple1DScalesQuestionContainer .label {
+  color: #0099ff;
+  font-size: 1.5em;
+}
+
+.queryMultiple1DScalesQuestionContainer td {
+  text-align: center;
+  padding: 10px 2px;
+  position: relative;
+}
+
+.queryMultiple1DScalesQuestionContainer td label.cover-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  cursor: pointer;
+}
+
+.queryMultiple1DScalesQuestionContainer td:nth-child(odd) {
+  background: #eee;
+}
+
+.queryMultiple1DScalesQuestionContainer tr:hover td {
+  background:#eee;
+}
+
+.queryMultiple1DScalesQuestionContainer tr:hover td:nth-child(odd) {
+  background:#ddd;
+}
+
+.queryMultiple1DScalesQuestionContainer tr td:first-child {
+  text-align: left;
+  background: transparent;
+  max-width: 150px;
+}
+
+.queryMultiple1DScalesQuestionContainer tr:hover td:first-child {
+  background:#eee;
+}
+
+.queryMultiple1DScalesQuestionContainer .scale-separator {
+  border: 0px;
+  width: 1px;
+  background: #000 !important;
+  padding: 0px;
+}

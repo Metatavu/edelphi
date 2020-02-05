@@ -9,6 +9,7 @@ var MultiSelectQueryPageController;
 var OrderQueryPageController;
 var GroupingQueryPageController;
 var TimeLineQueryPageController;
+var Multiple1DScaleQueryPageController;
 var Multiple2DScaleQueryPageController;
 var FormQueryPageController;
 var Collage2DQueryPageController;
@@ -118,10 +119,12 @@ var QueryBlockController = Class.create(BlockController, {
             case 'THESIS_TIMELINE':
               this.queryPageController = new TimeLineQueryPageController(this);
               break;
+            case 'THESIS_MULTIPLE_1D_SCALES':
+              this.queryPageController = new Multiple1DScaleQueryPageController(this);
+            break;
             case 'THESIS_MULTIPLE_2D_SCALES':
-              this.queryPageController = new Multiple2DScaleQueryPageController(
-                  this);
-              break;
+              this.queryPageController = new Multiple2DScaleQueryPageController(this);
+            break;
             case 'FORM':
               this.queryPageController = new FormQueryPageController(this);
               break;
@@ -442,102 +445,185 @@ Scale1DQueryPageController = Class.create(QueryPageController, {
   }
 });
 
-Multiple2DScaleQueryPageController = Class
-    .create(
-        QueryPageController,
-        {
+Multiple1DScaleQueryPageController = Class.create(QueryPageController, {
 
-          initialize : function($super, blockController) {
-            $super(blockController);
+  initialize: function ($super, blockController) {
+    $super(blockController);
 
-            var labelCells = this.getBlockElement().select('td:first-child');
+    var labelCells = this.getBlockElement().select('td:first-child');
 
-            var maxHeight = 0;
-            labelCells.each(function(labelCell) {
-              var cellLayout = new Element.Layout(labelCell);
-              maxHeight = Math.max(maxHeight, cellLayout.get('height'));
-            });
+    var maxHeight = 0;
+    labelCells.each(function (labelCell) {
+      var cellLayout = new Element.Layout(labelCell);
+      maxHeight = Math.max(maxHeight, cellLayout.get('height'));
+    });
 
-            labelCells.each(function(labelCell) {
-              labelCell.setStyle({
-                'height' : maxHeight + 'px'
-              });
-            });
+    labelCells.each(function (labelCell) {
+      labelCell.setStyle({
+        'height': maxHeight + 'px'
+      });
+    });
 
-            this._valueChangeListener = this._onValueChange
-                .bindAsEventListener(this);
-            this
-                .getBlockElement()
-                .select(
-                    '.queryMultiple2DScalesQuestionContainer table input[type="radio"]')
-                .each(function(input) {
-                  $(input).observe("change", this._valueChangeListener);
-                }.bind(this));
+    this._valueChangeListener = this._onValueChange.bindAsEventListener(this);
+    this.getBlockElement()
+      .select('.queryMultiple1DScalesQuestionContainer table input[type="radio"]')
+      .each(function (input) {
+        $(input).observe("change", this._valueChangeListener);
+      }.bind(this));
 
-            this._updateNextButton();
-          },
+    this._updateNextButton();
+  },
 
-          deinitialize : function($super) {
-            this
-                .getBlockElement()
-                .select(
-                    '.queryMultiple2DScalesQuestionContainer table input[type="radio"]')
-                .each(function(input) {
-                  $(input).stopObserving("change", this._valueChangeListener);
-                }.bind(this));
+  deinitialize: function ($super) {
+    this
+      .getBlockElement()
+      .select('.queryMultiple1DScalesQuestionContainer table input[type="radio"]')
+      .each(function (input) {
+        $(input).stopObserving("change", this._valueChangeListener);
+      }.bind(this));
 
-            $super();
-          },
+    $super();
+  },
 
-          _getOptionCount : function() {
-            var table = this.getBlockElement().select(
-                '.queryMultiple2DScalesQuestionContainer table')[0];
-            return parseInt($(table).getAttribute('data-option-count'));
-          },
+  _getOptionCount: function () {
+    var table = this.getBlockElement().select('.queryMultiple1DScalesQuestionContainer table')[0];
+    return parseInt($(table).getAttribute('data-option-count'));
+  },
 
-          _getThesisCount : function() {
-            var table = this.getBlockElement().select(
-                '.queryMultiple2DScalesQuestionContainer table')[0];
-            return parseInt($(table).getAttribute('data-thesis-count'));
-          },
+  _getThesisCount: function () {
+    var table = this.getBlockElement().select(
+      '.queryMultiple1DScalesQuestionContainer table')[0];
+    return parseInt($(table).getAttribute('data-thesis-count'));
+  },
 
-          _getSelectedThesisOption : function(thesisIndex, axis) {
-            var inputName = 'multiple2dscales.' + thesisIndex + '.' + axis;
+  _getSelectedThesisOption: function (thesisIndex) {
+    var inputName = 'multiple1dscales.' + thesisIndex;
 
-            var selectedInputs = this.getBlockElement().select(
-                '.queryMultiple2DScalesQuestionContainer table input[name="'
-                    + inputName + '"]:checked');
-            if (selectedInputs.length) {
-              return selectedInputs[0].value;
-            }
+    var selectedInputs = this.getBlockElement().select('.queryMultiple1DScalesQuestionContainer table input[name="' + inputName + '"]:checked');
+    if (selectedInputs.length) {
+      return selectedInputs[0].value;
+    }
 
-            return null;
-          },
+    return null;
+  },
 
-          _isAllValuesSet : function() {
-            for (var thesisIndex = 0, thesisCount = this._getThesisCount(); thesisIndex < thesisCount; thesisIndex++) {
-              var optionX = this._getSelectedThesisOption(thesisIndex, 'x');
-              var optionY = this._getSelectedThesisOption(thesisIndex, 'y');
-              if (optionX === null || optionY === null) {
-                return false;
-              }
-            }
+  _isAllValuesSet: function () {
+    for (var thesisIndex = 0, thesisCount = this._getThesisCount(); thesisIndex < thesisCount; thesisIndex++) {
+      var option = this._getSelectedThesisOption(thesisIndex);
+      if (option === null) {
+        return false;
+      }
+    }
 
-            return true;
-          },
+    return true;
+  },
 
-          _updateNextButton : function() {
-            if (!this._isAllValuesSet()) {
-              this.getBlockController().disableNext();
-            } else {
-              this.getBlockController().enableNext();
-            }
-          },
+  _updateNextButton: function () {
+    if (!this._isAllValuesSet()) {
+      this.getBlockController().disableNext();
+    } else {
+      this.getBlockController().enableNext();
+    }
+  },
 
-          _onValueChange : function() {
-            this._updateNextButton();
-          }
-        });
+  _onValueChange: function () {
+    this._updateNextButton();
+  }
+});
+
+Multiple2DScaleQueryPageController = Class.create(QueryPageController, {
+
+  initialize: function ($super, blockController) {
+    $super(blockController);
+
+    var labelCells = this.getBlockElement().select('td:first-child');
+
+    var maxHeight = 0;
+    labelCells.each(function (labelCell) {
+      var cellLayout = new Element.Layout(labelCell);
+      maxHeight = Math.max(maxHeight, cellLayout.get('height'));
+    });
+
+    labelCells.each(function (labelCell) {
+      labelCell.setStyle({
+        'height': maxHeight + 'px'
+      });
+    });
+
+    this._valueChangeListener = this._onValueChange
+      .bindAsEventListener(this);
+    this
+      .getBlockElement()
+      .select(
+        '.queryMultiple2DScalesQuestionContainer table input[type="radio"]')
+      .each(function (input) {
+        $(input).observe("change", this._valueChangeListener);
+      }.bind(this));
+
+    this._updateNextButton();
+  },
+
+  deinitialize: function ($super) {
+    this
+      .getBlockElement()
+      .select(
+        '.queryMultiple2DScalesQuestionContainer table input[type="radio"]')
+      .each(function (input) {
+        $(input).stopObserving("change", this._valueChangeListener);
+      }.bind(this));
+
+    $super();
+  },
+
+  _getOptionCount: function () {
+    var table = this.getBlockElement().select(
+      '.queryMultiple2DScalesQuestionContainer table')[0];
+    return parseInt($(table).getAttribute('data-option-count'));
+  },
+
+  _getThesisCount: function () {
+    var table = this.getBlockElement().select(
+      '.queryMultiple2DScalesQuestionContainer table')[0];
+    return parseInt($(table).getAttribute('data-thesis-count'));
+  },
+
+  _getSelectedThesisOption: function (thesisIndex, axis) {
+    var inputName = 'multiple2dscales.' + thesisIndex + '.' + axis;
+
+    var selectedInputs = this.getBlockElement().select(
+      '.queryMultiple2DScalesQuestionContainer table input[name="'
+      + inputName + '"]:checked');
+    if (selectedInputs.length) {
+      return selectedInputs[0].value;
+    }
+
+    return null;
+  },
+
+  _isAllValuesSet: function () {
+    for (var thesisIndex = 0, thesisCount = this._getThesisCount(); thesisIndex < thesisCount; thesisIndex++) {
+      var optionX = this._getSelectedThesisOption(thesisIndex, 'x');
+      var optionY = this._getSelectedThesisOption(thesisIndex, 'y');
+      if (optionX === null || optionY === null) {
+        return false;
+      }
+    }
+
+    return true;
+  },
+
+  _updateNextButton: function () {
+    if (!this._isAllValuesSet()) {
+      this.getBlockController().disableNext();
+    } else {
+      this.getBlockController().enableNext();
+    }
+  },
+
+  _onValueChange: function () {
+    this._updateNextButton();
+  }
+});
 
 Scale2DQueryPageController = Class.create(QueryPageController, {
   initialize : function($super, blockController) {

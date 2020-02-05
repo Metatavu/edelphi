@@ -39,6 +39,7 @@ var QueryEditorQuestionEditor;
 var QueryEditorThesisPageEditor;
 var QueryEditorScale1DThesisPageEditor;
 var QueryEditorScale2DThesisPageEditor;
+var QueryEditorMultipleScale1DThesisPageEditor;
 var QueryEditorMultipleScale2DThesisPageEditor;
 var QueryEditorTimeSerieThesisPageEditor;
 var QueryEditorTimelineThesisPageEditor;
@@ -561,6 +562,9 @@ QueryEditorBlockController = Class.create(BlockController, {
             break;
             case 'THESIS_GROUPING':
               this._elementEditor = new QueryEditorGroupingPageEditor(this);
+            break;
+            case 'THESIS_MULTIPLE_1D_SCALES':
+              this._elementEditor = new QueryEditorMultipleScale1DThesisPageEditor(this);
             break;
             case 'THESIS_MULTIPLE_2D_SCALES':
               this._elementEditor = new QueryEditorMultipleScale2DThesisPageEditor(this);
@@ -4531,6 +4535,24 @@ QueryEditorScale2DThesisPageEditor = Class.create(QueryEditorThesisPageEditor, {
     
     this._preview = new QueryEditorScale2DQuestionPreview(this, this._previewContainer);
     this._preview.setup();
+  }
+});
+
+QueryEditorMultipleScale1DThesisPageEditor = Class.create(QueryEditorThesisPageEditor, {
+  initialize: function ($super,blockController) {
+    $super(blockController);
+  },
+  deinitialize: function($super) {
+    $super();
+  },
+  setup: function ($super) {
+    $super();
+    
+    this._thesisTextContainer.remove();
+    this._showLiveReportContainer.remove();
+    
+    this._thesisTextContainer = null;
+    this._showLiveReportContainer = null;
   }
 });
 

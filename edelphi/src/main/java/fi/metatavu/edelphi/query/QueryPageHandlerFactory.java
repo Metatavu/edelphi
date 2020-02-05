@@ -12,6 +12,7 @@ import fi.metatavu.edelphi.query.form.FormQueryPageHandler;
 import fi.metatavu.edelphi.query.text.TextQueryPageHandler;
 import fi.metatavu.edelphi.query.thesis.GroupingThesisQueryPageHandler;
 import fi.metatavu.edelphi.query.thesis.MultiSelectThesisQueryPageHandler;
+import fi.metatavu.edelphi.query.thesis.Multiple1DScalesThesisQueryPageHandler;
 import fi.metatavu.edelphi.query.thesis.Multiple2DScalesThesisQueryPageHandler;
 import fi.metatavu.edelphi.query.thesis.Live2DThesisQueryPageHandler;
 import fi.metatavu.edelphi.query.thesis.OrderingThesisQueryPageHandler;
@@ -38,6 +39,7 @@ public class QueryPageHandlerFactory {
     registerPageHandler(QueryPageType.THESIS_ORDER, OrderingThesisQueryPageHandler.class);
     registerPageHandler(QueryPageType.THESIS_GROUPING, GroupingThesisQueryPageHandler.class);
     registerPageHandler(QueryPageType.THESIS_TIMELINE, TimelineThesisQueryPageHandler.class);
+    registerPageHandler(QueryPageType.THESIS_MULTIPLE_1D_SCALES, Multiple1DScalesThesisQueryPageHandler.class);
     registerPageHandler(QueryPageType.THESIS_MULTIPLE_2D_SCALES, Multiple2DScalesThesisQueryPageHandler.class);
     registerPageHandler(QueryPageType.LIVE_2D, Live2DThesisQueryPageHandler.class);
     registerPageHandler(QueryPageType.COLLAGE_2D, Collage2DQueryPageHandler.class);
