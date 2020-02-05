@@ -12,7 +12,6 @@ import org.jsoup.nodes.Document;
 
 import fi.metatavu.edelphi.reports.ReportException;
 import fi.metatavu.edelphi.reports.text.legacy.LegacyReportPageHtmlProvider;
-import fi.metatavu.edelphi.reports.text.live2d.Live2dReportPageHtmlProvider;
 
 /**
  * Controller for text reports
@@ -27,6 +26,9 @@ public class TextReportController {
 
   @Inject
   private Live2dReportPageHtmlProvider live2dReportPageHtmlProvider;
+
+  @Inject
+  private Multiple2dScalesReportPageHtmlProvider multiple2dScalesReportPageHtmlProvider;
   
   /**
    * Returns a report HTML for given report pages
@@ -81,6 +83,8 @@ public class TextReportController {
     switch (context.getPage().getPageType()) {
       case LIVE_2D:
         return live2dReportPageHtmlProvider.getPageHtml(context);
+      case THESIS_MULTIPLE_1D_SCALES:
+        return multiple2dScalesReportPageHtmlProvider.getPageHtml(context);
       default:
     }
     

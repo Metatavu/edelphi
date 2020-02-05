@@ -20,6 +20,9 @@ public class ImageReportController {
 
   @Inject
   private Live2dReportPageChartImageProvider live2dReportPageChartImageProvider;
+
+  @Inject
+  private MultipleScale1dReportPageChartImageProvider multipleScale1dReportPageChartImageProvider;
   
   /**
    * Generates a report chart as PNG
@@ -32,6 +35,8 @@ public class ImageReportController {
     switch (exportContext.getPage().getPageType()) {
       case LIVE_2D:
         return live2dReportPageChartImageProvider.getPageCharts(exportContext);
+      case THESIS_MULTIPLE_1D_SCALES:
+        return multipleScale1dReportPageChartImageProvider.getPageCharts(exportContext);
       default:
     }
     
