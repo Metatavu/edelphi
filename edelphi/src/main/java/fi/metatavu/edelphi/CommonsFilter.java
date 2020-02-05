@@ -41,6 +41,7 @@ public class CommonsFilter implements Filter {
         session.setAttribute("delfoiId", 1l);
         SessionUtils.setCurrentTheme(session, "default");
         request.setAttribute("googleAnalyticsTrackingId", SystemUtils.getSettingValue("googleAnalytics.trackingId"));
+        request.setAttribute("themeUrl", SystemUtils.getThemeUrl());
       }
   
       filterChain.doFilter(request, response);

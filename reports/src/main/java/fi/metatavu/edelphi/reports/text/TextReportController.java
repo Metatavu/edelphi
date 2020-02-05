@@ -12,6 +12,7 @@ import org.jsoup.nodes.Document;
 
 import fi.metatavu.edelphi.reports.ReportException;
 import fi.metatavu.edelphi.reports.text.legacy.LegacyReportPageHtmlProvider;
+import fi.metatavu.edelphi.settings.SettingsController;
 
 /**
  * Controller for text reports
@@ -20,6 +21,9 @@ import fi.metatavu.edelphi.reports.text.legacy.LegacyReportPageHtmlProvider;
  */
 @ApplicationScoped
 public class TextReportController {
+  
+  @Inject
+  private SettingsController settingsController; 
   
   @Inject
   private LegacyReportPageHtmlProvider legacyReportPageHtmlProvider;
@@ -42,7 +46,7 @@ public class TextReportController {
     try (InputStream htmlStream = getClass().getClassLoader().getResourceAsStream("report.html")) {
       Document document = Jsoup.parse(htmlStream, "UTF-8", baseUrl);
       
-      addStylesheet(document, String.format("%s/_themes/default/css/theme.css", baseUrl));
+      addStylesheet(document, String.format("%s/css/theme.css", settingsController.getThemeUrl()));
       addStylesheet(document, String.format("%s/_themes/default/css/report_overrides.css", baseUrl));
       
       for (String bodyContent : bodyContents) {
