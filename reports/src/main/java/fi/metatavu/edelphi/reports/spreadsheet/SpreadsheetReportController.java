@@ -35,6 +35,7 @@ import fi.metatavu.edelphi.reports.spreadsheet.export.FormQueryPageSpreadsheetEx
 import fi.metatavu.edelphi.reports.spreadsheet.export.GroupingQueryPageSpreadsheetExporter;
 import fi.metatavu.edelphi.reports.spreadsheet.export.Live2dQueryPageSpreadsheetExporter;
 import fi.metatavu.edelphi.reports.spreadsheet.export.MultiSelectQueryPageSpreadsheetExporter;
+import fi.metatavu.edelphi.reports.spreadsheet.export.Multiple1DScalesQueryPageSpreadsheetExporter;
 import fi.metatavu.edelphi.reports.spreadsheet.export.Multiple2DScalesQueryPageSpreadsheetExporter;
 import fi.metatavu.edelphi.reports.spreadsheet.export.OrderingQueryPageSpreadsheetExporter;
 import fi.metatavu.edelphi.reports.spreadsheet.export.QueryPageSpreadsheetExporter;
@@ -69,6 +70,9 @@ public class SpreadsheetReportController {
   
   @Inject
   private GroupingQueryPageSpreadsheetExporter groupingQueryPageSpreadsheetExporter;
+  
+  @Inject
+  private Multiple1DScalesQueryPageSpreadsheetExporter multiple1DScalesQueryPageSpreadsheetExporter;
   
   @Inject
   private Multiple2DScalesQueryPageSpreadsheetExporter multiple2DScalesQueryPageSpreadsheetExporter;
@@ -254,6 +258,8 @@ public class SpreadsheetReportController {
         return textQueryPageSpreadsheetExporter;
       case THESIS_GROUPING:
         return groupingQueryPageSpreadsheetExporter;
+      case THESIS_MULTIPLE_1D_SCALES:
+        return multiple1DScalesQueryPageSpreadsheetExporter;
       case THESIS_MULTIPLE_2D_SCALES:
         return multiple2DScalesQueryPageSpreadsheetExporter;
       case THESIS_MULTI_SELECT:

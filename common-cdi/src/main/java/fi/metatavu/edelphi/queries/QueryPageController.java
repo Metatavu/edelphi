@@ -22,10 +22,13 @@ import org.slf4j.Logger;
 
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentCategoryDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionNumericAnswerDAO;
+import fi.metatavu.edelphi.dao.querydata.QueryQuestionOptionAnswerDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingKeyDAO;
+import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryNumericFieldDAO;
+import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldOptionDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionNumericAnswer;
@@ -34,6 +37,8 @@ import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageSetting;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageSettingKey;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryNumericField;
+import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionField;
+import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.resources.ResourceController;
@@ -46,10 +51,17 @@ import fi.metatavu.edelphi.resources.ResourceController;
 @ApplicationScoped
 public class QueryPageController {
 
+  public static final String THESIS_TEXT_OPTION = "thesis.text";
+  public static final String THESIS_DESCRIPTION_OPTION = "thesis.description";
+  
   public static final String LIVE2D_VISIBLE_OPTION = "live2d.visible";
   public static final String LIVE2D_LABEL_OPTION_TEMPLATE = "live2d.label.%s";
   public static final String LIVE2D_COLOR_OPTION_TEMPLATE = "live2d.color.%s";
   public static final String OPTIONS_OPTION_TEMPLATE = "live2d.options.%s";
+  
+  public static final String MULTIPLE_1D_SCALES_LABEL_OPTION = "multiple1dscales.label";
+  public static final String MULTIPLE_1D_SCALES_OPTIONS_OPTION = "multiple1dscales.options";
+  public static final String MULTIPLE_1D_SCALES_THESES_OPTION = "multiple1dscales.theses";
   
   private static final String UTF_8 = "UTF-8";
   private static final String JSON_SERIALIZED_FILTER_START = "/**JSS-";
@@ -79,7 +91,16 @@ public class QueryPageController {
   private QueryNumericFieldDAO queryNumericFieldDAO;
 
   @Inject
+  private QueryFieldDAO queryFieldDAO;
+
+  @Inject
   private QueryQuestionNumericAnswerDAO queryQuestionNumericAnswerDAO;
+
+  @Inject
+  private QueryQuestionOptionAnswerDAO queryQuestionOptionAnswerDAO;
+
+  @Inject
+  private QueryOptionFieldOptionDAO queryOptionFieldOptionDAO;
 
   /**
    * Finds a query page by id
@@ -403,6 +424,35 @@ public class QueryPageController {
     
     return scatterValues;
   }
+  
+  /**
+   * Returns multiple scale1d query page answers as two dimensional array where first level is thesis, second option and the value answer count
+   * 
+   * @param queryPage query page
+   * @param queryReplies query replies
+   * @return multiple scale1d query page answers as two dimensional array 
+   */
+  public double[][] getMultipleScale1dValues(QueryPage queryPage, List<QueryReply> queryReplies) {
+    List<String> pageOptions = getListSetting(queryPage, MULTIPLE_1D_SCALES_OPTIONS_OPTION);
+    List<String> pageTheses = getListSetting(queryPage, MULTIPLE_1D_SCALES_THESES_OPTION);
+    
+    int thesesCount = pageTheses.size();
+    int optionCount = pageOptions.size();
+    
+    double[][] result = new double[thesesCount][optionCount];
+    
+    for (int thesisIndex = 0; thesisIndex < thesesCount; thesisIndex++) {
+      QueryOptionField queryField = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, getMultiple1dScalesFieldName(thesisIndex));
+      
+      for (int optionIndex = 0; optionIndex < optionCount; optionIndex++) {
+        QueryOptionFieldOption fieldOption = queryOptionFieldOptionDAO.findByQueryFieldAndValue(queryField, String.valueOf(optionIndex));
+        Long count = queryQuestionOptionAnswerDAO.countByOptionAndReplyIn(fieldOption, queryReplies);
+        result[thesisIndex][optionIndex] = count.doubleValue();
+      }
+    }
+    
+    return result;
+  }
 
   /**
    * Returns whether query page is archived
@@ -558,5 +608,14 @@ public class QueryPageController {
     else
       return null;
   }
-
+  /**
+   * Returns field name for given index
+   * 
+   * @param index index
+   * @return field name
+   */
+  private String getMultiple1dScalesFieldName(int index) {
+    return String.format("multiple1dscales.%d", index);
+  }
+  
 }

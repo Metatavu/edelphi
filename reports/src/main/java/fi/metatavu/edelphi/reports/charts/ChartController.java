@@ -15,10 +15,14 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.BitmapEncoder.BitmapFormat;
+import org.knowm.xchart.CategoryChart;
+import org.knowm.xchart.CategoryChartBuilder;
+import org.knowm.xchart.CategorySeries.CategorySeriesRenderStyle;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.XYSeries;
 import org.knowm.xchart.XYSeries.XYSeriesRenderStyle;
+import org.knowm.xchart.internal.chartpart.Chart;
 import org.knowm.xchart.style.Styler.LegendPosition;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 
@@ -43,6 +47,59 @@ public class ChartController {
   private static final int GRAPH_WIDTH = 690;
   private static final int GRAPH_HEIGHT = 690;
   private static final String OBJECT_STYLES = "display: block; border: 1px solid #000; margin: 10px;";
+  
+  /**
+   * Creates a bar chart 
+   * 
+   * @param locale locale
+   * @param queryPage query page
+   * @param queryReplies query replies
+   * @param label chart label
+   * @param options options
+   * @param values values
+   * @return bar chart
+   */
+  public CategoryChart createBarChart(Locale locale, QueryPage queryPage, List<QueryReply> queryReplies, String label, List<String> options, double[] values) {
+    // Create Chart
+    
+    CategoryChart chart = new CategoryChartBuilder().width(GRAPH_WIDTH).height(GRAPH_HEIGHT).title(queryPage.getTitle()).xAxisTitle(label).build();
+    
+    // Customize Chart
+    
+    chart.getStyler().setDefaultSeriesRenderStyle(CategorySeriesRenderStyle.Bar);
+    chart.getStyler().setChartTitleVisible(true);
+    chart.getStyler().setLegendPosition(LegendPosition.InsideSW);
+    chart.getStyler().setMarkerSize(16);
+    chart.getStyler().setLegendVisible(false);
+    chart.getStyler().setChartBackgroundColor(Color.WHITE);
+    chart.getStyler().setChartTitleBoxBackgroundColor(Color.WHITE);
+    chart.getStyler().setLocale(locale);
+    
+    // Axis 
+    
+    double maxX = options.size() - 1;
+    
+    chart.getStyler().setXAxisMin(0d);
+    chart.getStyler().setXAxisMax(maxX);
+    chart.getStyler().setYAxisMin(0d);
+    
+    // Ticks 
+    
+    chart.setXAxisLabelOverrideMap(createTickMap(options));
+    
+    // Series
+    
+    double[] categories = new double[options.size()];
+    for (int i = 0; i < categories.length; i++) {
+      categories[i] = i;
+    }
+
+    if (values != null && values.length > 0) {
+      chart.addSeries("data", categories, values);
+    }
+
+    return chart;
+  }
 
   /**
    * Creates a live 2d report
@@ -139,7 +196,7 @@ public class ChartController {
    * @return HTML
    * @throws ReportException thrown when graph printing fails
    */
-  public String printGraphPNG(XYChart chart) throws ReportException {
+  public String printGraphPNG(Chart<?, ?> chart) throws ReportException {
     try {
       byte[] chartData = renderChartPNG(chart);
       return String.format("<img src=\"data:image/png;base64,%s\" width=\"%s\" height=\"%s\"/>", Base64.encodeBase64String(chartData), GRAPH_WIDTH, GRAPH_HEIGHT);
@@ -155,7 +212,7 @@ public class ChartController {
    * @return SVG
    * @throws IOException thrown when chart rendering fails
    */
-  public byte[] renderChartSVG(XYChart chart) throws IOException {
+  public byte[] renderChartSVG(Chart<?, ?> chart) throws IOException {
     Processor processor = new SVGProcessor();
     Graphics2D vg2d = new VectorGraphics2D();
     CommandSequence commands = ((VectorGraphics2D) vg2d).getCommands();
@@ -177,7 +234,7 @@ public class ChartController {
    * @return SVG
    * @throws IOException thrown when chart rendering fails
    */
-  public byte[] renderChartPNG(XYChart chart) throws IOException {
+  public byte[] renderChartPNG(Chart<?, ?> chart) throws IOException {
     return BitmapEncoder.getBitmapBytes(chart, BitmapFormat.PNG);
   }
   

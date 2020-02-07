@@ -148,6 +148,34 @@ public class QueryQuestionOptionAnswerDAO extends GenericDAO<QueryQuestionOption
     return entityManager.createQuery(criteria).getResultList();
   }
 
+  /**
+   * Counts how many times option has been selected in given set of replies
+   * 
+   * @param option option
+   * @param queryReplies replies
+   * @return count of how many times option has been selected in given set of replies
+   */
+  public Long countByOptionAndReplyIn(QueryOptionFieldOption option, List<QueryReply> queryReplies) {
+    if (queryReplies == null || queryReplies.isEmpty()) {
+      return 0l;
+    }
+    
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
+    Root<QueryQuestionOptionAnswer> root = criteria.from(QueryQuestionOptionAnswer.class);
+    criteria.select(criteriaBuilder.count(root));
+    criteria.where(
+      criteriaBuilder.and(
+        criteriaBuilder.equal(root.get(QueryQuestionOptionAnswer_.option), option),
+        root.get(QueryQuestionOptionAnswer_.queryReply).in(queryReplies)
+      )
+    );
+    
+    return entityManager.createQuery(criteria).getSingleResult();
+  }
+
   public List<QueryQuestionOptionAnswer> listByQueryRepliesAndQueryField(List<QueryReply> queryReplies, QueryField queryField) {
     EntityManager entityManager = getEntityManager();
 
@@ -183,7 +211,6 @@ public class QueryQuestionOptionAnswerDAO extends GenericDAO<QueryQuestionOption
     queryQuestionOptionAnswer.setLastModified(new Date());
     return persist(queryQuestionOptionAnswer);
   }
-
 
   /**
    * Returns list of tuples containing x (string), y (string) and count (long) describing 2d answer counts for given x ad y fields within given reply set

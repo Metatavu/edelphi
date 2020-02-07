@@ -12,7 +12,7 @@ import org.jsoup.nodes.Document;
 
 import fi.metatavu.edelphi.reports.ReportException;
 import fi.metatavu.edelphi.reports.text.legacy.LegacyReportPageHtmlProvider;
-import fi.metatavu.edelphi.reports.text.live2d.Live2dReportPageHtmlProvider;
+import fi.metatavu.edelphi.settings.SettingsController;
 
 /**
  * Controller for text reports
@@ -23,10 +23,16 @@ import fi.metatavu.edelphi.reports.text.live2d.Live2dReportPageHtmlProvider;
 public class TextReportController {
   
   @Inject
+  private SettingsController settingsController; 
+  
+  @Inject
   private LegacyReportPageHtmlProvider legacyReportPageHtmlProvider;
 
   @Inject
   private Live2dReportPageHtmlProvider live2dReportPageHtmlProvider;
+
+  @Inject
+  private Multiple2dScalesReportPageHtmlProvider multiple2dScalesReportPageHtmlProvider;
   
   /**
    * Returns a report HTML for given report pages
@@ -40,7 +46,7 @@ public class TextReportController {
     try (InputStream htmlStream = getClass().getClassLoader().getResourceAsStream("report.html")) {
       Document document = Jsoup.parse(htmlStream, "UTF-8", baseUrl);
       
-      addStylesheet(document, String.format("%s/_themes/default/css/theme.css", baseUrl));
+      addStylesheet(document, String.format("%s/css/theme.css", settingsController.getThemeUrl()));
       addStylesheet(document, String.format("%s/_themes/default/css/report_overrides.css", baseUrl));
       
       for (String bodyContent : bodyContents) {
@@ -81,6 +87,8 @@ public class TextReportController {
     switch (context.getPage().getPageType()) {
       case LIVE_2D:
         return live2dReportPageHtmlProvider.getPageHtml(context);
+      case THESIS_MULTIPLE_1D_SCALES:
+        return multiple2dScalesReportPageHtmlProvider.getPageHtml(context);
       default:
     }
     

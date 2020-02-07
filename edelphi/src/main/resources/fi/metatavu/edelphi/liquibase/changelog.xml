@@ -3385,4 +3385,8 @@
     <dropNotNullConstraint tableName="QueryQuestionCommentCategory" columnName="queryPage_id" columnDataType="BIGINT"/>
   </changeSet>
   
+  <changeSet id="multiple1dscales" author="antti.leppa">
+    <sqlFile path="fi/metatavu/edelphi/liquibase/query-page-multiple-1d-scales.sql" />
+  </changeSet>
+  
 </databaseChangeLog>

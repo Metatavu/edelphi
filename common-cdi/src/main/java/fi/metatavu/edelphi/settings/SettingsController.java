@@ -3,6 +3,8 @@ package fi.metatavu.edelphi.settings;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
+
 import fi.metatavu.edelphi.dao.system.SettingDAO;
 import fi.metatavu.edelphi.dao.system.SettingKeyDAO;
 import fi.metatavu.edelphi.domainmodel.system.Setting;
@@ -20,7 +22,39 @@ public class SettingsController {
   private SettingKeyDAO settingKeyDAO; 
   
   @Inject
-  private SettingDAO settingDAO; 
+  private SettingDAO settingDAO;
+  
+  /**
+   * Returns used theme version
+   * 
+   * @return used theme version
+   */
+  public String getThemeVersion() {
+    return "v2";
+  }
+  
+  /**
+   * Returns theme folder URL
+   * 
+   * @return theme folder URL
+   */
+  public String getThemeUrl() {
+    return String.format("%s/assets/edelphi/_themes/%s", getCdnUrl(), getThemeVersion());
+  }
+    
+  /**
+   * Returns content delivery network URL address 
+   * 
+   * @return content delivery network URL address 
+   */
+  public String getCdnUrl() {
+    String result = System.getenv("CDN_URL");
+    if (StringUtils.isNotBlank(result)) {
+      return result;
+    }
+    
+    return "https://cdn.metatavu.io";
+  }
   
   /**
    * Returns MQTT settings
