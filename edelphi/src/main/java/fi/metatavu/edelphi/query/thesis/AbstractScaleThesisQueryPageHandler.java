@@ -154,7 +154,7 @@ public abstract class AbstractScaleThesisQueryPageHandler extends AbstractThesis
       queryFieldDAO.updateMandatory(queryField, mandatory);
       queryFieldDAO.updateCaption(queryField, StringUtils.abbreviate(fieldCaption, SystemUtils.MAX_QUERY_FIELD_CAPTION));
     } else {
-      queryField = queryOptionFieldDAO.create(queryPage, fieldName, mandatory, fieldCaption);
+      queryField = queryOptionFieldDAO.create(queryPage, fieldName, mandatory, StringUtils.abbreviate(fieldCaption, SystemUtils.MAX_QUERY_FIELD_CAPTION));
     }
 
     synchronizeFieldOptions(options, queryField);
@@ -176,9 +176,9 @@ public abstract class AbstractScaleThesisQueryPageHandler extends AbstractThesis
       
       QueryOptionFieldOption optionFieldOption = queryOptionFieldOptionDAO.findByQueryFieldAndValue(queryField, optionValue);
       if (optionFieldOption == null) {
-        queryOptionFieldOptionDAO.create(queryField, option, optionValue);
+        queryOptionFieldOptionDAO.create(queryField, StringUtils.abbreviate(option, SystemUtils.MAX_QUERY_FIELD_CAPTION), optionValue);
       } else {
-        queryOptionFieldOptionDAO.updateText(optionFieldOption, option);
+        queryOptionFieldOptionDAO.updateText(optionFieldOption, StringUtils.abbreviate(option, SystemUtils.MAX_QUERY_FIELD_CAPTION));
       }
           
       oldOptionValues.remove(optionValue);

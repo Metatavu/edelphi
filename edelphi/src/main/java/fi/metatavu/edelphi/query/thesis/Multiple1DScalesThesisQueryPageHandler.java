@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionOptionAnswerDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionAnswer;
@@ -19,6 +21,7 @@ import fi.metatavu.edelphi.query.RequiredQueryFragment;
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.QueryPageUtils;
+import fi.metatavu.edelphi.utils.SystemUtils;
 
 /**
  * Page handler for multiple 1d scales query page
@@ -107,6 +110,7 @@ public class Multiple1DScalesThesisQueryPageHandler extends AbstractScaleThesisQ
       }
     }
     
+
     String thesesOption = settings.get(THESES_OPTION);
     String label = settings.get(LABEL_OPTION);
     List<String> fieldOptions = QueryPageUtils.parseSerializedList(settings.get(OPTIONS_OPTION));
@@ -159,7 +163,7 @@ public class Multiple1DScalesThesisQueryPageHandler extends AbstractScaleThesisQ
    * @return field label
    */
   private String getFieldLabel(String thesis, String label) {
-    return String.format("%s/%s", thesis, label);
+    return StringUtils.abbreviate(String.format("%s/%s", thesis, label), SystemUtils.MAX_QUERY_FIELD_CAPTION);
   }
   
 }
