@@ -131,7 +131,7 @@
 
 <script type="text/javascript">
   var CONTEXTPATH = "${pageContext.request.contextPath}";
-  var THEMEPATH = "//cdn.metatavu.io/assets/edelphi/_themes/${theme}/";
+  var THEMEPATH = "https://cdn.metatavu.io/assets/edelphi/_themes/${theme}";
   
   function redirectTo(url) {
     if (url.indexOf("#") > 0) {
