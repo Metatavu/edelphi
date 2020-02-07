@@ -131,7 +131,7 @@
 
 <script type="text/javascript">
   var CONTEXTPATH = "${pageContext.request.contextPath}";
-  var THEMEPATH = "${themeUrl}/";
+  var THEMEPATH = "${themeUrl}";
   
   function redirectTo(url) {
     if (url.indexOf("#") > 0) {
