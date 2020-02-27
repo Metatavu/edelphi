@@ -34,4 +34,28 @@ export class PanelsService {
     });
   }
 
+
+  /**
+   * Lists panels
+   * @summary Lists panels
+   * @param managedOnly Return only panels user has manager access
+  */
+  public listPanels(managedOnly?: boolean, ):Promise<Array<Panel>> {
+    const uri = new URI(`${this.basePath}/panels/`);
+    if (managedOnly !== undefined && managedOnly !== null) {
+        uri.addQuery('managedOnly', <any>managedOnly);
+    }
+    const options = {
+      method: "get",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${this.token}`
+      }
+    };
+
+    return fetch(uri.toString(), options).then((response) => {
+      return ApiUtils.handleResponse(response);
+    });
+  }
+
 }
