@@ -76,6 +76,10 @@
           <div>
             <a id="queryEditorRemoveQueryAnswers" href="javascript:void(null)"><fmt:message key="panelAdmin.block.query.removeQueryAnswers"/></a>
           </div>
+
+          <div>
+            <a id="queryEditorCopyQuery" href="javascript:void(null)"><fmt:message key="panelAdmin.block.query.copyQuery"/></a>
+          </div>
           
         </div>
 

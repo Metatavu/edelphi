@@ -15,9 +15,20 @@ import javax.validation.Valid;
 
 @Path("/panels")
 @Api(description = "the panels API")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2019-09-19T16:56:02.470+03:00[Europe/Helsinki]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2020-02-27T07:56:20.629+02:00[Europe/Helsinki]")
 public interface PanelsApi {
 
+    @POST
+    @Path("/{panelId}/queries/{queryId}/copy")
+    @Produces({ "application/json" })
+    @ApiOperation(value = "Create copy of an query", notes = "Creates copy of an query", authorizations = {
+        @Authorization(value = "bearer")    }, tags={ "Queries" })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "Created query question comment", response = QueryQuestionComment.class),
+        @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class),
+        @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class),
+        @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class) })
+    Response copyQuery(@PathParam("panelId")  Long panelId,@PathParam("queryId")  Long queryId,@QueryParam("targetPanelId") @NotNull     Long targetPanelId,@QueryParam("copyData") @NotNull     Boolean copyData,@QueryParam("newName") @NotNull     String newName);
     @POST
     @Path("/{panelId}/queryQuestionComments")
     @Consumes({ "application/json" })
@@ -163,6 +174,17 @@ public interface PanelsApi {
         @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class, responseContainer = "List"),
         @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class, responseContainer = "List") })
     Response listInterestClasses(@PathParam("panelId")  Long panelId);
+    @GET
+    @Path("/")
+    @Produces({ "application/json" })
+    @ApiOperation(value = "Lists panels", notes = "Lists panels", authorizations = {
+        @Authorization(value = "bearer")    }, tags={ "Panels" })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "A panel list", response = Panel.class, responseContainer = "List"),
+        @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class, responseContainer = "List"),
+        @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class, responseContainer = "List"),
+        @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class, responseContainer = "List") })
+    Response listPanels(@QueryParam("managedOnly")     Boolean managedOnly);
     @GET
     @Path("/{panelId}/queries")
     @Produces({ "application/json" })
