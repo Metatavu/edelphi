@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 
 import fi.metatavu.edelphi.dao.base.AuthSourceDAO;
+import fi.metatavu.edelphi.dao.users.UserDAO;
 import fi.metatavu.edelphi.dao.users.UserIdentificationDAO;
 import fi.metatavu.edelphi.dao.users.UserPictureDAO;
 import fi.metatavu.edelphi.domainmodel.base.AuthSource;
@@ -38,6 +39,9 @@ public class UserController {
   @Inject
   private UserPictureDAO userPictureDAO;
 
+  @Inject
+  private UserDAO userDAO;
+
   /**
    * Finds user by Keycloak id
    * 
@@ -57,7 +61,17 @@ public class UserController {
     
     return null;
   }
-  
+
+  /**
+   * Finds user by id
+   * 
+   * @param id id
+   * @return user id
+   */
+  public User findUserById(Long id) {
+    return userDAO.findById(id);
+  }
+
   /**
    * Returns Keycloak id for an user
    * 

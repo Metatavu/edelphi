@@ -10,11 +10,14 @@ import fi.metatavu.edelphi.dao.panels.PanelStampDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserExpertiseClassDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserExpertiseGroupDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserIntressClassDAO;
+import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseClass;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseGroup;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserIntressClass;
+import fi.metatavu.edelphi.domainmodel.users.User;
+import fi.metatavu.edelphi.settings.SettingsController;
 
 /**
  * Controller for panels
@@ -23,7 +26,10 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelUserIntressClass;
  */
 @ApplicationScoped
 public class PanelController {
-
+  
+  @Inject
+  private SettingsController settingsController;
+  
   @Inject
   private PanelDAO panelDAO;
 
@@ -47,6 +53,16 @@ public class PanelController {
    */
   public Panel findPanelById(Long id) {
     return panelDAO.findById(id);
+  }
+  
+  /**
+   * Lists user's panels
+   * 
+   * @param user user
+   * @return panels
+   */
+  public List<Panel> listUserPanels(User user) {
+    return panelDAO.listByDelfoiAndUser(settingsController.getDelfoi(), user);
   }
 
   /**

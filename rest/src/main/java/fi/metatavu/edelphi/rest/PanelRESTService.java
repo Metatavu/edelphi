@@ -3,10 +3,13 @@ package fi.metatavu.edelphi.rest;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
+import javax.batch.operations.JobOperator;
+import javax.batch.runtime.BatchRuntime;
 import javax.ejb.Stateful;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -15,7 +18,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.ejb3.annotation.SecurityDomain;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,6 +45,8 @@ import fi.metatavu.edelphi.queries.QueryQuestionAnswerData;
 import fi.metatavu.edelphi.queries.QueryQuestionLive2dAnswerData;
 import fi.metatavu.edelphi.queries.QueryReplyController;
 import fi.metatavu.edelphi.queries.QuerySectionController;
+import fi.metatavu.edelphi.queries.batch.CopyQueryBatchProperties;
+import fi.metatavu.edelphi.resources.ResourceController;
 import fi.metatavu.edelphi.rest.api.PanelsApi;
 import fi.metatavu.edelphi.rest.model.QueryPageLive2DAnswersVisibleOption;
 import fi.metatavu.edelphi.rest.model.QueryPageLive2DOptions;
@@ -106,9 +113,12 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   
   @Inject
   private QueryPageTranslator queryPageTranslator;
-  
+
   @Inject
   private PermissionController permissionController;
+
+  @Inject
+  private ResourceController resourceController;
 
   @Inject
   private QueryQuestionCommentCategoryTranslator queryQuestionCommentCategoryTranslator;
@@ -751,6 +761,54 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   }
 
   @Override
+  @RolesAllowed("user")
+  public Response copyQuery(Long panelId, Long queryId, Long targetPanelId, Boolean copyData, String newName) {
+    Panel targetPanel = panelController.findPanelById(targetPanelId);
+    if (targetPanel == null || panelController.isPanelArchived(targetPanel)) {
+      return createNotFound();
+    }
+    
+    if (!permissionController.hasPanelAccess(targetPanel, getLoggedUser(), DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+
+    Query query = queryController.findQueryById(queryId);
+    if (query == null || queryController.isQueryArchived(query)) {
+      return createBadRequest(String.format("Invalid query id %d", queryId));
+    }
+
+    Panel sourcePanel = resourceController.getResourcePanel(query);
+    if (!permissionController.hasPanelAccess(sourcePanel, getLoggedUser(), DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    List<Long> queryPageIds = queryPageController.listQueryPages(query).stream()
+        .map(QueryPage::getId)
+        .collect(Collectors.toList());
+    
+    Properties properties = new Properties();
+    properties.put(CopyQueryBatchProperties.QUERY_ID, query.getId().toString());
+    properties.put(CopyQueryBatchProperties.LOCALE, getLocale().toString());
+    properties.put(CopyQueryBatchProperties.COPY_ANSWERS, copyData.toString());
+    properties.put(CopyQueryBatchProperties.COPY_COMMENTS, copyData.toString());
+    properties.put(CopyQueryBatchProperties.LOGGED_USER_ID, getLoggedUserId().toString());
+    properties.put(CopyQueryBatchProperties.NEW_NAME, newName);
+    properties.put(CopyQueryBatchProperties.TARGET_PANEL_ID, targetPanel.getId().toString());
+    properties.put(CopyQueryBatchProperties.PAGE_IDS, StringUtils.join(queryPageIds, ","));
+    properties.put(CopyQueryBatchProperties.BASE_URL, getBaseUrl());
+    properties.put(CopyQueryBatchProperties.DELIVERY_EMAIL, getLoggedUser().getDefaultEmailAsString());    
+    
+    JobOperator jobOperator = BatchRuntime.getJobOperator();
+    
+    long jobId = jobOperator.start("copyQueryJob", properties);
+    if (jobId > 0) {
+      return Response.status(Status.ACCEPTED).build();
+    }
+    
+    return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to submit job").build();
+  }
+
+  @Override
   @RolesAllowed("user") 
   public Response findPanel(Long panelId) {
     Panel panel = panelController.findPanelById(panelId);
@@ -764,6 +822,18 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     }
     
     return createOk(panelTranslator.translate(panel));
+  }
+
+  @Override
+  @RolesAllowed("user")
+  public Response listPanels(Boolean managedOnly) {
+    User loggedUser = getLoggedUser();
+    
+    List<Panel> panels = panelController.listUserPanels(getLoggedUser()).stream()
+        .filter(panel -> permissionController.hasPanelAccess(panel, loggedUser, managedOnly ? DelfoiActionName.MANAGE_PANEL : DelfoiActionName.ACCESS_PANEL))
+        .collect(Collectors.toList());
+
+    return createOk(panels.stream().map(panelTranslator::translate).collect(Collectors.toList()));
   }
 
   @Override

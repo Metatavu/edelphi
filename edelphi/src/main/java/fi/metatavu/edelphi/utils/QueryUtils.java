@@ -197,10 +197,25 @@ public class QueryUtils {
 
     QueryDAO queryDAO = new QueryDAO();
     QueryPageDAO queryPageDAO = new QueryPageDAO();
+    QueryFieldDAO queryFieldDAO = new QueryFieldDAO();
     QueryReplyDAO queryReplyDAO = new QueryReplyDAO();
     QuerySectionDAO querySectionDAO = new QuerySectionDAO();
     QueryPageSettingDAO queryPageSettingDAO = new QueryPageSettingDAO();
+    QueryNumericFieldDAO queryNumericFieldDAO = new QueryNumericFieldDAO();
+    QueryOptionFieldDAO queryOptionFieldDAO = new QueryOptionFieldDAO();
+    QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
+    QueryOptionFieldOptionGroupDAO queryOptionFieldOptionGroupDAO = new QueryOptionFieldOptionGroupDAO();
+    QueryScaleFieldDAO queryScaleFieldDAO = new QueryScaleFieldDAO();
+    QueryTextFieldDAO queryTextFieldDAO = new QueryTextFieldDAO();
+    QueryQuestionTextAnswerDAO queryQuestionTextAnswerDAO = new QueryQuestionTextAnswerDAO();
+    QueryQuestionNumericAnswerDAO queryQuestionNumericAnswerDAO = new QueryQuestionNumericAnswerDAO();
+    QueryQuestionCommentDAO queryQuestionCommentDAO = new QueryQuestionCommentDAO();
+    QueryQuestionOptionAnswerDAO queryQuestionOptionAnswerDAO = new QueryQuestionOptionAnswerDAO();
+    QueryQuestionMultiOptionAnswerDAO queryQuestionMultiOptionAnswerDAO = new QueryQuestionMultiOptionAnswerDAO();
+    QueryQuestionOptionGroupOptionAnswerDAO queryQuestionOptionGroupOptionAnswerDAO = new QueryQuestionOptionGroupOptionAnswerDAO();
     QueryQuestionCommentCategoryDAO queryQuestionCommentCategoryDAO = new QueryQuestionCommentCategoryDAO();
+    
+    Date now = new Date();
     
     // Comments are tied to answers
     
@@ -238,15 +253,15 @@ public class QueryUtils {
       originalQuery.getCloses(),
       indexNumber,
       copier,
-      new Date(),
+      now,
       copier,
-      new Date());
+      now);
 
     // Copy query scoped comment categories
     
     List<QueryQuestionCommentCategory> queryCommentCategories = queryQuestionCommentCategoryDAO.listByQueryAndPageNull(originalQuery);
     for (QueryQuestionCommentCategory queryCommentCategory : queryCommentCategories) {
-      QueryQuestionCommentCategory newCategory = queryQuestionCommentCategoryDAO.create(newQuery, null, queryCommentCategory.getName(), copier, copier, new Date(), new Date());
+      QueryQuestionCommentCategory newCategory = queryQuestionCommentCategoryDAO.create(newQuery, null, queryCommentCategory.getName(), copier, copier, now, now);
       commentCategoryMap.put(queryCommentCategory.getId(), newCategory);
     }
 
@@ -304,8 +319,188 @@ public class QueryUtils {
       
       List<QueryPage> queryPages = queryPageDAO.listByQuerySection(querySection);
       for (QueryPage queryPage : queryPages) {
-        copyQueryPage(copier, targetPanel, copyAnswers, copyComments, commentCategoryMap, sourcePanel, newQuery, replyMap, queryReplies,
-            collagePages, pageIds, newQuerySection, queryPage);
+        QueryPage newQueryPage = queryPageDAO.create(copier, newQuerySection, queryPage.getPageType(), queryPage.getPageNumber(), queryPage.getTitle(), queryPage.getVisible());
+        List<QueryPageSetting> queryPageSettings = queryPageSettingDAO.listByQueryPage(queryPage);
+        for (QueryPageSetting queryPageSetting : queryPageSettings) {
+          queryPageSettingDAO.create(queryPageSetting.getKey(), newQueryPage, queryPageSetting.getValue());
+        }
+        
+        // Special handling for collage pages, Part II :/
+        
+        pageIds.put(queryPage.getId().toString(), newQueryPage.getId());
+        if (queryPage.getPageType() == QueryPageType.COLLAGE_2D) {
+          collagePages.add(newQueryPage);
+        }
+        
+        // Copy page scoped comment categories
+        
+        List<QueryQuestionCommentCategory> pageCommentCategories = queryQuestionCommentCategoryDAO.listByQueryPage(queryPage);
+        for (QueryQuestionCommentCategory pageCommentCategory : pageCommentCategories) {
+          QueryQuestionCommentCategory newCategory = queryQuestionCommentCategoryDAO.create(newQuery, newQueryPage, pageCommentCategory.getName(), copier, copier, now, now);
+          commentCategoryMap.put(pageCommentCategory.getId(), newCategory);
+        }
+      
+        // Comments
+        
+        if (copyComments) {
+          HashMap<Long, Long> commentMap = new HashMap<>();
+          List<QueryQuestionComment> queryComments;
+          if (sourcePanel.getId().equals(targetPanel.getId())) {
+            queryComments = queryQuestionCommentDAO.listByQueryPage(queryPage); 
+          } else {
+            queryComments = queryQuestionCommentDAO.listByQueryPageAndStamp(queryPage, sourcePanel.getCurrentStamp());
+          }
+          
+          Collections.sort(queryComments, new Comparator<QueryQuestionComment>() {
+            @Override
+            public int compare(QueryQuestionComment o1, QueryQuestionComment o2) {
+              return o1.getCreated().compareTo(o2.getCreated());
+            }
+          });
+          
+          for (QueryQuestionComment queryComment : queryComments) {
+            QueryReply newReply = replyMap.get(queryComment.getQueryReply().getId());
+            QueryQuestionComment copiedParentComment = null;
+            
+            if (queryComment.getParentComment() != null) {
+              Long parentCommentId = queryComment.getParentComment().getId();  
+              Long copiedParentCommentId = commentMap.get(parentCommentId);
+              if (copiedParentCommentId != null) {
+                copiedParentComment = queryQuestionCommentDAO.findById(copiedParentCommentId);
+              } else {
+                logger.log(Level.SEVERE, String.format("Could not find %d from commentMap", parentCommentId));
+              }
+            }
+            
+            QueryQuestionCommentCategory newCategory = queryComment.getCategory() != null ? commentCategoryMap.get(queryComment.getCategory().getId()) : null;
+            
+            QueryQuestionComment newComment = queryQuestionCommentDAO.create(
+                newReply,
+                newQueryPage,
+                copiedParentComment,
+                newCategory,
+                queryComment.getComment(),
+                queryComment.getHidden(),
+                queryComment.getCreator(),
+                queryComment.getCreated(),
+                queryComment.getLastModifier(),
+                queryComment.getLastModified());
+            commentMap.put(queryComment.getId(), newComment.getId());
+          }
+        }
+        
+        // Fields and (optionally) answers
+        
+        List<QueryField> queryFields = queryFieldDAO.listByQueryPage(queryPage);
+        for (QueryField queryField : queryFields) {
+          QueryField newQueryField = null;
+          switch (queryField.getType()) {
+          
+            // Text fields
+          
+            case TEXT:
+              newQueryField = queryTextFieldDAO.create(newQueryPage, queryField.getName(), queryField.getMandatory(), queryField.getCaption());
+              if (copyAnswers) {
+                for (QueryReply queryReply : queryReplies) {
+                  QueryQuestionTextAnswer answer = queryQuestionTextAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryField);
+                  if (answer != null) {
+                    QueryReply newQueryReply = replyMap.get(queryReply.getId());
+                    queryQuestionTextAnswerDAO.create(newQueryReply, newQueryField, answer.getData());
+                  }
+                }
+              }
+              break;
+
+            // Option fields
+
+            case OPTIONFIELD:
+              QueryOptionField optionField = (QueryOptionField) queryField;
+              newQueryField = queryOptionFieldDAO.create(newQueryPage, optionField.getName(), optionField.getMandatory(), optionField.getCaption());
+              List<QueryOptionFieldOption> options = queryOptionFieldOptionDAO.listByQueryField(optionField);
+              Map<Long, Long> optionMap = new HashMap<>();
+              for (QueryOptionFieldOption option : options) {
+                QueryOptionFieldOption newOption = queryOptionFieldOptionDAO.create((QueryOptionField) newQueryField, option.getText(), option.getValue());
+                optionMap.put(option.getId(), newOption.getId());
+              }
+              Map<Long, QueryOptionFieldOptionGroup> optionGroupMap = new HashMap<>();
+              List<QueryOptionFieldOptionGroup> groups = queryOptionFieldOptionGroupDAO.listByQueryField(optionField);
+              for (QueryOptionFieldOptionGroup group : groups) {
+                QueryOptionFieldOptionGroup newGroup = queryOptionFieldOptionGroupDAO.create((QueryOptionField) newQueryField, group.getName());
+                optionGroupMap.put(group.getId(), newGroup);
+              }
+              if (copyAnswers) {
+                for (QueryReply queryReply : queryReplies) {
+                  QueryQuestionMultiOptionAnswer multiAnswer = queryQuestionMultiOptionAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryField);
+                  if (multiAnswer != null) {
+                    // QueryQuestionMultiOptionAnswer
+                    QueryReply newQueryReply = replyMap.get(queryReply.getId());
+                    Set<QueryOptionFieldOption> newOptions = new HashSet<>();
+                    for (QueryOptionFieldOption option : multiAnswer.getOptions()) {
+                      QueryOptionFieldOption newOption = queryOptionFieldOptionDAO.findById(optionMap.get(option.getId()));
+                      newOptions.add(newOption);
+                    }
+                    queryQuestionMultiOptionAnswerDAO.create(newQueryReply, newQueryField, newOptions);
+                  }
+                  else {
+                    // QueryQuestionOptionGroupOptionAnswer
+                    List<QueryQuestionOptionGroupOptionAnswer> groupAnswers = queryQuestionOptionGroupOptionAnswerDAO.listByQueryReplyAndQueryField(queryReply, queryField);
+                    if (!groupAnswers.isEmpty()) {
+                      for (QueryQuestionOptionGroupOptionAnswer groupAnswer : groupAnswers) {
+                        QueryReply newQueryReply = replyMap.get(queryReply.getId());
+                        QueryOptionFieldOption newOption = queryOptionFieldOptionDAO.findById(optionMap.get(groupAnswer.getOption().getId()));
+                        QueryOptionFieldOptionGroup newGroup = optionGroupMap.get(groupAnswer.getGroup().getId());
+                        queryQuestionOptionGroupOptionAnswerDAO.create(newQueryReply, newQueryField, newOption, newGroup);
+                      }
+                    }
+                    else {
+                      // QueryQuestionOptionAnswer
+                      List<QueryQuestionOptionAnswer> optionAnswers = queryQuestionOptionAnswerDAO.listByQueryReplyAndQueryField(queryReply, queryField);
+                      for (QueryQuestionOptionAnswer optionAnswer : optionAnswers) {
+                        QueryOptionFieldOption newOption = queryOptionFieldOptionDAO.findById(optionMap.get(optionAnswer.getOption().getId()));
+                        QueryReply newQueryReply = replyMap.get(queryReply.getId());
+                        queryQuestionOptionAnswerDAO.create(newQueryReply, newQueryField, newOption);
+                      }
+                    }
+                  }
+                }
+              }
+              break;
+              
+            // Numeric scale fields
+
+            case NUMERIC_SCALE:
+              QueryScaleField scaleField = (QueryScaleField) queryField;
+              newQueryField = queryScaleFieldDAO.create(newQueryPage, scaleField.getName(), scaleField.getMandatory(), scaleField.getCaption(),
+                  scaleField.getMin(), scaleField.getMax(), scaleField.getPrecision(), scaleField.getStep());
+              if (copyAnswers) {
+                for (QueryReply queryReply : queryReplies) {
+                  QueryQuestionNumericAnswer answer = queryQuestionNumericAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryField);
+                  if (answer != null) {
+                    QueryReply newQueryReply = replyMap.get(queryReply.getId());
+                    queryQuestionNumericAnswerDAO.create(newQueryReply, newQueryField, answer.getData());
+                  }
+                }
+              }
+              break;
+              
+            // Numeric fields
+              
+            case NUMERIC:
+              QueryNumericField numericField = (QueryNumericField) queryField;
+              newQueryField = queryNumericFieldDAO.create(newQueryPage, numericField.getName(), numericField.getMandatory(),
+                  numericField.getCaption(), numericField.getMin(), numericField.getMax(), numericField.getPrecision());
+              if (copyAnswers) {
+                for (QueryReply queryReply : queryReplies) {
+                  QueryQuestionNumericAnswer answer = queryQuestionNumericAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryField);
+                  if (answer != null) {
+                    QueryReply newQueryReply = replyMap.get(queryReply.getId());
+                    queryQuestionNumericAnswerDAO.create(newQueryReply, newQueryField, answer.getData());
+                  }
+                }
+              }
+              break;
+          }
+        }
       }
     }
 
@@ -347,222 +542,6 @@ public class QueryUtils {
     }
     
     return newQuery;
-  }
-
-  private static void copyQueryPage(User copier, 
-      Panel targetPanel, 
-      boolean copyAnswers, 
-      boolean copyComments, 
-      Map<Long, QueryQuestionCommentCategory> commentCategoryMap, 
-      Panel sourcePanel,
-      Query newQuery, 
-      HashMap<Long, QueryReply> replyMap, 
-      List<QueryReply> queryReplies, 
-      List<QueryPage> collagePages, 
-      HashMap<String, Long> pageIds,
-      QuerySection newQuerySection, 
-      QueryPage queryPage) {
-    
-    QueryPageDAO queryPageDAO = new QueryPageDAO();
-    QueryFieldDAO queryFieldDAO = new QueryFieldDAO();
-    QueryPageSettingDAO queryPageSettingDAO = new QueryPageSettingDAO();
-    QueryNumericFieldDAO queryNumericFieldDAO = new QueryNumericFieldDAO();
-    QueryOptionFieldDAO queryOptionFieldDAO = new QueryOptionFieldDAO();
-    QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
-    QueryOptionFieldOptionGroupDAO queryOptionFieldOptionGroupDAO = new QueryOptionFieldOptionGroupDAO();
-    QueryScaleFieldDAO queryScaleFieldDAO = new QueryScaleFieldDAO();
-    QueryTextFieldDAO queryTextFieldDAO = new QueryTextFieldDAO();
-    QueryQuestionTextAnswerDAO queryQuestionTextAnswerDAO = new QueryQuestionTextAnswerDAO();
-    QueryQuestionNumericAnswerDAO queryQuestionNumericAnswerDAO = new QueryQuestionNumericAnswerDAO();
-    QueryQuestionCommentDAO queryQuestionCommentDAO = new QueryQuestionCommentDAO();
-    QueryQuestionOptionAnswerDAO queryQuestionOptionAnswerDAO = new QueryQuestionOptionAnswerDAO();
-    QueryQuestionMultiOptionAnswerDAO queryQuestionMultiOptionAnswerDAO = new QueryQuestionMultiOptionAnswerDAO();
-    QueryQuestionOptionGroupOptionAnswerDAO queryQuestionOptionGroupOptionAnswerDAO = new QueryQuestionOptionGroupOptionAnswerDAO();
-    QueryQuestionCommentCategoryDAO queryQuestionCommentCategoryDAO = new QueryQuestionCommentCategoryDAO();
-    
-    
-    QueryPage newQueryPage = queryPageDAO.create(copier, newQuerySection, queryPage.getPageType(), queryPage.getPageNumber(), queryPage.getTitle(), queryPage.getVisible());
-    List<QueryPageSetting> queryPageSettings = queryPageSettingDAO.listByQueryPage(queryPage);
-    for (QueryPageSetting queryPageSetting : queryPageSettings) {
-      queryPageSettingDAO.create(queryPageSetting.getKey(), newQueryPage, queryPageSetting.getValue());
-    }
-    
-    // Special handling for collage pages, Part II :/
-    
-    pageIds.put(queryPage.getId().toString(), newQueryPage.getId());
-    if (queryPage.getPageType() == QueryPageType.COLLAGE_2D) {
-      collagePages.add(newQueryPage);
-    }
-    
-    // Copy page scoped comment categories
-    
-    List<QueryQuestionCommentCategory> pageCommentCategories = queryQuestionCommentCategoryDAO.listByQueryPage(queryPage);
-    for (QueryQuestionCommentCategory pageCommentCategory : pageCommentCategories) {
-      QueryQuestionCommentCategory newCategory = queryQuestionCommentCategoryDAO.create(newQuery, newQueryPage, pageCommentCategory.getName(), copier, copier, new Date(), new Date());
-      commentCategoryMap.put(pageCommentCategory.getId(), newCategory);
-    }
-   
-    // Comments
-    
-    if (copyComments) {
-      HashMap<Long, Long> commentMap = new HashMap<>();
-      List<QueryQuestionComment> queryComments;
-      if (sourcePanel.getId().equals(targetPanel.getId())) {
-        queryComments = queryQuestionCommentDAO.listByQueryPage(queryPage); 
-      } else {
-        queryComments = queryQuestionCommentDAO.listByQueryPageAndStamp(queryPage, sourcePanel.getCurrentStamp());
-      }
-      
-      Collections.sort(queryComments, new Comparator<QueryQuestionComment>() {
-        @Override
-        public int compare(QueryQuestionComment o1, QueryQuestionComment o2) {
-          return o1.getCreated().compareTo(o2.getCreated());
-        }
-      });
-      
-      for (QueryQuestionComment queryComment : queryComments) {
-        QueryReply newReply = replyMap.get(queryComment.getQueryReply().getId());
-        QueryQuestionComment copiedParentComment = null;
-        
-        if (queryComment.getParentComment() != null) {
-          Long parentCommentId = queryComment.getParentComment().getId();  
-          Long copiedParentCommentId = commentMap.get(parentCommentId);
-          if (copiedParentCommentId != null) {
-            copiedParentComment = queryQuestionCommentDAO.findById(copiedParentCommentId);
-          } else {
-            logger.log(Level.SEVERE, String.format("Could not find %d from commentMap", parentCommentId));
-          }
-        }
-        
-        QueryQuestionCommentCategory newCategory = queryComment.getCategory() != null ? commentCategoryMap.get(queryComment.getCategory().getId()) : null;
-        
-        QueryQuestionComment newComment = queryQuestionCommentDAO.create(
-            newReply,
-            newQueryPage,
-            copiedParentComment,
-            newCategory,
-            queryComment.getComment(),
-            queryComment.getHidden(),
-            queryComment.getCreator(),
-            queryComment.getCreated(),
-            queryComment.getLastModifier(),
-            queryComment.getLastModified());
-        commentMap.put(queryComment.getId(), newComment.getId());
-      }
-    }
-    
-    // Fields and (optionally) answers
-    
-    List<QueryField> queryFields = queryFieldDAO.listByQueryPage(queryPage);
-    for (QueryField queryField : queryFields) {
-      QueryField newQueryField = null;
-      switch (queryField.getType()) {
-      
-        // Text fields
-      
-        case TEXT:
-          newQueryField = queryTextFieldDAO.create(newQueryPage, queryField.getName(), queryField.getMandatory(), queryField.getCaption());
-          if (copyAnswers) {
-            for (QueryReply queryReply : queryReplies) {
-              QueryQuestionTextAnswer answer = queryQuestionTextAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryField);
-              if (answer != null) {
-                QueryReply newQueryReply = replyMap.get(queryReply.getId());
-                queryQuestionTextAnswerDAO.create(newQueryReply, newQueryField, answer.getData());
-              }
-            }
-          }
-          break;
-
-        // Option fields
-
-        case OPTIONFIELD:
-          QueryOptionField optionField = (QueryOptionField) queryField;
-          newQueryField = queryOptionFieldDAO.create(newQueryPage, optionField.getName(), optionField.getMandatory(), optionField.getCaption());
-          List<QueryOptionFieldOption> options = queryOptionFieldOptionDAO.listByQueryField(optionField);
-          Map<Long, Long> optionMap = new HashMap<>();
-          for (QueryOptionFieldOption option : options) {
-            QueryOptionFieldOption newOption = queryOptionFieldOptionDAO.create((QueryOptionField) newQueryField, option.getText(), option.getValue());
-            optionMap.put(option.getId(), newOption.getId());
-          }
-          Map<Long, QueryOptionFieldOptionGroup> optionGroupMap = new HashMap<>();
-          List<QueryOptionFieldOptionGroup> groups = queryOptionFieldOptionGroupDAO.listByQueryField(optionField);
-          for (QueryOptionFieldOptionGroup group : groups) {
-            QueryOptionFieldOptionGroup newGroup = queryOptionFieldOptionGroupDAO.create((QueryOptionField) newQueryField, group.getName());
-            optionGroupMap.put(group.getId(), newGroup);
-          }
-          if (copyAnswers) {
-            for (QueryReply queryReply : queryReplies) {
-              QueryQuestionMultiOptionAnswer multiAnswer = queryQuestionMultiOptionAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryField);
-              if (multiAnswer != null) {
-                // QueryQuestionMultiOptionAnswer
-                QueryReply newQueryReply = replyMap.get(queryReply.getId());
-                Set<QueryOptionFieldOption> newOptions = new HashSet<>();
-                for (QueryOptionFieldOption option : multiAnswer.getOptions()) {
-                  QueryOptionFieldOption newOption = queryOptionFieldOptionDAO.findById(optionMap.get(option.getId()));
-                  newOptions.add(newOption);
-                }
-                queryQuestionMultiOptionAnswerDAO.create(newQueryReply, newQueryField, newOptions);
-              }
-              else {
-                // QueryQuestionOptionGroupOptionAnswer
-                List<QueryQuestionOptionGroupOptionAnswer> groupAnswers = queryQuestionOptionGroupOptionAnswerDAO.listByQueryReplyAndQueryField(queryReply, queryField);
-                if (!groupAnswers.isEmpty()) {
-                  for (QueryQuestionOptionGroupOptionAnswer groupAnswer : groupAnswers) {
-                    QueryReply newQueryReply = replyMap.get(queryReply.getId());
-                    QueryOptionFieldOption newOption = queryOptionFieldOptionDAO.findById(optionMap.get(groupAnswer.getOption().getId()));
-                    QueryOptionFieldOptionGroup newGroup = optionGroupMap.get(groupAnswer.getGroup().getId());
-                    queryQuestionOptionGroupOptionAnswerDAO.create(newQueryReply, newQueryField, newOption, newGroup);
-                  }
-                }
-                else {
-                  // QueryQuestionOptionAnswer
-                  List<QueryQuestionOptionAnswer> optionAnswers = queryQuestionOptionAnswerDAO.listByQueryReplyAndQueryField(queryReply, queryField);
-                  for (QueryQuestionOptionAnswer optionAnswer : optionAnswers) {
-                    QueryOptionFieldOption newOption = queryOptionFieldOptionDAO.findById(optionMap.get(optionAnswer.getOption().getId()));
-                    QueryReply newQueryReply = replyMap.get(queryReply.getId());
-                    queryQuestionOptionAnswerDAO.create(newQueryReply, newQueryField, newOption);
-                  }
-                }
-              }
-            }
-          }
-          break;
-          
-        // Numeric scale fields
-
-        case NUMERIC_SCALE:
-          QueryScaleField scaleField = (QueryScaleField) queryField;
-          newQueryField = queryScaleFieldDAO.create(newQueryPage, scaleField.getName(), scaleField.getMandatory(), scaleField.getCaption(),
-              scaleField.getMin(), scaleField.getMax(), scaleField.getPrecision(), scaleField.getStep());
-          if (copyAnswers) {
-            for (QueryReply queryReply : queryReplies) {
-              QueryQuestionNumericAnswer answer = queryQuestionNumericAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryField);
-              if (answer != null) {
-                QueryReply newQueryReply = replyMap.get(queryReply.getId());
-                queryQuestionNumericAnswerDAO.create(newQueryReply, newQueryField, answer.getData());
-              }
-            }
-          }
-          break;
-          
-        // Numeric fields
-          
-        case NUMERIC:
-          QueryNumericField numericField = (QueryNumericField) queryField;
-          newQueryField = queryNumericFieldDAO.create(newQueryPage, numericField.getName(), numericField.getMandatory(),
-              numericField.getCaption(), numericField.getMin(), numericField.getMax(), numericField.getPrecision());
-          if (copyAnswers) {
-            for (QueryReply queryReply : queryReplies) {
-              QueryQuestionNumericAnswer answer = queryQuestionNumericAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryField);
-              if (answer != null) {
-                QueryReply newQueryReply = replyMap.get(queryReply.getId());
-                queryQuestionNumericAnswerDAO.create(newQueryReply, newQueryField, answer.getData());
-              }
-            }
-          }
-          break;
-      }
-    }
   }
 
   public static void stampQuery(Query query, PanelStamp sourceStamp, PanelStamp targetStamp) {

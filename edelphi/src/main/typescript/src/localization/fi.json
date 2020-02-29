@@ -114,6 +114,20 @@
         "downloadImage": "Lataa kuvana",
         "downloadPrintableImage": "Lataa tulostettava kuva",
         "okButton": "Ok"
+      },
+
+      "copyQueryDialog": {
+        "title": "Kyselyn kopiointi",
+        "helpText": "Valitse kopioidaanko kysely datan kanssa vai ilman. Anna sille myös uusi nimi ja valitse paneeli, johon se kopioidaan.",
+        "nameLabel": "Kyselyn kopion nimi",
+        "targetPanelLabel": "Valitse kohdepaneeli",
+        "withDataOption": "Kopioi kysely datan kanssa",
+        "withoutDataOption": "Kopioi kysely ilman dataa",
+        "okButton": "Kopioi",
+        "cancelButton": "Peruuuta",
+        "newName": "Uusi nimi",
+        "emailDialogTitle": "Kyselyä kopioidaan...",
+        "emailDialogMessage": "Kyselyä kopioidaan taustalla. Tieto kopion valmistumisesta tullaan toimittamaan profiilissa määrittelemääsi sähköpostiin"
       }
 
     },

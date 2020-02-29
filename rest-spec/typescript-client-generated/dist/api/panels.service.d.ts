@@ -9,4 +9,10 @@ export declare class PanelsService {
      * @param panelId panel id
     */
     findPanel(panelId: number): Promise<Panel>;
+    /**
+     * Lists panels
+     * @summary Lists panels
+     * @param managedOnly Return only panels user has manager access
+    */
+    listPanels(managedOnly?: boolean): Promise<Array<Panel>>;
 }

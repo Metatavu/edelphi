@@ -211,7 +211,14 @@ QueryEditorBlockController = Class.create(BlockController, {
         triggerReactCommand("open-anonymous-login-dialog", { });
       }.bindAsEventListener(this));
     }
-    
+
+    var copyQueryLink = $('queryEditorCopyQuery');
+    if (copyQueryLink) {
+      copyQueryLink.on("click", function () {
+        triggerReactCommand("open-copy-query-dialog", { });
+      }.bindAsEventListener(this));
+    }
+
     this._initializePages();
   },
   deinitialize: function ($super) {

@@ -96,6 +96,17 @@ public class QueryReplyController {
   private QueryQuestionOptionGroupOptionAnswerDAO queryQuestionOptionGroupOptionAnswerDAO;
   
   /**
+   * Copy query reply into new query
+   * 
+   * @param queryReply reply
+   * @param newQuery new query
+   * @return new reply
+   */
+  public QueryReply copyQueryReply(QueryReply queryReply, Query newQuery) {
+    return queryReplyDAO.create(queryReply.getUser(), newQuery, queryReply.getStamp(), queryReply.getComplete(), queryReply.getCreator(), queryReply.getCreated(), queryReply.getLastModifier(), queryReply.getLastModified());
+  }
+  
+  /**
    * Finds a query answer data object by id
    * 
    * @param answerId answer id
@@ -144,6 +155,16 @@ public class QueryReplyController {
    */
   public List<QueryReply> listQueryReplies(Query query, PanelStamp panelStamp) {
     return queryReplyDAO.listByQueryAndStamp(query, panelStamp);
+  }
+
+  /**
+   * Returns replies in all stamps of given query
+   * 
+   * @param query query
+   * @return replies in all stamps of given query
+   */
+  public List<QueryReply> listQueryRepliesInAllStamps(Query query) {
+    return queryReplyDAO.listByQueryAndArchived(query, Boolean.FALSE);
   }
   
   /**

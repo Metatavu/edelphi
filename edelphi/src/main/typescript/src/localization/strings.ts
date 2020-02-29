@@ -120,7 +120,22 @@ export interface IStrings extends LocalizedStringsMethods {
         downloadImage: string,
         downloadPrintableImage: string,
         okButton: string
+      },
+
+      copyQueryDialog: {
+        title: string,
+        helpText: string,
+        nameLabel: string,
+        targetPanelLabel: string,
+        withDataOption: string,
+        withoutDataOption: string,
+        okButton: string,
+        cancelButton: string,
+        newName: string,
+        emailDialogTitle: string,
+        emailDialogMessage: string
       }
+
     },
     liveView: {
       querySelectLabel: string,
