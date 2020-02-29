@@ -159,6 +159,22 @@ public class QueryPageController {
     return queryPageDAO.findById(queryPageId);
   }
   
+  /**
+   * Copies query page
+   * 
+   * @param queryPage query page to be copied
+   * @param targetPanel target panel
+   * @param sourcePanel source panel
+   * @param newQuery query where the page will be copied
+   * @param originalQueryReplies original query replies
+   * @param newQuerySection new query section
+   * @param copyAnswers whether to copy answers
+   * @param copyComments whether to copy comments
+   * @param replyMap old -> new reply map
+   * @param queryCommentCategoryMap old -> new comment category map
+   * @param copier copying user
+   * @return copied query page
+   */
   public QueryPage copyQueryPage(QueryPage queryPage, Panel targetPanel, Panel sourcePanel, Query newQuery, List<QueryReply> originalQueryReplies, QuerySection newQuerySection, Boolean copyAnswers, Boolean copyComments, Map<Long, QueryReply> replyMap, Map<Long, QueryQuestionCommentCategory> queryCommentCategoryMap, User copier) {
     QueryPage newQueryPage = queryPageDAO.create(copier, newQuerySection, queryPage.getPageType(), queryPage.getPageNumber(), queryPage.getTitle(), queryPage.getVisible());
     List<QueryPageSetting> queryPageSettings = queryPageSettingDAO.listByQueryPage(queryPage);
