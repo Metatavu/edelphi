@@ -70,7 +70,7 @@ export interface QueryLive2dAnswer {
 /**
  * Command
  */
-export type Command = "edit-page-comment-options" | "edit-page-live2d-options" | "enable-query-next" | "disable-query-next" | "open-anonymous-login-dialog";
+export type Command = "edit-page-comment-options" | "edit-page-live2d-options" | "enable-query-next" | "disable-query-next" | "open-anonymous-login-dialog" | "open-copy-query-dialog";
 
 /**
  * Command data for save query answers event
@@ -94,6 +94,12 @@ export interface EnableQueryNextCommandEventData {
  *  Event data for open anonymous login dialog event
  */
 export interface EditQueryOpenAnonymousLoginDialogEventData {
+}
+
+/**
+ *  Event data for open copy dialog dialog event
+ */
+export interface EditQueryOpenCopyQueryDialogEventData {
 }
 
 export interface EditQueryCommentOptionsEventData {
@@ -181,8 +187,16 @@ export interface EditQueryOpenAnonymousLoginDialogEventDetail {
 }
 
 /**
+ * Command payload for open anonymous login dialog event
+ */
+export interface EditQueryOpenCopyQueryDialogEventDetail {
+  command: "open-copy-query-dialog",
+  data: EditQueryOpenCopyQueryDialogEventData
+}
+
+/**
  * Command event for save query answers event
  */
 export interface CommandEvent extends CustomEvent {
-  detail: DisableQueryNextCommandEventDetail | EnableQueryNextCommandEventDetail | EditQueryCommentOptionsEventDataDetail | EditPageCommentOptionsEventDataDetail | EditPageLive2dOptionsEventDataDetail | RemoveQueryAnswersEventDataDetail | EditQueryOpenAnonymousLoginDialogEventDetail
+  detail: DisableQueryNextCommandEventDetail | EnableQueryNextCommandEventDetail | EditQueryCommentOptionsEventDataDetail | EditPageCommentOptionsEventDataDetail | EditPageLive2dOptionsEventDataDetail | RemoveQueryAnswersEventDataDetail | EditQueryOpenAnonymousLoginDialogEventDetail |EditQueryOpenCopyQueryDialogEventDetail
 } 

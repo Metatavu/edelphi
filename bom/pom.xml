@@ -109,6 +109,10 @@
     
     <paho.version>1.2.0</paho.version>
 
+    <!-- Slugify -->
+    
+    <slugify.version>2.4</slugify.version>
+    
   </properties>
 
   <dependencyManagement>
@@ -213,6 +217,14 @@
         <groupId>fi.metatavu.paytrail</groupId>
         <artifactId>paytrail-sdk</artifactId>
         <version>${paytrail-sdk.version}</version>
+      </dependency>
+      
+      <!-- Slugify -->
+      
+      <dependency>
+        <groupId>com.github.slugify</groupId>
+        <artifactId>slugify</artifactId>
+        <version>${slugify.version}</version>
       </dependency>
       
       <!-- Keycloak -->

@@ -1,0 +1,39 @@
+<job id="copyQueryJob" xmlns="http://xmlns.jcp.org/xml/ns/javaee" version="1.0">
+  
+  <listeners>
+    <listener ref="queryCopyStatusListener" />
+  </listeners>
+  
+  <properties>
+    <property name="queryId" value="#{jobParameters['queryId']}" />
+    <property name="loggedUserId" value="#{jobParameters['loggedUserId']}" />
+    <property name="targetPanelId" value="#{jobParameters['targetPanelId']}" />
+    <property name="newName" value="#{jobParameters['newName']}" />
+    <property name="copyAnswers" value="#{jobParameters['copyAnswers']}" />
+    <property name="copyComments" value="#{jobParameters['copyComments']}" />
+    <property name="baseUrl" value="#{jobParameters['baseUrl']}" />
+    <property name="locale" value="#{jobParameters['locale']}" />
+    <property name="pageIds" value="#{jobParameters['pageIds']}" />     
+    <property name="baseUrl" value="#{jobParameters['baseUrl']}" />     
+    <property name="deliveryEmail" value="#{jobParameters['deliveryEmail']}" />
+  </properties>
+        
+  <step id="query" next="pages">
+    <chunk item-count="1">
+      <reader ref="queryReader"/>
+      <writer ref="queryCopyWriter"/>
+    </chunk>
+  </step>
+        
+  <step id="pages" next="finalize">
+    <chunk item-count="2">
+      <reader ref="queryPageReader"/>
+      <writer ref="queryPageCopyWriter"/>
+    </chunk>
+  </step>
+
+  <step id="finalize">
+    <batchlet ref="copyQueryFinalizeBatchlet"/>
+  </step>
+
+</job> 

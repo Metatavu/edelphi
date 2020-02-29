@@ -9,6 +9,7 @@ import { Confirm, Modal, Header, Button, Icon } from "semantic-ui-react";
 import strings from "../../localization/strings";
 import Api from "edelphi-client";
 import * as QRCode from "qrcode";
+import PanelAdminQueryCopyDialog from "./panel-admin-query-copy-dialog";
 
 /**
  * Interface representing component properties
@@ -29,6 +30,7 @@ interface State {
   pageCommentOptionsOpen: boolean,
   pageLive2dOptionsOpen: boolean,
   anonymousLoginDialogOpen: boolean,
+  copyQueryDialogOpen: boolean,
   pageData?: EditPageLegacyPageData,
   pageId: number,
   anonymousLoginQrCode?: string
@@ -54,6 +56,7 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
       pageCommentOptionsOpen: false,
       pageLive2dOptionsOpen: false,
       anonymousLoginDialogOpen: false,
+      copyQueryDialogOpen: false,
       pageId: 0
     };
   }
@@ -103,6 +106,7 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
         { this.renderLive2dOptionsEditor() }
         { this.renderRemoveQueryAnswersDialog() }
         { this.renderAnonymousLoginDialog() }
+        { this.renderCopyQueryDialog() }
       </div>
     );
   }
@@ -200,6 +204,24 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
   }
 
   /**
+   * Renders copy query dialog
+   */
+  private renderCopyQueryDialog = () => {
+    if (!this.props.accessToken) {
+      return null;
+    }
+
+    return (
+      <PanelAdminQueryCopyDialog 
+        queryId={ this.props.queryId } 
+        panelId={ this.props.panelId} 
+        accessToken={ this.props.accessToken } 
+        open={ this.state.copyQueryDialogOpen } 
+        onClose={ this.onCopyQueryDialogClose }/>
+    );
+  }
+
+  /**
    * Event handler for react command events
    * 
    * @param event event
@@ -239,6 +261,11 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
       case "open-anonymous-login-dialog":
         this.setState({
           anonymousLoginDialogOpen: true
+        });
+      break;
+      case "open-copy-query-dialog":
+        this.setState({
+          copyQueryDialogOpen: true
         });
       break;
     }
@@ -322,6 +349,15 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
   private onAnonymousLoginDialogCloseButtonClick = () => {
     this.setState({
       anonymousLoginDialogOpen: false
+    });
+  }
+
+  /**
+   * Event handler for copy query dialog close event
+   */
+  private onCopyQueryDialogClose = () => {
+    this.setState({
+      copyQueryDialogOpen: false
     });
   }
 

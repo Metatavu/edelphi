@@ -12,6 +12,7 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -108,6 +109,20 @@ public class JobPropertyProducer {
     Member member = injectionPoint.getMember();
     String name = member.getName();
     return UUID.fromString(getProperty(name));
+  }
+
+  /**
+   * Producer for job property
+   * 
+   * @param injectionPoint injection point
+   * @return job property
+   */
+  @Produces
+  @JobProperty
+  public Boolean produceJobPropertyBoolean(InjectionPoint injectionPoint) {
+    Member member = injectionPoint.getMember();
+    String name = member.getName();
+    return BooleanUtils.toBooleanObject(getProperty(name));
   }
 
   /**

@@ -4,11 +4,16 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -21,24 +26,42 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentCategoryDAO;
+import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
+import fi.metatavu.edelphi.dao.querydata.QueryQuestionMultiOptionAnswerDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionNumericAnswerDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionOptionAnswerDAO;
+import fi.metatavu.edelphi.dao.querydata.QueryQuestionOptionGroupOptionAnswerDAO;
+import fi.metatavu.edelphi.dao.querydata.QueryQuestionTextAnswerDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingKeyDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryNumericFieldDAO;
+import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldOptionDAO;
+import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldOptionGroupDAO;
+import fi.metatavu.edelphi.dao.querymeta.QueryScaleFieldDAO;
+import fi.metatavu.edelphi.dao.querymeta.QueryTextFieldDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionMultiOptionAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionNumericAnswer;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionAnswer;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionGroupOptionAnswer;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionTextAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageSetting;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageSettingKey;
+import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageType;
+import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection;
+import fi.metatavu.edelphi.domainmodel.querymeta.QueryField;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryNumericField;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionField;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption;
+import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOptionGroup;
+import fi.metatavu.edelphi.domainmodel.querymeta.QueryScaleField;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.resources.ResourceController;
@@ -102,6 +125,30 @@ public class QueryPageController {
   @Inject
   private QueryOptionFieldOptionDAO queryOptionFieldOptionDAO;
 
+  @Inject
+  private QueryQuestionCommentDAO queryQuestionCommentDAO;
+
+  @Inject
+  private QueryTextFieldDAO queryTextFieldDAO;
+
+  @Inject
+  private QueryQuestionTextAnswerDAO queryQuestionTextAnswerDAO;
+
+  @Inject
+  private QueryOptionFieldDAO queryOptionFieldDAO;
+
+  @Inject
+  private QueryOptionFieldOptionGroupDAO queryOptionFieldOptionGroupDAO;
+
+  @Inject
+  private QueryQuestionMultiOptionAnswerDAO queryQuestionMultiOptionAnswerDAO;
+
+  @Inject
+  private QueryQuestionOptionGroupOptionAnswerDAO queryQuestionOptionGroupOptionAnswerDAO;
+
+  @Inject
+  private QueryScaleFieldDAO queryScaleFieldDAO;
+  
   /**
    * Finds a query page by id
    * 
@@ -110,6 +157,205 @@ public class QueryPageController {
    */
   public QueryPage findQueryPage(Long queryPageId) {
     return queryPageDAO.findById(queryPageId);
+  }
+  
+  /**
+   * Copies query page
+   * 
+   * @param queryPage query page to be copied
+   * @param targetPanel target panel
+   * @param sourcePanel source panel
+   * @param newQuery query where the page will be copied
+   * @param originalQueryReplies original query replies
+   * @param newQuerySection new query section
+   * @param copyAnswers whether to copy answers
+   * @param copyComments whether to copy comments
+   * @param replyMap old -> new reply map
+   * @param queryCommentCategoryMap old -> new comment category map
+   * @param copier copying user
+   * @return copied query page
+   */
+  public QueryPage copyQueryPage(QueryPage queryPage, Panel targetPanel, Panel sourcePanel, Query newQuery, List<QueryReply> originalQueryReplies, QuerySection newQuerySection, Boolean copyAnswers, Boolean copyComments, Map<Long, QueryReply> replyMap, Map<Long, QueryQuestionCommentCategory> queryCommentCategoryMap, User copier) {
+    QueryPage newQueryPage = queryPageDAO.create(copier, newQuerySection, queryPage.getPageType(), queryPage.getPageNumber(), queryPage.getTitle(), queryPage.getVisible());
+    List<QueryPageSetting> queryPageSettings = queryPageSettingDAO.listByQueryPage(queryPage);
+    for (QueryPageSetting queryPageSetting : queryPageSettings) {
+      queryPageSettingDAO.create(queryPageSetting.getKey(), newQueryPage, queryPageSetting.getValue());
+    }
+    
+    Map<Long, QueryQuestionCommentCategory> commentCategoryMap = new HashMap<>();
+    queryCommentCategoryMap.entrySet().forEach(entry -> commentCategoryMap.put(entry.getKey(), entry.getValue()));
+    
+    // Copy page scoped comment categories
+    
+    List<QueryQuestionCommentCategory> pageCommentCategories = queryQuestionCommentCategoryDAO.listByQueryPage(queryPage);
+    for (QueryQuestionCommentCategory pageCommentCategory : pageCommentCategories) {
+      QueryQuestionCommentCategory newCategory = queryQuestionCommentCategoryDAO.create(newQuery, newQueryPage, pageCommentCategory.getName(), copier, copier, new Date(), new Date());
+      commentCategoryMap.put(pageCommentCategory.getId(), newCategory);
+    }
+   
+    // Comments
+    
+    if (copyComments) {
+      HashMap<Long, Long> commentMap = new HashMap<>();
+      List<QueryQuestionComment> queryComments;
+      if (sourcePanel.getId().equals(targetPanel.getId())) {
+        queryComments = queryQuestionCommentDAO.listByQueryPage(queryPage); 
+      } else {
+        queryComments = queryQuestionCommentDAO.listByQueryPageAndStamp(queryPage, sourcePanel.getCurrentStamp());
+      }
+      
+      Collections.sort(queryComments, new Comparator<QueryQuestionComment>() {
+        @Override
+        public int compare(QueryQuestionComment o1, QueryQuestionComment o2) {
+          return o1.getCreated().compareTo(o2.getCreated());
+        }
+      });
+      
+      for (QueryQuestionComment queryComment : queryComments) {
+        QueryReply newReply = replyMap.get(queryComment.getQueryReply().getId());
+        QueryQuestionComment copiedParentComment = null;
+        
+        if (queryComment.getParentComment() != null) {
+          Long parentCommentId = queryComment.getParentComment().getId();  
+          Long copiedParentCommentId = commentMap.get(parentCommentId);
+          if (copiedParentCommentId != null) {
+            copiedParentComment = queryQuestionCommentDAO.findById(copiedParentCommentId);
+          } else {
+            logger.error(String.format("Could not find %d from commentMap", parentCommentId));
+          }
+        }
+        
+        QueryQuestionCommentCategory newCategory = queryComment.getCategory() != null ? commentCategoryMap.get(queryComment.getCategory().getId()) : null;
+        
+        QueryQuestionComment newComment = queryQuestionCommentDAO.create(
+            newReply,
+            newQueryPage,
+            copiedParentComment,
+            newCategory,
+            queryComment.getComment(),
+            queryComment.getHidden(),
+            queryComment.getCreator(),
+            queryComment.getCreated(),
+            queryComment.getLastModifier(),
+            queryComment.getLastModified());
+        commentMap.put(queryComment.getId(), newComment.getId());
+      }
+    }
+    
+    // Fields and (optionally) answers
+    
+    List<QueryField> queryFields = queryFieldDAO.listByQueryPage(queryPage);
+    for (QueryField queryField : queryFields) {
+      QueryField newQueryField = null;
+      switch (queryField.getType()) {
+      
+        // Text fields
+      
+        case TEXT:
+          newQueryField = queryTextFieldDAO.create(newQueryPage, queryField.getName(), queryField.getMandatory(), queryField.getCaption());
+          if (copyAnswers) {
+            for (QueryReply originalQueryReply : originalQueryReplies) {
+              QueryQuestionTextAnswer answer = queryQuestionTextAnswerDAO.findByQueryReplyAndQueryField(originalQueryReply, queryField);
+              if (answer != null) {
+                QueryReply newQueryReply = replyMap.get(originalQueryReply.getId());
+                queryQuestionTextAnswerDAO.create(newQueryReply, newQueryField, answer.getData());
+              }
+            }
+          }
+          break;
+
+        // Option fields
+
+        case OPTIONFIELD:
+          QueryOptionField optionField = (QueryOptionField) queryField;
+          newQueryField = queryOptionFieldDAO.create(newQueryPage, optionField.getName(), optionField.getMandatory(), optionField.getCaption());
+          List<QueryOptionFieldOption> options = queryOptionFieldOptionDAO.listByQueryField(optionField);
+          Map<Long, Long> optionMap = new HashMap<>();
+          for (QueryOptionFieldOption option : options) {
+            QueryOptionFieldOption newOption = queryOptionFieldOptionDAO.create((QueryOptionField) newQueryField, option.getText(), option.getValue());
+            optionMap.put(option.getId(), newOption.getId());
+          }
+          Map<Long, QueryOptionFieldOptionGroup> optionGroupMap = new HashMap<>();
+          List<QueryOptionFieldOptionGroup> groups = queryOptionFieldOptionGroupDAO.listByQueryField(optionField);
+          for (QueryOptionFieldOptionGroup group : groups) {
+            QueryOptionFieldOptionGroup newGroup = queryOptionFieldOptionGroupDAO.create((QueryOptionField) newQueryField, group.getName());
+            optionGroupMap.put(group.getId(), newGroup);
+          }
+          if (copyAnswers) {
+            for (QueryReply originalQueryReply : originalQueryReplies) {
+              QueryQuestionMultiOptionAnswer multiAnswer = queryQuestionMultiOptionAnswerDAO.findByQueryReplyAndQueryField(originalQueryReply, queryField);
+              if (multiAnswer != null) {
+                // QueryQuestionMultiOptionAnswer
+                QueryReply newQueryReply = replyMap.get(originalQueryReply.getId());
+                Set<QueryOptionFieldOption> newOptions = new HashSet<>();
+                for (QueryOptionFieldOption option : multiAnswer.getOptions()) {
+                  QueryOptionFieldOption newOption = queryOptionFieldOptionDAO.findById(optionMap.get(option.getId()));
+                  newOptions.add(newOption);
+                }
+                queryQuestionMultiOptionAnswerDAO.create(newQueryReply, newQueryField, newOptions);
+              }
+              else {
+                // QueryQuestionOptionGroupOptionAnswer
+                List<QueryQuestionOptionGroupOptionAnswer> groupAnswers = queryQuestionOptionGroupOptionAnswerDAO.listByQueryReplyAndQueryField(originalQueryReply, queryField);
+                if (!groupAnswers.isEmpty()) {
+                  for (QueryQuestionOptionGroupOptionAnswer groupAnswer : groupAnswers) {
+                    QueryReply newQueryReply = replyMap.get(originalQueryReply.getId());
+                    QueryOptionFieldOption newOption = queryOptionFieldOptionDAO.findById(optionMap.get(groupAnswer.getOption().getId()));
+                    QueryOptionFieldOptionGroup newGroup = optionGroupMap.get(groupAnswer.getGroup().getId());
+                    queryQuestionOptionGroupOptionAnswerDAO.create(newQueryReply, newQueryField, newOption, newGroup);
+                  }
+                }
+                else {
+                  // QueryQuestionOptionAnswer
+                  List<QueryQuestionOptionAnswer> optionAnswers = queryQuestionOptionAnswerDAO.listByQueryReplyAndQueryField(originalQueryReply, queryField);
+                  for (QueryQuestionOptionAnswer optionAnswer : optionAnswers) {
+                    QueryOptionFieldOption newOption = queryOptionFieldOptionDAO.findById(optionMap.get(optionAnswer.getOption().getId()));
+                    QueryReply newQueryReply = replyMap.get(originalQueryReply.getId());
+                    queryQuestionOptionAnswerDAO.create(newQueryReply, newQueryField, newOption);
+                  }
+                }
+              }
+            }
+          }
+          break;
+          
+        // Numeric scale fields
+
+        case NUMERIC_SCALE:
+          QueryScaleField scaleField = (QueryScaleField) queryField;
+          newQueryField = queryScaleFieldDAO.create(newQueryPage, scaleField.getName(), scaleField.getMandatory(), scaleField.getCaption(),
+              scaleField.getMin(), scaleField.getMax(), scaleField.getPrecision(), scaleField.getStep());
+          if (copyAnswers) {
+            for (QueryReply originalQueryReply : originalQueryReplies) {
+              QueryQuestionNumericAnswer answer = queryQuestionNumericAnswerDAO.findByQueryReplyAndQueryField(originalQueryReply, queryField);
+              if (answer != null) {
+                QueryReply newQueryReply = replyMap.get(originalQueryReply.getId());
+                queryQuestionNumericAnswerDAO.create(newQueryReply, newQueryField, answer.getData());
+              }
+            }
+          }
+          break;
+          
+        // Numeric fields
+          
+        case NUMERIC:
+          QueryNumericField numericField = (QueryNumericField) queryField;
+          newQueryField = queryNumericFieldDAO.create(newQueryPage, numericField.getName(), numericField.getMandatory(),
+              numericField.getCaption(), numericField.getMin(), numericField.getMax(), numericField.getPrecision());
+          if (copyAnswers) {
+            for (QueryReply originalQueryReply : originalQueryReplies) {
+              QueryQuestionNumericAnswer answer = queryQuestionNumericAnswerDAO.findByQueryReplyAndQueryField(originalQueryReply, queryField);
+              if (answer != null) {
+                QueryReply newQueryReply = replyMap.get(originalQueryReply.getId());
+                queryQuestionNumericAnswerDAO.create(newQueryReply, newQueryField, answer.getData());
+              }
+            }
+          }
+          break;
+      }
+    }
+    
+    return newQueryPage;
   }
 
   /**
@@ -481,6 +727,35 @@ public class QueryPageController {
     
     return queryPage.getQuerySection().getVisible();
   }
+
+  /**
+   * Lists query pages within section
+   * 
+   * @param querySection section
+   * @return query pages within section
+   */
+  public List<QueryPage> listQueryPagesBySection(QuerySection querySection) {
+    return queryPageDAO.listByQuerySection(querySection);
+  }
+  
+  /**
+   * Lists query pages in a query
+   * @param query query
+   * @return query pages
+   */
+  public List<QueryPage> listQueryPages(Query query) {
+    return queryPageDAO.listByQuery(query);
+  }
+
+  /**
+   * Lists query pages in a query
+   * @param query query
+   * @param pageType page type
+   * @return query pages
+   */
+  public List<QueryPage> listQueryPagesByType(Query query, QueryPageType pageType) {
+    return queryPageDAO.listByQueryAndType(query, pageType);
+  }
   
   /**
    * Parses serialized string into a map
@@ -617,5 +892,6 @@ public class QueryPageController {
   private String getMultiple1dScalesFieldName(int index) {
     return String.format("multiple1dscales.%d", index);
   }
+
   
 }

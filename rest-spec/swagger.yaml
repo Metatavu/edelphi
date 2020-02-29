@@ -7,7 +7,48 @@ security:
   - bearer:
       []
 paths:
-                                            
+
+  /panels/:
+    get:
+      operationId: listPanels
+      summary: Lists panels
+      description: Lists panels
+      tags:
+        - Panels
+      parameters:
+        - name: managedOnly
+          in: query
+          description: Return only panels user has manager access 
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: A panel list
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/Panel"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /panels/{panelId}:
     get:
       operationId: findPanel
@@ -73,6 +114,73 @@ paths:
                 type: array
                 items: 
                   $ref: "#/components/schemas/Query"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+                
+  /panels/{panelId}/queries/{queryId}/copy:
+    post:
+      operationId: copyQuery
+      summary: Create copy of an query
+      description: Creates copy of an query
+      tags:
+        - Queries
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: queryId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+        - name: targetPanelId
+          required: true
+          in: query
+          description: target panel panel id
+          schema:
+            type: integer
+            format: int64
+        - name: copyData
+          required: true
+          in: query
+          description: whether to copy query data
+          schema:
+            type: boolean
+        - name: newName
+          required: true
+          in: query
+          description: new name for query copy
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Created query question comment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QueryQuestionComment"
         "400":
           description: Invalid request was sent to the server
           content:

@@ -114,6 +114,20 @@
         "downloadImage": "Download image",
         "downloadPrintableImage": "Download printable image",
         "okButton": "Ok"
+      },
+
+      "copyQueryDialog": {
+        "title": "Copy query",
+        "helpText": "Select whether the query will be copied with or without data and name the copy of selected query and select a panel where you want the query to be copied.",
+        "nameLabel": "Name of the Copy",
+        "targetPanelLabel": "Select Panel",
+        "withDataOption": "Copy Query With Data",
+        "withoutDataOption": "Copy Query Without Data",
+        "okButton": "Copy",
+        "cancelButton": "Cancel",
+        "newName": "New name",
+        "emailDialogTitle": "Query is being copied...",
+        "emailDialogMessage": "Query is copied in the background. You will be notified about the complition of the copy into the email you specified in your profile"
       }
     },
     "liveView": {

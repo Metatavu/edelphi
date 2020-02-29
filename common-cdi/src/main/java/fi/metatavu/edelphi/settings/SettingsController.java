@@ -5,8 +5,10 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 
+import fi.metatavu.edelphi.dao.base.DelfoiDAO;
 import fi.metatavu.edelphi.dao.system.SettingDAO;
 import fi.metatavu.edelphi.dao.system.SettingKeyDAO;
+import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.system.Setting;
 import fi.metatavu.edelphi.domainmodel.system.SettingKey;
 
@@ -17,12 +19,17 @@ import fi.metatavu.edelphi.domainmodel.system.SettingKey;
  */
 @ApplicationScoped
 public class SettingsController {
+
+  private static final long DELFOI_ID = 1l;
+  
+  @Inject
+  private DelfoiDAO delfoiDAO;
   
   @Inject
   private SettingKeyDAO settingKeyDAO; 
   
   @Inject
-  private SettingDAO settingDAO;
+  private SettingDAO settingDAO; 
   
   /**
    * Returns used theme version
@@ -62,8 +69,13 @@ public class SettingsController {
    * @return MQTT settings
    */
   public MqttSettings getMqttSettings() {
+    String serverUrl = getSettingValue("mqtt.serverUrl");
+    if (StringUtils.isBlank(serverUrl)) {
+      return null;
+    }
+    
     MqttSettings settings = new MqttSettings();
-    settings.setServerUrl(getSettingValue("mqtt.serverUrl"));
+    settings.setServerUrl(serverUrl);
     settings.setClientUrl(getSettingValue("mqtt.clientUrl"));    
     settings.setTopic(getSettingValue("mqtt.topic"));
     settings.setWildcard(getSettingValue("mqtt.wildcard"));
@@ -79,6 +91,47 @@ public class SettingsController {
    */
   public String getInternalAuthorizationHash() {
     return getSettingValue("system.internalAuthorizationHash");
+  }
+  
+  /**
+   * Returns delfoi
+   * 
+   * @return delfoi
+   */
+  public Delfoi getDelfoi() {
+    return delfoiDAO.findById(getDelfoiId());
+  }
+  
+  /**
+   * Returns delfoi id
+   * 
+   * @return delfoi id
+   */
+  public long getDelfoiId() {
+    return DELFOI_ID;
+  }
+  
+  /**
+   * Returns whether system is running in test mode
+   * 
+   * @return whether system is running in test mode
+   */
+  public boolean isInTestMode() {
+    return "TEST".equals(getRunMode());
+  }
+
+  /**
+   * Returns system's current run mode
+   * 
+   * @return system's current run mode
+   */
+  public String getRunMode() {
+    String result = System.getProperty("runmode");
+    if (StringUtils.isNotBlank(result)) {
+      return result;
+    }
+    
+    return System.getenv("runmode");
   }
   
   /**
