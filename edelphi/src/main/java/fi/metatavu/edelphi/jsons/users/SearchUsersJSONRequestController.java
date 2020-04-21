@@ -7,16 +7,22 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.dao.users.UserEmailDAO;
+import fi.metatavu.edelphi.domainmodel.actions.DelfoiActionScope;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.jsons.JSONController;
 import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 
 public class SearchUsersJSONRequestController extends JSONController {
-
+  
+  public SearchUsersJSONRequestController() {
+    super();
+    setAccessAction(DelfoiActionName.MANAGE_USERS, DelfoiActionScope.DELFOI);
+  }
+  
   @Override
   public void process(JSONRequestContext jsonRequestContext) {
-    
     // Search string preparation
     
     String text = jsonRequestContext.getLowercaseString("text");

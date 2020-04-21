@@ -28,6 +28,14 @@
         <jsp:param name="value" value="${defaultValue}"/>
       </jsp:include>  
       
+      <div id="inviteUsersAddUserButton">
+        <jsp:include page="/jsp/fragments/formfield_button.jsp">
+          <jsp:param name="name" value="addUser"/>
+          <jsp:param name="value" value=""/>
+          <jsp:param name="labelLocale" value="panel.admin.inviteUsers.actionsBlock.addUser"/>
+        </jsp:include>
+      </div>
+      
       <h3><fmt:message key="panel.admin.inviteUsers.actionsBlock.CSVFieldLabel"></fmt:message></h3>
       
       <div id="inviteUsersCSVFileField">
