@@ -6,6 +6,7 @@ var InviteActionsBlockController = Class.create(BlockController, {
     this._inviteFieldChangeListener = this._onInviteFieldChange.bindAsEventListener(this);
     this._inviteFieldClickListener = this._onInviteFieldClick.bindAsEventListener(this);
     this._inviteFieldEnterListener = this._onInviteFieldEnter.bindAsEventListener(this);
+    this._addUserClickListener = this._onAddUserClick.bindAsEventListener(this);
     this._validEmailMask = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
     this._hasInviteFieldHelp = true;
     this._lastSearchValue = null;
@@ -17,12 +18,11 @@ var InviteActionsBlockController = Class.create(BlockController, {
   setup: function($super) {
     $super($('panelAdminInviteUsersActionsBlockContent'));
     this._formElement = $('panelAdminInvitationForm');
-    this._autoCompleteList = new AutoCompleteList(this);
     this._invitationList = new InvitationList(this, $('inviteUsersSelectedInvitationUsers'));
     this._inviteField = this._formElement.inviteUser;
-    this._inviteField.parentNode.insertBefore(this._autoCompleteList.getGuiElement(), this._inviteField.nextSibling);
     this._csvButton = this._formElement.csvButton;
     this._saveButton = this._formElement.sendInvitations;
+    
     Event.observe(this._inviteField, "click", this._inviteFieldClickListener);
     Event.observe(this._inviteField, "keydown", this._inviteFieldEnterListener);
     Event.observe(this._inviteField, "keyup", this._inviteFieldChangeListener);
@@ -30,6 +30,9 @@ var InviteActionsBlockController = Class.create(BlockController, {
     Event.observe(this._csvButton, "click", this._csvButtonClickListener);
     Event.observe($('csvFileContent'), "load", this._csvLoadedListener);
     Event.observe(document, "ed:resendInvitation", this._resendInvitationsListener);
+    Event.observe(this._formElement.addUser, "click", this._addUserClickListener);
+    
+    this._validateInviteField();
   },
   deinitialize: function($super) {
     $super();
@@ -40,33 +43,21 @@ var InviteActionsBlockController = Class.create(BlockController, {
     Event.stopObserving(this._csvButton, "click", this._csvButtonClickListener);
     Event.stopObserving($('csvFileContent'), "load", this._csvLoadedListener);
     Event.stopObserving(document, "ed:resendInvitation", this._resendInvitationsListener);
+    Event.stopObserving(this._formElement.addUser, "click", this._addUserClickListener);
   },
-  autoCompleteEntryClicked: function (entry) {
-    if (!this._invitationList.contains(entry.getId(), entry.getEmail())) {
-      this._invitationList.add(entry.getId(), entry.getFirstName(), entry.getLastName(), entry.getEmail());
-    }
-    this._autoCompleteList.clear();
-    this._autoCompleteList.setVisible(false);
-  },
+  
   invitationEntryClicked: function (entry) {
     this._invitationList.remove(entry);
   },
-  _showSearchResults: function(results) {
-    this._autoCompleteList.clear();
-    if (results.length == 0) {
-      var email = this._inviteField.value;
-      if (this._validEmailMask.test(email) && !this._invitationList.contains(null, email)) {
-        this._autoCompleteList.add(null, null, null, email);
-      }
-    }
-    else {
-      for (var i = 0, l = results.length; i < l; i++) {
-        if (!this._invitationList.contains(results[i].id, results[i].email)) {
-          this._autoCompleteList.add(results[i].id, results[i].firstName, results[i].lastName, results[i].email);
-        }
-      }
-    }
-    this._autoCompleteList.setVisible(this._autoCompleteList.getSize() > 0);
+  
+  /**
+   * Validates an email address
+   * 
+   * @param email email address
+   * @return whether given email address is valid or not
+   */
+  _isValidEmail: function (email) {
+    return email && email != '' && this._validEmailMask.test(email);  
   },
   
   _getResponseError: function (response) {
@@ -195,36 +186,52 @@ var InviteActionsBlockController = Class.create(BlockController, {
     this._showMessage('ERROR', message, timeout);
   },
   
+  /**
+   * Validates invite field value and enables or disables the add button accordingly
+   */
+  _validateInviteField: function () {
+    var value = this._inviteField.value.strip();
+	if (this._isValidEmail(value)) {
+	  this._formElement.addUser.removeAttribute("disabled");
+	  this._formElement.addUser.removeClassName("disabledButton");
+	} else {
+	  this._formElement.addUser.setAttribute("disabled", "disabled");
+	  this._formElement.addUser.addClassName("disabledButton");
+	}
+  },
+  
+  /**
+   * Attempts to add user to user invite list. User is added user's email is valid 
+   */
+  _addInviteUser: function () {
+    var value = this._inviteField.value.strip();
+    if (this._isValidEmail(value)) {
+      this._invitationList.add(null, null, null, value);
+      this._inviteField.value = '';
+      this._validateInviteField();
+    }
+  },
+  
+  /**
+   * Event handler for add user button click
+   */
+  _onAddUserClick: function () {
+    this._addInviteUser();
+  },
+  
+  /**
+   * Event handler for invite field enter keydown event
+   * 
+   * @param event event
+   */
   _onInviteFieldEnter: function (event) {
     if (event.keyCode == 13) {
       Event.stop(event);
-      if (this._autoCompleteList.getSize() == 1) {
-        this.autoCompleteEntryClicked(this._autoCompleteList.get(0));
-        this._inviteField.select();
-      }
+      this._addInviteUser();
     }
   },
   _onInviteFieldChange: function () {
-    var value = this._inviteField.value.strip();
-    if (value && value != '') {
-      if (value !== this._lastSearchValue || !this._autoCompleteList.isVisible()) {
-        var parameters = {
-          text: value
-        };
-        var _this = this;
-        JSONUtils.request(CONTEXTPATH + '/users/searchusers.json', {
-          parameters: parameters,
-          onSuccess : function(jsonRequest) {
-            _this._lastSearchValue = value;
-            _this._showSearchResults(jsonRequest.results);
-          }
-        });
-      }
-    }
-    else {
-      this._autoCompleteList.clear();
-      this._autoCompleteList.setVisible(false);
-    }
+    this._validateInviteField();
   },
   
   _onInviteFieldClick: function() {
