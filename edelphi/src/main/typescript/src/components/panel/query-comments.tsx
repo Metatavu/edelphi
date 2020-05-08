@@ -6,7 +6,8 @@ import { QueryQuestionCommentCategoriesService } from "edelphi-client/dist/api/a
 import Api, { QueryQuestionCommentCategory } from "edelphi-client";
 import QueryCommentEditor from "./query-comment-editor";
 import QueryCommentList from "./query-comment-list";
-import { Tab } from 'semantic-ui-react'
+import { Tab, Menu, Confirm } from 'semantic-ui-react'
+import strings from "../../localization/strings";
 
 /**
  * Interface representing component properties
@@ -27,8 +28,12 @@ interface Props {
  * Interface representing component state
  */
 interface State {
-  categories: QueryQuestionCommentCategory[],
-  loading: boolean
+  categories: QueryQuestionCommentCategory[];
+  loading: boolean;
+  commentChanged: boolean;
+  confirmOpen: boolean;
+  activeTabIndex: number;
+  clickedTabIndex?: number;
 }
 
 /**
@@ -45,17 +50,24 @@ class QueryComments extends React.Component<Props, State> {
     super(props);
     this.state = {
       categories: [],
-      loading: false
+      loading: false,
+      commentChanged: false,
+      confirmOpen: false,
+      activeTabIndex: 0,
     };
   }
   
   /**
-   * Component did update life-cycle event
+   * Component did mount life-cycle event
    */
   public async componentDidMount() {
     await this.loadData();
   }
 
+  /**
+   * Component did update life-cycle event
+   * @param oldProps old props
+   */
   public async componentDidUpdate(oldProps: Props) {
     if ((this.props.accessToken != oldProps.accessToken)) {
       await this.loadData();
@@ -81,16 +93,32 @@ class QueryComments extends React.Component<Props, State> {
    * Renders categorized comments
    */
   private renderCategorized() {
-    const panes = this.state.categories.map((category) => {
+    const panes = this.state.categories.map((category, index) => {
       return {
-        menuItem: category.name,
-        render: () => <Tab.Pane> { this.renderCategory(category) } </Tab.Pane>
+        menuItem: (
+          <Menu.Item
+            key={ category.name }
+            onClick={ () => this.onTabClick(index) }
+          >
+            { category.name }
+          </Menu.Item>
+        ),
+        render: () => <Tab.Pane>{ this.renderCategory(category) }</Tab.Pane>
       }
     });
     
-    return (
-      <Tab menu={{ color: "orange", pointing: true }} panes={panes}/>
-    );
+    return (<>
+      <Tab activeIndex={ this.state.activeTabIndex } menu={{ color: "orange", pointing: true }} panes={panes}/>
+      <Confirm
+        header={ strings.confirmationDialog.title }
+        content={ strings.confirmationDialog.content }
+        confirmButton={ strings.confirmationDialog.confirm }
+        cancelButton={ strings.confirmationDialog.cancel }
+        open={ this.state.confirmOpen }
+        onCancel={ this.onModalCancel }
+        onConfirm={ this.onModalConfirm }
+      />
+    </>);
   }
 
   /**
@@ -101,14 +129,89 @@ class QueryComments extends React.Component<Props, State> {
   private renderCategory = (category: QueryQuestionCommentCategory | null) => {      
     return (
       <div key={ category ? category.id : "ROOT" }>
-        {this.props.commentable ? this.renderCommentEditor(category) : null}
-        {this.props.viewDiscussion ? <QueryCommentList category={ category } canManageComments={this.props.canManageComments} panelId={this.props.panelId} queryId={this.props.queryId} pageId={this.props.pageId} queryReplyId={this.props.queryReplyId} /> : null}
+        { this.props.commentable ? this.renderCommentEditor(category) : null }
+        { this.props.viewDiscussion ?
+          <QueryCommentList
+            category={ category }
+            canManageComments={ this.props.canManageComments }
+            panelId={ this.props.panelId } queryId={ this.props.queryId }
+            pageId={ this.props.pageId }
+            queryReplyId={ this.props.queryReplyId }
+          />
+          : null 
+        }
       </div>
     );
   }
 
+  /**
+   * Render comment editor
+   * @param category comment category
+   */
   private renderCommentEditor = (category: QueryQuestionCommentCategory | null) => {
-    return <QueryCommentEditor setPageChangeListener={ this.props.setPageChangeListener } category={ category } pageId={this.props.pageId} panelId={this.props.panelId} queryId={this.props.queryId} queryReplyId={this.props.queryReplyId} />;
+    return (
+      <QueryCommentEditor
+      onCommentChange={ this.onCommentChange }
+      setPageChangeListener={ this.props.setPageChangeListener }
+      category={ category }
+      pageId={ this.props.pageId }
+      panelId={ this.props.panelId }
+      queryId={ this.props.queryId }
+      queryReplyId={ this.props.queryReplyId }
+      />
+    );
+  }
+
+  /**
+   * On comment change handler
+   * @param commentChanged has user changed comment
+   */
+  private onCommentChange = (commentChanged: boolean) => {
+    this.setState({ commentChanged });
+  }
+
+  /**
+   * Modal cancel handler
+   */
+  private onModalCancel = () => {
+    this.setState({
+      confirmOpen: false
+    });
+  }
+
+  /**
+   * Modal confirm handler
+   */
+  private onModalConfirm = () => {
+    const { clickedTabIndex } = this.state;
+    const indexToSet = clickedTabIndex || 0;
+    this.setState({
+      activeTabIndex: indexToSet,
+      commentChanged: false,
+      confirmOpen: false
+    });
+  }
+
+  /**
+   * On tab click handler
+   * @param tabIndex clicked tab index
+   */
+  private onTabClick = (tabIndex : number) => {
+    const { activeTabIndex, commentChanged } = this.state;
+    if (activeTabIndex === tabIndex) {
+      return;
+    }
+    if (commentChanged) {
+      this.setState({
+        confirmOpen: true,
+        clickedTabIndex: tabIndex
+      });
+      return;
+    }
+
+    this.setState({
+      activeTabIndex: tabIndex
+    });
   }
 
   /**
