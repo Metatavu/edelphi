@@ -247,7 +247,7 @@ class LiveView extends React.Component<Props, State> {
       <Grid style={{ marginTop: this.isFullscreen() ? "30px" : "0px" }}>
         <Grid.Row>
           <Grid.Column width={ 10 }>
-            <h3>{ title }</h3>
+            <h3 style={{ paddingLeft: this.isFullscreen() ? "30px" : "0px" }}>{ title }</h3>
           </Grid.Column>
         </Grid.Row>
         <Grid.Row>
