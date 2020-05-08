@@ -17,7 +17,8 @@ import PanelAdminQueryCopyDialog from "./panel-admin-query-copy-dialog";
 interface Props {
   accessToken: string,
   panelId: number,
-  queryId: number
+  queryId: number,
+  openCopyDialog: boolean;
 }
 
 /**
@@ -56,7 +57,7 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
       pageCommentOptionsOpen: false,
       pageLive2dOptionsOpen: false,
       anonymousLoginDialogOpen: false,
-      copyQueryDialogOpen: false,
+      copyQueryDialogOpen: this.props.openCopyDialog,
       pageId: 0
     };
   }

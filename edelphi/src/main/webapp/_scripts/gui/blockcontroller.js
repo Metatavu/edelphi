@@ -42,9 +42,15 @@ BlockController = Class.create({
   },
   _parseQueryParams: function (query) {
     var result = new Hash();
-    
     if (query) {
-      var split = query.split('&');
+      let splitQuery = query.split('?');
+      let queryString = "";
+      if (splitQuery.length > 1 ) {
+        queryString = splitQuery[1]
+      } else {
+        queryString = splitQuery[0]
+      }
+      var split = queryString.split('&');
       for (var i = 0, l = split.length; i < l; i++) {
         var pair = split[i].split('=');
         result.set(pair[0], pair[1]);
