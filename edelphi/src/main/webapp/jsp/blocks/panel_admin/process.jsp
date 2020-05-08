@@ -36,16 +36,16 @@
         </div>
       </ed:feature>
 
+      <!--
       <ed:feature featurePage="panel/admin/comparereports.page">
         <div class="panelAdminProcessRow">
           <div class="panelAdminGenericTitle"><a style="color: #666"><fmt:message key="panel.admin.dashboard.panelProcessCompareReportsAction" /></a></div>
           <p><i><fmt:message key="panel.admin.dashboard.panelProcessCompareReportsDisabled"/></i></p>
-          <!-- 
           <div class="panelAdminGenericTitle"><a href="comparereports.page?panelId=${panel.id}"><fmt:message key="panel.admin.dashboard.panelProcessCompareReportsAction" /></a></div>
           <div class="panelAdminGenericDescription"><fmt:message key="panel.admin.dashboard.panelProcessCompareReportsDescription" /></div>
-          -->
         </div>
       </ed:feature>
+      -->
 
       <ed:feature featurePage="panel/admin/liveview.page">
         <div class="panelAdminProcessRow">
@@ -56,13 +56,14 @@
     </div>
     
     <div id="panelAdminDashboardProcessRightBlock">
-    
+      <!--
       <ed:feature featurePage="panel/admin/managepanelstamps.page">
         <div class="panelAdminProcessRow">
           <div class="panelAdminGenericTitle"><a href="managepanelstamps.page?panelId=${panel.id}"><fmt:message key="panel.admin.dashboard.panelProcessPanelStampsAction" /></a></div>
           <div class="panelAdminGenericDescription"><fmt:message key="panel.admin.dashboard.panelProcessPanelStampsDescription" /></div>
-        </div>      
+        </div>
       </ed:feature>
+      -->
 
       <ed:feature featurePage="panel/admin/panelexperts.page">
         <div class="panelAdminProcessRow">
