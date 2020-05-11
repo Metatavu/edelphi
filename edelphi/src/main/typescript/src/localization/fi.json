@@ -49,7 +49,7 @@
       "comments": {
         "title": "Kommentit",
         "reply": "Vastaa",
-        "ellaborate": "Täsmennä vastausta",
+        "elaborate": "Täsmennä vastausta",
         "hide": "Piilota",
         "edit": "Muokkaa",
         "remove": "Poista",
@@ -124,7 +124,7 @@
         "withDataOption": "Kopioi kysely datan kanssa",
         "withoutDataOption": "Kopioi kysely ilman dataa",
         "okButton": "Kopioi",
-        "cancelButton": "Peruuuta",
+        "cancelButton": "Peruuta",
         "newName": "Uusi nimi",
         "emailDialogTitle": "Kyselyä kopioidaan...",
         "emailDialogMessage": "Kyselyä kopioidaan taustalla. Tieto kopion valmistumisesta tullaan toimittamaan profiilissa määrittelemääsi sähköpostiin"

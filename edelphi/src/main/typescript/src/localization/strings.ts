@@ -54,7 +54,7 @@ export interface IStrings extends LocalizedStringsMethods {
       comments: {
         title: string,
         reply: string,
-        ellaborate: string,
+        elaborate: string,
         hide: string,
         show: string,
         edit: string,
