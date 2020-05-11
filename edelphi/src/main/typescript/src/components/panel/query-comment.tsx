@@ -221,7 +221,7 @@ class QueryCommentClass extends React.Component<Props, State> {
   private renderLinks() {
     return (
       <div className="queryCommentMeta">
-        <div className="queryCommentNewComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onNewCommentClick(event) }  className="queryCommentNewCommentLink">{ this.props.comment.creatorId == this.props.logggedUserId ? strings.panel.query.comments.ellaborate : strings.panel.query.comments.reply }</a></div>
+        <div className="queryCommentNewComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onNewCommentClick(event) }  className="queryCommentNewCommentLink">{ this.props.comment.creatorId == this.props.logggedUserId ? strings.panel.query.comments.elaborate : strings.panel.query.comments.reply }</a></div>
         {
           this.renderShowHideComment()
         }

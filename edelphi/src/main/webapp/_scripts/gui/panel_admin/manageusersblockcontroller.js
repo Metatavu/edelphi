@@ -53,6 +53,7 @@ ManagePanelUsersBlockController = Class.create(BlockController, {
 
       var createdDate = new Date();
       createdDate.setTime(panelUsers[i].created);
+      var dateToDisplay = createdDate.toLocaleDateString("fi-FI");
       
       var expertisestext = "";
       if (panelUsers[i].expertises.length > 0) {
@@ -77,7 +78,7 @@ ManagePanelUsersBlockController = Class.create(BlockController, {
         panelUser_email.update(panelUsers[i].email);
       }
       
-      panelUser_created.update(getLocale().getText("panel.admin.managePanelUsers.userList.userCreated") + " " + getLocale().getDate(createdDate));
+      panelUser_created.update(getLocale().getText("panel.admin.managePanelUsers.userList.userCreated") + " " + dateToDisplay);
       panelUser_expertise_title.update(getLocale().getText("panel.admin.managePanelUsers.userList.userExpertise"));
       panelUser_expertise.update(expertisestext);
       

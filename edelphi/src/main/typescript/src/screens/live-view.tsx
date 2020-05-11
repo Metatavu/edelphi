@@ -238,8 +238,18 @@ class LiveView extends React.Component<Props, State> {
    * Renders answers view
    */
   private renderAnswersView = () => {
+    const page = this.state.pages.find((page) => {
+      return page.id == this.state.pageId;
+    });
+    const title = page !== undefined ? page.title : "";
+
     return (
       <Grid style={{ marginTop: this.isFullscreen() ? "30px" : "0px" }}>
+        <Grid.Row>
+          <Grid.Column width={ 10 }>
+            <h3 style={{ paddingLeft: this.isFullscreen() ? "30px" : "0px" }}>{ title }</h3>
+          </Grid.Column>
+        </Grid.Row>
         <Grid.Row>
           <Grid.Column width={ 10 }>
             <div style={{margin:"auto"}} ref={ (element) => this.setChartWrapperDiv(element) }>

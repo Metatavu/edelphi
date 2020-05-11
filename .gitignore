@@ -2,6 +2,7 @@
 /.project
 /todo.txt
 sonar-scanner
+.env
 .sonar
 travis-encrypted.tar 
 .travis_rsa
