@@ -45,7 +45,7 @@ BlockController = Class.create({
     if (query) {
       var splitQuery = query.split('?');
       var queryString = "";
-      if (splitQuery.length > 1 ) {
+      if (splitQuery.length > 1) {
         queryString = splitQuery[1]
       } else {
         queryString = splitQuery[0]
