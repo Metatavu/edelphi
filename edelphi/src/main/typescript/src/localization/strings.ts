@@ -59,21 +59,21 @@ export interface IStrings extends LocalizedStringsMethods {
         modify: string
       },
       comments: {
-        title: string;
-        reply: string;
-        ellaborate: string;
-        hide: string;
-        show: string;
-        edit: string;
-        remove: string;
-        commentModified: string;
-        commentDate: string;
-        saveReply: string;
-        saveEdit: string;
-        confirmRemoveConfirm: string;
-        confirmRemoveCancel: string;
-        confirmRemoveText: string;
-        noComments: string;
+        title: string,
+        reply: string,
+        elaborate: string,
+        hide: string,
+        show: string,
+        edit: string,
+        remove: string,
+        commentModified: string,
+        commentDate: string,
+        saveReply: string,
+        saveEdit: string,
+        confirmRemoveConfirm: string,
+        confirmRemoveCancel: string,
+        confirmRemoveText: string,
+        noComments: string,
         yourComment: string
       }
     }
