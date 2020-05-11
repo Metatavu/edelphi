@@ -44,7 +44,7 @@ BlockController = Class.create({
     var result = new Hash();
     if (query) {
       var splitQuery = query.split('?');
-      let queryString = "";
+      var queryString = "";
       if (splitQuery.length > 1 ) {
         queryString = splitQuery[1]
       } else {
