@@ -125,19 +125,19 @@ QueryListingBlockController = Class.create(BlockController, {
     Event.stop(event);
     var linkElement = Event.element(event);
     var linkHref = linkElement.getAttribute("href");
-    var hashParams = this._parseHash(linkHref);
+    var hashParams = this._parseQueryParams(linkHref);
     var queryId = hashParams.get("queryId");
     
-    var _this = this;
     JSONUtils.request(CONTEXTPATH + '/admin/listavailablepanels.json', {
       parameters: {
       },
-      onSuccess : function(jsonRequest) {
-        var dialog = _this._buildCopyQueryDialog(queryId, jsonRequest.panels, jsonRequest.currentPanel);
-        dialog.open(linkElement);
+      onSuccess : function(jsonResponse) {
+        window.location.replace(CONTEXTPATH + '/panel/admin/editquery.page?panelId=' + jsonResponse.currentPanel + '&queryId=' + queryId + "#copy");
       }
     });
   },
+
+  // Old copy dialog
   _buildCopyQueryDialog: function (queryId, panels, currentPanel) {
     var contentContainer = new Element("form", { id: "copyQueryForm", className: "copyQueryModalTextContainer" });
     var queryElement = new Element("input", { type: "hidden", name: "query", value: queryId });

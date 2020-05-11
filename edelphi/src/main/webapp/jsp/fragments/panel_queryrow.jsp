@@ -91,7 +91,7 @@
       </c:choose>
 
       <jsp:include page="/jsp/fragments/contextual_link.jsp">
-        <jsp:param name="href" value="#queryId:${param.queryId}" />
+        <jsp:param name="href" value="${pageContext.request.contextPath}/panel/admin/editquery.page?panelId=${param.panelId}&queryId=${param.queryId}" />
         <jsp:param name="action" value="copy"/>
         <jsp:param name="label" value="panel.block.queriesContextualLinkTitle.copyQuery" />
       </jsp:include>

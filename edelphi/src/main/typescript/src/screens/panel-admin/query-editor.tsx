@@ -34,7 +34,6 @@ const getIntAttribute = (element: Element, attributeName: string): number | null
 window.addEventListener('load', () => {
   const locale: string = getLanguage();
   strings.setLanguage(locale);
-
   const panelAdminQueryEditor = document.getElementById("panel-admin-query-editor");
   const initalStoreState: StoreState = {
     locale: locale,
@@ -46,12 +45,13 @@ window.addEventListener('load', () => {
   if (panelAdminQueryEditor) {
     const panelId = parseInt(JSDATA['securityContextId']);
     const queryId: number | null = getIntAttribute(panelAdminQueryEditor, "data-query-id");
+    const openCopyDialog = document.URL.endsWith("#copy");
 
     if (panelId && queryId) {
       const component =
         <Provider store={store}>
           <AccessTokenRefresh />
-          <PanelAdminQueryEditor panelId={ panelId } queryId={ queryId }/>
+          <PanelAdminQueryEditor panelId={ panelId } queryId={ queryId } openCopyDialog={ openCopyDialog }/>
         </Provider>;
 
       ReactDOM.render(component, panelAdminQueryEditor);
