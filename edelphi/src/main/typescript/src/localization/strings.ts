@@ -5,50 +5,57 @@ import LocalizedStrings, {
 export interface IStrings extends LocalizedStringsMethods {
 
   generic: {
-    loading: string,
-    back: string,
-    ok: string,
-    eDelphi: string,
-    welcomeUser: string,
-    profileLink: string,
+    loading: string;
+    back: string;
+    ok: string;
+    eDelphi: string;
+    welcomeUser: string;
+    profileLink: string;
     logoutLink: string
   },
 
   errorDialog: {
-    header: string,
-    reloadPage: string,
-    unsavedContents: string,
-    reportIssue: string,
-    technicalDetails: string,
-    time: string,
-    url: string,
-    errorMessage: string,
+    header: string;
+    reloadPage: string;
+    unsavedContents: string;
+    reportIssue: string;
+    technicalDetails: string;
+    time: string;
+    url: string;
+    errorMessage: string;
     close: string
-    reload: string,
+    reload: string;
   },
+
+  confirmationDialog: {
+    title: string;
+    content: string;
+    confirm: string;
+    cancel: string;
+  }
 
   panel: {
     query: {
-      previous: string,
-      next: string,
-      save: string,
-      skip: string,
-      noAnswer: string,
-      quickNavigationTitle: string,
+      previous: string;
+      next: string;
+      save: string;
+      skip: string;
+      noAnswer: string;
+      quickNavigationTitle: string;
       live2d: {
         statistics: {
-          title: string,
-          axisX: string,
-          axisY: string,
-          answerCount: string,
-          lowerQuartile: string,
-          median: string,
+          title: string;
+          axisX: string;
+          axisY: string;
+          answerCount: string;
+          lowerQuartile: string;
+          median: string;
           upperQuartile: string 
         }
       },
       commentEditor: {
-        title: string,
-        save: string,
+        title: string;
+        save: string;
         modify: string
       },
       comments: {
@@ -74,38 +81,38 @@ export interface IStrings extends LocalizedStringsMethods {
 
   panelAdmin: {
     navigation: {
-      panel: string,
-      administration: string,
+      panel: string;
+      administration: string;
       reportAnIssue: string
     },
     queryEditor: {
-      removeQueryAnswersConfirm: string,
+      removeQueryAnswersConfirm: string;
 
       queryCommentOptions: {
-        title: string,
-        categories: string,
-        addCategory: string,
-        save: string,
-        close: string,
-        deleteCategory: string,
+        title: string;
+        categories: string;
+        addCategory: string;
+        save: string;
+        close: string;
+        deleteCategory: string;
         deleteCategoryConfirm: string
       },
       
       pageCommentOptions: {
-        title: string,
-        categories: string,
-        addCategory: string,
-        save: string,
-        close: string,
-        deleteCategory: string,
+        title: string;
+        categories: string;
+        addCategory: string;
+        save: string;
+        close: string;
+        deleteCategory: string;
         deleteCategoryConfirm: string
       },
 
       pageLive2dOptions: {
-        title: string,
-        save: string,
-        close: string,
-        visible: string,
+        title: string;
+        save: string;
+        close: string;
+        visible: string;
         visibleOptions: {
           AFTEROWNANSWER: string
           IMMEDIATELY: string
@@ -113,61 +120,61 @@ export interface IStrings extends LocalizedStringsMethods {
       },
 
       anonymousLoginDialog: {
-        title: string,
+        title: string;
         helpText: string
-        hintText: string,
-        linkLabel: string,
-        downloadImage: string,
-        downloadPrintableImage: string,
+        hintText: string;
+        linkLabel: string;
+        downloadImage: string;
+        downloadPrintableImage: string;
         okButton: string
       },
 
       copyQueryDialog: {
-        title: string,
-        helpText: string,
-        nameLabel: string,
-        targetPanelLabel: string,
-        withDataOption: string,
-        withoutDataOption: string,
-        okButton: string,
-        cancelButton: string,
-        newName: string,
-        emailDialogTitle: string,
+        title: string;
+        helpText: string;
+        nameLabel: string;
+        targetPanelLabel: string;
+        withDataOption: string;
+        withoutDataOption: string;
+        okButton: string;
+        cancelButton: string;
+        newName: string;
+        emailDialogTitle: string;
         emailDialogMessage: string
       }
 
     },
     liveView: {
-      querySelectLabel: string,
-      pageSelectLabel: string,
-      commentCategorySelectLabel: string,
-      defaultCategory: string,
-      replyCount: string,
-      answersTab: string,
-      commentsTab: string,
+      querySelectLabel: string;
+      pageSelectLabel: string;
+      commentCategorySelectLabel: string;
+      defaultCategory: string;
+      replyCount: string;
+      answersTab: string;
+      commentsTab: string;
       selectQueryAndPage: string
     },
     reports: {
-      title: string,
-      queriesListTitle: string,
-      queriesListDates: string,
-      exportFilter: string,
-      exportFilterByExpertise: string,
-      exportFilterByPage: string,
-      exportFilterByPageAll: string,
-      exportFilterByCommentCategory: string,
-      exportReport: string,
-      exportReportContents: string,
-      exportReportPDF: string,
-      exportReportGoogleDocument: string,
-      exportCharts: string,
-      exportChartsPNG: string,
-      exportData: string,
-      exportDataCSV: string,
-      exportDataGoogleSpreadsheet: string,
-      reportToEmailTitle: string,
+      title: string;
+      queriesListTitle: string;
+      queriesListDates: string;
+      exportFilter: string;
+      exportFilterByExpertise: string;
+      exportFilterByPage: string;
+      exportFilterByPageAll: string;
+      exportFilterByCommentCategory: string;
+      exportReport: string;
+      exportReportContents: string;
+      exportReportPDF: string;
+      exportReportGoogleDocument: string;
+      exportCharts: string;
+      exportChartsPNG: string;
+      exportData: string;
+      exportDataCSV: string;
+      exportDataGoogleSpreadsheet: string;
+      reportToEmailTitle: string;
       reportToEmailMessageDelivery: string
-      reportToEmailMessageDeliveryTime: string,
+      reportToEmailMessageDeliveryTime: string;
       reportToEmailMessageLeave: string
     }
   }

@@ -19,6 +19,11 @@ interface Props {
   queryId: number,
   category: QueryQuestionCommentCategory | null,
   setPageChangeListener: (listener: (event: PageChangeEvent) => void) => void
+
+  /**
+   * On comment change handler from parent
+   */
+  onCommentChange: (changed: boolean) => void;
 }
 
 /**
@@ -64,7 +69,7 @@ class QueryCommentEditor extends React.Component<Props, State> {
   }
   
   /**
-   * Component did mount life-cycle event
+   * Component did update life-cycle event
    */
   public async componentDidUpdate() {
     if (!this.state.loaded) {
@@ -194,6 +199,8 @@ class QueryCommentEditor extends React.Component<Props, State> {
       contents: data.value as string,
       changed: true
     });
+
+    this.props.onCommentChange(true);
   }
 
   /**
@@ -206,6 +213,7 @@ class QueryCommentEditor extends React.Component<Props, State> {
     this.setState({
       changed: false
     });
+    this.props.onCommentChange(false);
   }
   
 }
