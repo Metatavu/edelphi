@@ -132,7 +132,10 @@ QueryListingBlockController = Class.create(BlockController, {
       parameters: {
       },
       onSuccess : function(jsonResponse) {
-        window.location.replace(CONTEXTPATH + '/panel/admin/editquery.page?panelId=' + jsonResponse.currentPanel + '&queryId=' + queryId + "#copy");
+        window.location.replace(CONTEXTPATH + '/panel/admin/editquery.page?panelId=' + jsonResponse.currentPanel + '&queryId=' + queryId + "&copy=true");
+      },
+      onFailure : function(jsonResponse){
+        window.location.replace(CONTEXTPATH + "login.page");
       }
     });
   },

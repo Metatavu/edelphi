@@ -35,17 +35,17 @@ window.addEventListener('load', () => {
   const locale: string = getLanguage();
   strings.setLanguage(locale);
   const panelAdminQueryEditor = document.getElementById("panel-admin-query-editor");
-  const initalStoreState: StoreState = {
+  const initialStoreState: StoreState = {
     locale: locale,
     queryValidationMessage: null
   };
 
-  const store = createStore<StoreState, AppAction, any, any>(reducer as any, initalStoreState);
+  const store = createStore<StoreState, AppAction, any, any>(reducer as any, initialStoreState);
 
   if (panelAdminQueryEditor) {
     const panelId = parseInt(JSDATA['securityContextId']);
     const queryId: number | null = getIntAttribute(panelAdminQueryEditor, "data-query-id");
-    const openCopyDialog = document.URL.endsWith("#copy");
+    const openCopyDialog = document.URL.endsWith("&copy=true");
 
     if (panelId && queryId) {
       const component =
