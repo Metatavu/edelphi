@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.dao.querydata;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -221,6 +222,11 @@ public class QueryQuestionOptionAnswerDAO extends GenericDAO<QueryQuestionOption
    * @return list of tuples
    */
   public List<Tuple> countReplies2d(List<QueryReply> queryReplies, QueryOptionField queryFieldX, QueryOptionField queryFieldY) {
+
+    if (queryReplies == null || queryReplies.isEmpty()) {
+      return new ArrayList<>();
+    }
+
     EntityManager entityManager = getEntityManager();
 
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
