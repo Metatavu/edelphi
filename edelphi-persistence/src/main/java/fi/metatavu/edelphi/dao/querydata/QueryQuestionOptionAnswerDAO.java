@@ -223,7 +223,7 @@ public class QueryQuestionOptionAnswerDAO extends GenericDAO<QueryQuestionOption
    */
   public List<Tuple> countReplies2d(List<QueryReply> queryReplies, QueryOptionField queryFieldX, QueryOptionField queryFieldY) {
 
-    if (queryReplies == null) {
+    if (queryReplies == null || queryReplies.isEmpty()) {
       return new ArrayList<>();
     }
 
