@@ -20,6 +20,7 @@ public class SpreadsheetExportContextImpl implements SpreadsheetExportContext {
   private Function<String, Integer> addColumn;
   private Consumer<SpreadsheetCellValue> setCellValue;
   private QueryPage queryPage;
+  private Long[] commentCategoryIds;
   private List<QueryReply> queryReplies;
   private PanelStamp panelStamp;
   private Locale locale;
@@ -31,14 +32,16 @@ public class SpreadsheetExportContextImpl implements SpreadsheetExportContext {
    * @param queryPage query page
    * @param panelStamp panel stamp 
    * @param queryReplies replies
+   * @param commentCategoryIds included comment category ids
    * @param addColumn add column function
    * @param setCellValue set cell value function
    */
-  public SpreadsheetExportContextImpl(Locale locale, QueryPage queryPage, PanelStamp panelStamp, List<QueryReply> queryReplies, Function<String, Integer> addColumn, Consumer<SpreadsheetCellValue> setCellValue) {
+  public SpreadsheetExportContextImpl(Locale locale, QueryPage queryPage, PanelStamp panelStamp, List<QueryReply> queryReplies, Long[] commentCategoryIds, Function<String, Integer> addColumn, Consumer<SpreadsheetCellValue> setCellValue) {
     this.locale = locale;
     this.queryPage = queryPage;
     this.panelStamp = panelStamp;
     this.queryReplies = queryReplies;
+    this.commentCategoryIds = commentCategoryIds;
     this.addColumn = addColumn;
     this.setCellValue = setCellValue;
   }
@@ -90,6 +93,13 @@ public class SpreadsheetExportContextImpl implements SpreadsheetExportContext {
    */
   public void setQueryReplies(List<QueryReply> queryReplies) {
     this.queryReplies = queryReplies;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public Long[] getCommentCategoryIds() {
+    return commentCategoryIds;
   }
 
 }

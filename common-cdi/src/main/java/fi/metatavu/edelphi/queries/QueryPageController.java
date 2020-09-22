@@ -416,7 +416,7 @@ public class QueryPageController {
    * @param name setting name
    * @return page setting as boolean
    */
-  public Boolean getBooleanSetting(QueryPage queryPage, String name) {
+  public boolean getBooleanSetting(QueryPage queryPage, String name) {
     String value = getSetting(queryPage, name);
     return "1".equals(value);
   }

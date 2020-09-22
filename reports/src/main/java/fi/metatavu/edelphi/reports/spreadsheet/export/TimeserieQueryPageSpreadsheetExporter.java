@@ -2,7 +2,6 @@ package fi.metatavu.edelphi.reports.spreadsheet.export;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.NavigableMap;
 import java.util.Set;
 
@@ -12,17 +11,14 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
-import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionNumericAnswerDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
-import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionNumericAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryNumericField;
 import fi.metatavu.edelphi.queries.QueryPageController;
-import fi.metatavu.edelphi.reports.i18n.ReportMessages;
 import fi.metatavu.edelphi.reports.spreadsheet.SpreadsheetExportContext;
 import fi.metatavu.edelphi.reports.spreadsheet.comments.ReportPageCommentProcessor;
 import fi.metatavu.edelphi.reports.spreadsheet.comments.TimeSerieReportPageCommentProcessor;
@@ -31,16 +27,10 @@ import fi.metatavu.edelphi.reports.spreadsheet.comments.TimeSerieReportPageComme
 public class TimeserieQueryPageSpreadsheetExporter extends AbstractQueryPageSpreadsheetExporter {
   
   @Inject
-  private ReportMessages reportMessages;
-
-  @Inject
   private QueryPageController queryPageController;
 
   @Inject
   private QueryFieldDAO queryFieldDAO;
-
-  @Inject
-  private QueryQuestionCommentDAO queryQuestionCommentDAO;
 
   @Inject
   private QueryQuestionNumericAnswerDAO queryQuestionNumericAnswerDAO;
@@ -50,8 +40,7 @@ public class TimeserieQueryPageSpreadsheetExporter extends AbstractQueryPageSpre
     List<QueryReply> queryReplies = exportContext.getQueryReplies();
     
     QueryPage queryPage = exportContext.getQueryPage();
-    
-    boolean commentable = isPageCommentable(queryPage);
+
     Double minX = queryPageController.getDoubleSetting(queryPage, "time_serie.minX");
     Double maxX = queryPageController.getDoubleSetting(queryPage, "time_serie.maxX");
     Double stepX = queryPageController.getDoubleSetting(queryPage, "time_serie.stepX");
@@ -79,16 +68,6 @@ public class TimeserieQueryPageSpreadsheetExporter extends AbstractQueryPageSpre
             exportContext.setCellValue(queryReply, columnIndex, answer.getData());
         }
       }
-
-      if (commentable) {
-        Locale locale = exportContext.getLocale();
-        int commentColumnIndex = exportContext.addColumn(queryPage.getTitle() + "/" + reportMessages.getText(locale, "reports.spreadsheet.comment")); 
-        for (QueryReply queryReply : queryReplies) {
-          QueryQuestionComment comment = queryQuestionCommentDAO.findRootCommentByQueryReplyAndQueryPage(queryReply, queryPage);
-          exportContext.setCellValue(queryReply, commentColumnIndex, comment != null ? comment.getComment() : null);
-        }
-      }
-
     }
   }
   

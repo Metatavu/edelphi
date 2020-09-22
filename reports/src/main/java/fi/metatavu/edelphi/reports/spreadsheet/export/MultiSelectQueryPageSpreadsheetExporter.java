@@ -1,30 +1,23 @@
   package fi.metatavu.edelphi.reports.spreadsheet.export;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionMultiOptionAnswerDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
-import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionMultiOptionAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionField;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption;
 import fi.metatavu.edelphi.queries.QueryPageController;
-import fi.metatavu.edelphi.reports.i18n.ReportMessages;
 import fi.metatavu.edelphi.reports.spreadsheet.SpreadsheetExportContext;
 
 @ApplicationScoped
 public class MultiSelectQueryPageSpreadsheetExporter extends AbstractQueryPageSpreadsheetExporter {
-
-  @Inject
-  private ReportMessages reportMessages;
 
   @Inject
   private QueryPageController queryPageController;
@@ -35,14 +28,10 @@ public class MultiSelectQueryPageSpreadsheetExporter extends AbstractQueryPageSp
   @Inject
   private QueryQuestionMultiOptionAnswerDAO queryQuestionMultiOptionAnswerDAO;
   
-  @Inject
-  private QueryQuestionCommentDAO queryQuestionCommentDAO;
-
   @Override
   public void exportSpreadsheet(SpreadsheetExportContext exportContext) {
     QueryPage queryPage = exportContext.getQueryPage();
-    
-    boolean commentable = isPageCommentable(queryPage);
+
     List<String> options = queryPageController.getListSetting(queryPage, "multiselect.options");
 
     QueryOptionField queryField = (QueryOptionField) queryFieldDAO.findByQueryPageAndName(queryPage, getFieldName());
@@ -67,15 +56,6 @@ public class MultiSelectQueryPageSpreadsheetExporter extends AbstractQueryPageSp
       }
       
       value++;
-    }
-    
-    if (commentable) {
-      Locale locale = exportContext.getLocale();
-      int commentColumnIndex = exportContext.addColumn(queryPage.getTitle() + "/" + reportMessages.getText(locale, "reports.spreadsheet.comment")); 
-      for (QueryReply queryReply : queryReplies) {
-        QueryQuestionComment comment = queryQuestionCommentDAO.findRootCommentByQueryReplyAndQueryPage(queryReply, queryPage);
-        exportContext.setCellValue(queryReply, commentColumnIndex, comment != null ? comment.getComment() : null);
-      }
     }
   }
   
