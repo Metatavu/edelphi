@@ -166,13 +166,14 @@ public abstract class AbstractQueryPageSpreadsheetExporter implements QueryPageS
   }
 
   /**
-   * Adds 
+   * Returns filtered comment category list
    * 
-   * @param exportContext
-   * @param categories
-   * @return
+   * @param exportContext spreadsheet export context
+   * @param categories comment category list
+   * @return filtered comment category list
    */
-  private List<QueryQuestionCommentCategory> getFilteredCommentCategories(SpreadsheetExportContext exportContext, List<QueryQuestionCommentCategory> categories) {
+  private List<QueryQuestionCommentCategory> getFilteredCommentCategories(SpreadsheetExportContext exportContext,
+      List<QueryQuestionCommentCategory> categories) {
     Long[] commentCategoryIds = exportContext.getCommentCategoryIds();
     List<QueryQuestionCommentCategory> filteredCategories = categories.stream().filter(category -> commentCategoryIds == null || ArrayUtils.contains(commentCategoryIds, category.getId())).collect(Collectors.toList());
     return filteredCategories;
