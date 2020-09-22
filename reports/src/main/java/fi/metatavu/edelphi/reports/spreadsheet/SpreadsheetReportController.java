@@ -102,7 +102,7 @@ public class SpreadsheetReportController {
   private Live2dQueryPageSpreadsheetExporter live2dQueryPageSpreadsheetExporter;
   
   /**
-   * Exports query page spreadsheet data
+   * Exports query page spreadsheet data and root comments
    * 
    * @param exportContext export context
    */
@@ -111,6 +111,7 @@ public class SpreadsheetReportController {
     QueryPageSpreadsheetExporter spreadsheetExporter = getQueryPageSpreadsheetExporter(pageType);
     if (spreadsheetExporter != null) {
       spreadsheetExporter.exportSpreadsheet(exportContext);
+      spreadsheetExporter.exportRootComments(exportContext);      
     } else {
       logger.warn("Could not find a spreadsheetExporter for {}", pageType);
     }

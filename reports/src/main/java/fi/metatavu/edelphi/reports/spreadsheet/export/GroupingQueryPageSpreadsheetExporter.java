@@ -59,8 +59,6 @@ public class GroupingQueryPageSpreadsheetExporter extends AbstractQueryPageSprea
         }
       }
     }  
-
-    exportComments(exportContext); 
   }
 
   private String getFieldName() {

@@ -40,8 +40,6 @@ public class Scale1DQueryPageSpreadsheetExporter extends AbstractQueryPageSpread
       QueryQuestionOptionAnswer answer = queryQuestionOptionAnswerDAO.findByQueryReplyAndQueryField(queryReply, queryField);
       exportContext.setCellValue(queryReply, columnIndex, answer != null ? answer.getOption().getText() : null);
     }
-
-    exportComments(exportContext);
   }
   
   @Override

@@ -42,21 +42,8 @@ public abstract class AbstractQueryPageSpreadsheetExporter implements QueryPageS
     return new GenericReportPageCommentProcessor(queryPage, listRootComments(stamp, queryPage), new HashMap<>());
   }
   
-  /**
-   * Lists page's root comments
-   * 
-   * @return page's root comments
-   */
-  protected List<QueryQuestionComment> listRootComments(PanelStamp panelStamp, QueryPage queryPage) {
-    return queryQuestionCommentDAO.listRootCommentsByQueryPageAndStampOrderByCreated(queryPage, panelStamp); 
-  } 
-
-  /**
-   * Exports query page comments
-   * 
-   * @param exportContext spreadsheet export context
-   */
-  protected void exportComments(SpreadsheetExportContext exportContext) {
+  @Override
+  public void exportRootComments(SpreadsheetExportContext exportContext) {
     QueryPage queryPage = exportContext.getQueryPage();    
     if (!isPageCommentable(queryPage)) {
       return;
@@ -67,6 +54,15 @@ public abstract class AbstractQueryPageSpreadsheetExporter implements QueryPageS
     Map<Long, Integer> commentColumns = addCommentColums(exportContext, categories);
     exportQueryPageComments(exportContext, categories, commentColumns, queryReplies);
   }
+  
+  /**
+   * Lists page's root comments
+   * 
+   * @return page's root comments
+   */
+  protected List<QueryQuestionComment> listRootComments(PanelStamp panelStamp, QueryPage queryPage) {
+    return queryQuestionCommentDAO.listRootCommentsByQueryPageAndStampOrderByCreated(queryPage, panelStamp); 
+  } 
 
   /**
    * Exports query page comments

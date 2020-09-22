@@ -50,8 +50,6 @@ public class Multiple1DScalesQueryPageSpreadsheetExporter extends AbstractQueryP
         exportContext.setCellValue(queryReply, columnIndex, answer != null ? answer.getOption().getText() : null);
       }
     }
-
-    exportComments(exportContext);
   }
 
   /**

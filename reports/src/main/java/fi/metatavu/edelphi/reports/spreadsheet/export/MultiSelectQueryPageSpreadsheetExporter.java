@@ -57,8 +57,6 @@ public class MultiSelectQueryPageSpreadsheetExporter extends AbstractQueryPageSp
       
       value++;
     }
-
-    exportComments(exportContext);
   }
   
   private String getFieldName() {

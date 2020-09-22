@@ -69,8 +69,6 @@ public class TimeserieQueryPageSpreadsheetExporter extends AbstractQueryPageSpre
         }
       }
     }
-    
-    exportComments(exportContext);
   }
   
   @Override

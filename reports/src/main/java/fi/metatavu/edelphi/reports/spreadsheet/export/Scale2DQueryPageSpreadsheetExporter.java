@@ -51,8 +51,6 @@ public class Scale2DQueryPageSpreadsheetExporter extends AbstractQueryPageSpread
       exportContext.setCellValue(queryReply, columnIndexX, answerX);
       exportContext.setCellValue(queryReply, columnIndexY, answerY);
     }   
-
-    exportComments(exportContext);
   }
 
   @Override

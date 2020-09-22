@@ -53,8 +53,6 @@ public class Multiple2DScalesQueryPageSpreadsheetExporter extends AbstractQueryP
         exportContext.setCellValue(queryReply, columnIndexY, answerY != null ? answerY.getOption().getText() : null);
       }
     }
-
-    exportComments(exportContext);
   }
 
   private String getFieldName(int index, String axis) {

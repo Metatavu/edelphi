@@ -10,8 +10,28 @@ import fi.metatavu.edelphi.reports.spreadsheet.comments.ReportPageCommentProcess
 
 public interface QueryPageSpreadsheetExporter {
 
+  /**
+   * Exports page data to spreadsheet
+   * 
+   * @param exportContext spreadsheet export context
+   */
   public void exportSpreadsheet(SpreadsheetExportContext exportContext);
+
+  /**
+   * Exports page root comments to spreadsheet 
+   * 
+   * @param exportContext spreadsheet export context
+   */
+  public void exportRootComments(SpreadsheetExportContext exportContext);
   
+  /**
+   * Exports all page comments to spreadsheet
+   *  
+   * @param queryPage query page
+   * @param stamp panel stamp
+   * @param replies replies
+   * @return page comment processor
+   */
   public ReportPageCommentProcessor exportComments(QueryPage queryPage, PanelStamp stamp, List<QueryReply> replies);
 
 }

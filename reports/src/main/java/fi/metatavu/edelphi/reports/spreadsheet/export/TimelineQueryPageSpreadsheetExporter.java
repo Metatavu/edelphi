@@ -55,8 +55,6 @@ public class TimelineQueryPageSpreadsheetExporter extends AbstractQueryPageSprea
         exportContext.setCellValue(queryReply, columnIndex2, Math.round(answer2.getData()));
       }
     }
-    
-    exportComments(exportContext);
   }
 
   @Override

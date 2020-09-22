@@ -39,8 +39,6 @@ public class OrderingQueryPageSpreadsheetExporter extends AbstractQueryPageSprea
 
       exportContext.setCellValue(queryReply, columnIndex, cellValueBuilder.toString());
     }
-
-    exportComments(exportContext);
   }
   
 }
