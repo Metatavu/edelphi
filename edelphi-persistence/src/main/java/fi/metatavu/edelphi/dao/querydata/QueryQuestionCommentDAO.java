@@ -77,6 +77,13 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
     return getSingleResult(entityManager.createQuery(criteria)); 
   }
 
+  /**
+   * Finds a root comment by query reply and query page
+   * 
+   * @param queryReply query reply
+   * @param queryPage query page
+   * @return root comment or null if not found
+   */
   public QueryQuestionComment findRootCommentByQueryReplyAndQueryPage(QueryReply queryReply, QueryPage queryPage) {
     EntityManager entityManager = getEntityManager();
 
@@ -89,6 +96,37 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
         criteriaBuilder.equal(root.get(QueryQuestionComment_.queryReply), queryReply),
         criteriaBuilder.equal(root.get(QueryQuestionComment_.queryPage), queryPage),
         criteriaBuilder.isNull(root.get(QueryQuestionComment_.parentComment)),
+        criteriaBuilder.equal(root.get(QueryQuestionComment_.archived), Boolean.FALSE)
+      )
+    );
+    
+    TypedQuery<QueryQuestionComment> query = entityManager.createQuery(criteria);
+    query.setMaxResults(1);
+
+    return getSingleResult(query); 
+  }
+
+  /**
+   * Finds a root comment by query reply, query page and category
+   * 
+   * @param queryReply query reply
+   * @param queryPage query page
+   * @param category query comment category
+   * @return root comment or null if not found
+   */
+  public QueryQuestionComment findRootCommentByQueryReplyQueryPageAndCategory(QueryReply queryReply, QueryPage queryPage, QueryQuestionCommentCategory category) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryQuestionComment> criteria = criteriaBuilder.createQuery(QueryQuestionComment.class);
+    Root<QueryQuestionComment> root = criteria.from(QueryQuestionComment.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.and(
+        criteriaBuilder.equal(root.get(QueryQuestionComment_.queryReply), queryReply),
+        criteriaBuilder.equal(root.get(QueryQuestionComment_.queryPage), queryPage),
+        criteriaBuilder.isNull(root.get(QueryQuestionComment_.parentComment)),
+        criteriaBuilder.equal(root.get(QueryQuestionComment_.category), category),
         criteriaBuilder.equal(root.get(QueryQuestionComment_.archived), Boolean.FALSE)
       )
     );
@@ -131,14 +169,14 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
    * 
    * @param queryPage filter by comment's query page
    * @param stamp filter by panel stamp
-   * @param query filter by query
+   * @param query filter by query. Ignored if null
    * @param queryParentFolder filter by query parent folder
    * @param parentComment filter by parent comment. Ignored if null
    * @param onlyRootComments return only root comments. 
-   * @param user filter by user
+   * @param user filter by user. Ignored if null
    * @param category return only comments of specified category. Ignored if null
-   * @param onlyNullCategories return only comments without category. Ignored if null
-   * @param archived filter by archived
+   * @param onlyNullCategories return only comments without category
+   * @param archived filter by archived. Ignored if null
    * 
    * @return a list of comments
    */

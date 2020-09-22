@@ -41,6 +41,13 @@ public interface SpreadsheetExportContext {
    * @return panel stamp
    */
   public PanelStamp getStamp();
+  
+  /**
+   * Returns comment category ids
+   *  
+   * @return comment category ids
+   */
+  public Long[] getCommentCategoryIds();
 
   /**
    * Adds a column into spreadsheet

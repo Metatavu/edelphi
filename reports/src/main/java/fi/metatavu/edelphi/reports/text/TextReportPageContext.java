@@ -33,6 +33,7 @@ public class TextReportPageContext {
    * @param baseURL application base URL
    * @param locale locale
    * @param stamp panel stamp
+   * @param commentCategoryIds included comment category ids
    * @param expertiseGroupIds expertise group ids
    * @param page query page
    */

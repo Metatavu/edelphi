@@ -48,7 +48,8 @@ public class Live2dQueryPageSpreadsheetExporter extends AbstractQueryPageSpreads
       exportContext.setCellValue(queryReply, columnIndexX, scatterValue.getX());
       exportContext.setCellValue(queryReply, columnIndexY, scatterValue.getY());
     }
-    
+
+    exportComments(exportContext);
   }
 
   @Override

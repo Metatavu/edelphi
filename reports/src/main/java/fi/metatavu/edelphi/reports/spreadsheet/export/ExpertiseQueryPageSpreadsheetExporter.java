@@ -99,6 +99,8 @@ public class ExpertiseQueryPageSpreadsheetExporter extends AbstractQueryPageSpre
         }        
       }
     }
+    
+    exportComments(exportContext);
   }
   
   private String getFieldName(PanelUserExpertiseClass expertiseClass) {

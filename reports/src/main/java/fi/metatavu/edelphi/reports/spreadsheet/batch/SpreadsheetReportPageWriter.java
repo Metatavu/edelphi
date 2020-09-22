@@ -65,6 +65,10 @@ public class SpreadsheetReportPageWriter extends TypedItemWriter<QueryPage> {
   @JobProperty
   private Long[] queryReplyIds;
   
+  @Inject
+  @JobProperty
+  private Long[] commentCategoryIds;
+  
   @Override
   public void write(List<QueryPage> items) throws Exception {
     if (queryReplyIds == null) {
@@ -85,7 +89,7 @@ public class SpreadsheetReportPageWriter extends TypedItemWriter<QueryPage> {
     logger.info("Processing query page {}", queryPage.getId());
     
     List<QueryReply> queryReplies = Arrays.stream(queryReplyIds).map(queryReplyController::findQueryReply).collect(Collectors.toList());
-    SpreadsheetExportContext exportContext = new SpreadsheetExportContextImpl(locale, queryPage, stamp, queryReplies, spreadsheetReportBatchContext::addColumn, spreadsheetReportBatchContext::setCellValue);
+    SpreadsheetExportContext exportContext = new SpreadsheetExportContextImpl(locale, queryPage, stamp, queryReplies, commentCategoryIds, spreadsheetReportBatchContext::addColumn, spreadsheetReportBatchContext::setCellValue);
     
     spreadsheetReportController.exportQueryPageSpreadsheet(exportContext);
   }

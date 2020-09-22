@@ -60,6 +60,8 @@ public class FormQueryPageSpreadsheetExporter extends AbstractQueryPageSpreadshe
         }
       }
     }
+
+    exportComments(exportContext);
   }
   
 }
