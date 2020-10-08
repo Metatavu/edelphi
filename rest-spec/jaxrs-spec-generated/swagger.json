@@ -2466,6 +2466,14 @@
               "format" : "int64"
             }
           },
+          "panelUserGroupIds" : {
+            "type" : "array",
+            "description" : "Include only speficied panel user group ids",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          },
           "commentCategoryIds" : {
             "type" : "array",
             "description" : "Include only comments from speficied comment category ids",

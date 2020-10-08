@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class ReportRequestOptions   {
-  private @Valid List<Long> queryPageIds = new ArrayList<>();  private @Valid List<Long> expertiseGroupIds = new ArrayList<>();  private @Valid List<Long> commentCategoryIds = new ArrayList<>();  private @Valid Boolean show2dAs1d = null;
+  private @Valid List<Long> queryPageIds = new ArrayList<>();  private @Valid List<Long> expertiseGroupIds = new ArrayList<>();  private @Valid List<Long> panelUserGroupIds = new ArrayList<>();  private @Valid List<Long> commentCategoryIds = new ArrayList<>();  private @Valid Boolean show2dAs1d = null;
 
   /**
    * Include only speficied page ids
@@ -49,6 +49,24 @@ public class ReportRequestOptions   {
   }
   public void setExpertiseGroupIds(List<Long> expertiseGroupIds) {
     this.expertiseGroupIds = expertiseGroupIds;
+  }
+
+  /**
+   * Include only speficied panel user group ids
+   **/
+  public ReportRequestOptions panelUserGroupIds(List<Long> panelUserGroupIds) {
+    this.panelUserGroupIds = panelUserGroupIds;
+    return this;
+  }
+
+  
+  @ApiModelProperty(value = "Include only speficied panel user group ids")
+  @JsonProperty("panelUserGroupIds")
+  public List<Long> getPanelUserGroupIds() {
+    return panelUserGroupIds;
+  }
+  public void setPanelUserGroupIds(List<Long> panelUserGroupIds) {
+    this.panelUserGroupIds = panelUserGroupIds;
   }
 
   /**
@@ -99,13 +117,14 @@ public class ReportRequestOptions   {
     ReportRequestOptions reportRequestOptions = (ReportRequestOptions) o;
     return Objects.equals(queryPageIds, reportRequestOptions.queryPageIds) &&
         Objects.equals(expertiseGroupIds, reportRequestOptions.expertiseGroupIds) &&
+        Objects.equals(panelUserGroupIds, reportRequestOptions.panelUserGroupIds) &&
         Objects.equals(commentCategoryIds, reportRequestOptions.commentCategoryIds) &&
         Objects.equals(show2dAs1d, reportRequestOptions.show2dAs1d);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(queryPageIds, expertiseGroupIds, commentCategoryIds, show2dAs1d);
+    return Objects.hash(queryPageIds, expertiseGroupIds, panelUserGroupIds, commentCategoryIds, show2dAs1d);
   }
 
   @Override
@@ -115,6 +134,7 @@ public class ReportRequestOptions   {
     
     sb.append("    queryPageIds: ").append(toIndentedString(queryPageIds)).append("\n");
     sb.append("    expertiseGroupIds: ").append(toIndentedString(expertiseGroupIds)).append("\n");
+    sb.append("    panelUserGroupIds: ").append(toIndentedString(panelUserGroupIds)).append("\n");
     sb.append("    commentCategoryIds: ").append(toIndentedString(commentCategoryIds)).append("\n");
     sb.append("    show2dAs1d: ").append(toIndentedString(show2dAs1d)).append("\n");
     sb.append("}");
