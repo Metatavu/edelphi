@@ -1735,6 +1735,12 @@ components:
           items:
             type: integer
             format: int64
+        panelUserGroupIds:
+          description: Include only speficied panel user group ids
+          type: array
+          items:
+            type: integer
+            format: int64
         commentCategoryIds:
           description: Include only comments from speficied comment category ids
           type: array
