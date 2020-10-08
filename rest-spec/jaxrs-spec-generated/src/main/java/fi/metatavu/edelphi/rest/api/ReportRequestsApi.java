@@ -15,7 +15,7 @@ import javax.validation.Valid;
 
 @Path("/reportRequests")
 @Api(description = "the reportRequests API")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2020-10-08T19:47:38.040+03:00[Europe/Helsinki]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2020-10-08T19:48:48.375+03:00[Europe/Helsinki]")
 public interface ReportRequestsApi {
 
     @POST
