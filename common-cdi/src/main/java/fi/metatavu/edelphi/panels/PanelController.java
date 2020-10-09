@@ -168,5 +168,16 @@ public class PanelController {
   public PanelUserGroup findPanelUserGroup(Long id) {
     return panelUserGroupDAO.findById(id);
   }
+
+  /**
+   * Returns list of panel user groups
+   * 
+   * @param panel panel
+   * @param stamp stamp
+   * @return list of panel user groups
+   */
+  public List<PanelUserGroup> listPanelUserGroups(Panel panel, PanelStamp stamp) {
+    return panelUserGroupDAO.listByPanelAndStamp(panel, stamp);
+  }
   
 }
