@@ -3,10 +3,11 @@ import { TextArea, TextAreaProps } from "semantic-ui-react";
 import * as actions from "../../actions";
 import { StoreState, AccessToken, PageChangeEvent } from "../../types";
 import { connect } from "react-redux";
-import { QueryQuestionCommentsService } from "edelphi-client/dist/api/api";
-import Api, { QueryQuestionCommentCategory } from "edelphi-client";
+import { QueryQuestionCommentsApi } from "../../generated/client/apis";
+import { QueryQuestionCommentCategory } from "../../generated/client/models";
 import strings from "../../localization/strings";
 import ErrorDialog from "../error-dialog";
+import Api from "../../api";
 
 /**
  * Interface representing component properties
@@ -118,9 +119,16 @@ class QueryCommentEditor extends React.Component<Props, State> {
     });
 
     const categoryId = this.props.category ? this.props.category.id : 0;
-    const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken.token);
-    const comments = await queryQuestionCommentsService.listQueryQuestionComments(this.props.panelId, this.props.queryId, this.props.pageId, this.props.accessToken.userId, undefined, 0, categoryId);
-    
+    const queryQuestionCommentsApi = this.getQueryQuestionCommentsApi(this.props.accessToken.token);
+    const comments = await queryQuestionCommentsApi.listQueryQuestionComments({
+      panelId: this.props.panelId,
+      queryId: this.props.queryId,
+      pageId: this.props.pageId,
+      userId: this.props.accessToken.userId,
+      parentId: 0,
+      categoryId: categoryId
+    });
+
     if (comments.length > 1) {
       console.error("Unexpected comment count");
     }
@@ -138,8 +146,8 @@ class QueryCommentEditor extends React.Component<Props, State> {
    * 
    * @returns query question comments API
    */
-  private getQueryQuestionCommentsService(accessToken: string): QueryQuestionCommentsService {
-    return Api.getQueryQuestionCommentsService(accessToken);
+  private getQueryQuestionCommentsApi(accessToken: string): QueryQuestionCommentsApi {
+    return Api.getQueryQuestionCommentsApi(accessToken);
   }
 
   /**
@@ -155,27 +163,34 @@ class QueryCommentEditor extends React.Component<Props, State> {
     });
 
     try {
-      const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken.token);
+      const queryQuestionCommentsApi = this.getQueryQuestionCommentsApi(this.props.accessToken.token);
 
       let comment = null;
       const categoryId = this.props.category ? this.props.category.id : 0;
 
       if (!this.state.commentId) {
-        comment = await queryQuestionCommentsService.createQueryQuestionComment({
-          contents: this.state.contents,
-          hidden: false,
-          queryPageId: this.props.pageId,
-          queryReplyId: this.props.queryReplyId,
-          categoryId: categoryId
-        }, this.props.panelId);
+        comment = await queryQuestionCommentsApi.createQueryQuestionComment({
+          panelId: this.props.panelId,
+          queryQuestionComment: {
+            contents: this.state.contents,
+            hidden: false,
+            queryPageId: this.props.pageId,
+            queryReplyId: this.props.queryReplyId,
+            categoryId: categoryId
+          }
+        });
       } else {
-        comment = await queryQuestionCommentsService.updateQueryQuestionComment({
-          contents: this.state.contents,
-          hidden: false,
-          queryPageId: this.props.pageId,
-          queryReplyId: this.props.queryReplyId,
-          categoryId: categoryId
-        }, this.props.panelId, this.state.commentId);
+        comment = await queryQuestionCommentsApi.updateQueryQuestionComment({
+          commentId: this.state.commentId,
+          panelId: this.props.panelId,
+          queryQuestionComment: {
+            contents: this.state.contents,
+            hidden: false,
+            queryPageId: this.props.pageId,
+            queryReplyId: this.props.queryReplyId,
+            categoryId: categoryId
+          }
+        });
       }
 
       this.setState({

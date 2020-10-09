@@ -4,9 +4,10 @@ import * as _ from "lodash";
 import { StoreState, AccessToken, EditPageLegacyPageData } from "../../types";
 import { connect } from "react-redux";
 import { Modal, Button, Loader, Dimmer, DropdownItemProps, Form, Select, DropdownProps } from "semantic-ui-react";
-import Api, { QueryPageLive2DAnswersVisibleOption } from "edelphi-client";
+import { QueryPageLive2DAnswersVisibleOption } from "../../generated/client/models";
 import strings from "../../localization/strings";
-import { QueryPagesService } from "edelphi-client/dist/api/api";
+import { QueryPagesApi } from "../../generated/client/apis";
+import Api from "../../api";
 
 /**
  * Interface representing component properties
@@ -129,8 +130,11 @@ class PanelAdminQueryPageLive2dOptionsEditor extends React.Component<Props, Stat
       loading: true
     });
 
-    const queryPagesService = await this.getQueryPagesService(this.props.accessToken.token);
-    const queryPage = await queryPagesService.findQueryPage(this.props.panelId, this.props.pageId);
+    const QueryPagesApi = await this.getQueryPagesApi(this.props.accessToken.token);
+    const queryPage = await QueryPagesApi.findQueryPage({
+      panelId: this.props.panelId,
+      queryPageId: this.props.pageId
+    });
 
     if (!queryPage) {
       throw new Error("Failed to find query page");
@@ -138,7 +142,7 @@ class PanelAdminQueryPageLive2dOptionsEditor extends React.Component<Props, Stat
 
     this.setState({
       loading: false,
-      visible: queryPage.queryOptions.answersVisible || "IMMEDIATELY"
+      visible: queryPage.queryOptions.answersVisible || QueryPageLive2DAnswersVisibleOption.IMMEDIATELY
     });
   }
 
@@ -147,8 +151,8 @@ class PanelAdminQueryPageLive2dOptionsEditor extends React.Component<Props, Stat
    * 
    * @returns query pages API
    */
-  private getQueryPagesService(accessToken: string): QueryPagesService {
-    return Api.getQueryPagesService(accessToken);
+  private getQueryPagesApi(accessToken: string): QueryPagesApi {
+    return Api.getQueryPagesApi(accessToken);
   }
 
 
@@ -180,8 +184,11 @@ class PanelAdminQueryPageLive2dOptionsEditor extends React.Component<Props, Stat
       updating: true
     });
 
-    const queryPagesService = await this.getQueryPagesService(this.props.accessToken.token);
-    const queryPage = await queryPagesService.findQueryPage(this.props.panelId, this.props.pageId);
+    const QueryPagesApi = await this.getQueryPagesApi(this.props.accessToken.token);
+    const queryPage = await QueryPagesApi.findQueryPage({
+      panelId: this.props.panelId,
+      queryPageId: this.props.pageId
+    });
 
     if (!queryPage) {
       throw new Error("Failed to find query page");
@@ -189,8 +196,12 @@ class PanelAdminQueryPageLive2dOptionsEditor extends React.Component<Props, Stat
 
     const updatePage = {... queryPage, queryOptions: { ... queryPage.queryOptions, answersVisible: this.state.visible } };
 
-    await queryPagesService.updateQueryPage(updatePage, this.props.panelId, this.props.pageId);
-
+    await QueryPagesApi.updateQueryPage({
+      panelId: this.props.panelId,
+      queryPage: updatePage,
+      queryPageId: this.props.pageId
+    });
+    
     this.setState({
       updating: false
     });

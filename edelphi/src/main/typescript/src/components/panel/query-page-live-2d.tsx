@@ -2,7 +2,7 @@ import * as React from "react";
 import * as actions from "../../actions";
 import { StoreState, AccessToken, QueryQuestionAnswerNotification, QueryPageStatistics, QueryLive2dAnswer } from "../../types";
 import { connect } from "react-redux";
-import Api, { QueryQuestionLive2dAnswerData, QueryPage } from "edelphi-client";
+import { QueryQuestionLive2dAnswerData, QueryPage, QueryQuestionAnswer } from "../../generated/client/models";
 import { mqttConnection, OnMessageCallback } from "../../mqtt";
 import { Loader, Dimmer, Segment, Grid } from "semantic-ui-react";
 import strings from "../../localization/strings";
@@ -10,6 +10,7 @@ import ErrorDialog from "../error-dialog";
 import Live2dQueryStatistics from "../generic/live2d-query-statistics";
 import StatisticsUtils from "../../statistics/statistics-utils";
 import Live2dQueryChart from "../generic/live2d-query-chart";
+import Api from "../../api";
 
 /**
  * Interface representing component properties
@@ -249,10 +250,13 @@ class QueryPageLive2d extends React.Component<Props, State> {
       return;
     }
 
-    const getQueryPagesService= Api.getQueryPagesService(this.props.accessToken.token);
+    const getQueryPagesApi= Api.getQueryPagesApi(this.props.accessToken.token);
 
     this.setState({
-      page: await getQueryPagesService.findQueryPage(this.props.panelId, this.props.pageId)
+      page: await getQueryPagesApi.findQueryPage({
+        panelId: this.props.panelId,
+        queryPageId: this.props.pageId
+      })
     });
   }
 
@@ -264,10 +268,14 @@ class QueryPageLive2d extends React.Component<Props, State> {
       return;
     }
 
-    const queryQuestionAnswersService = Api.getQueryQuestionAnswersService(this.props.accessToken.token);
-    const answers = await queryQuestionAnswersService.listQueryQuestionAnswers(this.props.panelId, this.props.queryId, this.props.pageId);
+    const queryQuestionAnswersApi = Api.getQueryQuestionAnswersApi(this.props.accessToken.token);
+    const answers = await queryQuestionAnswersApi.listQueryQuestionAnswers({
+      panelId: this.props.panelId,
+      queryId: this.props.queryId,
+      pageId: this.props.pageId
+    });
 
-    const values: QueryLive2dAnswer[] = answers.map((answer) => {
+    const values: QueryLive2dAnswer[] = answers.map((answer: QueryQuestionAnswer) => {
       return {
         x: answer.data.x,
         y: answer.data.y,
@@ -397,7 +405,7 @@ class QueryPageLive2d extends React.Component<Props, State> {
 
     this.saving = true;
 
-    const queryQuestionAnswersService = Api.getQueryQuestionAnswersService(this.props.accessToken.token);
+    const queryQuestionAnswersApi = Api.getQueryQuestionAnswersApi(this.props.accessToken.token);
     const answerData: QueryQuestionLive2dAnswerData = {
       x: x,
       y: y
@@ -405,11 +413,15 @@ class QueryPageLive2d extends React.Component<Props, State> {
 
     const answerId = this.getLoggedUserAnswerId();
 
-    const updatedAnswer = await queryQuestionAnswersService.upsertQueryQuestionAnswer({
-      queryReplyId: this.props.queryReplyId,
-      queryPageId: this.props.pageId,
-      data: answerData
-    }, this.props.panelId, answerId);
+    const updatedAnswer = await queryQuestionAnswersApi.upsertQueryQuestionAnswer({
+      answerId: answerId,
+      panelId: this.props.panelId,
+      queryQuestionAnswer: {
+        queryReplyId: this.props.queryReplyId,
+        queryPageId: this.props.pageId,
+        data: answerData
+      }
+    });
 
     if (updatedAnswer && updatedAnswer.id) {
       this.updateAnswer(updatedAnswer.id, updatedAnswer.data.x, updatedAnswer.data.y);
@@ -479,8 +491,12 @@ class QueryPageLive2d extends React.Component<Props, State> {
           return;
         }
 
-        const queryQuestionAnswersService = Api.getQueryQuestionAnswersService(this.props.accessToken.token); 
-        const answer = await queryQuestionAnswersService.findQueryQuestionAnswer(this.props.panelId, notification.answerId);
+        const queryQuestionAnswersApi = Api.getQueryQuestionAnswersApi(this.props.accessToken.token); 
+        const answer = await queryQuestionAnswersApi.findQueryQuestionAnswer({
+          panelId: this.props.panelId,
+          answerId: notification.answerId
+        });
+        
         this.updateAnswer(answer.id!, answer.data.x, answer.data.y);
       break;
     }

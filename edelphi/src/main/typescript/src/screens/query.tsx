@@ -13,7 +13,7 @@ import QueryPageLive2d from "../components/panel/query-page-live-2d";
 import QueryComments from "../components/panel/query-comments";
 import QueryNavigation from "../components/panel/query-navigation";
 import getLanguage from "../localization/language";
-import { QueryState } from "edelphi-client";
+import { QueryState } from "../generated/client/models";
 
 declare const JSDATA: any;
 let initialQueryValidationMessage: string | undefined = undefined;

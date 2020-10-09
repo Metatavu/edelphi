@@ -4,9 +4,10 @@ import * as _ from "lodash";
 import strings from "../../localization/strings";
 import { StoreState } from "../../types";
 import { connect } from "react-redux";
-import Api, { QueryPage, PanelExpertiseGroup, PanelInterestClass, PanelExpertiseClass, QueryQuestionCommentCategory } from "edelphi-client";
-import { QueryPagesService, PanelExpertiseService, QueryQuestionCommentCategoriesService } from "edelphi-client/dist/api/api";
+import { QueryPage, PanelExpertiseGroup, PanelInterestClass, PanelExpertiseClass, QueryQuestionCommentCategory } from "../../generated/client/models";
+import { QueryPagesApi, PanelExpertiseApi, QueryQuestionCommentCategoriesApi } from "../../generated/client/apis";
 import { Segment, Dimmer, Loader, DropdownItemProps, Select, DropdownProps, Table, Icon, Checkbox } from "semantic-ui-react";
+import Api from "../../api";
 
 /**
  * Interface representing component properties
@@ -74,12 +75,25 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
       loading: true
     });
 
-    const queryPagesService = this.getQueryPagesService();
-    const queryPages = await queryPagesService.listQueryPages(this.props.panelId, this.props.queryId, true);
+    const QueryPagesApi = this.getQueryPagesApi();
+    const queryPages = await QueryPagesApi.listQueryPages({
+      panelId: this.props.panelId,
+      queryId: this.props.queryId,
+      includeHidden: true
+    });
 
-    const panelExpertiseGroups = await this.getPanelExpertiseService().listExpertiseGroups(this.props.panelId);
-    const panelInterestClasses = await this.getPanelExpertiseService().listInterestClasses(this.props.panelId);
-    const panelExpertiseClasses = await this.getPanelExpertiseService().listExpertiseClasses(this.props.panelId);
+    const panelExpertiseGroups = await this.getPanelExpertiseApi().listExpertiseGroups({
+      panelId: this.props.panelId
+    });
+    
+    const panelInterestClasses = await this.getPanelExpertiseApi().listInterestClasses({
+      panelId: this.props.panelId
+    });
+
+    const panelExpertiseClasses = await this.getPanelExpertiseApi().listExpertiseClasses({
+      panelId: this.props.panelId
+    });
+
     const commentCategories: QueryQuestionCommentCategory[] = await this.loadCommentCategories();
 
     this.setState({
@@ -105,8 +119,13 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
         loading: true
       });
 
-      const queryPagesService = this.getQueryPagesService();
-      const queryPages = await queryPagesService.listQueryPages(this.props.panelId, this.props.queryId, true);
+      const QueryPagesApi = this.getQueryPagesApi();
+      const queryPages = await QueryPagesApi.listQueryPages({
+        panelId: this.props.panelId,
+        queryId: this.props.queryId,
+        includeHidden: true
+      });
+      
       const commentCategories = await this.loadCommentCategories();
 
       this.setState({
@@ -352,8 +371,12 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
    */
   private loadCommentCategories = async () => {
     try {
-      const queryQuestionCommentCategoriesService = this.getQueryQuestionCommentCategoriesService();
-      return await queryQuestionCommentCategoriesService.listQueryQuestionCommentCategories(this.props.panelId, 0, this.props.queryId);
+      const queryQuestionCommentCategoriesApi = this.getQueryQuestionCommentCategoriesApi();
+      return await queryQuestionCommentCategoriesApi.listQueryQuestionCommentCategories({
+        panelId: this.props.panelId,
+        pageId: 0,
+        queryId: this.props.queryId
+      });
     } catch (e) {
       return [];
     }
@@ -441,8 +464,8 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
    * 
    * @returns query pages API
    */
-  private getQueryPagesService(): QueryPagesService {
-    return Api.getQueryPagesService(this.props.accessToken);
+  private getQueryPagesApi(): QueryPagesApi {
+    return Api.getQueryPagesApi(this.props.accessToken);
   }
 
   /**
@@ -450,8 +473,8 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
    * 
    * @returns query comment categories API
    */
-  private getQueryQuestionCommentCategoriesService(): QueryQuestionCommentCategoriesService {
-    return Api.getQueryQuestionCommentCategoriesService(this.props.accessToken);
+  private getQueryQuestionCommentCategoriesApi(): QueryQuestionCommentCategoriesApi {
+    return Api.getQueryQuestionCommentCategoriesApi(this.props.accessToken);
   }
 
   /**
@@ -459,8 +482,8 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
    * 
    * @returns panel expertise service
    */
-  private getPanelExpertiseService(): PanelExpertiseService {
-    return Api.getPanelExpertiseService(this.props.accessToken);
+  private getPanelExpertiseApi(): PanelExpertiseApi {
+    return Api.getPanelExpertiseApi(this.props.accessToken);
   }
   
 }

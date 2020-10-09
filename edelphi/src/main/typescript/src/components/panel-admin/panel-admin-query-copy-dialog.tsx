@@ -1,9 +1,10 @@
 import * as React from "react";
 import * as _ from "lodash";
 import { Modal, Button, Loader, Dimmer, Icon, Input, InputOnChangeData, DropdownItemProps, Select, DropdownProps } from "semantic-ui-react";
-import Api, { Panel } from "edelphi-client";
-import {  PanelsService, QueriesService } from "edelphi-client/dist/api/api";
+import { Panel } from "../../generated/client/models";
+import {  PanelsApi, QueriesApi } from "../../generated/client/apis";
 import strings from "../../localization/strings";
+import Api from "../../api";
 
 /**
  * Interface representing component properties
@@ -58,9 +59,11 @@ export default class PanelAdminQueryCopyDialog extends React.Component<Props, St
       loading: true
     });
 
-    const panelsApi = this.getPanelsService(this.props.accessToken);
+    const panelsApi = this.getPanelsApi(this.props.accessToken);
 
-    const panels = await panelsApi.listPanels(true);
+    const panels = await panelsApi.listPanels({
+      managedOnly: true
+    });
     
     this.setState({
       panels: panels,
@@ -214,8 +217,8 @@ export default class PanelAdminQueryCopyDialog extends React.Component<Props, St
    * 
    * @returns panels API
    */
-  private getPanelsService(accessToken: string): PanelsService {
-    return Api.getPanelsService(accessToken);
+  private getPanelsApi(accessToken: string): PanelsApi {
+    return Api.getPanelsApi(accessToken);
   }
 
   /**
@@ -223,8 +226,8 @@ export default class PanelAdminQueryCopyDialog extends React.Component<Props, St
    * 
    * @returns queries API
    */
-  private getQueriesService(accessToken: string): QueriesService {
-    return Api.getQueriesService(accessToken);
+  private getQueriesApi(accessToken: string): QueriesApi {
+    return Api.getQueriesApi(accessToken);
   }
 
   /**
@@ -246,10 +249,15 @@ export default class PanelAdminQueryCopyDialog extends React.Component<Props, St
       loading: true
     });
 
-    const queriesService = this.getQueriesService(this.props.accessToken);
+    const QueriesApi = this.getQueriesApi(this.props.accessToken);
     
-    await queriesService.copyQuery(this.props.panelId, this.props.queryId, this.state.targetPanelId, this.state.copyData, this.state.name);
-
+    await QueriesApi.copyQuery({
+      copyData: this.state.copyData,
+      newName: this.state.name,
+      panelId: this.props.panelId,
+      queryId: this.props.queryId,
+      targetPanelId: this.state.targetPanelId
+    });
     
     this.setState({
       loading: false

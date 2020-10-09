@@ -4,10 +4,11 @@ import * as actions from "../../actions";
 import QueryComment from "./query-comment";
 import { StoreState, QueryQuestionCommentNotification } from "../../types";
 import { connect } from "react-redux";
-import Api, { QueryQuestionComment, QueryQuestionCommentCategory } from "edelphi-client";
-import { QueryQuestionCommentsService } from "edelphi-client/dist/api/api";
+import { QueryQuestionComment, QueryQuestionCommentCategory } from "../../generated/client/models";
+import { QueryQuestionCommentsApi } from "../../generated/client/apis";
 import { Loader } from "semantic-ui-react";
 import { mqttConnection, OnMessageCallback } from "../../mqtt";
+import Api from "../../api";
 
 /**
  * Interface representing component properties
@@ -112,7 +113,11 @@ class QueryCommentContainer extends React.Component<Props, State> {
     const parentCommentId = message.parentCommentId || 0;
 
     if (message.type == "CREATED" && parentCommentId == this.props.parentId) {
-      const comment = await this.getQueryQuestionCommentsService(this.props.accessToken).findQueryQuestionComment(this.props.panelId, message.commentId);
+      const comment = await this.getQueryQuestionCommentsApi(this.props.accessToken).findQueryQuestionComment({
+        panelId: this.props.panelId, 
+        commentId: message.commentId
+      });
+
       this.setState({
         comments: this.state.comments.concat([comment]).sort(this.compareComments)
       });      
@@ -123,7 +128,10 @@ class QueryCommentContainer extends React.Component<Props, State> {
         const comment = this.state.comments[i];
         if (message.commentId == comment.id) {
           if (message.type == "UPDATED") {
-            comments.push(await this.getQueryQuestionCommentsService(this.props.accessToken).findQueryQuestionComment(this.props.panelId, message.commentId));
+            comments.push(await this.getQueryQuestionCommentsApi(this.props.accessToken).findQueryQuestionComment({
+              panelId: this.props.panelId,
+              commentId: message.commentId
+            }));
           }
         } else {
           if (!(message.type == "DELETED" && message.commentId == comment.id)) {
@@ -168,7 +176,14 @@ class QueryCommentContainer extends React.Component<Props, State> {
   private async loadChildComments() {
     if (!this.state.comments && this.props.accessToken) {
       const categoryId = this.props.category ? this.props.category.id : 0;
-      const comments = await (this.getQueryQuestionCommentsService(this.props.accessToken)).listQueryQuestionComments(this.props.panelId, this.props.queryId, this.props.pageId, undefined, undefined, this.props.parentId, this.props.parentId == 0 ? categoryId : undefined);
+      
+      const comments = await (this.getQueryQuestionCommentsApi(this.props.accessToken)).listQueryQuestionComments({
+        panelId: this.props.panelId,
+        queryId: this.props.queryId,
+        pageId: this.props.pageId,
+        parentId: this.props.parentId,
+        categoryId: this.props.parentId == 0 ? categoryId : undefined
+      });
 
       this.setState({
         comments: comments.sort(this.compareComments)
@@ -181,8 +196,8 @@ class QueryCommentContainer extends React.Component<Props, State> {
    * 
    * @returns query question comments API
    */
-  private getQueryQuestionCommentsService(accessToken: string): QueryQuestionCommentsService {
-    return Api.getQueryQuestionCommentsService(accessToken);
+  private getQueryQuestionCommentsApi(accessToken: string): QueryQuestionCommentsApi {
+    return Api.getQueryQuestionCommentsApi(accessToken);
   }
 
 }

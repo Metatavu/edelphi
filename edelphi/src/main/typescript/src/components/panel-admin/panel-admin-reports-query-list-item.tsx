@@ -5,7 +5,7 @@ import * as _ from "lodash";
 import strings from "../../localization/strings";
 import { StoreState } from "../../types";
 import { connect } from "react-redux";
-import { Query } from "edelphi-client";
+import { Query } from "../../generated/client/models";
 import { List, Icon } from "semantic-ui-react";
 
 /**

@@ -4,9 +4,10 @@ import * as _ from "lodash";
 import { StoreState, CommandEvent, PageChangeEvent } from "../../types";
 import { connect } from "react-redux";
 import { Grid, Button, Popup, List, Segment, Dimmer, Loader, Icon } from "semantic-ui-react";
-import Api, { QueryPage, Panel, QueryState } from "edelphi-client";
-import { QueryPagesService, PanelsService } from "edelphi-client/dist/api/api";
+import { QueryPage, Panel, QueryState } from "../../generated/client/models";
+import { QueryPagesApi, PanelsApi } from "../../generated/client/apis";
 import strings from "../../localization/strings";
+import Api from "../../api";
 
 declare const JSONUtils: any;
 
@@ -317,8 +318,15 @@ class QueryNavigation extends React.Component<Props, State> {
       loading: true
     });
     
-    const pages = await this.getQueryPagesService().listQueryPages(this.props.panelId, this.props.queryId, false);
-    const panel = await this.getPanelsService().findPanel(this.props.panelId);
+    const pages = await this.getQueryPagesApi().listQueryPages({
+      panelId: this.props.panelId,
+      queryId: this.props.queryId,
+      includeHidden: false
+    });
+    
+    const panel = await this.getPanelsApi().findPanel({
+      panelId: this.props.panelId
+    });
 
     this.setState({
       loading: false,
@@ -341,8 +349,8 @@ class QueryNavigation extends React.Component<Props, State> {
    * 
    * @returns query pages API
    */
-  private getQueryPagesService(): QueryPagesService {
-    return Api.getQueryPagesService(this.props.accessToken);
+  private getQueryPagesApi(): QueryPagesApi {
+    return Api.getQueryPagesApi(this.props.accessToken);
   }
 
   /**
@@ -350,8 +358,8 @@ class QueryNavigation extends React.Component<Props, State> {
    * 
    * @returns panels API
    */
-  private getPanelsService(): PanelsService {
-    return Api.getPanelsService(this.props.accessToken);
+  private getPanelsApi(): PanelsApi {
+    return Api.getPanelsApi(this.props.accessToken);
   }
 
   /**

@@ -2,12 +2,13 @@ import * as React from "react";
 import * as actions from "../../actions";
 import { StoreState, AccessToken, PageChangeEvent } from "../../types";
 import { connect } from "react-redux";
-import { QueryQuestionCommentCategoriesService } from "edelphi-client/dist/api/api";
-import Api, { QueryQuestionCommentCategory } from "edelphi-client";
+import { QueryQuestionCommentCategoriesApi } from "../../generated/client/apis";
+import { QueryQuestionCommentCategory } from "../../generated/client/models";
 import QueryCommentEditor from "./query-comment-editor";
 import QueryCommentList from "./query-comment-list";
 import { Tab, Menu, Confirm } from 'semantic-ui-react'
 import strings from "../../localization/strings";
+import Api from "../../api";
 
 /**
  * Interface representing component properties
@@ -226,9 +227,18 @@ class QueryComments extends React.Component<Props, State> {
       loading: true
     });
 
-    const queryQuestionCommentCategoriesService = await this.getQueryQuestionCommentCategoriesService(this.props.accessToken.token);
-    const pageCategories = await queryQuestionCommentCategoriesService.listQueryQuestionCommentCategories(this.props.panelId, this.props.pageId, this.props.queryId);
-    const queryCategories = await queryQuestionCommentCategoriesService.listQueryQuestionCommentCategories(this.props.panelId, undefined, this.props.queryId);
+    const QueryQuestionCommentCategoriesApi = await this.getQueryQuestionCommentCategoriesApi(this.props.accessToken.token);
+
+    const pageCategories = await QueryQuestionCommentCategoriesApi.listQueryQuestionCommentCategories({
+      panelId: this.props.panelId,
+      pageId: this.props.pageId,
+      queryId: this.props.queryId
+    });
+    
+    const queryCategories = await QueryQuestionCommentCategoriesApi.listQueryQuestionCommentCategories({
+      panelId: this.props.panelId,
+      queryId: this.props.queryId
+    });
 
     this.setState({
       categories: pageCategories.concat(queryCategories),
@@ -241,8 +251,8 @@ class QueryComments extends React.Component<Props, State> {
    * 
    * @returns query question comments API
    */
-  private getQueryQuestionCommentCategoriesService(accessToken: string): QueryQuestionCommentCategoriesService {
-    return Api.getQueryQuestionCommentCategoriesService(accessToken);
+  private getQueryQuestionCommentCategoriesApi(accessToken: string): QueryQuestionCommentCategoriesApi {
+    return Api.getQueryQuestionCommentCategoriesApi(accessToken);
   }
 }
 

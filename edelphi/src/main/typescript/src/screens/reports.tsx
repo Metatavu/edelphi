@@ -4,15 +4,16 @@ import * as _ from "lodash";
 import { StoreState, AccessToken } from "../types";
 import { connect } from "react-redux";
 import PanelAdminLayout from "../components/generic/panel-admin-layout";
-import Api, { Panel, Query, QueryPage, ReportFormat, ReportType, User } from "edelphi-client";
+import { Panel, Query, QueryPage, ReportFormat, ReportType, User } from "../generated/client/models";
 import "../styles/reports.scss";
-import { PanelsService, QueriesService, ReportsService, UsersService } from "edelphi-client/dist/api/api";
+import { PanelsApi, QueriesApi, ReportsApi, UsersApi } from "../generated/client/apis";
 import * as queryString from "query-string";
 import { Grid, Container, List, Modal, Button, Icon, SemanticShorthandCollection, BreadcrumbSectionProps } from "semantic-ui-react";
 import strings from "../localization/strings";
 import PanelAdminReportsQueryListItem from "../components/panel-admin/panel-admin-reports-query-list-item";
 import PanelAdminReportsOptions from "../components/panel-admin/panel-admin-reports-options";
 import ErrorDialog from "../components/error-dialog";
+import Api from "../api";
 
 /**
  * Interface representing component properties
@@ -75,9 +76,9 @@ class Reports extends React.Component<Props, State> {
       loading: true
     });
     
-    const panel = await this.getPanelsService().findPanel(panelId);
-    const queries = await this.getQueriesService().listQueries(panelId);
-    const loggedUser = await this.getUsersService().findUser(this.props.accessToken.userId);
+    const panel = await this.getPanelsApi().findPanel({ panelId: panelId });
+    const queries = await this.getQueriesApi().listQueries({ panelId: panelId });
+    const loggedUser = await this.getUsersApi().findUser({ userId: this.props.accessToken.userId });
 
     this.setState({
       loading: false,
@@ -210,17 +211,19 @@ class Reports extends React.Component<Props, State> {
         throw new Error("Query not selected");
       }
 
-      const reportsService = this.getReportsService();
+      const ReportsApi = this.getReportsApi();
 
-      await reportsService.createReportRequest({
-        format: format,
-        type: type,
-        panelId: this.state.panel.id,
-        queryId: this.state.selectedQueryId,
-        options: {
-          expertiseGroupIds: this.state.expertiseGroupIds == "ALL" ? undefined : this.state.expertiseGroupIds,
-          queryPageIds: this.state.filterQueryPageId == "ALL" ? undefined : [ this.state.filterQueryPageId ],
-          commentCategoryIds: this.state.commentCategoryIds == "ALL" ? undefined : this.state.commentCategoryIds
+      await ReportsApi.createReportRequest({
+        reportRequest: {
+          format: format,
+          type: type,
+          panelId: this.state.panel.id,
+          queryId: this.state.selectedQueryId,
+          options: {
+            expertiseGroupIds: this.state.expertiseGroupIds == "ALL" ? undefined : this.state.expertiseGroupIds,
+            queryPageIds: this.state.filterQueryPageId == "ALL" ? undefined : [ this.state.filterQueryPageId ],
+            commentCategoryIds: this.state.commentCategoryIds == "ALL" ? undefined : this.state.commentCategoryIds
+          }
         }
       });
 
@@ -239,8 +242,8 @@ class Reports extends React.Component<Props, State> {
    * 
    * @returns queries API
    */
-  private getQueriesService(): QueriesService {
-    return Api.getQueriesService(this.props.accessToken.token);
+  private getQueriesApi(): QueriesApi {
+    return Api.getQueriesApi(this.props.accessToken.token);
   }
 
   /**
@@ -248,8 +251,8 @@ class Reports extends React.Component<Props, State> {
    * 
    * @returns users API
    */
-  private getUsersService(): UsersService {
-    return Api.getUsersService(this.props.accessToken.token);
+  private getUsersApi(): UsersApi {
+    return Api.getUsersApi(this.props.accessToken.token);
   }
 
   /**
@@ -257,8 +260,8 @@ class Reports extends React.Component<Props, State> {
    * 
    * @returns panels API
    */
-  private getPanelsService(): PanelsService {
-    return Api.getPanelsService(this.props.accessToken.token);
+  private getPanelsApi(): PanelsApi {
+    return Api.getPanelsApi(this.props.accessToken.token);
   }
 
   /**
@@ -266,8 +269,8 @@ class Reports extends React.Component<Props, State> {
    * 
    * @returns reports API
    */
-  private getReportsService(): ReportsService {
-    return Api.getReportsService(this.props.accessToken.token);
+  private getReportsApi(): ReportsApi {
+    return Api.getReportsApi(this.props.accessToken.token);
   } 
 
   /**
@@ -302,35 +305,35 @@ class Reports extends React.Component<Props, State> {
    * Event handler for export as PDF click
    */
   private onExportReportContentsPdfClick = async () => {
-    await this.requestReport("TEXT", "PDF");
+    await this.requestReport(ReportType.TEXT, ReportFormat.PDF);
   }
 
   /**
    * Event handler for export as CSV click
    */
   private onExportReportSpreadsheetCsvClick = async () => {
-    await this.requestReport("SPREADSHEET", "CSV");
+    await this.requestReport(ReportType.SPREADSHEET, ReportFormat.CSV);
   }
 
   /**
    * Event handler for export as Google Sheet click
    */
   private onExportReportSpreadsheetGoogleSheetClick = async () => {
-    await this.requestReport("SPREADSHEET", "GOOGLE_SHEET");
+    await this.requestReport(ReportType.SPREADSHEET, ReportFormat.GOOGLESHEET);
   } 
 
   /**
    * Event handler for export as Google Document click
    */
   private onExportReportContentsGoogleDocumentClick  = async () => {
-    await this.requestReport("TEXT", "GOOGLE_DOCUMENT");
+    await this.requestReport(ReportType.TEXT, ReportFormat.GOOGLEDOCUMENT);
   } 
 
   /**
    * Event handler for export images as PNGs click
    */
   private onExportReportImagesPngClick  = async () => {
-    await this.requestReport("IMAGES", "PNG");
+    await this.requestReport(ReportType.IMAGES, ReportFormat.PNG);
   } 
 
 }
@@ -342,7 +345,7 @@ class Reports extends React.Component<Props, State> {
  */
 function mapStateToProps(state: StoreState) {
   return {
-    accessToken: state.accessToken,
+    accessToken: state.accessToken!,
     locale: state.locale
   };
 }

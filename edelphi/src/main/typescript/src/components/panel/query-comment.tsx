@@ -6,11 +6,12 @@ import QueryCommentContainer from "./query-comment-container";
 import strings from "../../localization/strings";
 import { StoreState, QueryQuestionCommentNotification } from "../../types";
 import { connect } from "react-redux";
-import Api, { QueryQuestionComment, QueryQuestionCommentCategory } from "edelphi-client";
-import { QueryQuestionCommentsService } from "edelphi-client/dist/api/api";
+import { QueryQuestionComment, QueryQuestionCommentCategory } from "../../generated/client/models";
+import { QueryQuestionCommentsApi } from "../../generated/client/apis";
 import { mqttConnection, OnMessageCallback } from "../../mqtt";
 import styles from "../../constants/styles";
 import { Confirm } from "semantic-ui-react";
+import Api from "../../api";
 
 /**
  * Interface representing component properties
@@ -294,8 +295,8 @@ class QueryCommentClass extends React.Component<Props, State> {
    * 
    * @returns query question comments API
    */
-  private getQueryQuestionCommentsService(accessToken: string): QueryQuestionCommentsService {
-    return Api.getQueryQuestionCommentsService(accessToken);
+  private getQueryQuestionCommentsApi(accessToken: string): QueryQuestionCommentsApi {
+    return Api.getQueryQuestionCommentsApi(accessToken);
   }
 
   /**
@@ -353,8 +354,12 @@ class QueryCommentClass extends React.Component<Props, State> {
       updating: true
     });
 
-    const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken);
-    queryQuestionCommentsService.deleteQueryQuestionComment(this.props.panelId, this.props.comment.id);
+    const queryQuestionCommentsApi = this.getQueryQuestionCommentsApi(this.props.accessToken);
+
+    queryQuestionCommentsApi.deleteQueryQuestionComment({
+      panelId: this.props.panelId,
+      commentId: this.props.comment.id
+    });
   }
 
   /**
@@ -376,8 +381,13 @@ class QueryCommentClass extends React.Component<Props, State> {
       updating: true
     });
 
-    const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken);
-    queryQuestionCommentsService.updateQueryQuestionComment({ ... this.props.comment, contents: contents }, this.props.panelId, this.props.comment.id);
+    const queryQuestionCommentsApi = this.getQueryQuestionCommentsApi(this.props.accessToken);
+
+    queryQuestionCommentsApi.updateQueryQuestionComment({
+      commentId: this.props.comment.id,
+      panelId: this.props.panelId,
+      queryQuestionComment: { ... this.props.comment, contents: contents }
+    });
   }
     
   /**
@@ -401,15 +411,19 @@ class QueryCommentClass extends React.Component<Props, State> {
 
     const categoryId = this.props.category ? this.props.category.id : 0;
 
-    const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken);
-    queryQuestionCommentsService.createQueryQuestionComment({
-      contents: contents,
-      hidden: false,
-      parentId: this.props.comment.id,
-      queryPageId: this.props.pageId,
-      queryReplyId: this.props.queryReplyId,
-      categoryId: categoryId
-    }, this.props.panelId);
+    const queryQuestionCommentsApi = this.getQueryQuestionCommentsApi(this.props.accessToken);
+
+    queryQuestionCommentsApi.createQueryQuestionComment({
+      panelId: this.props.panelId,
+      queryQuestionComment: {
+        contents: contents,
+        hidden: false,
+        parentId: this.props.comment.id,
+        queryPageId: this.props.pageId,
+        queryReplyId: this.props.queryReplyId,
+        categoryId: categoryId
+      }
+    });
   }
 
   /**
@@ -441,8 +455,13 @@ class QueryCommentClass extends React.Component<Props, State> {
       updating: true
     });
 
-    const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken);
-    queryQuestionCommentsService.updateQueryQuestionComment({ ... this.props.comment, hidden: false }, this.props.panelId, this.props.comment.id);
+    const queryQuestionCommentsApi = this.getQueryQuestionCommentsApi(this.props.accessToken);
+    
+    queryQuestionCommentsApi.updateQueryQuestionComment({
+      commentId: this.props.comment.id,
+      panelId: this.props.panelId,
+      queryQuestionComment: { ... this.props.comment, hidden: false }
+    });
   }
 
   /**
@@ -461,8 +480,13 @@ class QueryCommentClass extends React.Component<Props, State> {
       updating: true
     });
 
-    const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken);
-    queryQuestionCommentsService.updateQueryQuestionComment({ ... this.props.comment, hidden: true }, this.props.panelId, this.props.comment.id);
+    const queryQuestionCommentsApi = this.getQueryQuestionCommentsApi(this.props.accessToken);
+
+    queryQuestionCommentsApi.updateQueryQuestionComment({
+      commentId: this.props.comment.id,
+      panelId: this.props.panelId,
+      queryQuestionComment: { ... this.props.comment, hidden: true }
+    });
   }
 
   private onHoldClick() {

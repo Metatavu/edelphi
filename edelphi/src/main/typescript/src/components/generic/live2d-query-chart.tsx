@@ -1,7 +1,7 @@
 import * as React from "react";
 import { AxisDomain, ScatterChart, XAxis, YAxis, ZAxis, CartesianGrid, Scatter, Cell, Label } from "recharts";
 import { QueryLive2dAnswer } from "src/types";
-import { QueryPage, QueryPageLive2DOptions, QueryPageLive2DColor } from "edelphi-client";
+import { QueryPage, QueryPageLive2DOptions, QueryPageLive2DColor } from "../../generated/client/models";
 
 /**
  * Interface representing component properties
@@ -58,8 +58,8 @@ export default class Live2dQueryChart extends React.Component<Props, State> {
 
     const domainX: [ AxisDomain, AxisDomain ] = [ 0, optionsX.length - 1 ];
     const domainY: [ AxisDomain, AxisDomain ] = [ 0, optionsY.length - 1 ];
-    const colorY = ( pageOptions.axisY ? pageOptions.axisY.color : undefined ) || "RED";
-    const colorX = ( pageOptions.axisX ? pageOptions.axisX.color : undefined ) || "GREEN";
+    const colorY = ( pageOptions.axisY ? pageOptions.axisY.color : undefined ) || QueryPageLive2DColor.RED;
+    const colorX = ( pageOptions.axisX ? pageOptions.axisX.color : undefined ) || QueryPageLive2DColor.GREEN;
     const data = this.props.values;
 
     return (

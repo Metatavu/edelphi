@@ -5,10 +5,10 @@ import { StoreState, AccessToken, QueryQuestionCommentNotification, QueryQuestio
 import { connect } from "react-redux";
 import { Grid, DropdownItemProps, DropdownProps, Form, Container, Icon, Transition, SemanticShorthandCollection, BreadcrumbSectionProps, Button, Tab } from "semantic-ui-react";
 import PanelAdminLayout from "../components/generic/panel-admin-layout";
-import Api, { Panel, QueryQuestionComment, Query, QueryPage, QueryQuestionAnswer, QueryQuestionCommentCategory, User } from "edelphi-client";
+import { Panel, QueryQuestionComment, Query, QueryPage, QueryQuestionAnswer, QueryQuestionCommentCategory, User } from "../generated/client/models";
 import "../styles/live-view.scss";
 import { mqttConnection, OnMessageCallback } from "../mqtt";
-import { QueryQuestionCommentsService, QueriesService, PanelsService, QueryPagesService, QueryQuestionAnswersService, QueryQuestionCommentCategoriesService, UsersService } from "edelphi-client/dist/api/api";
+import { QueryQuestionCommentsApi, QueriesApi, PanelsApi, QueryPagesApi, QueryQuestionAnswersApi, QueryQuestionCommentCategoriesApi, UsersApi } from "../generated/client/apis";
 import * as queryString from "query-string";
 import * as moment from "moment";
 import getLanguage from "../localization/language";
@@ -16,6 +16,7 @@ import strings from "../localization/strings";
 import StatisticsUtils from "../statistics/statistics-utils";
 import Live2dQueryStatistics from "../components/generic/live2d-query-statistics";
 import Live2dQueryChart from "../components/generic/live2d-query-chart";
+import Api from "../api";
 
 /**
  * Interface representing component properties
@@ -126,9 +127,9 @@ class LiveView extends React.Component<Props, State> {
       loading: true
     });
 
-    const panel = await this.getPanelsService().findPanel(panelId);
-    const queries = await this.getQueriesService().listQueries(panelId);
-    const loggedUser = await this.getUsersService().findUser(this.props.accessToken.userId);
+    const panel = await this.getPanelsApi().findPanel({ panelId: panelId });
+    const queries = await this.getQueriesApi().listQueries({ panelId: panelId });
+    const loggedUser = await this.getUsersApi().findUser({ userId: this.props.accessToken.userId });
 
     this.setState({
       loading: false,
@@ -607,7 +608,7 @@ class LiveView extends React.Component<Props, State> {
     });
 
     if (this.state.queryId) {
-      const pages = await this.getQueryPagesService().listQueryPages(panelId, this.state.queryId, false);
+      const pages = await this.getQueryPagesApi().listQueryPages({ panelId: panelId, queryId: this.state.queryId, includeHidden: false });
 
       await this.setStateAsync({
         pages: pages.filter((page) => {
@@ -625,8 +626,11 @@ class LiveView extends React.Component<Props, State> {
         throw new Error("Could not lookup page axes");
       }
 
+      const categories = await this.getQueryQuestionCommentCategoriesApi(this.props.accessToken.token)
+        .listQueryQuestionCommentCategories({ panelId: this.state.panel.id, pageId: this.state.pageId });
+
       await this.setStateAsync({
-        categories: await this.getQueryQuestionCommentCategoriesService(this.props.accessToken.token).listQueryQuestionCommentCategories(this.state.panel.id, this.state.pageId),
+        categories: categories,
         pageMaxX: page.queryOptions.axisX.options.length,
         pageMaxY: page.queryOptions.axisY.options.length
       });
@@ -637,8 +641,18 @@ class LiveView extends React.Component<Props, State> {
     }
 
     if (this.state.pageId && this.state.queryId && this.state.panel && this.state.panel.id && this.state.categoryId !== undefined) {
-      const comments = await this.getQueryQuestionCommentsService().listQueryQuestionComments(this.state.panel.id, this.state.queryId, this.state.pageId, undefined, undefined, undefined, this.state.categoryId);
-      const answers = await this.getQueryQuestionAnswersService().listQueryQuestionAnswers(this.state.panel.id, this.state.queryId, this.state.pageId, undefined, undefined);
+      const comments = await this.getQueryQuestionCommentsApi().listQueryQuestionComments({
+        panelId: this.state.panel.id,
+        queryId: this.state.queryId,
+        pageId: this.state.pageId,
+        categoryId: this.state.categoryId
+      });
+      
+      const answers = await this.getQueryQuestionAnswersApi().listQueryQuestionAnswers({
+        panelId: this.state.panel.id,
+        pageId: this.state.pageId,
+        queryId: this.state.queryId
+      });
 
       await this.setStateAsync({
         comments: comments,
@@ -735,8 +749,8 @@ class LiveView extends React.Component<Props, State> {
    * 
    * @returns query question comments API
    */
-  private getQueryQuestionCommentsService(): QueryQuestionCommentsService {
-    return Api.getQueryQuestionCommentsService(this.props.accessToken.token);
+  private getQueryQuestionCommentsApi(): QueryQuestionCommentsApi {
+    return Api.getQueryQuestionCommentsApi(this.props.accessToken.token);
   }
 
   /**
@@ -744,8 +758,8 @@ class LiveView extends React.Component<Props, State> {
    * 
    * @returns queries API
    */
-  private getQueriesService(): QueriesService {
-    return Api.getQueriesService(this.props.accessToken.token);
+  private getQueriesApi(): QueriesApi {
+    return Api.getQueriesApi(this.props.accessToken.token);
   }
 
   /**
@@ -753,8 +767,8 @@ class LiveView extends React.Component<Props, State> {
    * 
    * @returns users API
    */
-  private getUsersService(): UsersService {
-    return Api.getUsersService(this.props.accessToken.token);
+  private getUsersApi(): UsersApi {
+    return Api.getUsersApi(this.props.accessToken.token);
   }
 
   /**
@@ -762,8 +776,8 @@ class LiveView extends React.Component<Props, State> {
    * 
    * @returns panels API
    */
-  private getPanelsService(): PanelsService {
-    return Api.getPanelsService(this.props.accessToken.token);
+  private getPanelsApi(): PanelsApi {
+    return Api.getPanelsApi(this.props.accessToken.token);
   }
 
   /**
@@ -771,8 +785,8 @@ class LiveView extends React.Component<Props, State> {
    * 
    * @returns query pages API
    */
-  private getQueryPagesService(): QueryPagesService {
-    return Api.getQueryPagesService(this.props.accessToken.token);
+  private getQueryPagesApi(): QueryPagesApi {
+    return Api.getQueryPagesApi(this.props.accessToken.token);
   }
 
   /**
@@ -780,8 +794,8 @@ class LiveView extends React.Component<Props, State> {
    * 
    * @returns query question answers API
    */
-  private getQueryQuestionAnswersService(): QueryQuestionAnswersService {
-    return Api.getQueryQuestionAnswersService(this.props.accessToken.token);
+  private getQueryQuestionAnswersApi(): QueryQuestionAnswersApi {
+    return Api.getQueryQuestionAnswersApi(this.props.accessToken.token);
   }
 
   /**
@@ -789,8 +803,8 @@ class LiveView extends React.Component<Props, State> {
    * 
    * @returns query question comments API
    */
-  private getQueryQuestionCommentCategoriesService(accessToken: string): QueryQuestionCommentCategoriesService {
-    return Api.getQueryQuestionCommentCategoriesService(accessToken);
+  private getQueryQuestionCommentCategoriesApi(accessToken: string): QueryQuestionCommentCategoriesApi {
+    return Api.getQueryQuestionCommentCategoriesApi(accessToken);
   }
 
   /**
@@ -996,7 +1010,11 @@ class LiveView extends React.Component<Props, State> {
       return;
     }
 
-    const comment = await this.getQueryQuestionCommentsService().findQueryQuestionComment(this.state.panel.id, notification.commentId);
+    const comment = await this.getQueryQuestionCommentsApi().findQueryQuestionComment({
+      panelId: this.state.panel.id,
+      commentId: notification.commentId
+    });
+      
     this.updateComment(comment);
   }
 
@@ -1014,7 +1032,11 @@ class LiveView extends React.Component<Props, State> {
       return;
     }
 
-    const answer = await this.getQueryQuestionAnswersService().findQueryQuestionAnswer(this.state.panel.id, notification.answerId);
+    const answer = await this.getQueryQuestionAnswersApi().findQueryQuestionAnswer({
+      panelId: this.state.panel.id,
+      answerId: notification.answerId
+    });
+    
     this.updateAnswer(answer);
   }
 

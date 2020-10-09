@@ -4,9 +4,10 @@ import * as _ from "lodash";
 import { StoreState, AccessToken, EditPageLegacyPageData } from "../../types";
 import { connect } from "react-redux";
 import { Modal, Button, Input, InputOnChangeData, Grid, Loader, Dimmer, Confirm } from "semantic-ui-react";
-import Api, { QueryQuestionCommentCategory } from "edelphi-client";
-import { QueryQuestionCommentCategoriesService } from "edelphi-client/dist/api/api";
+import { QueryQuestionCommentCategory } from "../../generated/client/models";
+import { QueryQuestionCommentCategoriesApi } from "../../generated/client/apis";
 import strings from "../../localization/strings";
+import Api from "../../api";
 
 /**
  * Interface representing component properties
@@ -163,8 +164,12 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
       loading: true
     });
 
-    const queryQuestionCommentCategoriesService = await this.getQueryQuestionCommentCategoriesService(this.props.accessToken.token);
-    const categories = await queryQuestionCommentCategoriesService.listQueryQuestionCommentCategories(this.props.panelId, this.props.pageId, this.props.queryId);
+    const QueryQuestionCommentCategoriesApi = await this.getQueryQuestionCommentCategoriesApi(this.props.accessToken.token);
+    const categories = await QueryQuestionCommentCategoriesApi.listQueryQuestionCommentCategories({
+      panelId: this.props.panelId,
+      pageId: this.props.pageId,
+      queryId: this.props.queryId
+    });
 
     this.setState({
       categories: categories,
@@ -177,8 +182,8 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
    * 
    * @returns query question comments API
    */
-  private getQueryQuestionCommentCategoriesService(accessToken: string): QueryQuestionCommentCategoriesService {
-    return Api.getQueryQuestionCommentCategoriesService(accessToken);
+  private getQueryQuestionCommentCategoriesApi(accessToken: string): QueryQuestionCommentCategoriesApi {
+    return Api.getQueryQuestionCommentCategoriesApi(accessToken);
   }
 
   /**
@@ -196,8 +201,11 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
     categories.splice(index, 1); 
 
     if (category.id) {
-      const queryQuestionCommentCategoriesService = await this.getQueryQuestionCommentCategoriesService(this.props.accessToken.token);
-      await queryQuestionCommentCategoriesService.deleteQueryQuestionCommentCategory(this.props.panelId, category.id);
+      const QueryQuestionCommentCategoriesApi = await this.getQueryQuestionCommentCategoriesApi(this.props.accessToken.token);
+      await QueryQuestionCommentCategoriesApi.deleteQueryQuestionCommentCategory({
+        panelId: this.props.panelId,
+        categoryId: category.id
+      });
     } 
 
     this.setState({
@@ -224,16 +232,23 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
       updating: true
     });
 
-    const queryQuestionCommentCategoriesService = await this.getQueryQuestionCommentCategoriesService(this.props.accessToken.token);
+    const QueryQuestionCommentCategoriesApi = await this.getQueryQuestionCommentCategoriesApi(this.props.accessToken.token);
     const categories = [];
 
     for (let i = 0; i < this.state.categories.length; i++) {
       const category = this.state.categories[i];
       
       if (category.id) {
-        categories.push(await queryQuestionCommentCategoriesService.updateQueryQuestionCommentCategory(category, this.props.panelId, category.id));
+        categories.push(await QueryQuestionCommentCategoriesApi.updateQueryQuestionCommentCategory({
+          categoryId: category.id,
+          panelId: this.props.panelId,
+          queryQuestionCommentCategory: category
+        }));
       } else {
-        categories.push(await queryQuestionCommentCategoriesService.createQueryQuestionCommentCategory(category, this.props.panelId));
+        categories.push(await QueryQuestionCommentCategoriesApi.createQueryQuestionCommentCategory({
+          panelId:this.props.panelId,
+          queryQuestionCommentCategory: category
+        }));
       }
     }
 

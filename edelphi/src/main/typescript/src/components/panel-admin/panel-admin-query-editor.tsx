@@ -7,9 +7,9 @@ import PanelAdminQueryCommentOptionsEditor from "./panel-admin-query-comment-opt
 import PanelAdminQueryPageLive2dOptionsEditor from "./panel-admin-query-page-live2d-options-editor";
 import { Confirm, Modal, Header, Button, Icon } from "semantic-ui-react";
 import strings from "../../localization/strings";
-import Api from "edelphi-client";
 import * as QRCode from "qrcode";
 import PanelAdminQueryCopyDialog from "./panel-admin-query-copy-dialog";
+import Api from "../../api";
 
 /**
  * Interface representing component properties
@@ -312,8 +312,11 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
    * Removes query answers
    */
   private removeQueryAnswers = async () => {
-    const queryQuestionAnswersService = this.getQueryQuestionAnswersService();
-    await queryQuestionAnswersService.deleteQueryQuestionAnswers(this.props.panelId, this.props.queryId, undefined, undefined);
+    const queryQuestionAnswersApi = this.getQueryQuestionAnswersApi();
+    await queryQuestionAnswersApi.deleteQueryQuestionAnswers({
+      panelId: this.props.panelId,
+      queryId: this.props.queryId
+    });
   }
 
   /**
@@ -331,8 +334,8 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
    * 
    * @returns query question answers service
    */
-  private getQueryQuestionAnswersService = () => {
-    return Api.getQueryQuestionAnswersService(this.props.accessToken);
+  private getQueryQuestionAnswersApi = () => {
+    return Api.getQueryQuestionAnswersApi(this.props.accessToken);
   }
 
   /**
