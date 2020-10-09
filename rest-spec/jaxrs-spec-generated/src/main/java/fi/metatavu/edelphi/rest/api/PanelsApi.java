@@ -15,7 +15,7 @@ import javax.validation.Valid;
 
 @Path("/panels")
 @Api(description = "the panels API")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2020-10-08T19:48:48.375+03:00[Europe/Helsinki]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2020-10-09T07:26:19.537+03:00[Europe/Helsinki]")
 public interface PanelsApi {
 
     @POST
@@ -240,6 +240,17 @@ public interface PanelsApi {
         @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class, responseContainer = "List"),
         @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class, responseContainer = "List") })
     Response listQueryQuestionComments(@PathParam("panelId")  Long panelId,@QueryParam("queryId")     Long queryId,@QueryParam("pageId")     Long pageId,@QueryParam("userId")     UUID userId,@QueryParam("stampId")     Long stampId,@QueryParam("parentId")     Long parentId,@QueryParam("categoryId")     Long categoryId);
+    @GET
+    @Path("/{panelId}/userGroups")
+    @Produces({ "application/json" })
+    @ApiOperation(value = "List panel user groups", notes = "List defined user groups from a panel", authorizations = {
+        @Authorization(value = "bearer")    }, tags={ "UserGroups" })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "List of panel user groups", response = PanelUserGroup.class, responseContainer = "List"),
+        @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class, responseContainer = "List"),
+        @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class, responseContainer = "List"),
+        @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class, responseContainer = "List") })
+    Response listUserGroups(@PathParam("panelId")  Long panelId);
     @PUT
     @Path("/{panelId}/queryPages/{queryPageId}")
     @Consumes({ "application/json" })

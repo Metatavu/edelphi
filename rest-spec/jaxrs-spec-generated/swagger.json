@@ -1952,6 +1952,71 @@
         }
       }
     },
+    "/panels/{panelId}/userGroups" : {
+      "get" : {
+        "tags" : [ "UserGroups" ],
+        "summary" : "List panel user groups",
+        "description" : "List defined user groups from a panel",
+        "operationId" : "listUserGroups",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of panel user groups",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PanelUserGroup"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/reportRequests" : {
       "post" : {
         "tags" : [ "Reports" ],
@@ -2332,6 +2397,21 @@
           "expertiseClassId" : {
             "type" : "integer",
             "format" : "int64"
+          }
+        }
+      },
+      "PanelUserGroup" : {
+        "required" : [ "name" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "description" : "Id",
+            "format" : "int64",
+            "readOnly" : true
+          },
+          "name" : {
+            "type" : "string"
           }
         }
       },
