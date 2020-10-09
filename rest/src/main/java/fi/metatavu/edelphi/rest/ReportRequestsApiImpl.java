@@ -149,6 +149,10 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
       properties.put(ReportBatchProperties.COMMENT_CATEGORY_IDS, StringUtils.join(options.getCommentCategoryIds(), ","));
     }
     
+    if (options.getPanelUserGroupIds() != null && !options.getPanelUserGroupIds().isEmpty()) {
+      properties.put(ReportBatchProperties.PANEL_USER_GROUP_IDS, StringUtils.join(options.getPanelUserGroupIds(), ","));
+    }
+    
     if (body.getDelivery() != null && StringUtils.isNotBlank(body.getDelivery().getEmail())) {
       properties.put(ReportBatchProperties.DELIVERY_EMAIL, body.getDelivery().getEmail());
     } else {

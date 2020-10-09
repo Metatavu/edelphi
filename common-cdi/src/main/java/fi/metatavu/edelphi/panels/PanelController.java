@@ -9,12 +9,13 @@ import fi.metatavu.edelphi.dao.panels.PanelDAO;
 import fi.metatavu.edelphi.dao.panels.PanelStampDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserExpertiseClassDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserExpertiseGroupDAO;
+import fi.metatavu.edelphi.dao.panels.PanelUserGroupDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserIntressClassDAO;
-import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseClass;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseGroup;
+import fi.metatavu.edelphi.domainmodel.panels.PanelUserGroup;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserIntressClass;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.settings.SettingsController;
@@ -44,6 +45,9 @@ public class PanelController {
   
   @Inject
   private PanelUserExpertiseGroupDAO panelUserExpertiseGroupDAO;
+  
+  @Inject
+  private PanelUserGroupDAO panelUserGroupDAO;
   
   /**
    * Finds a panel by id
@@ -153,6 +157,16 @@ public class PanelController {
    */
   public List<PanelUserExpertiseGroup> listPanelUserExpertiseGroups(Panel panel, PanelStamp stamp) {
     return panelUserExpertiseGroupDAO.listByPanelAndStamp(panel, stamp);
+  }
+
+  /**
+   * Returns panel user group
+   * 
+   * @param id id
+   * @return Panel user group
+   */
+  public PanelUserGroup findPanelUserGroup(Long id) {
+    return panelUserGroupDAO.findById(id);
   }
   
 }

@@ -1,15 +1,20 @@
 package fi.metatavu.edelphi.reports.batch;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
 import javax.batch.api.AbstractBatchlet;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
+
 import fi.metatavu.edelphi.batch.JobProperty;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseClass;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseGroup;
+import fi.metatavu.edelphi.domainmodel.panels.PanelUserGroup;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserIntressClass;
 import fi.metatavu.edelphi.panels.PanelController;
 import fi.metatavu.edelphi.reports.i18n.ReportMessages;
@@ -51,22 +56,41 @@ public abstract class AbstractPrinter extends AbstractBatchlet {
   @JobProperty
   private Long[] expertiseGroupIds;
 
+  @Inject
+  @JobProperty
+  private Long[] panelUserGroupIds;
+
   /**
    * Returns export filters as human readable text
    * 
    * @return export filters as human readable text
    */
   protected String getFilters() {
+    List<String> filters = new ArrayList<>();
+    
     if (expertiseGroupIds != null) {    
-      String groups = Arrays.stream(expertiseGroupIds)
-        .map(panelController::findPanelUserExpertiseGroup)
-        .map(this::getExpertiseGroupName)
-        .collect(Collectors.joining(", "));
+      String expertiseGroupNames = Arrays.stream(expertiseGroupIds)
+          .map(panelController::findPanelUserExpertiseGroup)
+          .map(this::getExpertiseGroupName)
+          .collect(Collectors.joining(", "));
       
-      return reportMessages.getText(locale, "reports.mail.expertiseFilter", groups);
+      filters.add(reportMessages.getText(locale, "reports.mail.expertiseFilter", expertiseGroupNames));
     }
     
-    return reportMessages.getText(locale, "reports.mail.noFilters");
+    if (panelUserGroupIds != null) {    
+      String panelUserGroupNames = Arrays.stream(panelUserGroupIds)
+        .map(panelController::findPanelUserGroup)
+        .map(PanelUserGroup::getName)
+        .collect(Collectors.joining(", "));
+      
+      filters.add(reportMessages.getText(locale, "reports.mail.panelUserGroupFilter", panelUserGroupNames));
+    }
+    
+    if (filters.isEmpty()) {    
+      return reportMessages.getText(locale, "reports.mail.noFilters");
+    } else {
+      return StringUtils.join(filters, ", ");
+    }
   }
   
   /**

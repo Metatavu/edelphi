@@ -15,6 +15,7 @@ public class ReportBatchProperties {
   public static String DELIVERY_EMAIL = "deliveryEmail";
   public static String EXPERTISE_GROUP_IDS = "expertiseGroupIds";
   public static String COMMENT_CATEGORY_IDS = "commentCategoryIds";
+  public static String PANEL_USER_GROUP_IDS = "panelUserGroupIds";
   public static String QUERY_REPLY_IDS = "queryReplyIds";
   
 }
