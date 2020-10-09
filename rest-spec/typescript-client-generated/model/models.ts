@@ -5,6 +5,7 @@ export * from './panelExpertiseClass';
 export * from './panelExpertiseGroup';
 export * from './panelInterestClass';
 export * from './panelState';
+export * from './panelUserGroup';
 export * from './query';
 export * from './queryPage';
 export * from './queryPageCommentOptions';

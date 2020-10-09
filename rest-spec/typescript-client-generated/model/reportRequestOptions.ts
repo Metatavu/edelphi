@@ -21,6 +21,10 @@ export interface ReportRequestOptions {
      */
     expertiseGroupIds?: Array<number>;
     /**
+     * Include only speficied panel user group ids
+     */
+    panelUserGroupIds?: Array<number>;
+    /**
      * Include only comments from speficied comment category ids
      */
     commentCategoryIds?: Array<number>;
@@ -38,6 +42,10 @@ export interface ReportRequestOptionsOpt {
      * Include only speficied expertise group ids
      */
     expertiseGroupIds?: Array<number>;
+    /**
+     * Include only speficied panel user group ids
+     */
+    panelUserGroupIds?: Array<number>;
     /**
      * Include only comments from speficied comment category ids
      */
