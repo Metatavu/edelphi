@@ -59,10 +59,6 @@ public class SpreadsheetReportPageWriter extends TypedItemWriter<QueryPage> {
 
   @Inject
   @JobProperty
-  private Long[] expertiseGroupIds;
-
-  @Inject
-  @JobProperty
   private Long[] queryReplyIds;
   
   @Inject
