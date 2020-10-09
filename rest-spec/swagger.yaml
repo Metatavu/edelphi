@@ -1229,6 +1229,93 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /panels/{panelId}/invitations:
+    get:
+      operationId: listPanelInvitations
+      summary: List panel invitations
+      description: List panel invitations
+      tags:
+        - PanelInvitations
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: List of panel invitations
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/PanelInvitation"
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+                
+  /panels/{panelId}/invitationRequests:
+    post:
+      operationId: createPanelInvitationRequest
+      summary: Creates a panel invitation request
+      description: Creates a panel invitation request
+      tags:
+        - PanelInvitations
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: panel id
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PanelInvitationRequest"
+        description: Payload
+        required: true
+      responses:
+        "202":
+          description: Panel invitation request has been accepted
+        "400":
+          description: Invalid request was sent to the server
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Attempted to make a call with unauthorized client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+                
   /users/{userId}:
     get:
       operationId: findUser
@@ -1806,6 +1893,87 @@ components:
         show2dAs1d:
           description: Show 2d answers as 1d graphs instead of 2d graphs
           type: boolean
+
+    PanelInvitationRequest:
+      type: object
+      required:
+        - emails
+        - skipInvitation
+      properties:
+        emails:
+          description: List of emails the invitation will be sent to
+          type: array
+          items:
+            type: string
+            format: email
+        invitationTitle: 
+          description: Inviation email title
+          type: string
+        invitationContent: 
+          description: Inviation email content
+          type: string
+        targetQueryId:
+          description: Specify target query for invitation link. If this is left blank, link will lead to panel index page
+          type: integer
+          format: int64
+        skipInvitation:
+          description: If skip invitation is true, users will be added directly without invitation
+          type: boolean
+
+    PanelInvitation:
+      type: object
+      required:
+        - comment
+      properties:
+        id:
+          description: Invitation id
+          type: integer
+          format: int64
+          readOnly: true
+        panelId:
+          description: Panel id
+          type: integer
+          format: int64
+        queryId:
+          description: Invitation's target query id
+          type: integer
+          format: int64
+        email:
+          description: Invitation email
+          type: string
+          format: email
+        state:
+          $ref: '#/components/schemas/PanelInvitationState'
+        creatorId:
+          description: Comment's creator id
+          type: string
+          format: uuid
+          readOnly: true
+        lastModifierId:
+          description: Comment's last modifier id
+          type: string
+          format: uuid
+          readOnly: true
+        created:
+          description: Comment's creation time
+          type: string
+          format: date-time
+          readOnly: true
+        lastModified:
+          description: Comment's last modification time
+          type: string
+          format: date-time
+          readOnly: true   
+      
+    PanelInvitationState:
+      type: string
+      enum:    
+        - IN_QUEUE
+        - BEING_SENT
+        - SEND_FAIL
+        - PENDING
+        - ACCEPTED
+        - DECLINED
 
     ErrorResponse:
       type: object
