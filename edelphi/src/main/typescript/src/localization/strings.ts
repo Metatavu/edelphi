@@ -160,6 +160,7 @@ export interface IStrings extends LocalizedStringsMethods {
       queriesListDates: string;
       exportFilter: string;
       exportFilterByExpertise: string;
+      exportFilterByUserGroup: string;
       exportFilterByPage: string;
       exportFilterByPageAll: string;
       exportFilterByCommentCategory: string;

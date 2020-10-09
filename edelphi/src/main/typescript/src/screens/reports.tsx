@@ -38,6 +38,7 @@ interface State {
   reportToEmailDialogVisible: boolean,
   filterQueryPageId: number | "ALL",
   expertiseGroupIds: number[] | "ALL",
+  panelUserGroupIds: number[] | "ALL",
   commentCategoryIds: number[] | "ALL"
 }
 
@@ -60,6 +61,7 @@ class Reports extends React.Component<Props, State> {
       queryPages: [],
       filterQueryPageId: "ALL",
       expertiseGroupIds: "ALL",
+      panelUserGroupIds: "ALL",
       commentCategoryIds: "ALL"
     };
   }
@@ -182,16 +184,18 @@ class Reports extends React.Component<Props, State> {
         queryId={ this.state.selectedQueryId } 
         queryPageId={ this.state.filterQueryPageId }
         expertiseGroupIds={ this.state.expertiseGroupIds }
+        panelUserGroupIds={ this.state.panelUserGroupIds }
         commentCategoryIds={ this.state.commentCategoryIds }
         onQueryPageChange={ this.onQueryPageFilterChange }
         onExpertiseGroupsChanged={ this.onExpertiseGroupsChanged }
+        onPanelUserGroupsChanged={ this.onPanelUserGroupsChanged }
         onCommentCategoriesChanged={ this.onCommentCategoriesChanged }
         onExportReportContentsPdfClick={ this.onExportReportContentsPdfClick } 
         onExportReportSpreadsheetCsvClick={ this.onExportReportSpreadsheetCsvClick }
         onExportReportSpreadsheetGoogleSheetsClick={ this.onExportReportSpreadsheetGoogleSheetClick }
         onExportReportContentsGoogleDocumentClick={ this.onExportReportContentsGoogleDocumentClick }
         onExportReportImagesPngClick={ this.onExportReportImagesPngClick }
-        />
+      />
     );
   }
 
@@ -222,6 +226,7 @@ class Reports extends React.Component<Props, State> {
           options: {
             expertiseGroupIds: this.state.expertiseGroupIds == "ALL" ? undefined : this.state.expertiseGroupIds,
             queryPageIds: this.state.filterQueryPageId == "ALL" ? undefined : [ this.state.filterQueryPageId ],
+            panelUserGroupIds: this.state.panelUserGroupIds == "ALL" ? undefined : this.state.panelUserGroupIds,
             commentCategoryIds: this.state.commentCategoryIds == "ALL" ? undefined : this.state.commentCategoryIds
           }
         }
@@ -294,6 +299,19 @@ class Reports extends React.Component<Props, State> {
       expertiseGroupIds: expertiseGroupIds
     });
   }
+
+  /**
+   * Event handler for user group ids filter change
+   * 
+   * @param panelUserGroupIds user group ids or ALL if filter is not applied
+   */
+  private onPanelUserGroupsChanged = (panelUserGroupIds: number[] | "ALL") => {
+    this.setState({
+      panelUserGroupIds: panelUserGroupIds
+    });
+  }
+
+  
 
   private onCommentCategoriesChanged = (commentCategoryIds: number[] | "ALL") => {
     this.setState({

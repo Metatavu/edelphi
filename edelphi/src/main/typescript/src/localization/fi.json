@@ -154,6 +154,7 @@
       "queriesListDates": "Luotu: {0}, Muokattu: {0}",
       "exportFilter": "Suodata",
       "exportFilterByExpertise": "Intressit ja asiantuntijuudet",
+      "exportFilterByUserGroup": "Käyttäjäryhmät",
       "exportFilterByPage": "Sivu(t)",
       "exportFilterByPageAll": "Kaikki",
       "exportFilterByCommentCategory": "Kommenttikategoriat",

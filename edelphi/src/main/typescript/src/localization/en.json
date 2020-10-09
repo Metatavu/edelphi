@@ -153,6 +153,7 @@
       "queriesListDates": "Created: {0}, Modified: {0}",
       "exportFilter": "Filter",
       "exportFilterByExpertise": "Interest and Expertise Groups",
+      "exportFilterByUserGroup": "User groups",
       "exportFilterByPage": "Page(s)",
       "exportFilterByPageAll": "All",
       "exportFilterByCommentCategory": "Comment categories",
