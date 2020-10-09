@@ -24,6 +24,7 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseGroup;
+import fi.metatavu.edelphi.domainmodel.panels.PanelUserGroup;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
@@ -144,13 +145,19 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
       
       properties.put(ReportBatchProperties.EXPERTISE_GROUP_IDS, StringUtils.join(options.getExpertiseGroupIds(), ","));
     }
+
+    List<PanelUserGroup> panelUserGroups = null;
+    if (options.getPanelUserGroupIds() != null && !options.getPanelUserGroupIds().isEmpty()) {
+      panelUserGroups = options.getPanelUserGroupIds().stream().map(panelController::findPanelUserGroup).collect(Collectors.toList());
+      if (panelUserGroups.contains(null)) {
+        return createBadRequest("Invalid user group id");
+      }
+      
+      properties.put(ReportBatchProperties.PANEL_USER_GROUP_IDS, StringUtils.join(options.getPanelUserGroupIds(), ","));
+    }
     
     if (options.getCommentCategoryIds() != null && !options.getCommentCategoryIds().isEmpty()) {
       properties.put(ReportBatchProperties.COMMENT_CATEGORY_IDS, StringUtils.join(options.getCommentCategoryIds(), ","));
-    }
-    
-    if (options.getPanelUserGroupIds() != null && !options.getPanelUserGroupIds().isEmpty()) {
-      properties.put(ReportBatchProperties.PANEL_USER_GROUP_IDS, StringUtils.join(options.getPanelUserGroupIds(), ","));
     }
     
     if (body.getDelivery() != null && StringUtils.isNotBlank(body.getDelivery().getEmail())) {
@@ -162,6 +169,10 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
     List<QueryReply> replies = queryReplyController.listQueryReplies(query, stamp);
     if (expertiseGroups != null) {
       replies = queryReplyController.filterQueryRepliesByExpertiseGroup(replies, expertiseGroups);
+    }
+    
+    if (panelUserGroups != null) {
+      replies = queryReplyController.filterQueryRepliesByPanelUserGroup(replies, panelUserGroups);
     }
     
     properties.put(ReportBatchProperties.QUERY_REPLY_IDS, replies.stream().map(QueryReply::getId).map(String::valueOf).collect(Collectors.joining(",")));
