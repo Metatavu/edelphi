@@ -192,7 +192,6 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
         <h2> { strings.panelAdmin.reports.exportFilter } </h2>
         <h3> { strings.panelAdmin.reports.exportFilterByExpertise } </h3>
         { this.renderExpertiseMatrixFilter() }
-        <h3> { strings.panelAdmin.reports.exportFilterByUserGroup } </h3>
         { this.renderUserGroupsFilter() }
         <h3> { strings.panelAdmin.reports.exportFilterByPage } </h3>
         <div>
@@ -293,12 +292,21 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
    * Renders user groups filter
    */
   private renderUserGroupsFilter = () => {
+    const { panelUserGroups } = this.state;
+
+    if (!panelUserGroups || panelUserGroups.length == 0) {
+      return null;
+    }
+
     return (
-      <div>
-        {
-          this.state.panelUserGroups.map(this.renderUserGroupFilter) 
-        }  
-      </div>
+      <>
+        <h3> { strings.panelAdmin.reports.exportFilterByUserGroup } </h3>
+        <div>
+          {
+            panelUserGroups.map(this.renderUserGroupFilter) 
+          }  
+        </div>
+      </>
     );
   }
 
