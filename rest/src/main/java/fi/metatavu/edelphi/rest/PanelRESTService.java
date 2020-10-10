@@ -48,6 +48,7 @@ import fi.metatavu.edelphi.queries.QuerySectionController;
 import fi.metatavu.edelphi.queries.batch.CopyQueryBatchProperties;
 import fi.metatavu.edelphi.resources.ResourceController;
 import fi.metatavu.edelphi.rest.api.PanelsApi;
+import fi.metatavu.edelphi.rest.model.PanelInvitationRequest;
 import fi.metatavu.edelphi.rest.model.QueryPageLive2DAnswersVisibleOption;
 import fi.metatavu.edelphi.rest.model.QueryPageLive2DOptions;
 import fi.metatavu.edelphi.rest.model.QueryQuestionComment;
@@ -57,6 +58,7 @@ import fi.metatavu.edelphi.rest.mqtt.QueryQuestionCommentNotification;
 import fi.metatavu.edelphi.rest.translate.PanelExpertiseClassTranslator;
 import fi.metatavu.edelphi.rest.translate.PanelExpertiseGroupTranslator;
 import fi.metatavu.edelphi.rest.translate.PanelInterestClassTranslator;
+import fi.metatavu.edelphi.rest.translate.PanelInvitationTranslator;
 import fi.metatavu.edelphi.rest.translate.PanelTranslator;
 import fi.metatavu.edelphi.rest.translate.PanelUserGroupTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryPageTranslator;
@@ -141,6 +143,9 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Inject
   private PanelUserGroupTranslator panelUserGroupTranslator;
+
+  @Inject
+  private PanelInvitationTranslator panelInvitationTranslator;
   
   @Override
   @RolesAllowed("user")
@@ -955,6 +960,29 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     }
     
     return createOk(panelController.listPanelUserGroups(panel, panel.getCurrentStamp()).stream().map(this.panelUserGroupTranslator::translate).collect(Collectors.toList()));
+  }
+
+  @Override
+  @RolesAllowed("user") 
+  public Response createPanelInvitationRequest(PanelInvitationRequest body, Long panelId) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  @RolesAllowed("user") 
+  public Response listPanelInvitations(Long panelId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    return createOk(panelController.listPanelInvitations(panel).stream().map(this.panelInvitationTranslator::translate).collect(Collectors.toList()));
   }
   
   /**

@@ -6,12 +6,14 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import fi.metatavu.edelphi.dao.panels.PanelDAO;
+import fi.metatavu.edelphi.dao.panels.PanelInvitationDAO;
 import fi.metatavu.edelphi.dao.panels.PanelStampDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserExpertiseClassDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserExpertiseGroupDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserGroupDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserIntressClassDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
+import fi.metatavu.edelphi.domainmodel.panels.PanelInvitation;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseClass;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseGroup;
@@ -48,6 +50,9 @@ public class PanelController {
   
   @Inject
   private PanelUserGroupDAO panelUserGroupDAO;
+
+  @Inject
+  private PanelInvitationDAO panelInvitationDAO;
   
   /**
    * Finds a panel by id
@@ -178,6 +183,16 @@ public class PanelController {
    */
   public List<PanelUserGroup> listPanelUserGroups(Panel panel, PanelStamp stamp) {
     return panelUserGroupDAO.listByPanelAndStamp(panel, stamp);
+  }
+  
+  /**
+   * Returns list of panel invitations
+   * 
+   * @param panel panel
+   * @return list of panel invitations
+   */
+  public List<PanelInvitation> listPanelInvitations(Panel panel) {
+    return panelInvitationDAO.listByPanel(panel);
   }
   
 }
