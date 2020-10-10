@@ -1,6 +1,7 @@
 package fi.metatavu.edelphi.panels;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -14,11 +15,13 @@ import fi.metatavu.edelphi.dao.panels.PanelUserGroupDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserIntressClassDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitation;
+import fi.metatavu.edelphi.domainmodel.panels.PanelInvitationState;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseClass;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseGroup;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserGroup;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserIntressClass;
+import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.settings.SettingsController;
 
@@ -186,6 +189,16 @@ public class PanelController {
   }
   
   /**
+   * Finds a panel invitation by id
+   * 
+   * @param id id
+   * @return panel invitation or null if not found
+   */
+  public PanelInvitation findPanelInvitationById(Long id) {
+    return panelInvitationDAO.findById(id);
+  }
+  
+  /**
    * Returns list of panel invitations
    * 
    * @param panel panel
@@ -193,6 +206,30 @@ public class PanelController {
    */
   public List<PanelInvitation> listPanelInvitations(Panel panel) {
     return panelInvitationDAO.listByPanel(panel);
+  }
+
+  /**
+   * Creates an panel invitation
+   * 
+   * @param panel panel
+   * @param targetQuery target query or null if not specified 
+   * @param email email address
+   * @param creator creator user
+   * @return created panel invitation
+   */
+  public PanelInvitation createPanelInvitation(Panel panel, Query targetQuery, String email, User creator) {
+    // See if the user already has an existing invitation that points to the invitation target,
+    // i.e. the front page of the panel or the front page of a single query within the panel 
+    PanelInvitation invitation = panelInvitationDAO.findByPanelAndQueryAndEmail(panel, targetQuery, email);
+    
+    // Reuse the hash of an existing invitation, if we have one 
+    String invitationHash = invitation == null ? UUID.randomUUID().toString() : invitation.getHash();
+    
+    if (invitation == null) {
+      return panelInvitationDAO.create(panel, targetQuery, email, invitationHash, panel.getDefaultPanelUserRole(), PanelInvitationState.IN_QUEUE, creator);
+    } else {
+      return panelInvitationDAO.updateState(invitation, PanelInvitationState.IN_QUEUE, creator);
+    }
   }
   
 }
