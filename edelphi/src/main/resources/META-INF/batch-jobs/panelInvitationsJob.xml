@@ -1,0 +1,18 @@
+<job id="copyQueryJob" xmlns="http://xmlns.jcp.org/xml/ns/javaee" version="1.0">
+  
+  <properties>
+    <property name="panelInvitationIds" value="#{jobParameters['panelInvitationIds']}" />  
+    <property name="locale" value="#{jobParameters['locale']}" />  
+    <property name="invitationMessage" value="#{jobParameters['invitationMessage']}" />  
+    <property name="panelId" value="#{jobParameters['panelId']}" />  
+    <property name="baseUrl" value="#{jobParameters['baseUrl']}" /> 
+    <property name="loggedUserId" value="#{jobParameters['loggedUserId']}" />  
+  </properties>
+  
+  <step id="invitations">
+    <chunk item-count="1">
+      <reader ref="panelInvitationReader"/>
+      <writer ref="panelInvitationSendWriter"/>
+    </chunk>
+  </step>
+</job> 

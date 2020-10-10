@@ -1,6 +1,7 @@
 package fi.metatavu.edelphi.rest;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -34,6 +35,7 @@ import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageType;
 import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
+import fi.metatavu.edelphi.invitations.batch.PanelInvitationBatchProperties;
 import fi.metatavu.edelphi.mqtt.MqttController;
 import fi.metatavu.edelphi.panels.PanelController;
 import fi.metatavu.edelphi.permissions.DelfoiActionName;
@@ -965,8 +967,51 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   @Override
   @RolesAllowed("user") 
   public Response createPanelInvitationRequest(PanelInvitationRequest body, Long panelId) {
-    // TODO Auto-generated method stub
-    return null;
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null) {
+      return createNotFound();
+    }
+    
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+
+    Query targetQuery = null;
+    if (body.getTargetQueryId() != null) {
+      targetQuery = queryController.findQueryById(body.getTargetQueryId());
+      
+      if (targetQuery == null || queryController.isQueryArchived(targetQuery)) {
+        return createBadRequest(String.format("Invalid target query id %d", body.getTargetQueryId()));
+      }
+      
+      if (!queryController.isPanelsQuery(targetQuery, panel)) {
+        return createBadRequest(String.format("Invalid target query id %d", body.getTargetQueryId()));
+      }
+    }
+    
+    User loggedUser = getLoggedUser();
+    List<Long> invitationIds = new ArrayList<>();
+    
+    for (String email : body.getEmails()) {
+      invitationIds.add(panelController.createPanelInvitation(panel, targetQuery, email, loggedUser).getId());      
+    }
+
+    Properties properties = new Properties();
+    properties.put(PanelInvitationBatchProperties.LOCALE, getLocale().toString());
+    properties.put(PanelInvitationBatchProperties.PANEL_ID, panel.getId().toString());
+    properties.put(PanelInvitationBatchProperties.LOGGED_USER_ID, getLoggedUserId().toString());
+    properties.put(PanelInvitationBatchProperties.BASE_URL, getBaseUrl());
+    properties.put(PanelInvitationBatchProperties.PANEL_INVITATION_IDS, StringUtils.join(invitationIds, ","));
+    properties.put(PanelInvitationBatchProperties.INVITATION_MESSAGE, body.getInvitationContent());
+    
+    JobOperator jobOperator = BatchRuntime.getJobOperator();
+    
+    long jobId = jobOperator.start("panelInvitationsJob", properties);
+    if (jobId > 0) {
+      return Response.status(Status.ACCEPTED).build();
+    }
+    
+    return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to submit job").build();
   }
 
   @Override

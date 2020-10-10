@@ -44,6 +44,8 @@ interface State {
  */
 export default class InviteUsers extends React.Component<Props, State> {
 
+  private timer?: any;
+
   /**
    * Constructor
    * 
@@ -85,6 +87,19 @@ export default class InviteUsers extends React.Component<Props, State> {
       panelInvitations: panelInvitations,
       loggedUser: loggedUser
     });
+
+    this.timer = setInterval(() => {
+      this.updateInvitations();
+    }, 1000 * 30);
+  }
+
+  /**
+   * Component will unmount life-cycle event
+   */
+  public componentWillUnmount() {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
   }
 
   /** 
@@ -234,7 +249,7 @@ export default class InviteUsers extends React.Component<Props, State> {
 
     return (
       <List.Item key={ invitation.id }>
-        <List.Icon name='user' size='large' verticalAlign='middle' color={ this.getIconColor(invitation.state) } />
+        <List.Icon name='user' size='large' verticalAlign='middle' color={ this.getInvitationIconColor(invitation.state) } />
         <List.Content>
           <List.Header>{ invitation.email }</List.Header>
           <List.Description>{ strings.formatString(listStrings.timeLabel, time) }</List.Description>
@@ -336,7 +351,7 @@ export default class InviteUsers extends React.Component<Props, State> {
    * @param invitationState invitation state 
    * @returns icon color for given status
    */
-  private getIconColor = (invitationState: PanelInvitationState): SemanticCOLORS => {
+  private getInvitationIconColor = (invitationState: PanelInvitationState): SemanticCOLORS => {
     switch (invitationState) {
       case PanelInvitationState.ACCEPTED:
         return "green";
@@ -346,6 +361,19 @@ export default class InviteUsers extends React.Component<Props, State> {
     }
 
     return 'grey';
+  }
+
+  /**
+   * Updates invitation list
+   */
+  private updateInvitations = async () => {
+    const { accessToken } = this.props;
+    
+    const panelInvitations = await Api.getPanelInvitationsApi(accessToken.token).listPanelInvitations({ panelId: this.props.panelId });
+
+    this.setState({
+      panelInvitations: panelInvitations
+    });
   }
 
   /**
@@ -481,7 +509,28 @@ export default class InviteUsers extends React.Component<Props, State> {
   /**
    * Event handler for send invitations click
    */
-  private onSendInvitationsClick = () => {
+  private onSendInvitationsClick = async () => {
+    const { accessToken } = this.props;
+
+    this.setState({
+      loading: true
+    })
+
+    await Api.getPanelInvitationsApi(accessToken.token).createPanelInvitationRequest({
+      panelId: this.props.panelId,
+      panelInvitationRequest: {
+        emails: this.state.inviteEmails,
+        skipInvitation: this.state.skipInvitation,
+        invitationContent: this.state.mailTemplate,
+        targetQueryId: this.state.invitationTarget ? this.state.invitationTarget : undefined 
+      }
+    });    
+
+    this.setState({
+      loading: false
+    })
+
+    /// const panelInvitations = await Api.getPanelInvitationsApi(accessToken.token).listPanelInvitations({ panelId: this.props.panelId });
 
   }
 
