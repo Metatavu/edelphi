@@ -10,7 +10,7 @@ import "../styles/live-view.scss";
 import { mqttConnection, OnMessageCallback } from "../mqtt";
 import { QueryQuestionCommentsApi, QueriesApi, PanelsApi, QueryPagesApi, QueryQuestionAnswersApi, QueryQuestionCommentCategoriesApi, UsersApi } from "../generated/client/apis";
 import * as queryString from "query-string";
-import * as moment from "moment";
+import moment from "moment";
 import getLanguage from "../localization/language";
 import strings from "../localization/strings";
 import StatisticsUtils from "../statistics/statistics-utils";
@@ -924,8 +924,8 @@ class LiveView extends React.Component<Props, State> {
    * Updates parent and root comment maps
    */
   private updateCommentMaps = () => {
-    const parentMap = {};
-    const rootMap = {};
+    const parentMap: { [key: number]: QueryQuestionComment[] } = {};
+    const rootMap: { [key: number]: QueryQuestionComment[] } = {};
 
     this.state.comments.forEach((comment) => {
       const parentCommentId = comment.parentId;
@@ -1110,7 +1110,7 @@ class LiveView extends React.Component<Props, State> {
  */
 function mapStateToProps(state: StoreState) {
   return {
-    accessToken: state.accessToken,
+    accessToken: state.accessToken!,
     locale: state.locale
   };
 }
