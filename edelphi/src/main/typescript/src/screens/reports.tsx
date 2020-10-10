@@ -179,8 +179,12 @@ class Reports extends React.Component<Props, State> {
       return null;
     }
 
+    const { accessToken } = this.props;
+
     return (
-      <PanelAdminReportsOptions panelId={ this.state.panel.id } 
+      <PanelAdminReportsOptions 
+        accessToken={ accessToken.token }
+        panelId={ this.state.panel.id } 
         queryId={ this.state.selectedQueryId } 
         queryPageId={ this.state.filterQueryPageId }
         expertiseGroupIds={ this.state.expertiseGroupIds }

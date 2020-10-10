@@ -1,10 +1,7 @@
 import * as React from "react";
-import * as moment from "moment";
-import * as actions from "../../actions";
+import moment from "moment";
 import * as _ from "lodash";
 import strings from "../../localization/strings";
-import { StoreState } from "../../types";
-import { connect } from "react-redux";
 import { Query } from "../../generated/client/models";
 import { List, Icon } from "semantic-ui-react";
 
@@ -12,9 +9,6 @@ import { List, Icon } from "semantic-ui-react";
  * Interface representing component properties
  */
 interface Props {
-  accessToken: string,
-  logggedUserId?: string,
-  locale: string,
   panelId: number,
   query: Query,
   selected: boolean,
@@ -80,31 +74,9 @@ class PanelAdminReportsQueryListItem extends React.Component<Props, State> {
    * @return formatted date
    */
   private formatDate(date?: Date | string) {
-    return moment(date).locale(this.props.locale).format("L"); 
+    return moment(date).locale(strings.getLanguage()).format("L"); 
   }
 
 }
 
-/**
- * Redux mapper for mapping store state to component props
- * 
- * @param state store state
- */
-function mapStateToProps(state: StoreState) {
-  return {
-    accessToken: state.accessToken ? state.accessToken.token : null,
-    logggedUserId: state.accessToken ? state.accessToken.userId : null,
-    locale: state.locale
-  };
-}
-
-/**
- * Redux mapper for mapping component dispatches 
- * 
- * @param dispatch dispatch method
- */
-function mapDispatchToProps(dispatch: React.Dispatch<actions.AppAction>) {
-  return { };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(PanelAdminReportsQueryListItem);
+export default PanelAdminReportsQueryListItem

@@ -13,24 +13,22 @@ import Api from "../../api";
  * Interface representing component properties
  */
 interface Props {
-  accessToken: string,
-  logggedUserId?: string,
-  locale: string,
-  panelId: number,
-  queryId: number,
-  queryPageId: number | "ALL",
-  expertiseGroupIds: number[] | "ALL",
-  panelUserGroupIds: number[] | "ALL",
-  commentCategoryIds: number[] | "ALL",
-  onExpertiseGroupsChanged: (expertiseGroupIds: number[] | "ALL") => void,
-  onPanelUserGroupsChanged: (userGroupIds: number[] | "ALL") => void,
-  onCommentCategoriesChanged: (selectedCommentCategories: number[] | "ALL") => void,
-  onQueryPageChange: (queryPageId: number | "ALL") => void,
-  onExportReportContentsPdfClick: () => void,
-  onExportReportSpreadsheetCsvClick: () => void,
-  onExportReportSpreadsheetGoogleSheetsClick: () => void,
-  onExportReportContentsGoogleDocumentClick: () => void,
-  onExportReportImagesPngClick: () => void
+  accessToken: string;
+  panelId: number;
+  queryId: number;
+  queryPageId: number | "ALL";
+  expertiseGroupIds: number[] | "ALL";
+  panelUserGroupIds: number[] | "ALL";
+  commentCategoryIds: number[] | "ALL";
+  onExpertiseGroupsChanged: (expertiseGroupIds: number[] | "ALL") => void;
+  onPanelUserGroupsChanged: (userGroupIds: number[] | "ALL") => void;
+  onCommentCategoriesChanged: (selectedCommentCategories: number[] | "ALL") => void;
+  onQueryPageChange: (queryPageId: number | "ALL") => void;
+  onExportReportContentsPdfClick: () => void;
+  onExportReportSpreadsheetCsvClick: () => void;
+  onExportReportSpreadsheetGoogleSheetsClick: () => void;
+  onExportReportContentsGoogleDocumentClick: () => void;
+  onExportReportImagesPngClick: () => void;
 }
 
 /**
@@ -567,26 +565,4 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
   
 }
 
-/**
- * Redux mapper for mapping store state to component props
- * 
- * @param state store state
- */
-function mapStateToProps(state: StoreState) {
-  return {
-    accessToken: state.accessToken ? state.accessToken.token : null,
-    logggedUserId: state.accessToken ? state.accessToken.userId : null,
-    locale: state.locale
-  };
-}
-
-/**
- * Redux mapper for mapping component dispatches 
- * 
- * @param dispatch dispatch method
- */
-function mapDispatchToProps(dispatch: React.Dispatch<actions.AppAction>) {
-  return { };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(PanelAdminReportsOptions);
+export default PanelAdminReportsOptions;

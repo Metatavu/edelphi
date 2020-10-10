@@ -21,7 +21,6 @@ interface Props {
   queryReplyId: number,
   accessToken?: string,
   loggedUserId?: string,
-  locale: string,
   className: string,
   canManageComments: boolean,
   category: QueryQuestionCommentCategory | null,
@@ -202,26 +201,4 @@ class QueryCommentContainer extends React.Component<Props, State> {
 
 }
 
-/**
- * Redux mapper for mapping store state to component props
- * 
- * @param state store state
- */
-function mapStateToProps(state: StoreState) {
-  return {
-    accessToken: state.accessToken ? state.accessToken.token : null,
-    loggedUserId: state.accessToken ? state.accessToken.userId : null,
-    locale: state.locale
-  };
-}
-
-/**
- * Redux mapper for mapping component dispatches 
- * 
- * @param dispatch dispatch method
- */
-function mapDispatchToProps(dispatch: React.Dispatch<actions.AppAction>) {
-  return { };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(QueryCommentContainer);
+export default QueryCommentContainer;

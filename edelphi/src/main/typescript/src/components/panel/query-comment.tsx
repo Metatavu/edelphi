@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as moment from "moment";
+import moment from "moment";
 import * as actions from "../../actions";
 import * as _ from "lodash";
 import QueryCommentContainer from "./query-comment-container";
@@ -18,7 +18,7 @@ import Api from "../../api";
  */
 interface Props {
   accessToken?: string,
-  logggedUserId?: string,
+  loggedUserId?: string,
   locale: string,
   comment: QueryQuestionComment,
   panelId: number,
@@ -48,8 +48,8 @@ interface State {
 class QueryCommentClass extends React.Component<Props, State> {
 
   private queryQuestionCommentsListener: OnMessageCallback;
-  private commentEditor: HTMLTextAreaElement | null;
-  private replyEditor: HTMLTextAreaElement | null;
+  private commentEditor: HTMLTextAreaElement | null = null;
+  private replyEditor: HTMLTextAreaElement | null = null;
 
   /**
    * Constructor
@@ -93,7 +93,7 @@ class QueryCommentClass extends React.Component<Props, State> {
         <div className={ this.state.folded ? "queryCommentShowHideButton hideIcon" : "queryCommentShowHideButton showIcon" } onClick={ () => this.onHoldClick() }></div>
         <div className="queryCommentHeader" style={{ clear: "both" }}>
           <div className="queryCommentDate">{ strings.formatString(strings.panel.query.comments.commentDate, this.formatDateTime(this.props.comment.created)) } </div>
-          { this.props.comment.creatorId == this.props.logggedUserId ? <p style={{ fontStyle: "italic", fontWeight: "bold" }}> { strings.panel.query.comments.yourComment } </p> : null }
+          { this.props.comment.creatorId == this.props.loggedUserId ? <p style={{ fontStyle: "italic", fontWeight: "bold" }}> { strings.panel.query.comments.yourComment } </p> : null }
         </div>
         {
           this.renderFoldableContent()
@@ -213,7 +213,20 @@ class QueryCommentClass extends React.Component<Props, State> {
    * Renders child comments
    */
   private renderChildComments() {
-    return <QueryCommentContainer onCommentsChanged={ this.onCommentsChanged } category={ this.props.category } className="queryCommentChildren" canManageComments={ this.props.canManageComments } parentId={ this.props.comment.id! } queryReplyId={this.props.queryReplyId} pageId={ this.props.pageId } panelId={ this.props.panelId } queryId={ this.props.queryId }/>
+    const { accessToken, loggedUserId } = this.props;  
+
+    return <QueryCommentContainer 
+      accessToken={ accessToken }
+      loggedUserId={ loggedUserId }
+      onCommentsChanged={ this.onCommentsChanged } 
+      category={ this.props.category } 
+      className="queryCommentChildren" 
+      canManageComments={ this.props.canManageComments } 
+      parentId={ this.props.comment.id! } 
+      queryReplyId={this.props.queryReplyId} 
+      pageId={ this.props.pageId } 
+      panelId={ this.props.panelId } 
+      queryId={ this.props.queryId }/>
   }
 
   /**
@@ -222,7 +235,7 @@ class QueryCommentClass extends React.Component<Props, State> {
   private renderLinks() {
     return (
       <div className="queryCommentMeta">
-        <div className="queryCommentNewComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onNewCommentClick(event) }  className="queryCommentNewCommentLink">{ this.props.comment.creatorId == this.props.logggedUserId ? strings.panel.query.comments.elaborate : strings.panel.query.comments.reply }</a></div>
+        <div className="queryCommentNewComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onNewCommentClick(event) }  className="queryCommentNewCommentLink">{ this.props.comment.creatorId == this.props.loggedUserId ? strings.panel.query.comments.elaborate : strings.panel.query.comments.reply }</a></div>
         {
           this.renderShowHideComment()
         }
@@ -266,7 +279,7 @@ class QueryCommentClass extends React.Component<Props, State> {
    * @returns whether user may edit a comment or not
    */
   private canEditComment = () => {
-    return this.state.hasChildren == false && (this.props.canManageComments || this.props.logggedUserId == this.props.comment.creatorId);
+    return this.state.hasChildren == false && (this.props.canManageComments || this.props.loggedUserId == this.props.comment.creatorId);
   }
 
   /**
@@ -527,8 +540,8 @@ class QueryCommentClass extends React.Component<Props, State> {
  */
 function mapStateToProps(state: StoreState) {
   return {
-    accessToken: state.accessToken ? state.accessToken.token : null,
-    logggedUserId: state.accessToken ? state.accessToken.userId : null,
+    accessToken: state.accessToken!.token,
+    loggedUserId: state.accessToken!.userId,
     locale: state.locale
   };
 }
