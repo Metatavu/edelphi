@@ -1924,6 +1924,7 @@ components:
       type: object
       required:
         - comment
+        - state
       properties:
         id:
           description: Invitation id
