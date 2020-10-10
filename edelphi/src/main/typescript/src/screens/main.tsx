@@ -2,7 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { createStore } from 'redux';
 import App from "../components/app";
-import { StoreState } from "src/types";
+import { StoreState } from "../types";
 import "semantic-ui-less/semantic.less";
 import { AppAction } from "../actions";
 import { reducer } from "../reducers";
@@ -31,10 +31,11 @@ window.addEventListener('load', () => {
   if (root) {
     ReactDOM.render(
       <Provider store={store}>
-        <AccessTokenRefresh />
-        <MqttConnector>
-          <App/>
-        </MqttConnector>
+        <AccessTokenRefresh>
+          <MqttConnector>
+            <App/>
+          </MqttConnector>
+        </AccessTokenRefresh>
       </Provider>, root);
   }
 

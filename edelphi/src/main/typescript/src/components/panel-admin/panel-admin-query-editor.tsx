@@ -10,6 +10,7 @@ import strings from "../../localization/strings";
 import * as QRCode from "qrcode";
 import PanelAdminQueryCopyDialog from "./panel-admin-query-copy-dialog";
 import Api from "../../api";
+import LegacyUtils from "../../utils/legacy-utils";
 
 /**
  * Interface representing component properties
@@ -86,14 +87,14 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
    * Component will mount life-cycle event
    */
   public componentWillMount() {
-    document.addEventListener("react-command", this.onReactCommand);  
+    LegacyUtils.addCommandListener(this.onReactCommand);  
   }
   
   /**
    * Component will unmount life-cycle event
    */
   public async componentWillUnmount() {
-    document.removeEventListener("react-command", this.onReactCommand);
+    LegacyUtils.removeCommandListener(this.onReactCommand);
   }
   
   /** 
@@ -416,7 +417,7 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
  */
 function mapStateToProps(state: StoreState) {
   return {
-    accessToken: state.accessToken ? state.accessToken.token : null,
+    accessToken: state.accessToken!.token
   };
 }
 

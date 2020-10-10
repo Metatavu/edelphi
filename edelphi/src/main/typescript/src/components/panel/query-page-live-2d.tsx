@@ -48,7 +48,7 @@ const GRAPH_WINDOW_OFFSET = 40;
  */
 class QueryPageLive2d extends React.Component<Props, State> {
 
-  private chartContainerRef: HTMLDivElement | null;
+  private chartContainerRef: HTMLDivElement | null = null;
   private queryQuestionAnswersListener: OnMessageCallback;
   private savedAt: number = 0;
   private saving: boolean = false;

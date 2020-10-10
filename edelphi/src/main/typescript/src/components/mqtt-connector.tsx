@@ -106,7 +106,7 @@ class MqttConnector extends React.Component<Props, State> {
  */
 function mapStateToProps(state: StoreState) {
   return {
-    accessToken: state.accessToken ? state.accessToken.token : null,
+    accessToken: state.accessToken?.token,
     locale: state.locale
   };
 }

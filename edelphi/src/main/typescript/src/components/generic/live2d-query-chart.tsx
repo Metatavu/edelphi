@@ -1,6 +1,6 @@
 import * as React from "react";
 import { AxisDomain, ScatterChart, XAxis, YAxis, ZAxis, CartesianGrid, Scatter, Cell, Label } from "recharts";
-import { QueryLive2dAnswer } from "src/types";
+import { QueryLive2dAnswer } from "../../types";
 import { QueryPage, QueryPageLive2DOptions, QueryPageLive2DColor } from "../../generated/client/models";
 
 /**

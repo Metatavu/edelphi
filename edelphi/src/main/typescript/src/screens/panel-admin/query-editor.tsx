@@ -8,7 +8,7 @@ import AccessTokenRefresh from "../../components/access-token-refresh";
 import PanelAdminQueryEditor from "../../components/panel-admin/panel-admin-query-editor";
 
 import strings from "../../localization/strings";
-import { StoreState } from "src/types";
+import { StoreState } from "../../types";
 import getLanguage from "../../localization/language";
 
 declare const JSDATA: any;
@@ -50,8 +50,9 @@ window.addEventListener('load', () => {
     if (panelId && queryId) {
       const component =
         <Provider store={store}>
-          <AccessTokenRefresh />
-          <PanelAdminQueryEditor panelId={ panelId } queryId={ queryId } openCopyDialog={ openCopyDialog }/>
+          <AccessTokenRefresh>
+            <PanelAdminQueryEditor panelId={ panelId } queryId={ queryId } openCopyDialog={ openCopyDialog }/>
+          </AccessTokenRefresh>
         </Provider>;
 
       ReactDOM.render(component, panelAdminQueryEditor);

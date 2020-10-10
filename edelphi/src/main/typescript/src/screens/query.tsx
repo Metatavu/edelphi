@@ -14,6 +14,7 @@ import QueryComments from "../components/panel/query-comments";
 import QueryNavigation from "../components/panel/query-navigation";
 import getLanguage from "../localization/language";
 import { QueryState } from "../generated/client/models";
+import LegacyUtils from "../utils/legacy-utils";
 
 declare const JSDATA: any;
 let initialQueryValidationMessage: string | undefined = undefined;
@@ -43,7 +44,7 @@ const getBoolAttribute = (element: Element, attributeName: string): boolean => {
   return value === "true";
 }
 
-document.addEventListener("react-command", (event: CommandEvent) => {
+LegacyUtils.addCommandListener((event: CommandEvent) => {
   if (event.detail.command == "disable-query-next") {
     initialQueryValidationMessage = event.detail.data.reason || strings.panel.query.noAnswer;
   } else if (event.detail.command == "enable-query-next") {
@@ -80,10 +81,11 @@ window.addEventListener('load', () => {
     if (panelId && queryId && pageId && queryReplyId) {
       const component =
         <Provider store={store}>
-          <AccessTokenRefresh />
-          <MqttConnector>
-            <QueryComments setPageChangeListener={ setPageChangeListener } panelId={ panelId } canManageComments={ canManageComments }  viewDiscussion={ viewDiscussion } commentable={ commentable } pageId={ pageId } queryId={ queryId } queryReplyId={ queryReplyId }/>
-          </MqttConnector>
+          <AccessTokenRefresh>
+            <MqttConnector>
+              <QueryComments setPageChangeListener={ setPageChangeListener } panelId={ panelId } canManageComments={ canManageComments }  viewDiscussion={ viewDiscussion } commentable={ commentable } pageId={ pageId } queryId={ queryId } queryReplyId={ queryReplyId }/>
+            </MqttConnector>
+          </AccessTokenRefresh>
         </Provider>;
 
       ReactDOM.render(component, queryComments);
@@ -99,10 +101,11 @@ window.addEventListener('load', () => {
     if (panelId && queryId && pageId) {
       const component =
         <Provider store={store}>
-          <AccessTokenRefresh />
-          <MqttConnector>
-            <QueryPageLive2d pageId={pageId} panelId={panelId} queryId={queryId} queryReplyId={queryReplyId} />
-          </MqttConnector>
+          <AccessTokenRefresh>
+            <MqttConnector>
+              <QueryPageLive2d pageId={pageId} panelId={panelId} queryId={queryId} queryReplyId={queryReplyId} />
+            </MqttConnector>
+          </AccessTokenRefresh>
         </Provider>;
 
       ReactDOM.render(component, queryPageLive2D);
@@ -118,10 +121,11 @@ window.addEventListener('load', () => {
     if (panelId && queryId && pageId) {
       const component =
         <Provider store={store}>
-          <AccessTokenRefresh />
-          <MqttConnector>
-            <QueryNavigation queryState={ queryState } pageId={pageId} panelId={panelId} queryId={queryId} onPageChange={ pageChangeListener }/>
-          </MqttConnector>
+          <AccessTokenRefresh>
+            <MqttConnector>
+              <QueryNavigation queryState={ queryState } pageId={pageId} panelId={panelId} queryId={queryId} onPageChange={ pageChangeListener }/>
+            </MqttConnector>
+          </AccessTokenRefresh>
         </Provider>;
 
       ReactDOM.render(component, queryNavigation);
