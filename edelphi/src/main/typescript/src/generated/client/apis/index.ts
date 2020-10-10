@@ -1,4 +1,5 @@
 export * from './PanelExpertiseApi';
+export * from './PanelInvitationsApi';
 export * from './PanelsApi';
 export * from './QueriesApi';
 export * from './QueryPagesApi';

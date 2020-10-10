@@ -1,4 +1,4 @@
-import { Configuration, PanelExpertiseApi, PanelsApi, QueriesApi, QueryPagesApi, QueryQuestionAnswersApi, QueryQuestionCommentCategoriesApi, QueryQuestionCommentsApi, ReportsApi, UserGroupsApi, UsersApi } from "../generated/client";
+import { Configuration, PanelExpertiseApi, PanelInvitationsApi, PanelsApi, QueriesApi, QueryPagesApi, QueryQuestionAnswersApi, QueryQuestionCommentCategoriesApi, QueryQuestionCommentsApi, ReportsApi, UserGroupsApi, UsersApi } from "../generated/client";
 
 const location = window.location;
 const basePath = `${location.protocol}//${location.hostname}:${location.port}/api/v1`;
@@ -106,6 +106,16 @@ export default class Api {
    */
   public static getPanelExpertiseApi(accessToken: string) {
     return new PanelExpertiseApi(Api.getConfiguration(accessToken));
+  }
+
+  /**
+   * Gets initialized api
+   *
+   * @param token access token
+   * @returns initialized api
+   */
+  public static getPanelInvitationsApi(accessToken: string) {
+    return new PanelInvitationsApi(Api.getConfiguration(accessToken));
   }
 
   /**
