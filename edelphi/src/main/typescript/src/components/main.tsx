@@ -1,12 +1,13 @@
 import * as React from "react";
 import * as actions from "../actions";
-import { StoreState, AccessToken } from "src/types";
+import { StoreState, AccessToken } from "../types";
 import { Dispatch } from "redux";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import { Route } from "react-router";
 import LiveView from "../screens/live-view";
 import Reports from "../screens/reports";
+import InviteUsersScreen from "../screens/invite-users-screen";
 
 /**
  * Interface for component props
@@ -49,6 +50,7 @@ class MainPage extends React.Component<Props, State> {
       <div>
         <Route exact path="/panel/admin/liveview.page" component={LiveView}/>
         <Route exact path="/panel/admin/reports.page" component={Reports}/>
+        <Route exact path="/panel/admin/inviteusers.page" component={InviteUsersScreen}/>
       </div>
     );
   }

@@ -177,6 +177,63 @@ export interface IStrings extends LocalizedStringsMethods {
       reportToEmailMessageDelivery: string
       reportToEmailMessageDeliveryTime: string;
       reportToEmailMessageLeave: string
+    },
+
+    inviteUsers: {
+      title: string;
+      breadcrumb: string;
+
+      inviteBlock: {
+        title: string;
+        emailPlaceholder: string;
+        csvFieldLabel: string;
+        csvUploadButton: string;
+        csvExampleLinkLabel: string;
+        usersToBeInvitedLabel: string;
+        invitationFieldLabel: string;
+        addUsersWithoutInvitationLabel: string;
+        singleUseLabel: string;
+        sendInvitationsButtonLabel: string;
+        invitationTarget: string;
+        panelTarget: string;
+        addUser: string;
+        mailTemplate: string;
+      },
+      usersListBlock: {
+        title: string;
+        addedByManagerLabel: string;
+        addedDateTimeLabel: string;
+        resendInvitationToAll: string;
+        resendInvitationToUser: string;
+
+        lists: {
+          IN_QUEUE: {
+            title: string;
+            timeLabel: string;
+          };
+          BEING_SENT: {
+            title: string;
+            timeLabel: string;
+          };
+          SEND_FAIL: {
+            title: string;
+            timeLabel: string;
+          };
+          PENDING: {
+            title: string;
+            timeLabel: string;
+          };
+          ACCEPTED: {
+            title: string;
+            timeLabel: string;
+          };
+          DECLINED: {
+            title: string;
+            timeLabel: string;
+          };
+
+        }
+      }
     }
   }
   
