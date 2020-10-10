@@ -17,9 +17,8 @@ import Api from "../../api";
  * Interface representing component properties
  */
 interface Props {
-  accessToken?: string,
-  loggedUserId?: string,
-  locale: string,
+  accessToken: string,
+  loggedUserId: string,
   comment: QueryQuestionComment,
   panelId: number,
   queryId: number,
@@ -213,7 +212,7 @@ class QueryCommentClass extends React.Component<Props, State> {
    * Renders child comments
    */
   private renderChildComments() {
-    const { accessToken, loggedUserId } = this.props;  
+    const { accessToken, loggedUserId } = this.props;
 
     return <QueryCommentContainer 
       accessToken={ accessToken }
@@ -300,7 +299,7 @@ class QueryCommentClass extends React.Component<Props, State> {
    * @return formatted date time
    */
   private formatDateTime(dateTime?: Date | string) {
-    return moment(dateTime).locale(this.props.locale).format("LLL"); 
+    return moment(dateTime).locale(strings.getLanguage()).format("LLL"); 
   }
 
   /**
@@ -533,27 +532,4 @@ class QueryCommentClass extends React.Component<Props, State> {
   }
 }
 
-/**
- * Redux mapper for mapping store state to component props
- * 
- * @param state store state
- */
-function mapStateToProps(state: StoreState) {
-  return {
-    accessToken: state.accessToken!.token,
-    loggedUserId: state.accessToken!.userId,
-    locale: state.locale
-  };
-}
-
-/**
- * Redux mapper for mapping component dispatches 
- * 
- * @param dispatch dispatch method
- */
-function mapDispatchToProps(dispatch: React.Dispatch<actions.AppAction>) {
-  return { };
-}
-
-const QueryComment = connect(mapStateToProps, mapDispatchToProps)(QueryCommentClass);
-export default QueryComment;
+export default QueryCommentClass;

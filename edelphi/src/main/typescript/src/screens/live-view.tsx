@@ -22,7 +22,7 @@ import Api from "../api";
  * Interface representing component properties
  */
 interface Props {
-  accessToken: AccessToken,
+  accessToken?: AccessToken,
   location: any
 }
 
@@ -114,22 +114,26 @@ class LiveView extends React.Component<Props, State> {
   /**
    * Component will mount life-cycle event
    */
-  public async componentDidMount() {
+  public async componentDidMount() {    
     mqttConnection.subscribe("queryquestioncomments", this.queryQuestionCommentsListener);
     mqttConnection.subscribe("queryquestionanswers", this.queryQuestionAnswersListener);
     window.addEventListener("resize", this.onWindowResize);
 
-    const queryParams = queryString.parse(this.props.location.search);
-    
+    const queryParams = queryString.parse(this.props.location.search);    
     const panelId = parseInt(queryParams.panelId as string);
+
+    const { accessToken } = this.props;
+    if (!accessToken) {
+      return;
+    }
 
     this.setState({
       loading: true
     });
 
-    const panel = await this.getPanelsApi().findPanel({ panelId: panelId });
-    const queries = await this.getQueriesApi().listQueries({ panelId: panelId });
-    const loggedUser = await this.getUsersApi().findUser({ userId: this.props.accessToken.userId });
+    const panel = await Api.getPanelsApi(accessToken.token).findPanel({ panelId: panelId });
+    const queries = await Api.getQueriesApi(accessToken.token).listQueries({ panelId: panelId });
+    const loggedUser = await Api.getUsersApi(accessToken.token).findUser({ userId: accessToken.userId });
 
     this.setState({
       loading: false,
@@ -597,9 +601,16 @@ class LiveView extends React.Component<Props, State> {
    * Loads view data
    */
   private async loadData() {
-    if (!this.state.panel || !this.state.panel.id) {
+    const { accessToken } = this.props;
+
+    if (!accessToken || !this.state.panel || !this.state.panel.id) {
       return;
     }
+
+    const queryQuestionCommentsApi = Api.getQueryQuestionCommentsApi(accessToken.token);
+    const queryPagesApi = Api.getQueryPagesApi(accessToken.token);
+    const queryQuestionAnswersApi = Api.getQueryQuestionAnswersApi(accessToken.token);
+    const queryQuestionCommentCategoriesApi = Api.getQueryQuestionCommentCategoriesApi(accessToken.token);
 
     const panelId = this.state.panel.id;
 
@@ -608,7 +619,7 @@ class LiveView extends React.Component<Props, State> {
     });
 
     if (this.state.queryId) {
-      const pages = await this.getQueryPagesApi().listQueryPages({ panelId: panelId, queryId: this.state.queryId, includeHidden: false });
+      const pages = await queryPagesApi.listQueryPages({ panelId: panelId, queryId: this.state.queryId, includeHidden: false });
 
       await this.setStateAsync({
         pages: pages.filter((page) => {
@@ -626,7 +637,7 @@ class LiveView extends React.Component<Props, State> {
         throw new Error("Could not lookup page axes");
       }
 
-      const categories = await this.getQueryQuestionCommentCategoriesApi(this.props.accessToken.token)
+      const categories = await queryQuestionCommentCategoriesApi
         .listQueryQuestionCommentCategories({ panelId: this.state.panel.id, pageId: this.state.pageId });
 
       await this.setStateAsync({
@@ -641,14 +652,14 @@ class LiveView extends React.Component<Props, State> {
     }
 
     if (this.state.pageId && this.state.queryId && this.state.panel && this.state.panel.id && this.state.categoryId !== undefined) {
-      const comments = await this.getQueryQuestionCommentsApi().listQueryQuestionComments({
+      const comments = await queryQuestionCommentsApi.listQueryQuestionComments({
         panelId: this.state.panel.id,
         queryId: this.state.queryId,
         pageId: this.state.pageId,
         categoryId: this.state.categoryId
       });
       
-      const answers = await this.getQueryQuestionAnswersApi().listQueryQuestionAnswers({
+      const answers = await queryQuestionAnswersApi.listQueryQuestionAnswers({
         panelId: this.state.panel.id,
         pageId: this.state.pageId,
         queryId: this.state.queryId
@@ -742,69 +753,6 @@ class LiveView extends React.Component<Props, State> {
     return this.state.answers.find((answer) => {
       return answer.queryReplyId == comment.queryReplyId && answer.queryPageId == comment.queryPageId;
     }) || null;
-  }
-
-  /**
-   * Returns query question comments API
-   * 
-   * @returns query question comments API
-   */
-  private getQueryQuestionCommentsApi(): QueryQuestionCommentsApi {
-    return Api.getQueryQuestionCommentsApi(this.props.accessToken.token);
-  }
-
-  /**
-   * Returns queries API
-   * 
-   * @returns queries API
-   */
-  private getQueriesApi(): QueriesApi {
-    return Api.getQueriesApi(this.props.accessToken.token);
-  }
-
-  /**
-   * Returns users API
-   * 
-   * @returns users API
-   */
-  private getUsersApi(): UsersApi {
-    return Api.getUsersApi(this.props.accessToken.token);
-  }
-
-  /**
-   * Returns panels API
-   * 
-   * @returns panels API
-   */
-  private getPanelsApi(): PanelsApi {
-    return Api.getPanelsApi(this.props.accessToken.token);
-  }
-
-  /**
-   * Returns query pages API
-   * 
-   * @returns query pages API
-   */
-  private getQueryPagesApi(): QueryPagesApi {
-    return Api.getQueryPagesApi(this.props.accessToken.token);
-  }
-
-  /**
-   * Returns query question answers API
-   * 
-   * @returns query question answers API
-   */
-  private getQueryQuestionAnswersApi(): QueryQuestionAnswersApi {
-    return Api.getQueryQuestionAnswersApi(this.props.accessToken.token);
-  }
-
-  /**
-   * Returns query question comments API
-   * 
-   * @returns query question comments API
-   */
-  private getQueryQuestionCommentCategoriesApi(accessToken: string): QueryQuestionCommentCategoriesApi {
-    return Api.getQueryQuestionCommentCategoriesApi(accessToken);
   }
 
   /**
@@ -1002,7 +950,9 @@ class LiveView extends React.Component<Props, State> {
    * @param notification notification
    */
   private async onQueryQuestionCommentNotification(notification: QueryQuestionCommentNotification) {
-    if (!this.state.panel || !this.state.panel.id) {
+    const { accessToken } = this.props;
+
+    if (!accessToken || !this.state.panel || !this.state.panel.id) {
       return;
     }
 
@@ -1010,7 +960,7 @@ class LiveView extends React.Component<Props, State> {
       return;
     }
 
-    const comment = await this.getQueryQuestionCommentsApi().findQueryQuestionComment({
+    const comment = await Api.getQueryQuestionCommentsApi(accessToken.token).findQueryQuestionComment({
       panelId: this.state.panel.id,
       commentId: notification.commentId
     });
@@ -1024,7 +974,9 @@ class LiveView extends React.Component<Props, State> {
    * @param notification notification
    */
   private async onQueryQuestionAnswerNotification(notification: QueryQuestionAnswerNotification) {
-    if (!this.state.panel || !this.state.panel.id) {
+    const { accessToken } = this.props;
+
+    if (!accessToken || !this.state.panel || !this.state.panel.id) {
       return;
     }
 
@@ -1032,7 +984,7 @@ class LiveView extends React.Component<Props, State> {
       return;
     }
 
-    const answer = await this.getQueryQuestionAnswersApi().findQueryQuestionAnswer({
+    const answer = await Api.getQueryQuestionAnswersApi(accessToken.token).findQueryQuestionAnswer({
       panelId: this.state.panel.id,
       answerId: notification.answerId
     });
@@ -1110,7 +1062,7 @@ class LiveView extends React.Component<Props, State> {
  */
 function mapStateToProps(state: StoreState) {
   return {
-    accessToken: state.accessToken!,
+    accessToken: state.accessToken,
     locale: state.locale
   };
 }

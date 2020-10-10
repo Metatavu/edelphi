@@ -19,7 +19,7 @@ import Api from "../api";
  * Interface representing component properties
  */
 interface Props {
-  accessToken: AccessToken,
+  accessToken?: AccessToken,
   location: any
 }
 
@@ -70,6 +70,11 @@ class Reports extends React.Component<Props, State> {
    * Component will mount life-cycle event
    */
   public async componentDidMount() {
+    const { accessToken } = this.props;
+    if (!accessToken) {
+      return;
+    }
+
     const queryParams = queryString.parse(this.props.location.search);
     
     const panelId = parseInt(queryParams.panelId as string);
@@ -77,10 +82,10 @@ class Reports extends React.Component<Props, State> {
     this.setState({
       loading: true
     });
-    
-    const panel = await this.getPanelsApi().findPanel({ panelId: panelId });
-    const queries = await this.getQueriesApi().listQueries({ panelId: panelId });
-    const loggedUser = await this.getUsersApi().findUser({ userId: this.props.accessToken.userId });
+
+    const panel = await Api.getPanelsApi(accessToken.token).findPanel({ panelId: panelId });
+    const queries = await Api.getQueriesApi(accessToken.token).listQueries({ panelId: panelId });
+    const loggedUser = await Api.getUsersApi(accessToken.token).findUser({ userId: accessToken.userId });
 
     this.setState({
       loading: false,
@@ -181,6 +186,10 @@ class Reports extends React.Component<Props, State> {
 
     const { accessToken } = this.props;
 
+    if (!accessToken) {
+      return null;
+    }
+
     return (
       <PanelAdminReportsOptions 
         accessToken={ accessToken.token }
@@ -210,6 +219,11 @@ class Reports extends React.Component<Props, State> {
    * @param format report format
    */
   private requestReport = async (type: ReportType, format: ReportFormat) => {
+    const { accessToken } = this.props;
+    if (!accessToken) {
+      return;
+    }
+
     try {
       if (!this.state.panel || !this.state.panel.id) {
         throw new Error("Could not load panel");
@@ -219,9 +233,7 @@ class Reports extends React.Component<Props, State> {
         throw new Error("Query not selected");
       }
 
-      const ReportsApi = this.getReportsApi();
-
-      await ReportsApi.createReportRequest({
+      await Api.getReportsApi(accessToken.token).createReportRequest({
         reportRequest: {
           format: format,
           type: type,
@@ -245,42 +257,6 @@ class Reports extends React.Component<Props, State> {
       });
     }
   }
-
-  /**
-   * Returns queries API
-   * 
-   * @returns queries API
-   */
-  private getQueriesApi(): QueriesApi {
-    return Api.getQueriesApi(this.props.accessToken.token);
-  }
-
-  /**
-   * Returns users API
-   * 
-   * @returns users API
-   */
-  private getUsersApi(): UsersApi {
-    return Api.getUsersApi(this.props.accessToken.token);
-  }
-
-  /**
-   * Returns panels API
-   * 
-   * @returns panels API
-   */
-  private getPanelsApi(): PanelsApi {
-    return Api.getPanelsApi(this.props.accessToken.token);
-  }
-
-  /**
-   * Returns reports API
-   * 
-   * @returns reports API
-   */
-  private getReportsApi(): ReportsApi {
-    return Api.getReportsApi(this.props.accessToken.token);
-  } 
 
   /**
    * Event handler for query page filter change
@@ -367,7 +343,7 @@ class Reports extends React.Component<Props, State> {
  */
 function mapStateToProps(state: StoreState) {
   return {
-    accessToken: state.accessToken!,
+    accessToken: state.accessToken,
     locale: state.locale
   };
 }

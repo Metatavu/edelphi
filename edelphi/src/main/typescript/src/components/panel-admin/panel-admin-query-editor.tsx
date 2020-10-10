@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as actions from "../../actions";
-import { StoreState, CommandEvent, EditPageLegacyPageData } from "../../types";
+import { StoreState, CommandEvent, EditPageLegacyPageData, AccessToken } from "../../types";
 import { connect } from "react-redux";
 import PanelAdminQueryPageCommentOptionsEditor from "./panel-admin-query-page-comment-options-editor";
 import PanelAdminQueryCommentOptionsEditor from "./panel-admin-query-comment-options-editor";
@@ -16,7 +16,7 @@ import LegacyUtils from "../../utils/legacy-utils";
  * Interface representing component properties
  */
 interface Props {
-  accessToken: string,
+  accessToken?: AccessToken,
   panelId: number,
   queryId: number,
   openCopyDialog: boolean;
@@ -217,7 +217,7 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
       <PanelAdminQueryCopyDialog 
         queryId={ this.props.queryId } 
         panelId={ this.props.panelId} 
-        accessToken={ this.props.accessToken } 
+        accessToken={ this.props.accessToken.token } 
         open={ this.state.copyQueryDialogOpen } 
         onClose={ this.onCopyQueryDialogClose }/>
     );
@@ -313,8 +313,12 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
    * Removes query answers
    */
   private removeQueryAnswers = async () => {
-    const queryQuestionAnswersApi = this.getQueryQuestionAnswersApi();
-    await queryQuestionAnswersApi.deleteQueryQuestionAnswers({
+    const { accessToken } = this.props;
+    if (!accessToken) {
+      return;
+    }
+
+    await Api.getQueryQuestionAnswersApi(accessToken.token).deleteQueryQuestionAnswers({
       panelId: this.props.panelId,
       queryId: this.props.queryId
     });
@@ -328,15 +332,6 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
   private getAnonymousLoginUrl = () => {
     const location = window.location;
     return `${location.protocol}//${location.host}/panel/anonymouslogin.page?panelId=${this.props.panelId}&queryId=${this.props.queryId}`;
-  }
-
-  /**
-   * Returns query question answers service
-   * 
-   * @returns query question answers service
-   */
-  private getQueryQuestionAnswersApi = () => {
-    return Api.getQueryQuestionAnswersApi(this.props.accessToken);
   }
 
   /**
@@ -417,7 +412,7 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
  */
 function mapStateToProps(state: StoreState) {
   return {
-    accessToken: state.accessToken!.token
+    accessToken: state.accessToken
   };
 }
 

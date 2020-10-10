@@ -128,11 +128,18 @@ class QueryComments extends React.Component<Props, State> {
    * @param category category
    */
   private renderCategory = (category: QueryQuestionCommentCategory | null) => {      
+    const { accessToken } = this.props;
+    if (!accessToken) {
+      return null;
+    }
+
     return (
       <div key={ category ? category.id : "ROOT" }>
         { this.props.commentable ? this.renderCommentEditor(category) : null }
         { this.props.viewDiscussion ?
           <QueryCommentList
+            accessToken={ accessToken.token }
+            loggedUserId={ accessToken.userId }
             category={ category }
             canManageComments={ this.props.canManageComments }
             panelId={ this.props.panelId } queryId={ this.props.queryId }

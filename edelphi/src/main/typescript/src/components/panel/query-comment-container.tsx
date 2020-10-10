@@ -14,13 +14,13 @@ import Api from "../../api";
  * Interface representing component properties
  */
 interface Props {
+  accessToken: string,
+  loggedUserId: string,
   queryId: number,
   panelId: number,
   pageId: number,
   parentId: number,
   queryReplyId: number,
-  accessToken?: string,
-  loggedUserId?: string,
   className: string,
   canManageComments: boolean,
   category: QueryQuestionCommentCategory | null,
@@ -89,7 +89,16 @@ class QueryCommentContainer extends React.Component<Props, State> {
     return <div className={ this.props.className }>
       {
         this.state.comments.map((comment) => {
-          return <QueryComment key={ comment.id } category={ this.props.category } canManageComments={ this.props.canManageComments } comment={ comment } queryReplyId={this.props.queryReplyId} pageId={ this.props.pageId } panelId={ this.props.panelId} queryId={ this.props.queryId }/>
+          return <QueryComment key={ comment.id } 
+            accessToken={ this.props.accessToken }
+            loggedUserId={ this.props.loggedUserId }
+            category={ this.props.category } 
+            canManageComments={ this.props.canManageComments } 
+            comment={ comment } 
+            queryReplyId={this.props.queryReplyId}
+            pageId={ this.props.pageId } 
+            panelId={ this.props.panelId} 
+            queryId={ this.props.queryId }/>
         })
       } 
     </div>
