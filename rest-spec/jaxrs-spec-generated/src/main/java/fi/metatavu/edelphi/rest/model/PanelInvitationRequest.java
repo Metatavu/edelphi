@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class PanelInvitationRequest   {
-  private @Valid List<String> emails = new ArrayList<>();  private @Valid String invitationTitle = null;  private @Valid String invitationContent = null;  private @Valid Long targetQueryId = null;  private @Valid Boolean skipInvitation = null;
+  private @Valid List<String> emails = new ArrayList<>();  private @Valid String invitationMessage = null;  private @Valid Long targetQueryId = null;  private @Valid Boolean skipInvitation = null;  private @Valid String password = null;
 
   /**
    * List of emails the invitation will be sent to
@@ -35,39 +35,21 @@ public class PanelInvitationRequest   {
   }
 
   /**
-   * Inviation email title
-   **/
-  public PanelInvitationRequest invitationTitle(String invitationTitle) {
-    this.invitationTitle = invitationTitle;
-    return this;
-  }
-
-  
-  @ApiModelProperty(value = "Inviation email title")
-  @JsonProperty("invitationTitle")
-  public String getInvitationTitle() {
-    return invitationTitle;
-  }
-  public void setInvitationTitle(String invitationTitle) {
-    this.invitationTitle = invitationTitle;
-  }
-
-  /**
    * Inviation email content
    **/
-  public PanelInvitationRequest invitationContent(String invitationContent) {
-    this.invitationContent = invitationContent;
+  public PanelInvitationRequest invitationMessage(String invitationMessage) {
+    this.invitationMessage = invitationMessage;
     return this;
   }
 
   
   @ApiModelProperty(value = "Inviation email content")
-  @JsonProperty("invitationContent")
-  public String getInvitationContent() {
-    return invitationContent;
+  @JsonProperty("invitationMessage")
+  public String getInvitationMessage() {
+    return invitationMessage;
   }
-  public void setInvitationContent(String invitationContent) {
-    this.invitationContent = invitationContent;
+  public void setInvitationMessage(String invitationMessage) {
+    this.invitationMessage = invitationMessage;
   }
 
   /**
@@ -107,6 +89,24 @@ public class PanelInvitationRequest   {
     this.skipInvitation = skipInvitation;
   }
 
+  /**
+   * Initial password for users. This field is used only when skipInvitation is true
+   **/
+  public PanelInvitationRequest password(String password) {
+    this.password = password;
+    return this;
+  }
+
+  
+  @ApiModelProperty(value = "Initial password for users. This field is used only when skipInvitation is true")
+  @JsonProperty("password")
+  public String getPassword() {
+    return password;
+  }
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -118,15 +118,15 @@ public class PanelInvitationRequest   {
     }
     PanelInvitationRequest panelInvitationRequest = (PanelInvitationRequest) o;
     return Objects.equals(emails, panelInvitationRequest.emails) &&
-        Objects.equals(invitationTitle, panelInvitationRequest.invitationTitle) &&
-        Objects.equals(invitationContent, panelInvitationRequest.invitationContent) &&
+        Objects.equals(invitationMessage, panelInvitationRequest.invitationMessage) &&
         Objects.equals(targetQueryId, panelInvitationRequest.targetQueryId) &&
-        Objects.equals(skipInvitation, panelInvitationRequest.skipInvitation);
+        Objects.equals(skipInvitation, panelInvitationRequest.skipInvitation) &&
+        Objects.equals(password, panelInvitationRequest.password);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(emails, invitationTitle, invitationContent, targetQueryId, skipInvitation);
+    return Objects.hash(emails, invitationMessage, targetQueryId, skipInvitation, password);
   }
 
   @Override
@@ -135,10 +135,10 @@ public class PanelInvitationRequest   {
     sb.append("class PanelInvitationRequest {\n");
     
     sb.append("    emails: ").append(toIndentedString(emails)).append("\n");
-    sb.append("    invitationTitle: ").append(toIndentedString(invitationTitle)).append("\n");
-    sb.append("    invitationContent: ").append(toIndentedString(invitationContent)).append("\n");
+    sb.append("    invitationMessage: ").append(toIndentedString(invitationMessage)).append("\n");
     sb.append("    targetQueryId: ").append(toIndentedString(targetQueryId)).append("\n");
     sb.append("    skipInvitation: ").append(toIndentedString(skipInvitation)).append("\n");
+    sb.append("    password: ").append(toIndentedString(password)).append("\n");
     sb.append("}");
     return sb.toString();
   }

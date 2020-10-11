@@ -95,8 +95,9 @@ public class PanelInvitation   {
   }
 
   
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(required = true, value = "")
   @JsonProperty("state")
+  @NotNull
   public PanelInvitationState getState() {
     return state;
   }

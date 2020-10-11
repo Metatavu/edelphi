@@ -2711,11 +2711,7 @@
               "format" : "email"
             }
           },
-          "invitationTitle" : {
-            "type" : "string",
-            "description" : "Inviation email title"
-          },
-          "invitationContent" : {
+          "invitationMessage" : {
             "type" : "string",
             "description" : "Inviation email content"
           },
@@ -2727,11 +2723,15 @@
           "skipInvitation" : {
             "type" : "boolean",
             "description" : "If skip invitation is true, users will be added directly without invitation"
+          },
+          "password" : {
+            "type" : "string",
+            "description" : "Initial password for users. This field is used only when skipInvitation is true"
           }
         }
       },
       "PanelInvitation" : {
-        "required" : [ "comment" ],
+        "required" : [ "comment", "state" ],
         "type" : "object",
         "properties" : {
           "id" : {
