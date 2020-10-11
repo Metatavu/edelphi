@@ -222,12 +222,12 @@ export default class InviteUsers extends React.Component<Props, State> {
    * Renders queries list
    */
   private renderUsersListBlock = () => {
-    const states: PanelInvitationState[] = [ 
-      PanelInvitationState.ADDED,       
-      PanelInvitationState.SENDFAIL,       
+    const states: PanelInvitationState[] = [       
       PanelInvitationState.INQUEUE, 
       PanelInvitationState.BEINGSENT,
       PanelInvitationState.PENDING, 
+      PanelInvitationState.SENDFAIL,
+      PanelInvitationState.ADDED,
       PanelInvitationState.ACCEPTED,
       PanelInvitationState.DECLINED
     ];
@@ -386,6 +386,7 @@ export default class InviteUsers extends React.Component<Props, State> {
   private getInvitationIconColor = (invitationState: PanelInvitationState): SemanticCOLORS => {
     switch (invitationState) {
       case PanelInvitationState.ACCEPTED:
+      case PanelInvitationState.ADDED:    
         return "green";
       case PanelInvitationState.DECLINED:
       case PanelInvitationState.SENDFAIL:
