@@ -234,11 +234,12 @@ export default class InviteUsers extends React.Component<Props, State> {
       
     return (
       <div className="block">
-        <h2>{ strings.panelAdmin.inviteUsers.usersListBlock.title }</h2>
+        <h2>{ strings.panelAdmin.inviteUsers.usersListBlock.title } <span color="blue">{ strings.panelAdmin.inviteUsers.usersListBlock.resendInvitationToAll }</span></h2>
         { states.map(this.renderUsersList) }
       </div>
     );
   }
+
   /**
    * Renders queries list
    */
