@@ -203,13 +203,17 @@
         "resendInvitationToUser": "Resend Invitation",
 
         "lists": {
+          "ADDED": {
+            "title": "Added by manager",
+            "timeLabel": "Added {0}"
+          },
           "IN_QUEUE": {
             "title": "Invitations in Mail Queue",
             "timeLabel": "Added to Queue {0}"
           },
           "BEING_SENT": {
-            "title": "Invitations in Mail Queue",
-            "timeLabel": "Added to Queue {0}"
+            "title": "Being sent",
+            "timeLabel": "Started sending {0}"
           },
           "SEND_FAIL": {
             "title": "Sending an Invitation Failed",
@@ -227,10 +231,7 @@
             "title": "Declined Invitations",
             "timeLabel": "Declined {0}"
           }
-        },
-
-        "registeredLabel": "Registered Users",
-        "registeredDateTimeLabel": "Registered"
+        }
       }
     }
   }

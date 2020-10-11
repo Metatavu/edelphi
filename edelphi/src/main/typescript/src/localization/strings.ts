@@ -211,6 +211,11 @@ export interface IStrings extends LocalizedStringsMethods {
         resendInvitationToUser: string;
 
         lists: {
+          ADDED: {
+            title: string;
+            timeLabel: string;
+          };
+          
           IN_QUEUE: {
             title: string;
             timeLabel: string;
@@ -235,7 +240,6 @@ export interface IStrings extends LocalizedStringsMethods {
             title: string;
             timeLabel: string;
           };
-
         }
       }
     }

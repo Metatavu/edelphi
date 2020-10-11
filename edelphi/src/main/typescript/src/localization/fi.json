@@ -204,9 +204,13 @@
         "resendInvitationToUser": "Lähetä uusi kutsu",
 
         "lists": {
+          "ADDED": {
+            "title": "Managerin lisäämät",
+            "timeLabel": "Lisätty {0}"
+          },
           "IN_QUEUE": {
-            "title": "Postitusjonossa olevat kutsut",
-            "timeLabel": "Lisätty jonoon {0}"
+            "title": "Lähetetään",
+            "timeLabel": "Lähetys aloitettu {0}"
           },
           "BEING_SENT": {
             "title": "Postitusjonossa olevat kutsut",
@@ -221,17 +225,14 @@
             "timeLabel": "Kutsuttu {0}"
           },
           "ACCEPTED": {
-            "title": "Accepted Invitations",
+            "title": "Hyväksytyt kutsut",
             "timeLabel": "Hyväksynyt {0}"
           },
           "DECLINED": {
             "title": "Kutsun hylänneet käyttäjät",
             "timeLabel": "Hylännyt {0}"
           }
-        },
-        
-        "registeredLabel": "Rekisteröityneet käyttäjät",
-        "registeredDateTimeLabel": "Liittynyt"
+        }
       }
     }
   }
