@@ -3389,4 +3389,20 @@
     <sqlFile path="fi/metatavu/edelphi/liquibase/query-page-multiple-1d-scales.sql" />
   </changeSet>
   
+  <changeSet id="added-panel-invitations" author="antti.leppa">
+    <addAutoIncrement tableName="PanelInvitation" columnName="id" columnDataType="BIGINT(20)"/>
+    <sql>
+      INSERT INTO
+        PanelInvitation (panel_id, email, hash, role_id, state, archived, creator_id, created, lastModifier_id, lastModified)
+      SELECT
+        panel_id, (SELECT address from UserEmail where user_id = user_id LIMIT 1), uuid(), role_id, 'ADDED', false,
+        creator_id, created, lastModifier_id, lastModified
+      FROM 
+        PanelUser 
+      WHERE 
+        joinType = 'ADDED' AND 
+        archived = false
+    </sql>
+  </changeSet>
+  
 </databaseChangeLog>
