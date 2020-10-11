@@ -1906,10 +1906,7 @@ components:
           items:
             type: string
             format: email
-        invitationTitle: 
-          description: Inviation email title
-          type: string
-        invitationContent: 
+        invitationMessage: 
           description: Inviation email content
           type: string
         targetQueryId:
@@ -1919,6 +1916,9 @@ components:
         skipInvitation:
           description: If skip invitation is true, users will be added directly without invitation
           type: boolean
+        password: 
+          description: Initial password for users. This field is used only when skipInvitation is true
+          type: string
 
     PanelInvitation:
       type: object
