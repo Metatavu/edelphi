@@ -222,19 +222,19 @@ export default class InviteUsers extends React.Component<Props, State> {
    * Renders queries list
    */
   private renderUsersListBlock = () => {
-    const states: PanelInvitationState[] = [
+    const states: PanelInvitationState[] = [ 
+      PanelInvitationState.ADDED,       
+      PanelInvitationState.SENDFAIL,       
       PanelInvitationState.INQUEUE, 
-      PanelInvitationState.BEINGSENT, 
-      PanelInvitationState.SENDFAIL, 
+      PanelInvitationState.BEINGSENT,
       PanelInvitationState.PENDING, 
-      PanelInvitationState.ACCEPTED, 
+      PanelInvitationState.ACCEPTED,
       PanelInvitationState.DECLINED
     ];
 
-      
     return (
       <div className="block">
-        <h2>{ strings.panelAdmin.inviteUsers.usersListBlock.title } <span color="blue">{ strings.panelAdmin.inviteUsers.usersListBlock.resendInvitationToAll }</span></h2>
+        <h2>{ strings.panelAdmin.inviteUsers.usersListBlock.title }</h2>
         { states.map(this.renderUsersList) }
       </div>
     );
@@ -253,7 +253,10 @@ export default class InviteUsers extends React.Component<Props, State> {
     
     return (
       <div key={ invitationState }>
-        <h3> { listStrings.title } </h3>
+        <h3> 
+          <span>{ listStrings.title }</span>
+          <span className="resend-all-link" color="blue" onClick={ () => this.resendInvitations(invitations) }>{ strings.panelAdmin.inviteUsers.usersListBlock.resendInvitationToAll }</span> 
+        </h3>
         <List divided relaxed>
           { invitations.map(this.renderUsersListInvitation) }
         </List>
@@ -268,13 +271,16 @@ export default class InviteUsers extends React.Component<Props, State> {
    */
   private renderUsersListInvitation = (invitation: PanelInvitation) => {
     const listStrings = strings.panelAdmin.inviteUsers.usersListBlock.lists[invitation.state];
-    const time = moment(invitation.created).locale(strings.getLanguage()).format("LLL");
+    const time = moment(invitation.lastModified).locale(strings.getLanguage()).format("LLL");
 
     return (
       <List.Item key={ invitation.id }>
         <List.Icon name='user' size='large' verticalAlign='middle' color={ this.getInvitationIconColor(invitation.state) } />
         <List.Content>
-          <List.Header>{ invitation.email }</List.Header>
+          <List.Header>
+            <span>{ invitation.email }</span>
+            <span className="resend-link" color="blue" onClick={ () => this.resendInvitations([invitation]) }>{ strings.panelAdmin.inviteUsers.usersListBlock.resendInvitationToAll }</span> 
+          </List.Header>
           <List.Description>{ strings.formatString(listStrings.timeLabel, time) }</List.Description>
         </List.Content>
       </List.Item>
@@ -387,6 +393,19 @@ export default class InviteUsers extends React.Component<Props, State> {
     }
 
     return 'grey';
+  }
+
+  /**
+   * Adds invitation emails to send queue
+   * 
+   * @param invitations invitations
+   */
+  private resendInvitations = (invitations: PanelInvitation[]) => {
+    const inviteEmails = invitations.map(invitation => invitation.email);
+
+    this.setState({
+      inviteEmails: _.uniq([ ...this.state.inviteEmails, ...inviteEmails ])
+    });
   }
 
   /**

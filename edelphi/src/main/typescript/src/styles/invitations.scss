@@ -36,6 +36,14 @@
     border: 3px solid #e5e5e5;
   }
 
+  .resend-all-link,
+  .resend-link {
+    color: #0099ff;
+    text-decoration: underline;
+    float: right;
+    font-size: 12px;
+  }
+
   .example-csv-container {
     margin-top: 10px;
     margin-left: 1px;
