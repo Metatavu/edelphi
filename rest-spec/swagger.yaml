@@ -1973,6 +1973,7 @@ components:
         - BEING_SENT
         - SEND_FAIL
         - PENDING
+        - ADDED
         - ACCEPTED
         - DECLINED
 
