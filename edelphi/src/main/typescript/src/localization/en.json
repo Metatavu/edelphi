@@ -175,6 +175,10 @@
     "inviteUsers": {
       "title": "Invite Users To Panel",
       "breadcrumb": "Invite Users To Panel",
+      "passwordHeader": "Uusille käyttäjille tullaan luomaan oletussalasana",
+      "passwordText": "Salasana tulee olemaan ",
+      "invitationsSentHeader": "Kutsut on lähetetty.",
+      "invitationsSentText": "{0} kutsua on lisätty lähetysjonon ja ne toimitetaan pian paneelilaisille.",
       "inviteBlock": {
         "title": "Invite / Add Users",
         "emailPlaceholder": "Type user's email address",

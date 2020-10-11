@@ -3,7 +3,7 @@ import * as _ from "lodash";
 import PanelAdminLayout from "../../components/generic/panel-admin-layout";
 import { Panel, PanelInvitation, PanelInvitationState, Query, User } from "../../generated/client/models";
 import "../../styles/invitations.scss";
-import { Grid, Container, List, Button, Icon, SemanticShorthandCollection, BreadcrumbSectionProps, Input, InputOnChangeData, Label, TextArea, TextAreaProps, Select, DropdownItemProps, Checkbox, CheckboxProps, DropdownProps } from "semantic-ui-react";
+import { Grid, Container, List, Button, Icon, SemanticShorthandCollection, BreadcrumbSectionProps, Input, InputOnChangeData, Label, TextArea, TextAreaProps, Select, DropdownItemProps, Checkbox, CheckboxProps, DropdownProps, Message } from "semantic-ui-react";
 import strings from "../../localization/strings";
 import ErrorDialog from "../../components/error-dialog";
 import Api from "../../api";
@@ -37,6 +37,8 @@ interface State {
   panelInvitations: PanelInvitation[];
   skipInvitation: boolean;
   invitationTarget: number;
+  password: string;
+  message?: string;
 }
 
 /**
@@ -61,7 +63,8 @@ export default class InviteUsers extends React.Component<Props, State> {
       inviteEmail: "",
       inviteEmails: [],
       skipInvitation: false,
-      invitationTarget: 0
+      invitationTarget: 0,
+      password: (Math.random() + 0.1).toString(36).slice(2).substring(0, 8)
     };
   }
 
@@ -123,6 +126,7 @@ export default class InviteUsers extends React.Component<Props, State> {
     return (
       <PanelAdminLayout loggedUser={ this.state.loggedUser } breadcrumbs={ breadcrumbs } loading={ this.state.loading } panel={ this.state.panel } redirectTo={ this.state.redirectTo }>
         <Container className="invite-users-screen-container">
+          { this.renderPasswordBlock() }
           <Grid>
             <Grid.Row>
               <Grid.Column width={ 16 }>
@@ -140,6 +144,24 @@ export default class InviteUsers extends React.Component<Props, State> {
           </Grid>
         </Container>
       </PanelAdminLayout>
+    );
+  }
+
+  /**
+   * Renders generated password block
+   */
+  private renderPasswordBlock = () => {
+    if (!this.state.skipInvitation) {
+      return null;
+    }
+
+    return (
+      <div className="message-container">
+        <Message info>
+          <Message.Header>{ strings.panelAdmin.inviteUsers.passwordHeader }</Message.Header>
+          <p>{ strings.panelAdmin.inviteUsers.passwordText }<b>{ this.state.password }</b></p>
+        </Message>
+      </div>
     );
   }
 
@@ -398,6 +420,51 @@ export default class InviteUsers extends React.Component<Props, State> {
     });
   }
 
+  private addUser = async (email: string) => {
+    const body = new URLSearchParams();
+    body.append("email", email);
+    body.append("password", this.state.password);
+    
+    if (this.state.invitationTarget) {
+      body.append("queryId", String(this.state.invitationTarget));
+    }
+
+    const url = `${location.protocol}//${location.hostname}:${location.port}/panel/admin/adduser.json`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      body: body
+    });
+
+    return await response.json();
+  }
+
+  private addUsers = async () => {
+    const { inviteEmails } = this.state;
+
+    for (let i = 0; i < inviteEmails.length; i++) {
+      const inviteEmail = inviteEmails[i];
+      await this.addUser(inviteEmail);
+    }
+  }
+
+  /**
+   * Invite users
+   */
+  private inviteUsers = async () => {
+    const { accessToken } = this.props;
+
+    await Api.getPanelInvitationsApi(accessToken.token).createPanelInvitationRequest({
+      panelId: this.props.panelId,
+      panelInvitationRequest: {
+        emails: this.state.inviteEmails,
+        skipInvitation: this.state.skipInvitation,
+        invitationContent: this.state.mailTemplate,
+        targetQueryId: this.state.invitationTarget ? this.state.invitationTarget : undefined 
+      }
+    }); 
+  }
+
   /**
    * Event handler for email input change
    * 
@@ -418,7 +485,7 @@ export default class InviteUsers extends React.Component<Props, State> {
    */
   private onMailTemplateChange = (event: React.FormEvent<HTMLTextAreaElement>, data: TextAreaProps) => {
     this.setState({
-      inviteEmail: data.value as string
+      mailTemplate: data.value as string
     });
   }
 
@@ -510,28 +577,20 @@ export default class InviteUsers extends React.Component<Props, State> {
    * Event handler for send invitations click
    */
   private onSendInvitationsClick = async () => {
-    const { accessToken } = this.props;
-
     this.setState({
       loading: true
     })
 
-    await Api.getPanelInvitationsApi(accessToken.token).createPanelInvitationRequest({
-      panelId: this.props.panelId,
-      panelInvitationRequest: {
-        emails: this.state.inviteEmails,
-        skipInvitation: this.state.skipInvitation,
-        invitationContent: this.state.mailTemplate,
-        targetQueryId: this.state.invitationTarget ? this.state.invitationTarget : undefined 
-      }
-    });    
+    if (this.state.skipInvitation)  {
+      await this.addUsers();
+    } else {
+      await this.inviteUsers();
+    }
 
     this.setState({
-      loading: false
+      loading: false,
+      inviteEmails: []
     })
-
-    /// const panelInvitations = await Api.getPanelInvitationsApi(accessToken.token).listPanelInvitations({ panelId: this.props.panelId });
-
   }
 
 }

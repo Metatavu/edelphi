@@ -182,6 +182,10 @@ export interface IStrings extends LocalizedStringsMethods {
     inviteUsers: {
       title: string;
       breadcrumb: string;
+      passwordHeader: string;
+      passwordText: string;
+      invitationsSentHeader: string;
+      invitationsSentText: string;
 
       inviteBlock: {
         title: string;

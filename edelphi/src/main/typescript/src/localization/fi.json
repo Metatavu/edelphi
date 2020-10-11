@@ -176,6 +176,10 @@
     "inviteUsers": {
       "title": "Käyttäjien kutsuminen paneeliin",
       "breadcrumb": "Käyttäjien kutsuminen paneeliin",
+      "passwordHeader": "A default password will be generated for new users",
+      "passwordText": "The password will be ",
+      "invitationsSentHeader": "Invitations have been sent",
+      "invitationsSentText": "{0} invitations have been added to send queue and will be delivered soon to panelists.",
       "inviteBlock": {
         "title": "Kutsu / liitä käyttäjiä",
         "emailPlaceholder": "Kirjoita käyttäjän sähköpostiosoite",
