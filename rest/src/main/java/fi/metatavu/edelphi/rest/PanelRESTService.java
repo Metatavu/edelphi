@@ -1004,6 +1004,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     properties.put(PanelInvitationBatchProperties.PANEL_INVITATION_IDS, StringUtils.join(invitationIds, ","));
     properties.put(PanelInvitationBatchProperties.INVITATION_MESSAGE, body.getInvitationMessage());
     properties.put(PanelInvitationBatchProperties.PASSWORD, body.getPassword());
+    properties.put(PanelInvitationBatchProperties.SKIP_INVITAION, String.valueOf(body.isisSkipInvitation()));
     
     JobOperator jobOperator = BatchRuntime.getJobOperator();
     

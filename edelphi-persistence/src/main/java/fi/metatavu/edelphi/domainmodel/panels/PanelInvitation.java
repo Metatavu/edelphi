@@ -10,21 +10,72 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotEmpty;
 
 import fi.metatavu.edelphi.domainmodel.base.ArchivableEntity;
 import fi.metatavu.edelphi.domainmodel.base.ModificationTrackedEntity;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
+/**
+ * Entity for panel invitations
+ * 
+ * @author Antti Leppä
+ */
 @Entity
 public class PanelInvitation implements ArchivableEntity, ModificationTrackedEntity {
+  
+  @Id 
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  
+  @ManyToOne
+  private Panel panel;
+
+  @ManyToOne
+  private Query query;
+
+  @NotNull
+  @Column (nullable = false)
+  @NotEmpty
+  private String email;
+
+  @NotNull
+  @Column (nullable = false)
+  @NotEmpty
+  private String hash;
+
+  @ManyToOne
+  private PanelUserRole role;
+
+  @NotNull
+  @Column (nullable = false)
+  @Enumerated (EnumType.STRING)
+  private PanelInvitationState state;
+
+  @ManyToOne 
+  private User creator;
+  
+  @NotNull
+  @Column (updatable=false, nullable=false)
+  @Temporal (value=TemporalType.TIMESTAMP)
+  private Date created;
+  
+  @ManyToOne  
+  private User lastModifier;
+  
+  @NotNull
+  @Column (nullable=false)
+  @Temporal (value=TemporalType.TIMESTAMP)
+  private Date lastModified;
+
+  @NotNull
+  @Column(nullable = false)
+  private Boolean archived = Boolean.FALSE;
 
   /**
    * Returns internal unique id
@@ -131,53 +182,4 @@ public class PanelInvitation implements ArchivableEntity, ModificationTrackedEnt
   public PanelInvitationState getState() {
     return state;
   }
-
-  @Id 
-  @GeneratedValue(strategy=GenerationType.TABLE, generator="PanelInvitation")  
-  @TableGenerator(name="PanelInvitation", initialValue=1, allocationSize=100, table = "hibernate_sequences", pkColumnName = "sequence_name", valueColumnName = "sequence_next_hi_value")
-  private Long id;
-  
-  @ManyToOne
-  private Panel panel;
-
-  @ManyToOne
-  private Query query;
-
-  @NotNull
-  @Column (nullable = false)
-  @NotEmpty
-  private String email;
-
-  @NotNull
-  @Column (nullable = false)
-  @NotEmpty
-  private String hash;
-
-  @ManyToOne
-  private PanelUserRole role;
-
-  @NotNull
-  @Column (nullable = false)
-  @Enumerated (EnumType.STRING)
-  private PanelInvitationState state;
-
-  @ManyToOne 
-  private User creator;
-  
-  @NotNull
-  @Column (updatable=false, nullable=false)
-  @Temporal (value=TemporalType.TIMESTAMP)
-  private Date created;
-  
-  @ManyToOne  
-  private User lastModifier;
-  
-  @NotNull
-  @Column (nullable=false)
-  @Temporal (value=TemporalType.TIMESTAMP)
-  private Date lastModified;
-
-  @NotNull
-  @Column(nullable = false)
-  private Boolean archived = Boolean.FALSE;
 }
