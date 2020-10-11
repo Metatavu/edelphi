@@ -49,7 +49,7 @@ export interface PanelInvitation {
      * @type {string}
      * @memberof PanelInvitation
      */
-    email?: string;
+    email: string;
     /**
      * 
      * @type {PanelInvitationState}
@@ -95,7 +95,7 @@ export function PanelInvitationFromJSONTyped(json: any, ignoreDiscriminator: boo
         'id': !exists(json, 'id') ? undefined : json['id'],
         'panelId': !exists(json, 'panelId') ? undefined : json['panelId'],
         'queryId': !exists(json, 'queryId') ? undefined : json['queryId'],
-        'email': !exists(json, 'email') ? undefined : json['email'],
+        'email': json['email'],
         'state': PanelInvitationStateFromJSON(json['state']),
         'creatorId': !exists(json, 'creatorId') ? undefined : json['creatorId'],
         'lastModifierId': !exists(json, 'lastModifierId') ? undefined : json['lastModifierId'],

@@ -1923,7 +1923,7 @@ components:
     PanelInvitation:
       type: object
       required:
-        - comment
+        - email
         - state
       properties:
         id:

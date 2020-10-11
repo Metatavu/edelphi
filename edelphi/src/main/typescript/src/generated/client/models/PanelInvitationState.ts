@@ -22,6 +22,7 @@ export enum PanelInvitationState {
     BEINGSENT = 'BEING_SENT',
     SENDFAIL = 'SEND_FAIL',
     PENDING = 'PENDING',
+    ADDED = 'ADDED',
     ACCEPTED = 'ACCEPTED',
     DECLINED = 'DECLINED'
 }
