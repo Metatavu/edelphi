@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import fi.metatavu.edelphi.dao.panels.PanelDAO;
 import fi.metatavu.edelphi.dao.panels.PanelInvitationDAO;
 import fi.metatavu.edelphi.dao.panels.PanelStampDAO;
+import fi.metatavu.edelphi.dao.panels.PanelUserDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserExpertiseClassDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserExpertiseGroupDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserGroupDAO;
@@ -17,10 +18,13 @@ import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitation;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitationState;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
+import fi.metatavu.edelphi.domainmodel.panels.PanelUser;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseClass;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseGroup;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserGroup;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserIntressClass;
+import fi.metatavu.edelphi.domainmodel.panels.PanelUserJoinType;
+import fi.metatavu.edelphi.domainmodel.panels.PanelUserRole;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.settings.SettingsController;
@@ -56,6 +60,9 @@ public class PanelController {
 
   @Inject
   private PanelInvitationDAO panelInvitationDAO;
+
+  @Inject
+  private PanelUserDAO panelUserDAO;
   
   /**
    * Finds a panel by id
@@ -230,6 +237,32 @@ public class PanelController {
     } else {
       return panelInvitationDAO.updateState(invitation, PanelInvitationState.IN_QUEUE, creator);
     }
+  }
+  
+  /**
+   * Creates new panel user
+   * 
+   * @param panel panel
+   * @param user user
+   * @param role role
+   * @param joinType join type
+   * @param creator creator
+   * @return created panel user
+   */
+  public PanelUser createPanelUser(Panel panel, User user, PanelUserRole role, PanelUserJoinType joinType, User creator) {
+    return panelUserDAO.create(panel, user, role, joinType, panel.getCurrentStamp(), creator);
+  }
+
+  /**
+   * Finds a user by panel, user and stamp
+   * 
+   * @param panel panel
+   * @param user user
+   * @param stamp stamp
+   * @return panel user or null if not found
+   */
+  public PanelUser findByPanelAndUserAndStamp(Panel panel, User user, PanelStamp stamp) {   
+    return panelUserDAO.findByPanelAndUserAndStamp(panel, user, stamp);
   }
   
 }

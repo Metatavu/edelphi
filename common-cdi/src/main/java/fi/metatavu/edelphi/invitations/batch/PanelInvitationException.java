@@ -18,4 +18,13 @@ public class PanelInvitationException extends Exception {
     super(message);
   }
 
+  /**
+   * Constructor
+   * 
+   * @param cause cause
+   */
+  public PanelInvitationException(Throwable cause) {
+    super(cause);
+  }
+
 }

@@ -7,6 +7,8 @@
     <property name="panelId" value="#{jobParameters['panelId']}" />  
     <property name="baseUrl" value="#{jobParameters['baseUrl']}" /> 
     <property name="loggedUserId" value="#{jobParameters['loggedUserId']}" />  
+    <property name="password" value="#{jobParameters['password']}" />  
+    <property name="skipInvitaion" value="#{jobParameters['skipInvitaion']}" />  
   </properties>
   
   <step id="invitations">

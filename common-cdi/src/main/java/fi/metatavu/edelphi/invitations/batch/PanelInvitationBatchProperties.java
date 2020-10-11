@@ -13,5 +13,7 @@ public class PanelInvitationBatchProperties {
   public static String BASE_URL = "baseUrl";  
   public static String INVITATION_MESSAGE = "invitationMessage";
   public static String PANEL_INVITATION_IDS = "panelInvitationIds";
+  public static String PASSWORD = "password";
+  public static String SKIP_INVITAION = "skipInvitaion";
   
 }

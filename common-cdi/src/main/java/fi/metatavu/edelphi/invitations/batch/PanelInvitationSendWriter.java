@@ -4,14 +4,13 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.simplejavamail.email.Email;
 import org.simplejavamail.email.EmailBuilder;
+import org.slf4j.Logger;
 
 import fi.metatavu.edelphi.batch.JobProperty;
 import fi.metatavu.edelphi.batch.TypedItemWriter;
@@ -20,6 +19,8 @@ import fi.metatavu.edelphi.dao.panels.PanelInvitationDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitation;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitationState;
+import fi.metatavu.edelphi.domainmodel.panels.PanelUser;
+import fi.metatavu.edelphi.domainmodel.panels.PanelUserJoinType;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.mail.Mailer;
 import fi.metatavu.edelphi.panels.PanelController;
@@ -61,6 +62,14 @@ public class PanelInvitationSendWriter extends TypedItemWriter<PanelInvitation> 
 
   @Inject
   @JobProperty
+  private String password;
+  
+  @Inject
+  @JobProperty
+  private Boolean skipInvitaion;
+
+  @Inject
+  @JobProperty
   private Long panelId;
 
   @Inject
@@ -78,9 +87,18 @@ public class PanelInvitationSendWriter extends TypedItemWriter<PanelInvitation> 
 
   @Override
   public void write(List<PanelInvitation> items) throws Exception {
-    items.stream().forEach(this::sendInvitation);
+    if (skipInvitaion) {
+      items.stream().forEach(this::addUser);
+    } else {
+      items.stream().forEach(this::sendInvitation);
+    }
   }
 
+  /**
+   * Sends an invitation to panelist
+   * 
+   * @param panelInvitation panel invitation
+   */
   private void sendInvitation(PanelInvitation panelInvitation) {
     User loggedUser = userController.findUserByKeycloakId(loggedUserId);
     
@@ -135,15 +153,45 @@ public class PanelInvitationSendWriter extends TypedItemWriter<PanelInvitation> 
         .from("noreply@edelphi.org")
         .to(panelInvitation.getEmail())
         .withSubject(mailSubject)
-        .withHTMLText(mailContent)
+        .withPlainText(mailContent)
         .buildEmail();
       
-      panelInvitationDAO.updateState(panelInvitation, PanelInvitationState.PENDING, loggedUser);
-      
       mailer.sendMail(email);
+      
+      panelInvitationDAO.updateState(panelInvitation, PanelInvitationState.PENDING, loggedUser);
     } catch (Exception e) {
       panelInvitationDAO.updateState(panelInvitation, PanelInvitationState.SEND_FAIL, loggedUser);
-      logger.log(Level.SEVERE, "Failed to send invitation email", e);
+      logger.error("Failed to send invitation email", e);
     }
+  }
+  
+  /**
+   * Adds user to panel
+   * 
+   * @param panelInvitation panel invitation
+   */
+  private void addUser(PanelInvitation panelInvitation) {
+    User loggedUser = userController.findUserByKeycloakId(loggedUserId);
+    
+    try {
+      Panel panel = panelController.findPanelById(panelId);
+      if (panel == null) {
+        throw new PanelInvitationException("Invalid panel id");
+      }
+      
+      User user = userController.createUser(null, null, panelInvitation.getEmail(), password, locale, loggedUser);
+      
+      PanelUser panelUser = panelController.findByPanelAndUserAndStamp(panel, user, panel.getCurrentStamp());
+      if (panelUser == null) {
+        panelUser = panelController.createPanelUser(panel, user, panelInvitation.getRole(), PanelUserJoinType.ADDED, loggedUser);
+      } else {
+        logger.warn(String.format("User %d already member of panel", user.getId()));
+      }
+      
+      panelInvitationDAO.delete(panelInvitation);
+    } catch (Exception e) {
+      panelInvitationDAO.updateState(panelInvitation, PanelInvitationState.SEND_FAIL, loggedUser);
+      logger.error("Failed to send invitation email", e);
+    }    
   }
 }
