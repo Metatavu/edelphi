@@ -18,6 +18,7 @@ public enum PanelInvitationState {
     BEING_SENT("BEING_SENT"),
     SEND_FAIL("SEND_FAIL"),
     PENDING("PENDING"),
+    ADDED("ADDED"),
     ACCEPTED("ACCEPTED"),
     DECLINED("DECLINED");
 

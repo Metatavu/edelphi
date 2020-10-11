@@ -2786,7 +2786,7 @@
       },
       "PanelInvitationState" : {
         "type" : "string",
-        "enum" : [ "IN_QUEUE", "BEING_SENT", "SEND_FAIL", "PENDING", "ACCEPTED", "DECLINED" ]
+        "enum" : [ "IN_QUEUE", "BEING_SENT", "SEND_FAIL", "PENDING", "ADDED", "ACCEPTED", "DECLINED" ]
       },
       "ErrorResponse" : {
         "type" : "object",
