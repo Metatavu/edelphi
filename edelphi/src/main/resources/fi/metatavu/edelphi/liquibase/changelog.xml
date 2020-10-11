@@ -3393,15 +3393,21 @@
     <addAutoIncrement tableName="PanelInvitation" columnName="id" columnDataType="BIGINT(20)"/>
     <sql>
       INSERT INTO
-        PanelInvitation (panel_id, email, hash, role_id, state, archived, creator_id, created, lastModifier_id, lastModified)
+        PanelInvitation (panel_id, email, hash, role_id, state, archived, creator_id, created, lastModifier_id, lastModified)        
       SELECT
-        panel_id, (SELECT address from UserEmail where user_id = user_id LIMIT 1), uuid(), role_id, 'ADDED', false,
-        creator_id, created, lastModifier_id, lastModified
+        pu.panel_id, (SELECT address from UserEmail where user_id = pu.user_id LIMIT 1), uuid(), pu.role_id, 'ADDED', false,
+        pu.creator_id, pu.created, pu.lastModifier_id, pu.lastModified
       FROM 
-        PanelUser 
+        PanelUser pu
+      INNER JOIN
+        Panel p
+      ON 
+        p.id = pu.panel_id
       WHERE 
-        joinType = 'ADDED' AND 
-        archived = false
+        pu.joinType = 'ADDED' AND 
+        pu.archived = false AND
+        pu.stamp_id = p.currentStamp_id AND
+        (SELECT address from UserEmail where user_id = pu.user_id LIMIT 1) IS NOT NULL
     </sql>
   </changeSet>
   
