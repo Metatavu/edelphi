@@ -188,7 +188,7 @@ public class PanelInvitationSendWriter extends TypedItemWriter<PanelInvitation> 
         logger.warn(String.format("User %d already member of panel", user.getId()));
       }
       
-      panelInvitationDAO.delete(panelInvitation);
+      panelInvitationDAO.updateState(panelInvitation, PanelInvitationState.ADDED, loggedUser);
     } catch (Exception e) {
       panelInvitationDAO.updateState(panelInvitation, PanelInvitationState.SEND_FAIL, loggedUser);
       logger.error("Failed to send invitation email", e);

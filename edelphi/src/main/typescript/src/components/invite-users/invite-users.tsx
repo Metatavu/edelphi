@@ -359,6 +359,9 @@ export default class InviteUsers extends React.Component<Props, State> {
     );
   }
 
+  /**
+   * Renders send invitations button
+   */
   private renderSendInvitationsButton = () => {
     return (
       <div>
@@ -420,34 +423,6 @@ export default class InviteUsers extends React.Component<Props, State> {
     });
   }
 
-  private addUser = async (email: string) => {
-    const body = new URLSearchParams();
-    body.append("email", email);
-    body.append("password", this.state.password);
-    
-    if (this.state.invitationTarget) {
-      body.append("queryId", String(this.state.invitationTarget));
-    }
-
-    const url = `${location.protocol}//${location.hostname}:${location.port}/panel/admin/adduser.json`;
-
-    const response = await fetch(url, {
-      method: "POST",
-      body: body
-    });
-
-    return await response.json();
-  }
-
-  private addUsers = async () => {
-    const { inviteEmails } = this.state;
-
-    for (let i = 0; i < inviteEmails.length; i++) {
-      const inviteEmail = inviteEmails[i];
-      await this.addUser(inviteEmail);
-    }
-  }
-
   /**
    * Invite users
    */
@@ -459,7 +434,8 @@ export default class InviteUsers extends React.Component<Props, State> {
       panelInvitationRequest: {
         emails: this.state.inviteEmails,
         skipInvitation: this.state.skipInvitation,
-        invitationContent: this.state.mailTemplate,
+        invitationMessage: this.state.mailTemplate,
+        password: this.state.password,
         targetQueryId: this.state.invitationTarget ? this.state.invitationTarget : undefined 
       }
     }); 
@@ -581,11 +557,7 @@ export default class InviteUsers extends React.Component<Props, State> {
       loading: true
     })
 
-    if (this.state.skipInvitation)  {
-      await this.addUsers();
-    } else {
-      await this.inviteUsers();
-    }
+    await this.inviteUsers();
 
     this.setState({
       loading: false,

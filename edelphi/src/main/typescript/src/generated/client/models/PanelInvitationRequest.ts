@@ -26,17 +26,11 @@ export interface PanelInvitationRequest {
      */
     emails: Array<string>;
     /**
-     * Inviation email title
-     * @type {string}
-     * @memberof PanelInvitationRequest
-     */
-    invitationTitle?: string;
-    /**
      * Inviation email content
      * @type {string}
      * @memberof PanelInvitationRequest
      */
-    invitationContent?: string;
+    invitationMessage?: string;
     /**
      * Specify target query for invitation link. If this is left blank, link will lead to panel index page
      * @type {number}
@@ -49,6 +43,12 @@ export interface PanelInvitationRequest {
      * @memberof PanelInvitationRequest
      */
     skipInvitation: boolean;
+    /**
+     * Initial password for users. This field is used only when skipInvitation is true
+     * @type {string}
+     * @memberof PanelInvitationRequest
+     */
+    password?: string;
 }
 
 export function PanelInvitationRequestFromJSON(json: any): PanelInvitationRequest {
@@ -62,10 +62,10 @@ export function PanelInvitationRequestFromJSONTyped(json: any, ignoreDiscriminat
     return {
         
         'emails': json['emails'],
-        'invitationTitle': !exists(json, 'invitationTitle') ? undefined : json['invitationTitle'],
-        'invitationContent': !exists(json, 'invitationContent') ? undefined : json['invitationContent'],
+        'invitationMessage': !exists(json, 'invitationMessage') ? undefined : json['invitationMessage'],
         'targetQueryId': !exists(json, 'targetQueryId') ? undefined : json['targetQueryId'],
         'skipInvitation': json['skipInvitation'],
+        'password': !exists(json, 'password') ? undefined : json['password'],
     };
 }
 
@@ -79,10 +79,10 @@ export function PanelInvitationRequestToJSON(value?: PanelInvitationRequest | nu
     return {
         
         'emails': value.emails,
-        'invitationTitle': value.invitationTitle,
-        'invitationContent': value.invitationContent,
+        'invitationMessage': value.invitationMessage,
         'targetQueryId': value.targetQueryId,
         'skipInvitation': value.skipInvitation,
+        'password': value.password,
     };
 }
 
