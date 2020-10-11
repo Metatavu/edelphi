@@ -67,6 +67,15 @@ public class KeycloakController {
   @Inject
   private Logger logger;
   
+  @Inject
+  private AuthSourceDAO authSourceDAO;
+  
+  @Inject
+  private UserIdentificationDAO userIdentificationDAO;
+  
+  @Inject
+  private AuthSourceSettingDAO authSourceSettingDAO;
+
   /**
    * Creates user into Keycloak (if missing)
    * 
@@ -77,8 +86,6 @@ public class KeycloakController {
    * @throws KeycloakException thrown when Keycloak related error occurs
    */
   public void createUser(User user, String password, boolean passwordTemporary, boolean emailVerified) throws KeycloakException {
-    UserIdentificationDAO userIdentificationDAO = new UserIdentificationDAO();
-    
     Map<String, String> settings = getKeycloakSettings();
     
     Keycloak keycloakClient = getAdminClient(settings);
@@ -303,8 +310,6 @@ public class KeycloakController {
    * @return Keycloak id or null if id could not be resolved
    */
   public UUID getUserKeycloakId(User user) {
-    UserIdentificationDAO userIdentificationDAO = new UserIdentificationDAO();
-    
     AuthSource authSource = getKeycloakAuthSource();
     List<UserIdentification> userIdentifications = userIdentificationDAO.listByUserAndAuthSource(user, authSource);
     if (userIdentifications.size() == 1) {
@@ -353,7 +358,6 @@ public class KeycloakController {
    * @return Keycloak auth source
    */
   private AuthSource getKeycloakAuthSource() {
-    AuthSourceDAO authSourceDAO = new AuthSourceDAO();
     AuthSource authSource = authSourceDAO.findByStrategy(KEYCLOAK_AUTH_SOURCE);
     
     if (authSource == null) {
@@ -410,7 +414,6 @@ public class KeycloakController {
    * @return auth source settings as map
    */
   private Map<String, String> getKeycloakSettings() {
-    AuthSourceSettingDAO authSourceSettingDAO = new AuthSourceSettingDAO();
     List<AuthSourceSetting> authSourceSettings = authSourceSettingDAO.listByAuthSource(getKeycloakAuthSource());
     return authSourceSettings.stream().collect(Collectors.toMap(AuthSourceSetting::getKey, AuthSourceSetting::getValue));
   }
