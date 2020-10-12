@@ -178,6 +178,7 @@ class LiveView extends React.Component<Props, State> {
     const breadcrumbs: SemanticShorthandCollection<BreadcrumbSectionProps> = [
       { key: "home", content: strings.generic.eDelphi, href: "/" },
       { key: "panel", content: this.state.panel.name, href: `/${this.state.panel.urlName}` },
+      { key: "panel-admin", content: strings.generic.panelAdminBreadcrumb, href: `/panel/admin/dashboard.page?panelId=${this.state.panel.id}` },
       { key: "commentview", content: this.state.panel.name, active: true }      
     ];
 
