@@ -277,8 +277,14 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
    * Renders query comment options editor
    */
   private renderQueryCommentOptionsEditor() {
+    const { accessToken } = this.props;
+    if (!accessToken) {
+      return null;
+    }
+
     return (
       <PanelAdminQueryCommentOptionsEditor 
+        accessToken={ accessToken }
         panelId={ this.props.panelId} 
         open={ this.state.queryCommentOptionsOpen } 
         queryId={ this.props.queryId } 

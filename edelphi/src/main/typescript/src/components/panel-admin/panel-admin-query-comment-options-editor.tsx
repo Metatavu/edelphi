@@ -1,19 +1,17 @@
 import * as React from "react";
-import * as actions from "../../actions";
 import * as _ from "lodash";
-import { StoreState, AccessToken } from "../../types";
-import { connect } from "react-redux";
 import { Modal, Button, Input, InputOnChangeData, Grid, Loader, Dimmer, Confirm } from "semantic-ui-react";
 import { QueryQuestionCommentCategory } from "../../generated/client/models";
 import { QueryQuestionCommentCategoriesApi } from "../../generated/client/apis";
 import strings from "../../localization/strings";
 import Api from "../../api";
+import { AccessToken } from "../../types";
 
 /**
  * Interface representing component properties
  */
 interface Props {
-  accessToken?: AccessToken,
+  accessToken: AccessToken,
   panelId: number,
   queryId: number,
   open: boolean,
@@ -34,7 +32,7 @@ interface State {
 /**
  * React component for comment editor
  */
-class PanelAdminQueryCommentOptionsEditor extends React.Component<Props, State> {
+export default class PanelAdminQueryCommentOptionsEditor extends React.Component<Props, State> {
 
   /**
    * Constructor
@@ -156,16 +154,11 @@ class PanelAdminQueryCommentOptionsEditor extends React.Component<Props, State> 
    * Loads a comment
    */
   private loadData = async () => {
-    if (!this.props.accessToken) {
-      return;
-    }
-
     this.setState({
       loading: true
     });
 
-    const QueryQuestionCommentCategoriesApi = await this.getQueryQuestionCommentCategoriesApi(this.props.accessToken.token);
-    const categories = await QueryQuestionCommentCategoriesApi.listQueryQuestionCommentCategories({
+    const categories = await this.getQueryQuestionCommentCategoriesApi(this.props.accessToken.token).listQueryQuestionCommentCategories({
       panelId: this.props.panelId,
       queryId: this.props.queryId
     });
@@ -290,26 +283,3 @@ class PanelAdminQueryCommentOptionsEditor extends React.Component<Props, State> 
     });
   }
 }
-
-/**
- * Redux mapper for mapping store state to component props
- * 
- * @param state store state
- */
-function mapStateToProps(state: StoreState) {
-  return {
-    accessToken: state.accessToken,
-    locale: state.locale
-  };
-}
-
-/**
- * Redux mapper for mapping component dispatches 
- * 
- * @param dispatch dispatch method
- */
-function mapDispatchToProps(dispatch: React.Dispatch<actions.AppAction>) {
-  return { };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(PanelAdminQueryCommentOptionsEditor);
