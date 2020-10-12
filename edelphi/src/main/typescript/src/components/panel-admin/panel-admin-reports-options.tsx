@@ -77,8 +77,7 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
       loading: true
     });
 
-    const QueryPagesApi = this.getQueryPagesApi();
-    const queryPages = await QueryPagesApi.listQueryPages({
+    const queryPages = await this.getQueryPagesApi().listQueryPages({
       panelId: this.props.panelId,
       queryId: this.props.queryId,
       includeHidden: true
@@ -126,8 +125,7 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
         loading: true
       });
 
-      const QueryPagesApi = this.getQueryPagesApi();
-      const queryPages = await QueryPagesApi.listQueryPages({
+      const queryPages = await this.getQueryPagesApi().listQueryPages({
         panelId: this.props.panelId,
         queryId: this.props.queryId,
         includeHidden: true
