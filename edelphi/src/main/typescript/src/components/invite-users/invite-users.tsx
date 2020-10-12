@@ -272,14 +272,15 @@ export default class InviteUsers extends React.Component<Props, State> {
   private renderUsersListInvitation = (invitation: PanelInvitation) => {
     const listStrings = strings.panelAdmin.inviteUsers.usersListBlock.lists[invitation.state];
     const time = moment(invitation.lastModified).locale(strings.getLanguage()).format("LLL");
-
+    const invitationTargetLabel = this.getInvitationTargetLabel(invitation);
+    
     return (
       <List.Item key={ invitation.id }>
         <List.Icon name='user' size='large' verticalAlign='middle' color={ this.getInvitationIconColor(invitation.state) } />
         <List.Content>
           <List.Header>
-            <span>{ invitation.email }</span>
-            <span className="resend-link" color="blue" onClick={ () => this.resendInvitations([invitation]) }>{ strings.panelAdmin.inviteUsers.usersListBlock.resendInvitationToAll }</span> 
+            <span>{ invitation.email }{ invitationTargetLabel }</span>
+            <span className="resend-link" color="blue" onClick={ () => this.resendInvitations([invitation]) }>{ strings.panelAdmin.inviteUsers.usersListBlock.resendInvitationToUser }</span> 
           </List.Header>
           <List.Description>{ strings.formatString(listStrings.timeLabel, time) }</List.Description>
         </List.Content>
@@ -375,6 +376,23 @@ export default class InviteUsers extends React.Component<Props, State> {
         <Button  disabled={ this.state.inviteEmails.length === 0 } color="blue" onClick={ this.onSendInvitationsClick }>{ strings.panelAdmin.inviteUsers.inviteBlock.sendInvitationsButtonLabel }</Button>
       </div>
     );
+  }
+
+  /**
+   * Returns invitation target label
+   * 
+   * @param invitation invitation
+   * @returns invitation target label
+   */
+  private getInvitationTargetLabel = (invitation: PanelInvitation): string => {
+    if (invitation.queryId) {
+      const queryName = this.state.queries.find(query => query.id === invitation.queryId)?.name || "";
+      if (queryName) {
+        return ` (${queryName})`
+      }
+    }
+
+    return "";
   }
 
   /**
