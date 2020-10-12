@@ -11,7 +11,8 @@ export interface IStrings extends LocalizedStringsMethods {
     eDelphi: string;
     welcomeUser: string;
     profileLink: string;
-    logoutLink: string
+    logoutLink: string;
+    panelAdminBreadcrumb: string;
   },
 
   errorDialog: {
@@ -202,6 +203,8 @@ export interface IStrings extends LocalizedStringsMethods {
         panelTarget: string;
         addUser: string;
         mailTemplate: string;
+        acceptReplaceMissing: string;
+        acceptReplace: string;
       },
       usersListBlock: {
         title: string;

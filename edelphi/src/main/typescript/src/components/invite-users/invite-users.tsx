@@ -39,6 +39,7 @@ interface State {
   invitationTarget: number;
   password: string;
   message?: string;
+  containsAcceptLink: boolean;
 }
 
 /**
@@ -64,7 +65,8 @@ export default class InviteUsers extends React.Component<Props, State> {
       inviteEmails: [],
       skipInvitation: false,
       invitationTarget: 0,
-      password: (Math.random() + 0.1).toString(36).slice(2).substring(0, 8)
+      password: (Math.random() + 0.1).toString(36).slice(2).substring(0, 8),
+      containsAcceptLink: true
     };
   }
 
@@ -120,6 +122,7 @@ export default class InviteUsers extends React.Component<Props, State> {
     const breadcrumbs: SemanticShorthandCollection<BreadcrumbSectionProps> = [
       { key: "home", content: strings.generic.eDelphi, href: "/" },
       { key: "panel", content: this.state.panel.name, href: `/${this.state.panel.urlName}` },
+      { key: "panel-admin", content: strings.generic.panelAdminBreadcrumb, href: `/panel/admin/dashboard.page?panelId=${this.state.panel.id}` },
       { key: "invitations", content: strings.panelAdmin.inviteUsers.breadcrumb, active: true }      
     ];
 
@@ -322,9 +325,25 @@ export default class InviteUsers extends React.Component<Props, State> {
   private renderMailTemplate = () => {
     return (
       <div>
-        <h3> { strings.panelAdmin.inviteUsers.inviteBlock.invitationFieldLabel } </h3>
+        <h3> { strings.panelAdmin.inviteUsers.inviteBlock.invitationFieldLabel } </h3>        
         <TextArea className="invite-template" value={ this.state.mailTemplate } onChange={ this.onMailTemplateChange }/>
+        { this.renderMailTemplateValidation() }        
       </div>
+    );
+  }
+
+  /**
+   * Renders mail template validation message if needed
+   */
+  private renderMailTemplateValidation = () => {
+    if (this.state.containsAcceptLink) {
+      return null;
+    }
+
+    return (
+      <Label basic color='red' pointing>
+        { strings.panelAdmin.inviteUsers.inviteBlock.acceptReplaceMissing }
+      </Label>
     );
   }
 
@@ -373,7 +392,7 @@ export default class InviteUsers extends React.Component<Props, State> {
   private renderSendInvitationsButton = () => {
     return (
       <div>
-        <Button  disabled={ this.state.inviteEmails.length === 0 } color="blue" onClick={ this.onSendInvitationsClick }>{ strings.panelAdmin.inviteUsers.inviteBlock.sendInvitationsButtonLabel }</Button>
+        <Button  disabled={ !this.state.containsAcceptLink || this.state.inviteEmails.length === 0 } color="blue" onClick={ this.onSendInvitationsClick }>{ strings.panelAdmin.inviteUsers.inviteBlock.sendInvitationsButtonLabel }</Button>
       </div>
     );
   }
@@ -499,8 +518,12 @@ export default class InviteUsers extends React.Component<Props, State> {
    * @param data data
    */
   private onMailTemplateChange = (event: React.FormEvent<HTMLTextAreaElement>, data: TextAreaProps) => {
+    const mailTemplate = data.value as string;
+    const containsAcceptLink = mailTemplate.indexOf(strings.panelAdmin.inviteUsers.inviteBlock.acceptReplace) > -1;
+    
     this.setState({
-      mailTemplate: data.value as string
+      mailTemplate: mailTemplate,
+      containsAcceptLink: containsAcceptLink
     });
   }
 
