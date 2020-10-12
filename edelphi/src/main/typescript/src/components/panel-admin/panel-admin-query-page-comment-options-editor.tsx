@@ -1,8 +1,6 @@
 import * as React from "react";
-import * as actions from "../../actions";
 import * as _ from "lodash";
-import { StoreState, AccessToken, EditPageLegacyPageData } from "../../types";
-import { connect } from "react-redux";
+import { AccessToken, EditPageLegacyPageData } from "../../types";
 import { Modal, Button, Input, InputOnChangeData, Grid, Loader, Dimmer, Confirm } from "semantic-ui-react";
 import { QueryQuestionCommentCategory } from "../../generated/client/models";
 import { QueryQuestionCommentCategoriesApi } from "../../generated/client/apis";
@@ -13,7 +11,7 @@ import Api from "../../api";
  * Interface representing component properties
  */
 interface Props {
-  accessToken?: AccessToken,
+  accessToken: AccessToken,
   pageId: number,
   panelId: number,
   queryId: number,
@@ -35,7 +33,7 @@ interface State {
 /**
  * React component for comment editor
  */
-class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, State> {
+export default class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, State> {
 
   /**
    * Constructor
@@ -156,7 +154,7 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
    * Loads a comment
    */
   private loadData = async () => {
-    if (!this.props.accessToken || !this.props.pageId) {
+    if (!this.props.pageId) {
       return;
     }
 
@@ -164,8 +162,7 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
       loading: true
     });
 
-    const QueryQuestionCommentCategoriesApi = await this.getQueryQuestionCommentCategoriesApi(this.props.accessToken.token);
-    const categories = await QueryQuestionCommentCategoriesApi.listQueryQuestionCommentCategories({
+    const categories = await this.getQueryQuestionCommentCategoriesApi(this.props.accessToken.token).listQueryQuestionCommentCategories({
       panelId: this.props.panelId,
       pageId: this.props.pageId,
       queryId: this.props.queryId
@@ -192,10 +189,6 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
    * @param category category
    */
   private deleteCategory = async (index: number) => {
-    if (!this.props.accessToken) {
-      return;
-    }
-
     const category: QueryQuestionCommentCategory = this.state.categories[index];
     const categories = _.clone(this.state.categories);
     categories.splice(index, 1); 
@@ -224,10 +217,6 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
    * Event handler for save click
    */
   private onSaveClick = async () => {
-    if (!this.props.accessToken) {
-      return;
-    }
-    
     this.setState({
       updating: true
     });
@@ -292,26 +281,3 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
     });
   }
 }
-
-/**
- * Redux mapper for mapping store state to component props
- * 
- * @param state store state
- */
-function mapStateToProps(state: StoreState) {
-  return {
-    accessToken: state.accessToken,
-    locale: state.locale
-  };
-}
-
-/**
- * Redux mapper for mapping component dispatches 
- * 
- * @param dispatch dispatch method
- */
-function mapDispatchToProps(dispatch: React.Dispatch<actions.AppAction>) {
-  return { };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(PanelAdminQueryPageCommentOptionsEditor);

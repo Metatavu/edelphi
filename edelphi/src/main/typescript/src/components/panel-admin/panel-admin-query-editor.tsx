@@ -297,11 +297,23 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
    * Renders page comment options editor
    */
   private renderPageCommentOptionsEditor() {
+    const { accessToken } = this.props;
+    if (!accessToken) {
+      return null;
+    }
+    
     if (!this.state.pageData) {
       return null;
     }
 
-    return <PanelAdminQueryPageCommentOptionsEditor pageData={ this.state.pageData } open={ this.state.pageCommentOptionsOpen } pageId={ this.state.pageId } panelId={ this.props.panelId} queryId={ this.props.queryId } onClose={ this.onPageCommentOptionsEditorClose }/>
+    return <PanelAdminQueryPageCommentOptionsEditor 
+      accessToken={ accessToken }
+      pageData={ this.state.pageData } 
+      open={ this.state.pageCommentOptionsOpen } 
+      pageId={ this.state.pageId } 
+      panelId={ this.props.panelId} 
+      queryId={ this.props.queryId } 
+      onClose={ this.onPageCommentOptionsEditorClose }/>
   }
 
   /**
