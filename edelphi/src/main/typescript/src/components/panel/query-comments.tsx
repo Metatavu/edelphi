@@ -234,15 +234,15 @@ class QueryComments extends React.Component<Props, State> {
       loading: true
     });
 
-    const QueryQuestionCommentCategoriesApi = await this.getQueryQuestionCommentCategoriesApi(this.props.accessToken.token);
+    const queryQuestionCommentCategoriesApi = this.getQueryQuestionCommentCategoriesApi(this.props.accessToken.token);
 
-    const pageCategories = await QueryQuestionCommentCategoriesApi.listQueryQuestionCommentCategories({
+    const pageCategories = await queryQuestionCommentCategoriesApi.listQueryQuestionCommentCategories({
       panelId: this.props.panelId,
       pageId: this.props.pageId,
       queryId: this.props.queryId
     });
     
-    const queryCategories = await QueryQuestionCommentCategoriesApi.listQueryQuestionCommentCategories({
+    const queryCategories = await queryQuestionCommentCategoriesApi.listQueryQuestionCommentCategories({
       panelId: this.props.panelId,
       queryId: this.props.queryId
     });
