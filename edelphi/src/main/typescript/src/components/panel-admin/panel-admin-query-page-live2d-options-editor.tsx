@@ -130,8 +130,7 @@ class PanelAdminQueryPageLive2dOptionsEditor extends React.Component<Props, Stat
       loading: true
     });
 
-    const QueryPagesApi = await this.getQueryPagesApi(this.props.accessToken.token);
-    const queryPage = await QueryPagesApi.findQueryPage({
+    const queryPage = await this.getQueryPagesApi(this.props.accessToken.token).findQueryPage({
       panelId: this.props.panelId,
       queryPageId: this.props.pageId
     });
@@ -184,8 +183,8 @@ class PanelAdminQueryPageLive2dOptionsEditor extends React.Component<Props, Stat
       updating: true
     });
 
-    const QueryPagesApi = await this.getQueryPagesApi(this.props.accessToken.token);
-    const queryPage = await QueryPagesApi.findQueryPage({
+    const queryPagesApi = this.getQueryPagesApi(this.props.accessToken.token);
+    const queryPage = await queryPagesApi.findQueryPage({
       panelId: this.props.panelId,
       queryPageId: this.props.pageId
     });
@@ -196,7 +195,7 @@ class PanelAdminQueryPageLive2dOptionsEditor extends React.Component<Props, Stat
 
     const updatePage = {... queryPage, queryOptions: { ... queryPage.queryOptions, answersVisible: this.state.visible } };
 
-    await QueryPagesApi.updateQueryPage({
+    await queryPagesApi.updateQueryPage({
       panelId: this.props.panelId,
       queryPage: updatePage,
       queryPageId: this.props.pageId
