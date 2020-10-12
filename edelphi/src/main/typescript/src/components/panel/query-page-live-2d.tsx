@@ -250,10 +250,8 @@ class QueryPageLive2d extends React.Component<Props, State> {
       return;
     }
 
-    const getQueryPagesApi= Api.getQueryPagesApi(this.props.accessToken.token);
-
     this.setState({
-      page: await getQueryPagesApi.findQueryPage({
+      page: await Api.getQueryPagesApi(this.props.accessToken.token).findQueryPage({
         panelId: this.props.panelId,
         queryPageId: this.props.pageId
       })
