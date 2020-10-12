@@ -90,8 +90,9 @@ public class UserController {
       user = userDAO.create(firstName, lastName, null, creator, Defaults.NEW_USER_SUBSCRIPTION_LEVEL, null, null, locale.getLanguage());
       userEmail = userEmailDAO.create(user, email);
       userDAO.addUserEmail(user, userEmail, true, creator);
-      keycloakController.createUser(user, password, false, true);
     }
+
+    keycloakController.createUser(user, password, false, true);
     
     DelfoiUser delfoiUser = delfoiUserDAO.findByDelfoiAndUser(delfoi, user);
     
