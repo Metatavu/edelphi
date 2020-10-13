@@ -224,7 +224,12 @@ export default class InviteUsers extends React.Component<Props, State> {
     return (
       <>
         <h3>{ strings.panelAdmin.inviteUsers.inviteBlock.csvFieldLabel }</h3>
-        <Input accept="text/csv" type="file" style={{ width: "100%" }} onChange={ this.onCsvInputChange } />
+        <Input
+          accept="text/csv"
+          type="file"
+          style={{ width: "100%" }}
+          onChange={ this.onCsvInputChange }
+        />
         <div className="example-csv-container">
           <a href={ `/_files/userimportexample_${strings.getLanguage()}.csv` }>{ strings.panelAdmin.inviteUsers.inviteBlock.csvExampleLinkLabel }</a>
         </div>
