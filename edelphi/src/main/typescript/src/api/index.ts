@@ -69,10 +69,10 @@ export default class Api {
   }
 
   /**
-   * Gets initialized api
+   * Gets initialized query pages api
    *
-   * @param token access token
-   * @returns initialized api
+   * @param accessToken access token
+   * @returns initialized query pages api
    */
   public static getQueryPagesApi(accessToken: string) {
     return new QueryPagesApi(Api.getConfiguration(accessToken));
