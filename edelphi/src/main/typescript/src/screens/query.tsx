@@ -83,7 +83,16 @@ window.addEventListener('load', () => {
         <Provider store={store}>
           <AccessTokenRefresh>
             <MqttConnector>
-              <QueryComments setPageChangeListener={ setPageChangeListener } panelId={ panelId } canManageComments={ canManageComments }  viewDiscussion={ viewDiscussion } commentable={ commentable } pageId={ pageId } queryId={ queryId } queryReplyId={ queryReplyId }/>
+              <QueryComments
+                setPageChangeListener={ setPageChangeListener }
+                panelId={ panelId }
+                canManageComments={ canManageComments }
+                viewDiscussion={ viewDiscussion }
+                commentable={ commentable }
+                pageId={ pageId }
+                queryId={ queryId }
+                queryReplyId={ queryReplyId }
+              />
             </MqttConnector>
           </AccessTokenRefresh>
         </Provider>;
