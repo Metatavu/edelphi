@@ -69,7 +69,7 @@ class QueryNavigation extends React.Component<Props, State> {
   /**
    * Component will unmount life-cycle event
    */
-  public async componentWillUnmount() {
+  public componentWillUnmount = async () => {
     LegacyUtils.removeCommandListener(this.onReactCommand);
   }
   
