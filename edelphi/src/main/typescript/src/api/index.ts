@@ -79,10 +79,10 @@ export default class Api {
   }
 
   /**
-   * Gets initialized api
+   * Gets initialized query question answers api
    *
-   * @param token access token
-   * @returns initialized api
+   * @param accessToken access token
+   * @returns initialized query question answers api
    */
   public static getQueryQuestionAnswersApi(accessToken: string) {
     return new QueryQuestionAnswersApi(Api.getConfiguration(accessToken));
