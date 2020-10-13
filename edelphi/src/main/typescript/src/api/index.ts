@@ -121,7 +121,8 @@ export default class Api {
   /**
    * Gets api configuration
    *
-   * @param token acess token
+   * @param accessToken acess token
+   * @returns api configuration
    */
   private static getConfiguration(accessToken: string) {
     return new Configuration({
