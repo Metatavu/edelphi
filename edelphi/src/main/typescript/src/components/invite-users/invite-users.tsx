@@ -274,7 +274,13 @@ export default class InviteUsers extends React.Component<Props, State> {
       <div key={ invitationState }>
         <h3> 
           <span>{ listStrings.title }</span>
-          <span className="resend-all-link" color="blue" onClick={ () => this.resendInvitations(invitations) }>{ strings.panelAdmin.inviteUsers.usersListBlock.resendInvitationToAll }</span> 
+          <span
+            className="resend-all-link"
+            color="blue"
+            onClick={ () => this.resendInvitations(invitations) }
+          >
+            { strings.panelAdmin.inviteUsers.usersListBlock.resendInvitationToAll }
+          </span> 
         </h3>
         <List divided relaxed>
           { invitations.map(this.renderUsersListInvitation) }
