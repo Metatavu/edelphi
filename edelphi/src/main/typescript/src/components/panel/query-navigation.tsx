@@ -62,7 +62,7 @@ class QueryNavigation extends React.Component<Props, State> {
   /**
    * Component will mount life-cycle event
    */
-  public componentWillMount() {
+  public componentWillMount = () => {
     LegacyUtils.addCommandListener(this.onReactCommand);  
   }
   
