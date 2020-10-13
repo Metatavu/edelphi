@@ -19,10 +19,10 @@ export default class Api {
   }
 
   /**
-   * Gets initialized api
+   * Gets initialized users api
    *
-   * @param token access token
-   * @returns initialized api
+   * @param accessToken access token
+   * @returns initialized users api
    */
   public static getUsersApi(accessToken: string) {
     return new UsersApi(Api.getConfiguration(accessToken));
