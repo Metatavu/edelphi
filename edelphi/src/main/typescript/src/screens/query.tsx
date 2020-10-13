@@ -103,7 +103,12 @@ window.addEventListener('load', () => {
         <Provider store={store}>
           <AccessTokenRefresh>
             <MqttConnector>
-              <QueryPageLive2d pageId={pageId} panelId={panelId} queryId={queryId} queryReplyId={queryReplyId} />
+              <QueryPageLive2d
+                pageId={ pageId }
+                panelId={ panelId }
+                queryId={ queryId }
+                queryReplyId={ queryReplyId }
+              />
             </MqttConnector>
           </AccessTokenRefresh>
         </Provider>;
