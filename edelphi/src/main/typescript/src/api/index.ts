@@ -89,10 +89,10 @@ export default class Api {
   }
 
   /**
-   * Gets initialized api
+   * Gets initialized query question comment categories api
    *
-   * @param token access token
-   * @returns initialized api
+   * @param accessToken access token
+   * @returns initialized query question comment categories api
    */
   public static getQueryQuestionCommentCategoriesApi(accessToken: string) {
     return new QueryQuestionCommentCategoriesApi(Api.getConfiguration(accessToken));
