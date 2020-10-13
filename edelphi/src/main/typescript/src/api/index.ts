@@ -49,10 +49,10 @@ export default class Api {
   }
 
   /**
-   * Gets initialized api
+   * Gets initialized reports api
    *
-   * @param token access token
-   * @returns initialized api
+   * @param accessToken access token
+   * @returns initialized reports api
    */
   public static getReportsApi(accessToken: string) {
     return new ReportsApi(Api.getConfiguration(accessToken));
