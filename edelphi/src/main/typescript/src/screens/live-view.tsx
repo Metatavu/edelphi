@@ -114,7 +114,7 @@ class LiveView extends React.Component<Props, State> {
   /**
    * Component will mount life-cycle event
    */
-  public async componentDidMount() {    
+  public componentDidMount = async () => {
     mqttConnection.subscribe("queryquestioncomments", this.queryQuestionCommentsListener);
     mqttConnection.subscribe("queryquestionanswers", this.queryQuestionAnswersListener);
     window.addEventListener("resize", this.onWindowResize);
