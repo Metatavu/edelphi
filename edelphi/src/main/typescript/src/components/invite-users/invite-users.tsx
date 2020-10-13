@@ -101,7 +101,7 @@ export default class InviteUsers extends React.Component<Props, State> {
   /**
    * Component will unmount life-cycle event
    */
-  public componentWillUnmount() {
+  public componentWillUnmount = () => {
     if (this.timer) {
       clearInterval(this.timer);
     }
