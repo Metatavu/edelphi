@@ -109,10 +109,10 @@ export default class Api {
   }
 
   /**
-   * Gets initialized api
+   * Gets initialized panel invitations api
    *
-   * @param token access token
-   * @returns initialized api
+   * @param accessToken access token
+   * @returns initialized panel invitations api
    */
   public static getPanelInvitationsApi(accessToken: string) {
     return new PanelInvitationsApi(Api.getConfiguration(accessToken));
