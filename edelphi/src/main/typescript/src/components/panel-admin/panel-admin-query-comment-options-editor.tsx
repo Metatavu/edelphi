@@ -154,13 +154,15 @@ export default class PanelAdminQueryCommentOptionsEditor extends React.Component
    * Loads a comment
    */
   private loadData = async () => {
+    const { panelId, queryId, accessToken } = this.props;
+
     this.setState({
       loading: true
     });
 
-    const categories = await this.getQueryQuestionCommentCategoriesApi(this.props.accessToken.token).listQueryQuestionCommentCategories({
-      panelId: this.props.panelId,
-      queryId: this.props.queryId
+    const categories = await Api.getQueryQuestionCommentCategoriesApi(accessToken.token).listQueryQuestionCommentCategories({
+      panelId: panelId,
+      queryId: queryId
     });
 
     this.setState({
@@ -170,21 +172,14 @@ export default class PanelAdminQueryCommentOptionsEditor extends React.Component
   }
 
   /**
-   * Returns query question comments API
-   * 
-   * @returns query question comments API
-   */
-  private getQueryQuestionCommentCategoriesApi(accessToken: string): QueryQuestionCommentCategoriesApi {
-    return Api.getQueryQuestionCommentCategoriesApi(accessToken);
-  }
-
-  /**
    * Deletes a category
    * 
    * @param category category
    */
   private deleteCategory = async (index: number) => {
-    if (!this.props.accessToken) {
+    const { panelId, accessToken } = this.props;
+
+    if (!accessToken) {
       return;
     }
 
@@ -193,10 +188,9 @@ export default class PanelAdminQueryCommentOptionsEditor extends React.Component
     categories.splice(index, 1); 
 
     if (category.id) {
-      const QueryQuestionCommentCategoriesApi = await this.getQueryQuestionCommentCategoriesApi(this.props.accessToken.token);
-      await QueryQuestionCommentCategoriesApi.deleteQueryQuestionCommentCategory({
+      await Api.getQueryQuestionCommentCategoriesApi(accessToken.token).deleteQueryQuestionCommentCategory({
         categoryId: category.id,
-        panelId: this.props.panelId
+        panelId: panelId
       });
     } 
 
@@ -216,7 +210,9 @@ export default class PanelAdminQueryCommentOptionsEditor extends React.Component
    * Event handler for save click
    */
   private onSaveClick = async () => {
-    if (!this.props.accessToken) {
+    const { panelId, accessToken } = this.props;
+
+    if (!accessToken) {
       return;
     }
     
@@ -224,21 +220,20 @@ export default class PanelAdminQueryCommentOptionsEditor extends React.Component
       updating: true
     });
 
-    const QueryQuestionCommentCategoriesApi = await this.getQueryQuestionCommentCategoriesApi(this.props.accessToken.token);
     const categories = [];
 
     for (let i = 0; i < this.state.categories.length; i++) {
       const category = this.state.categories[i];
       
       if (category.id) {
-        categories.push(await QueryQuestionCommentCategoriesApi.updateQueryQuestionCommentCategory({
+        categories.push(await Api.getQueryQuestionCommentCategoriesApi(accessToken.token).updateQueryQuestionCommentCategory({
           categoryId: category.id,
-          panelId: this.props.panelId,
+          panelId: panelId,
           queryQuestionCommentCategory: category
         }));
       } else {
-        categories.push(await QueryQuestionCommentCategoriesApi.createQueryQuestionCommentCategory({
-          panelId: this.props.panelId,
+        categories.push(await Api.getQueryQuestionCommentCategoriesApi(accessToken.token).createQueryQuestionCommentCategory({
+          panelId: panelId,
           queryQuestionCommentCategory: category
         }));
       }

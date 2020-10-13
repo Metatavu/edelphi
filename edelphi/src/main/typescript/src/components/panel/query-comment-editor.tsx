@@ -110,7 +110,10 @@ class QueryCommentEditor extends React.Component<Props, State> {
    * Loads a comment
    */
   private async loadComment() {
-    if (!this.props.accessToken || this.state.loading || this.state.saving) {
+    const { accessToken, category, panelId, queryId, pageId } = this.props;
+    const { loading, saving } = this.state;
+
+    if (!accessToken || loading || saving) {
       return;
     }
 
@@ -118,13 +121,12 @@ class QueryCommentEditor extends React.Component<Props, State> {
       loading: true
     });
 
-    const categoryId = this.props.category ? this.props.category.id : 0;
-    const queryQuestionCommentsApi = this.getQueryQuestionCommentsApi(this.props.accessToken.token);
-    const comments = await queryQuestionCommentsApi.listQueryQuestionComments({
-      panelId: this.props.panelId,
-      queryId: this.props.queryId,
-      pageId: this.props.pageId,
-      userId: this.props.accessToken.userId,
+    const categoryId = category ? category.id : 0;
+    const comments = await Api.getQueryQuestionCommentsApi(accessToken.token).listQueryQuestionComments({
+      panelId: panelId,
+      queryId: queryId,
+      pageId: pageId,
+      userId: accessToken.userId,
       parentId: 0,
       categoryId: categoryId
     });
@@ -142,19 +144,13 @@ class QueryCommentEditor extends React.Component<Props, State> {
   }
 
   /**
-   * Returns query question comments API
-   * 
-   * @returns query question comments API
-   */
-  private getQueryQuestionCommentsApi(accessToken: string): QueryQuestionCommentsApi {
-    return Api.getQueryQuestionCommentsApi(accessToken);
-  }
-
-  /**
    * Saves editor contents
    */
   private save = async () => {
-    if (!this.state.changed || !this.state.contents || this.state.saving || !this.props.accessToken) {
+    const { accessToken, category, panelId, pageId, queryReplyId } = this.props;
+    const { changed, contents, saving, commentId } = this.state;
+
+    if (!changed || !contents || saving || !accessToken) {
       return;
     }
 
@@ -163,31 +159,31 @@ class QueryCommentEditor extends React.Component<Props, State> {
     });
 
     try {
-      const queryQuestionCommentsApi = this.getQueryQuestionCommentsApi(this.props.accessToken.token);
+      const queryQuestionCommentsApi = Api.getQueryQuestionCommentsApi(accessToken.token)
 
       let comment = null;
-      const categoryId = this.props.category ? this.props.category.id : 0;
+      const categoryId = category ? category.id : 0;
 
-      if (!this.state.commentId) {
+      if (!commentId) {
         comment = await queryQuestionCommentsApi.createQueryQuestionComment({
-          panelId: this.props.panelId,
+          panelId: panelId,
           queryQuestionComment: {
-            contents: this.state.contents,
+            contents: contents,
             hidden: false,
-            queryPageId: this.props.pageId,
-            queryReplyId: this.props.queryReplyId,
+            queryPageId: pageId,
+            queryReplyId: queryReplyId,
             categoryId: categoryId
           }
         });
       } else {
         comment = await queryQuestionCommentsApi.updateQueryQuestionComment({
-          commentId: this.state.commentId,
-          panelId: this.props.panelId,
+          commentId: commentId,
+          panelId: panelId,
           queryQuestionComment: {
-            contents: this.state.contents,
+            contents: contents,
             hidden: false,
-            queryPageId: this.props.pageId,
-            queryReplyId: this.props.queryReplyId,
+            queryPageId: pageId,
+            queryReplyId: queryReplyId,
             categoryId: categoryId
           }
         });

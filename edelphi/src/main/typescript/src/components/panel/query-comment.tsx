@@ -212,20 +212,20 @@ class QueryCommentClass extends React.Component<Props, State> {
    * Renders child comments
    */
   private renderChildComments() {
-    const { accessToken, loggedUserId } = this.props;
+    const { accessToken, loggedUserId, category, canManageComments, comment, queryReplyId, pageId, panelId, queryId } = this.props;
 
     return <QueryCommentContainer 
       accessToken={ accessToken }
       loggedUserId={ loggedUserId }
       onCommentsChanged={ this.onCommentsChanged } 
-      category={ this.props.category } 
+      category={ category } 
       className="queryCommentChildren" 
-      canManageComments={ this.props.canManageComments } 
-      parentId={ this.props.comment.id! } 
-      queryReplyId={this.props.queryReplyId} 
-      pageId={ this.props.pageId } 
-      panelId={ this.props.panelId } 
-      queryId={ this.props.queryId }/>
+      canManageComments={ canManageComments } 
+      parentId={ comment.id! } 
+      queryReplyId={ queryReplyId } 
+      pageId={ pageId } 
+      panelId={ panelId } 
+      queryId={ queryId }/>
   }
 
   /**
@@ -303,15 +303,6 @@ class QueryCommentClass extends React.Component<Props, State> {
   }
 
   /**
-   * Returns query question comments API
-   * 
-   * @returns query question comments API
-   */
-  private getQueryQuestionCommentsApi(accessToken: string): QueryQuestionCommentsApi {
-    return Api.getQueryQuestionCommentsApi(accessToken);
-  }
-
-  /**
    * Event called when container comments array have changed
    * 
    * @param comments comments
@@ -353,11 +344,13 @@ class QueryCommentClass extends React.Component<Props, State> {
    * Event handler for comment delete dialog confirm click
    */
   private onCommentDeleteConfirm() {
-    if (!this.props.accessToken || !this.props.comment.id) {
+    const { accessToken, comment, panelId } = this.props;
+
+    if (!accessToken || !comment.id) {
       return;
     }
 
-    if (this.state.updating || !this.props.accessToken || !this.props.comment.id) {
+    if (this.state.updating || !accessToken || !comment.id) {
       return;
     }
 
@@ -366,11 +359,11 @@ class QueryCommentClass extends React.Component<Props, State> {
       updating: true
     });
 
-    const queryQuestionCommentsApi = this.getQueryQuestionCommentsApi(this.props.accessToken);
+    const queryQuestionCommentsApi = Api.getQueryQuestionCommentsApi(accessToken);
 
     queryQuestionCommentsApi.deleteQueryQuestionComment({
-      panelId: this.props.panelId,
-      commentId: this.props.comment.id
+      panelId: panelId,
+      commentId: comment.id
     });
   }
 
@@ -380,9 +373,11 @@ class QueryCommentClass extends React.Component<Props, State> {
    * @param event event
    */
   private onEditCommentSaveClick(event: React.MouseEvent<HTMLElement>) {
+    const { accessToken, comment, panelId } = this.props;
+    
     event.preventDefault();
 
-    if (!this.commentEditor || this.state.updating || !this.props.accessToken || !this.props.comment.id) {
+    if (!this.commentEditor || this.state.updating || !accessToken || !comment.id) {
       return;
     }
 
@@ -393,12 +388,12 @@ class QueryCommentClass extends React.Component<Props, State> {
       updating: true
     });
 
-    const queryQuestionCommentsApi = this.getQueryQuestionCommentsApi(this.props.accessToken);
+    const queryQuestionCommentsApi = Api.getQueryQuestionCommentsApi(accessToken);
 
     queryQuestionCommentsApi.updateQueryQuestionComment({
-      commentId: this.props.comment.id,
-      panelId: this.props.panelId,
-      queryQuestionComment: { ... this.props.comment, contents: contents }
+      commentId: comment.id,
+      panelId: panelId,
+      queryQuestionComment: { ... comment, contents: contents }
     });
   }
     
@@ -408,6 +403,8 @@ class QueryCommentClass extends React.Component<Props, State> {
    * @param event event
    */
   private onNewCommentSaveClick(event: React.MouseEvent<HTMLElement>) {
+    const { accessToken } = this.props;
+
     event.preventDefault();
 
     if (!this.replyEditor || this.state.updating || !this.props.accessToken || !this.props.comment.id) {
@@ -423,7 +420,7 @@ class QueryCommentClass extends React.Component<Props, State> {
 
     const categoryId = this.props.category ? this.props.category.id : 0;
 
-    const queryQuestionCommentsApi = this.getQueryQuestionCommentsApi(this.props.accessToken);
+    const queryQuestionCommentsApi = Api.getQueryQuestionCommentsApi(accessToken);
 
     queryQuestionCommentsApi.createQueryQuestionComment({
       panelId: this.props.panelId,
@@ -457,9 +454,11 @@ class QueryCommentClass extends React.Component<Props, State> {
    * @param event event
    */
   private onShowClick(event: React.MouseEvent<HTMLElement>) {
+    const { accessToken, comment, panelId } = this.props;
+
     event.preventDefault();
 
-    if (this.state.updating || !this.props.accessToken || !this.props.comment.id) {
+    if (this.state.updating || !accessToken || !comment.id) {
       return;
     }
 
@@ -467,12 +466,12 @@ class QueryCommentClass extends React.Component<Props, State> {
       updating: true
     });
 
-    const queryQuestionCommentsApi = this.getQueryQuestionCommentsApi(this.props.accessToken);
+    const queryQuestionCommentsApi = Api.getQueryQuestionCommentsApi(accessToken);
     
     queryQuestionCommentsApi.updateQueryQuestionComment({
-      commentId: this.props.comment.id,
-      panelId: this.props.panelId,
-      queryQuestionComment: { ... this.props.comment, hidden: false }
+      commentId: comment.id,
+      panelId: panelId,
+      queryQuestionComment: { ... comment, hidden: false }
     });
   }
 
@@ -482,9 +481,11 @@ class QueryCommentClass extends React.Component<Props, State> {
    * @param event event
    */
   private onHideClick(event: React.MouseEvent<HTMLElement>) {
+    const { accessToken, comment, panelId } = this.props;
+
     event.preventDefault();
 
-    if (this.state.updating || !this.props.accessToken || !this.props.comment.id) {
+    if (this.state.updating || !accessToken || !comment.id) {
       return;
     }
 
@@ -492,12 +493,12 @@ class QueryCommentClass extends React.Component<Props, State> {
       updating: true
     });
 
-    const queryQuestionCommentsApi = this.getQueryQuestionCommentsApi(this.props.accessToken);
+    const queryQuestionCommentsApi = Api.getQueryQuestionCommentsApi(accessToken);
 
     queryQuestionCommentsApi.updateQueryQuestionComment({
-      commentId: this.props.comment.id,
-      panelId: this.props.panelId,
-      queryQuestionComment: { ... this.props.comment, hidden: true }
+      commentId: comment.id,
+      panelId: panelId,
+      queryQuestionComment: { ... comment, hidden: true }
     });
   }
 

@@ -246,14 +246,16 @@ class QueryPageLive2d extends React.Component<Props, State> {
    * Loads settings
    */
   private async loadSettings() {
-    if (!this.props.accessToken) {
+    const { accessToken, pageId, panelId } = this.props;
+
+    if (!accessToken) {
       return;
     }
 
     this.setState({
-      page: await Api.getQueryPagesApi(this.props.accessToken.token).findQueryPage({
-        panelId: this.props.panelId,
-        queryPageId: this.props.pageId
+      page: await Api.getQueryPagesApi(accessToken.token).findQueryPage({
+        panelId: panelId,
+        queryPageId: pageId
       })
     });
   }
@@ -262,15 +264,17 @@ class QueryPageLive2d extends React.Component<Props, State> {
    * Loads values from server
    */
   private async loadValues() {
-    if (!this.props.accessToken) {
+    const { accessToken, pageId, queryId, panelId } = this.props;
+
+    if (!accessToken) {
       return;
     }
 
-    const queryQuestionAnswersApi = Api.getQueryQuestionAnswersApi(this.props.accessToken.token);
+    const queryQuestionAnswersApi = Api.getQueryQuestionAnswersApi(accessToken.token);
     const answers = await queryQuestionAnswersApi.listQueryQuestionAnswers({
-      panelId: this.props.panelId,
-      queryId: this.props.queryId,
-      pageId: this.props.pageId
+      panelId: panelId,
+      queryId: queryId,
+      pageId: pageId
     });
 
     const values: QueryLive2dAnswer[] = answers.map((answer: QueryQuestionAnswer) => {
@@ -397,13 +401,15 @@ class QueryPageLive2d extends React.Component<Props, State> {
    * @param y answer y
    */
   private saveAnswer = async (x: number, y: number) => {
-    if (!this.props.accessToken || this.saving || !this.props.queryReplyId) {
+    const { accessToken, pageId, queryReplyId, panelId } = this.props;
+
+    if (!accessToken || this.saving || !queryReplyId) {
       return;
     }
 
     this.saving = true;
 
-    const queryQuestionAnswersApi = Api.getQueryQuestionAnswersApi(this.props.accessToken.token);
+    const queryQuestionAnswersApi = Api.getQueryQuestionAnswersApi(accessToken.token);
     const answerData: QueryQuestionLive2dAnswerData = {
       x: x,
       y: y
@@ -413,10 +419,10 @@ class QueryPageLive2d extends React.Component<Props, State> {
 
     const updatedAnswer = await queryQuestionAnswersApi.upsertQueryQuestionAnswer({
       answerId: answerId,
-      panelId: this.props.panelId,
+      panelId: panelId,
       queryQuestionAnswer: {
-        queryReplyId: this.props.queryReplyId,
-        queryPageId: this.props.pageId,
+        queryReplyId: queryReplyId,
+        queryPageId: pageId,
         data: answerData
       }
     });

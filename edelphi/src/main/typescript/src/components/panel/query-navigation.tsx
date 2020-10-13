@@ -5,7 +5,6 @@ import { StoreState, CommandEvent, PageChangeEvent, AccessToken } from "../../ty
 import { connect } from "react-redux";
 import { Grid, Button, Popup, List, Segment, Dimmer, Loader, Icon } from "semantic-ui-react";
 import { QueryPage, Panel, QueryState } from "../../generated/client/models";
-import { QueryPagesApi, PanelsApi } from "../../generated/client/apis";
 import strings from "../../localization/strings";
 import Api from "../../api";
 import LegacyUtils from "../../utils/legacy-utils";
@@ -311,7 +310,7 @@ class QueryNavigation extends React.Component<Props, State> {
    * Loads component data
    */
   private loadData = async () => {
-    const { accessToken } = this.props;
+    const { accessToken, panelId, queryId } = this.props;
 
     if (!accessToken) {
       return;
@@ -322,13 +321,13 @@ class QueryNavigation extends React.Component<Props, State> {
     });
     
     const pages = await Api.getQueryPagesApi(accessToken.token).listQueryPages({
-      panelId: this.props.panelId,
-      queryId: this.props.queryId,
+      panelId: panelId,
+      queryId: queryId,
       includeHidden: false
     });
     
     const panel = await Api.getPanelsApi(accessToken.token).findPanel({
-      panelId: this.props.panelId
+      panelId: panelId
     });
 
     this.setState({

@@ -154,7 +154,9 @@ export default class PanelAdminQueryPageCommentOptionsEditor extends React.Compo
    * Loads a comment
    */
   private loadData = async () => {
-    if (!this.props.pageId) {
+    const { accessToken, pageId, panelId, queryId } = this.props;
+
+    if (!pageId) {
       return;
     }
 
@@ -162,10 +164,10 @@ export default class PanelAdminQueryPageCommentOptionsEditor extends React.Compo
       loading: true
     });
 
-    const categories = await this.getQueryQuestionCommentCategoriesApi(this.props.accessToken.token).listQueryQuestionCommentCategories({
-      panelId: this.props.panelId,
-      pageId: this.props.pageId,
-      queryId: this.props.queryId
+    const categories = await Api.getQueryQuestionCommentCategoriesApi(accessToken.token).listQueryQuestionCommentCategories({
+      panelId: panelId,
+      pageId: pageId,
+      queryId: queryId
     });
 
     this.setState({
@@ -175,27 +177,19 @@ export default class PanelAdminQueryPageCommentOptionsEditor extends React.Compo
   }
 
   /**
-   * Returns query question comments API
-   * 
-   * @returns query question comments API
-   */
-  private getQueryQuestionCommentCategoriesApi(accessToken: string): QueryQuestionCommentCategoriesApi {
-    return Api.getQueryQuestionCommentCategoriesApi(accessToken);
-  }
-
-  /**
    * Deletes a category
    * 
    * @param category category
    */
   private deleteCategory = async (index: number) => {
+    const { accessToken } = this.props;
+
     const category: QueryQuestionCommentCategory = this.state.categories[index];
     const categories = _.clone(this.state.categories);
     categories.splice(index, 1); 
 
     if (category.id) {
-      const QueryQuestionCommentCategoriesApi = await this.getQueryQuestionCommentCategoriesApi(this.props.accessToken.token);
-      await QueryQuestionCommentCategoriesApi.deleteQueryQuestionCommentCategory({
+      await Api.getQueryQuestionCommentCategoriesApi(accessToken.token).deleteQueryQuestionCommentCategory({
         panelId: this.props.panelId,
         categoryId: category.id
       });
@@ -217,24 +211,25 @@ export default class PanelAdminQueryPageCommentOptionsEditor extends React.Compo
    * Event handler for save click
    */
   private onSaveClick = async () => {
+    const { accessToken } = this.props;
+
     this.setState({
       updating: true
     });
 
-    const QueryQuestionCommentCategoriesApi = await this.getQueryQuestionCommentCategoriesApi(this.props.accessToken.token);
     const categories = [];
 
     for (let i = 0; i < this.state.categories.length; i++) {
       const category = this.state.categories[i];
       
       if (category.id) {
-        categories.push(await QueryQuestionCommentCategoriesApi.updateQueryQuestionCommentCategory({
+        categories.push(await Api.getQueryQuestionCommentCategoriesApi(accessToken.token).updateQueryQuestionCommentCategory({
           categoryId: category.id,
           panelId: this.props.panelId,
           queryQuestionCommentCategory: category
         }));
       } else {
-        categories.push(await QueryQuestionCommentCategoriesApi.createQueryQuestionCommentCategory({
+        categories.push(await Api.getQueryQuestionCommentCategoriesApi(accessToken.token).createQueryQuestionCommentCategory({
           panelId:this.props.panelId,
           queryQuestionCommentCategory: category
         }));

@@ -226,7 +226,9 @@ class QueryComments extends React.Component<Props, State> {
    * Loads a comment
    */
   private loadData = async () => {
-    if (!this.props.accessToken) {
+    const { accessToken, panelId, pageId, queryId } = this.props;
+
+    if (!accessToken) {
       return;
     }
 
@@ -234,17 +236,17 @@ class QueryComments extends React.Component<Props, State> {
       loading: true
     });
 
-    const queryQuestionCommentCategoriesApi = this.getQueryQuestionCommentCategoriesApi(this.props.accessToken.token);
+    const queryQuestionCommentCategoriesApi = Api.getQueryQuestionCommentCategoriesApi(accessToken.token);
 
     const pageCategories = await queryQuestionCommentCategoriesApi.listQueryQuestionCommentCategories({
-      panelId: this.props.panelId,
-      pageId: this.props.pageId,
-      queryId: this.props.queryId
+      panelId: panelId,
+      pageId: pageId,
+      queryId: queryId
     });
     
     const queryCategories = await queryQuestionCommentCategoriesApi.listQueryQuestionCommentCategories({
-      panelId: this.props.panelId,
-      queryId: this.props.queryId
+      panelId: panelId,
+      queryId: queryId
     });
 
     this.setState({
@@ -253,14 +255,6 @@ class QueryComments extends React.Component<Props, State> {
     });
   }
 
-  /**
-   * Returns query question comments API
-   * 
-   * @returns query question comments API
-   */
-  private getQueryQuestionCommentCategoriesApi(accessToken: string): QueryQuestionCommentCategoriesApi {
-    return Api.getQueryQuestionCommentCategoriesApi(accessToken);
-  }
 }
 
 /**

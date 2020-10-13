@@ -46,22 +46,24 @@ class QueryCommentList extends React.Component<Props, State> {
    * Render edit pest view
    */
   public render() {
+    const { accessToken, loggedUserId, category, canManageComments, queryReplyId, pageId, panelId, queryId } = this.props;
+
     return (
       <div className="queryCommentList">
         <h2 className="querySubTitle queryCommentListSubTitle">{ strings.panel.query.comments.title }</h2>
         { this.state.empty ? <p> { strings.panel.query.comments.noComments } </p> : null }
         <QueryCommentContainer 
-          accessToken={ this.props.accessToken }
-          loggedUserId={ this.props.loggedUserId }
+          accessToken={ accessToken }
+          loggedUserId={ loggedUserId }
           onCommentsChanged={ this.onCommentsChanged } 
-          category={ this.props.category } 
+          category={ category } 
           className="queryCommentsContainer" 
-          canManageComments={ this.props.canManageComments } 
-          queryReplyId={ this.props.queryReplyId } 
+          canManageComments={ canManageComments } 
+          queryReplyId={ queryReplyId } 
           parentId={ 0 } 
-          pageId={ this.props.pageId } 
-          panelId={ this.props.panelId } 
-          queryId={ this.props.queryId }/>
+          pageId={ pageId } 
+          panelId={ panelId } 
+          queryId={ queryId }/>
       </div>
     );
   }

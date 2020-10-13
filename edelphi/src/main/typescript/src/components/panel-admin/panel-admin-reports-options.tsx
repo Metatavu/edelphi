@@ -73,30 +73,32 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
    * Component will mount life-cycle event
    */
   public async componentDidMount() {
+    const { panelId, queryId } = this.props;
+
     this.setState({
       loading: true
     });
 
     const queryPages = await this.getQueryPagesApi().listQueryPages({
-      panelId: this.props.panelId,
-      queryId: this.props.queryId,
+      panelId: panelId,
+      queryId: queryId,
       includeHidden: true
     });
 
     const panelExpertiseGroups = await this.getPanelExpertiseApi().listExpertiseGroups({
-      panelId: this.props.panelId
+      panelId: panelId
     });
     
     const panelInterestClasses = await this.getPanelExpertiseApi().listInterestClasses({
-      panelId: this.props.panelId
+      panelId: panelId
     });
 
     const panelExpertiseClasses = await this.getPanelExpertiseApi().listExpertiseClasses({
-      panelId: this.props.panelId
+      panelId: panelId
     });
 
     const panelUserGroups = await this.getUserGroupsApi().listUserGroups({
-      panelId: this.props.panelId
+      panelId: panelId
     });
 
     const commentCategories: QueryQuestionCommentCategory[] = await this.loadCommentCategories();

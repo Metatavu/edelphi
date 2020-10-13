@@ -297,22 +297,24 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
    * Renders page comment options editor
    */
   private renderPageCommentOptionsEditor() {
-    const { accessToken } = this.props;
+    const { accessToken, panelId, queryId } = this.props;
+    const { pageData, pageCommentOptionsOpen, pageId } = this.state;
+
     if (!accessToken) {
       return null;
     }
     
-    if (!this.state.pageData) {
+    if (!pageData) {
       return null;
     }
 
     return <PanelAdminQueryPageCommentOptionsEditor 
       accessToken={ accessToken }
-      pageData={ this.state.pageData } 
-      open={ this.state.pageCommentOptionsOpen } 
-      pageId={ this.state.pageId } 
-      panelId={ this.props.panelId} 
-      queryId={ this.props.queryId } 
+      pageData={ pageData } 
+      open={ pageCommentOptionsOpen } 
+      pageId={ pageId } 
+      panelId={ panelId } 
+      queryId={ queryId } 
       onClose={ this.onPageCommentOptionsEditorClose }/>
   }
 
@@ -331,14 +333,14 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
    * Removes query answers
    */
   private removeQueryAnswers = async () => {
-    const { accessToken } = this.props;
+    const { accessToken, panelId, queryId } = this.props;
     if (!accessToken) {
       return;
     }
 
     await Api.getQueryQuestionAnswersApi(accessToken.token).deleteQueryQuestionAnswers({
-      panelId: this.props.panelId,
-      queryId: this.props.queryId
+      panelId: panelId,
+      queryId: queryId
     });
   }
 

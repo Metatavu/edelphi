@@ -122,7 +122,9 @@ class PanelAdminQueryPageLive2dOptionsEditor extends React.Component<Props, Stat
    * Loads a comment
    */
   private loadData = async () => {
-    if (!this.props.accessToken || !this.props.pageId) {
+    const  { accessToken, pageId, panelId } = this.props;
+
+    if (!accessToken || !pageId) {
       return;
     }
 
@@ -130,9 +132,9 @@ class PanelAdminQueryPageLive2dOptionsEditor extends React.Component<Props, Stat
       loading: true
     });
 
-    const queryPage = await this.getQueryPagesApi(this.props.accessToken.token).findQueryPage({
-      panelId: this.props.panelId,
-      queryPageId: this.props.pageId
+    const queryPage = await Api.getQueryPagesApi(accessToken.token).findQueryPage({
+      panelId: panelId,
+      queryPageId: pageId
     });
 
     if (!queryPage) {
@@ -144,16 +146,6 @@ class PanelAdminQueryPageLive2dOptionsEditor extends React.Component<Props, Stat
       visible: queryPage.queryOptions.answersVisible || QueryPageLive2DAnswersVisibleOption.IMMEDIATELY
     });
   }
-
-  /**
-   * Returns query pages API
-   * 
-   * @returns query pages API
-   */
-  private getQueryPagesApi(accessToken: string): QueryPagesApi {
-    return Api.getQueryPagesApi(accessToken);
-  }
-
 
   /**
    * Event for visible dropdown change
@@ -175,7 +167,9 @@ class PanelAdminQueryPageLive2dOptionsEditor extends React.Component<Props, Stat
    * Event handler for save click
    */
   private onSaveClick = async () => {
-    if (!this.props.accessToken) {
+    const { accessToken, panelId, pageId, onClose } = this.props;
+
+    if (!accessToken) {
       return;
     }
 
@@ -183,10 +177,10 @@ class PanelAdminQueryPageLive2dOptionsEditor extends React.Component<Props, Stat
       updating: true
     });
 
-    const queryPagesApi = this.getQueryPagesApi(this.props.accessToken.token);
+    const queryPagesApi = Api.getQueryPagesApi(accessToken.token);
     const queryPage = await queryPagesApi.findQueryPage({
-      panelId: this.props.panelId,
-      queryPageId: this.props.pageId
+      panelId: panelId,
+      queryPageId: pageId
     });
 
     if (!queryPage) {
@@ -196,16 +190,16 @@ class PanelAdminQueryPageLive2dOptionsEditor extends React.Component<Props, Stat
     const updatePage = {... queryPage, queryOptions: { ... queryPage.queryOptions, answersVisible: this.state.visible } };
 
     await queryPagesApi.updateQueryPage({
-      panelId: this.props.panelId,
+      panelId: panelId,
       queryPage: updatePage,
-      queryPageId: this.props.pageId
+      queryPageId: pageId
     });
     
     this.setState({
       updating: false
     });
 
-    this.props.onClose();
+    onClose();
   }
   
   /**

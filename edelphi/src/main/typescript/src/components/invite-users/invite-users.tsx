@@ -74,16 +74,17 @@ export default class InviteUsers extends React.Component<Props, State> {
    * Component will mount life-cycle event
    */
   public async componentDidMount() {
-    const { accessToken } = this.props;
+    const { accessToken, panelId } = this.props;
+    const { token, userId } = accessToken;
 
     this.setState({
       loading: true
     });
     
-    const panel = await Api.getPanelsApi(accessToken.token).findPanel({ panelId: this.props.panelId });
-    const queries = await Api.getQueriesApi(accessToken.token).listQueries({ panelId: this.props.panelId });
-    const panelInvitations = await Api.getPanelInvitationsApi(accessToken.token).listPanelInvitations({ panelId: this.props.panelId });
-    const loggedUser = await Api.getUsersApi(accessToken.token).findUser({ userId: accessToken.userId });
+    const panel = await Api.getPanelsApi(token).findPanel({ panelId: panelId });
+    const queries = await Api.getQueriesApi(token).listQueries({ panelId: panelId });
+    const panelInvitations = await Api.getPanelInvitationsApi(token).listPanelInvitations({ panelId: panelId });
+    const loggedUser = await Api.getUsersApi(token).findUser({ userId: userId });
 
     this.setState({
       loading: false,
@@ -111,23 +112,25 @@ export default class InviteUsers extends React.Component<Props, State> {
    * Component render method
    */
   public render() {
-    if (!this.state.panel || !this.state.loggedUser) {
+    const { panel, loggedUser, loading, error, redirectTo } = this.state;
+
+    if (!panel || !loggedUser) {
       return null;
     }
 
-    if (this.state.error) {
-      return <ErrorDialog error={ this.state.error } onClose={ () => this.setState({ error: undefined }) } /> 
+    if (error) {
+      return <ErrorDialog error={ error } onClose={ () => this.setState({ error: undefined }) } /> 
     }
 
     const breadcrumbs: SemanticShorthandCollection<BreadcrumbSectionProps> = [
       { key: "home", content: strings.generic.eDelphi, href: "/" },
-      { key: "panel", content: this.state.panel.name, href: `/${this.state.panel.urlName}` },
-      { key: "panel-admin", content: strings.generic.panelAdminBreadcrumb, href: `/panel/admin/dashboard.page?panelId=${this.state.panel.id}` },
+      { key: "panel", content: panel.name, href: `/${panel.urlName}` },
+      { key: "panel-admin", content: strings.generic.panelAdminBreadcrumb, href: `/panel/admin/dashboard.page?panelId=${panel.id}` },
       { key: "invitations", content: strings.panelAdmin.inviteUsers.breadcrumb, active: true }      
     ];
 
     return (
-      <PanelAdminLayout loggedUser={ this.state.loggedUser } breadcrumbs={ breadcrumbs } loading={ this.state.loading } panel={ this.state.panel } redirectTo={ this.state.redirectTo }>
+      <PanelAdminLayout loggedUser={ loggedUser } breadcrumbs={ breadcrumbs } loading={ loading } panel={ panel } redirectTo={ redirectTo }>
         <Container className="invite-users-screen-container">
           { this.renderPasswordBlock() }
           <Grid>
@@ -244,7 +247,7 @@ export default class InviteUsers extends React.Component<Props, State> {
   }
 
   /**
-   * Renders queries list
+   * Renders users list
    */
   private renderUsersList = (invitationState: PanelInvitationState) => {
     const invitations = this.state.panelInvitations.filter(panelInvitation => panelInvitation.state == invitationState);
@@ -486,15 +489,16 @@ export default class InviteUsers extends React.Component<Props, State> {
    */
   private inviteUsers = async () => {
     const { accessToken } = this.props;
+    const { inviteEmails, skipInvitation, mailTemplate, password, invitationTarget } = this.state;
 
     await Api.getPanelInvitationsApi(accessToken.token).createPanelInvitationRequest({
       panelId: this.props.panelId,
       panelInvitationRequest: {
-        emails: this.state.inviteEmails,
-        skipInvitation: this.state.skipInvitation,
-        invitationMessage: this.state.mailTemplate,
-        password: this.state.password,
-        targetQueryId: this.state.invitationTarget ? this.state.invitationTarget : undefined 
+        emails: inviteEmails,
+        skipInvitation: skipInvitation,
+        invitationMessage: mailTemplate,
+        password: password,
+        targetQueryId: invitationTarget ? invitationTarget : undefined 
       }
     }); 
   }
@@ -597,7 +601,7 @@ export default class InviteUsers extends React.Component<Props, State> {
             const row = rowData.filter(cell => !!cell);
             if (row.length === 1) {
               inviteEmails.push(row[0]);
-            } else if (row.length > 1) {
+            } else if (row.length > 2) {
               inviteEmails.push(row[2]);
             }
           });

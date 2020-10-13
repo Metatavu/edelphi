@@ -40,12 +40,12 @@ class InviteUsersScreen extends React.Component<Props, State> {
    * Component render method
    */
   public render() {
-    const { accessToken } = this.props;
+    const { accessToken, location } = this.props;
     if (!accessToken) {
       return null;
     }
 
-    const queryParams = queryString.parse(this.props.location.search);    
+    const queryParams = queryString.parse(location.search);    
     const panelId = parseInt(queryParams.panelId as string);
     
     return ( 

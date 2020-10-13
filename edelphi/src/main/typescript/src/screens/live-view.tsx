@@ -8,7 +8,6 @@ import PanelAdminLayout from "../components/generic/panel-admin-layout";
 import { Panel, QueryQuestionComment, Query, QueryPage, QueryQuestionAnswer, QueryQuestionCommentCategory, User } from "../generated/client/models";
 import "../styles/live-view.scss";
 import { mqttConnection, OnMessageCallback } from "../mqtt";
-import { QueryQuestionCommentsApi, QueriesApi, PanelsApi, QueryPagesApi, QueryQuestionAnswersApi, QueryQuestionCommentCategoriesApi, UsersApi } from "../generated/client/apis";
 import * as queryString from "query-string";
 import moment from "moment";
 import getLanguage from "../localization/language";
@@ -603,8 +602,9 @@ class LiveView extends React.Component<Props, State> {
    */
   private async loadData() {
     const { accessToken } = this.props;
+    const { panel, queryId, pageId, pages, categoryId } = this.state;
 
-    if (!accessToken || !this.state.panel || !this.state.panel.id) {
+    if (!accessToken || !panel || !panel.id) {
       return;
     }
 
@@ -613,14 +613,14 @@ class LiveView extends React.Component<Props, State> {
     const queryQuestionAnswersApi = Api.getQueryQuestionAnswersApi(accessToken.token);
     const queryQuestionCommentCategoriesApi = Api.getQueryQuestionCommentCategoriesApi(accessToken.token);
 
-    const panelId = this.state.panel.id;
+    const panelId = panel.id;
 
     this.setState({
       loading: true
     });
 
-    if (this.state.queryId) {
-      const pages = await queryPagesApi.listQueryPages({ panelId: panelId, queryId: this.state.queryId, includeHidden: false });
+    if (queryId) {
+      const pages = await queryPagesApi.listQueryPages({ panelId: panelId, queryId: queryId, includeHidden: false });
 
       await this.setStateAsync({
         pages: pages.filter((page) => {
@@ -629,9 +629,9 @@ class LiveView extends React.Component<Props, State> {
       });
     }
 
-    if (this.state.pageId && this.state.queryId && this.state.panel && this.state.panel.id) {
-      const page = this.state.pages.find((page) => {
-        return page.id == this.state.pageId;
+    if (pageId && queryId && panel && panel.id) {
+      const page = pages.find((page) => {
+        return page.id == pageId;
       });
 
       if (!page || !page.queryOptions.axisX || !page.queryOptions.axisY || !page.queryOptions.axisX.options || !page.queryOptions.axisY.options) {
@@ -639,7 +639,7 @@ class LiveView extends React.Component<Props, State> {
       }
 
       const categories = await queryQuestionCommentCategoriesApi
-        .listQueryQuestionCommentCategories({ panelId: this.state.panel.id, pageId: this.state.pageId });
+        .listQueryQuestionCommentCategories({ panelId: panel.id, pageId: pageId });
 
       await this.setStateAsync({
         categories: categories,
@@ -652,18 +652,18 @@ class LiveView extends React.Component<Props, State> {
       });
     }
 
-    if (this.state.pageId && this.state.queryId && this.state.panel && this.state.panel.id && this.state.categoryId !== undefined) {
+    if (pageId && queryId && panel && panel.id && categoryId !== undefined) {
       const comments = await queryQuestionCommentsApi.listQueryQuestionComments({
-        panelId: this.state.panel.id,
-        queryId: this.state.queryId,
-        pageId: this.state.pageId,
-        categoryId: this.state.categoryId
+        panelId: panel.id,
+        queryId: queryId,
+        pageId: pageId,
+        categoryId: categoryId
       });
       
       const answers = await queryQuestionAnswersApi.listQueryQuestionAnswers({
-        panelId: this.state.panel.id,
-        pageId: this.state.pageId,
-        queryId: this.state.queryId
+        panelId: panel.id,
+        pageId: pageId,
+        queryId: queryId
       });
 
       await this.setStateAsync({

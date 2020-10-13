@@ -82,23 +82,26 @@ class QueryCommentContainer extends React.Component<Props, State> {
    * Render comments container
    */
   public render() {
-    if (!this.state.comments || !this.props.accessToken) {
+    const { className, accessToken, loggedUserId, category, canManageComments, queryReplyId, pageId, panelId, queryId } = this.props;
+    const { comments } = this.state;
+
+    if (!comments || !accessToken) {
       return <Loader/>;
     }
 
-    return <div className={ this.props.className }>
+    return <div className={ className }>
       {
-        this.state.comments.map((comment) => {
+        comments.map((comment) => {
           return <QueryComment key={ comment.id } 
-            accessToken={ this.props.accessToken }
-            loggedUserId={ this.props.loggedUserId }
-            category={ this.props.category } 
-            canManageComments={ this.props.canManageComments } 
+            accessToken={ accessToken }
+            loggedUserId={ loggedUserId }
+            category={ category } 
+            canManageComments={ canManageComments } 
             comment={ comment } 
-            queryReplyId={this.props.queryReplyId}
-            pageId={ this.props.pageId } 
-            panelId={ this.props.panelId} 
-            queryId={ this.props.queryId }/>
+            queryReplyId={ queryReplyId }
+            pageId={ pageId } 
+            panelId={ panelId} 
+            queryId={ queryId }/>
         })
       } 
     </div>
@@ -110,19 +113,21 @@ class QueryCommentContainer extends React.Component<Props, State> {
    * @param message message
    */
   private async onQueryQuestionCommentNotification(message: QueryQuestionCommentNotification) {
-    if (message.pageId != this.props.pageId || message.panelId != this.props.panelId || message.queryId != this.props.queryId) {
+    const { pageId, panelId, queryId, accessToken, parentId } = this.props;
+
+    if (message.pageId != pageId || message.panelId != panelId || message.queryId != queryId) {
       return;
     }
 
-    if (!this.state.comments || !this.props.accessToken) {
+    if (!this.state.comments || !accessToken) {
       return;
     }
 
     const parentCommentId = message.parentCommentId || 0;
 
-    if (message.type == "CREATED" && parentCommentId == this.props.parentId) {
-      const comment = await this.getQueryQuestionCommentsApi(this.props.accessToken).findQueryQuestionComment({
-        panelId: this.props.panelId, 
+    if (message.type == "CREATED" && parentCommentId == parentId) {
+      const comment = await Api.getQueryQuestionCommentsApi(accessToken).findQueryQuestionComment({
+        panelId: panelId, 
         commentId: message.commentId
       });
 
@@ -136,8 +141,8 @@ class QueryCommentContainer extends React.Component<Props, State> {
         const comment = this.state.comments[i];
         if (message.commentId == comment.id) {
           if (message.type == "UPDATED") {
-            comments.push(await this.getQueryQuestionCommentsApi(this.props.accessToken).findQueryQuestionComment({
-              panelId: this.props.panelId,
+            comments.push(await Api.getQueryQuestionCommentsApi(accessToken).findQueryQuestionComment({
+              panelId: panelId,
               commentId: message.commentId
             }));
           }
@@ -182,30 +187,23 @@ class QueryCommentContainer extends React.Component<Props, State> {
    * Loads child comments
    */
   private async loadChildComments() {
-    if (!this.state.comments && this.props.accessToken) {
-      const categoryId = this.props.category ? this.props.category.id : 0;
+    const { pageId, panelId, queryId, accessToken, parentId, category } = this.props;
+
+    if (!this.state.comments && accessToken) {
+      const categoryId = category ? category.id : 0;
       
-      const comments = await (this.getQueryQuestionCommentsApi(this.props.accessToken)).listQueryQuestionComments({
-        panelId: this.props.panelId,
-        queryId: this.props.queryId,
-        pageId: this.props.pageId,
-        parentId: this.props.parentId,
-        categoryId: this.props.parentId == 0 ? categoryId : undefined
+      const comments = await Api.getQueryQuestionCommentsApi(accessToken).listQueryQuestionComments({
+        panelId: panelId,
+        queryId: queryId,
+        pageId: pageId,
+        parentId: parentId,
+        categoryId: parentId == 0 ? categoryId : undefined
       });
 
       this.setState({
         comments: comments.sort(this.compareComments)
       });
     }
-  } 
-
-  /**
-   * Returns query question comments API
-   * 
-   * @returns query question comments API
-   */
-  private getQueryQuestionCommentsApi(accessToken: string): QueryQuestionCommentsApi {
-    return Api.getQueryQuestionCommentsApi(accessToken);
   }
 
 }

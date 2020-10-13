@@ -55,13 +55,13 @@ export default class PanelAdminQueryCopyDialog extends React.Component<Props, St
    * Component did mount life-cycle event
    */
   public async componentDidMount() {
+    const { accessToken } = this.props;
+
     this.setState({
       loading: true
     });
 
-    const panelsApi = this.getPanelsApi(this.props.accessToken);
-
-    const panels = await panelsApi.listPanels({
+    const panels = await Api.getPanelsApi(accessToken).listPanels({
       managedOnly: true
     });
     
@@ -213,24 +213,6 @@ export default class PanelAdminQueryCopyDialog extends React.Component<Props, St
   }
 
   /**
-   * Returns panels API 
-   * 
-   * @returns panels API
-   */
-  private getPanelsApi(accessToken: string): PanelsApi {
-    return Api.getPanelsApi(accessToken);
-  }
-
-  /**
-   * Returns queries API 
-   * 
-   * @returns queries API
-   */
-  private getQueriesApi(accessToken: string): QueriesApi {
-    return Api.getQueriesApi(accessToken);
-  }
-
-  /**
    * Event handler for modal close
    */
   private onModalClose = () => {
@@ -241,22 +223,19 @@ export default class PanelAdminQueryCopyDialog extends React.Component<Props, St
    * Event handler for save click
    */
   private onCopyButtonClick  = async () => {
-    if (!this.props.accessToken) {
-      return;
-    }
-    
+    const { accessToken, panelId, queryId } = this.props;
+    const { copyData, name, targetPanelId } = this.state;
+
     this.setState({
       loading: true
     });
 
-    const QueriesApi = this.getQueriesApi(this.props.accessToken);
-    
-    await QueriesApi.copyQuery({
-      copyData: this.state.copyData,
-      newName: this.state.name,
-      panelId: this.props.panelId,
-      queryId: this.props.queryId,
-      targetPanelId: this.state.targetPanelId
+    await Api.getQueriesApi(accessToken).copyQuery({
+      copyData: copyData,
+      newName: name,
+      panelId: panelId,
+      queryId: queryId,
+      targetPanelId: targetPanelId
     });
     
     this.setState({
