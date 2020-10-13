@@ -39,10 +39,10 @@ export default class Api {
   }
 
   /**
-   * Gets initialized api
+   * Gets initialized panels api
    *
-   * @param token access token
-   * @returns initialized api
+   * @param accessToken access token
+   * @returns initialized panels api
    */
   public static getPanelsApi(accessToken: string) {
     return new PanelsApi(Api.getConfiguration(accessToken));
