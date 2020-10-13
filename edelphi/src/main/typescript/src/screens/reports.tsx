@@ -69,7 +69,7 @@ class Reports extends React.Component<Props, State> {
   /**
    * Component will mount life-cycle event
    */
-  public async componentDidMount() {
+  public componentDidMount = async () => {
     const { accessToken } = this.props;
     if (!accessToken) {
       return;
