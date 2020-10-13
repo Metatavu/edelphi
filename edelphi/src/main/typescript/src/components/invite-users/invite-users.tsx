@@ -305,7 +305,13 @@ export default class InviteUsers extends React.Component<Props, State> {
         <List.Content>
           <List.Header>
             <span>{ invitation.email }{ invitationTargetLabel }</span>
-            <span className="resend-link" color="blue" onClick={ () => this.resendInvitations([invitation]) }>{ strings.panelAdmin.inviteUsers.usersListBlock.resendInvitationToUser }</span> 
+            <span
+              className="resend-link"
+              color="blue"
+              onClick={ () => this.resendInvitations([invitation]) }
+            >
+              { strings.panelAdmin.inviteUsers.usersListBlock.resendInvitationToUser }
+            </span> 
           </List.Header>
           <List.Description>{ strings.formatString(listStrings.timeLabel, time) }</List.Description>
         </List.Content>
