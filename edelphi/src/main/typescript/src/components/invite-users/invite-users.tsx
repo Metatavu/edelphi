@@ -73,7 +73,7 @@ export default class InviteUsers extends React.Component<Props, State> {
   /**
    * Component will mount life-cycle event
    */
-  public async componentDidMount() {
+  public componentDidMount = async () => {
     const { accessToken } = this.props;
 
     this.setState({
