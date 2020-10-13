@@ -402,7 +402,12 @@ export default class InviteUsers extends React.Component<Props, State> {
     return (
       <div>
         <h3> { strings.panelAdmin.inviteUsers.inviteBlock.invitationTarget } </h3>
-        <Select style={{ width: "100%" }} options={ options } value={ this.state.invitationTarget } onChange={ this.onInvitationTargetChange }/>
+        <Select
+          style={{ width: "100%" }}
+          options={ options }
+          value={ this.state.invitationTarget }
+          onChange={ this.onInvitationTargetChange }
+        />
       </div>
     );
   }
