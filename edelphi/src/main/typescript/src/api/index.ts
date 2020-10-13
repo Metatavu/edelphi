@@ -99,10 +99,10 @@ export default class Api {
   }
 
   /**
-   * Gets initialized api
+   * Gets initialized panel expertise api
    *
-   * @param token access token
-   * @returns initialized api
+   * @param accessToken access token
+   * @returns initialized panel expertise api
    */
   public static getPanelExpertiseApi(accessToken: string) {
     return new PanelExpertiseApi(Api.getConfiguration(accessToken));
