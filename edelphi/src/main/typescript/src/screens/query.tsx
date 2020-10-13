@@ -137,7 +137,13 @@ window.addEventListener('load', () => {
         <Provider store={store}>
           <AccessTokenRefresh>
             <MqttConnector>
-              <QueryNavigation queryState={ queryState } pageId={pageId} panelId={panelId} queryId={queryId} onPageChange={ pageChangeListener }/>
+              <QueryNavigation
+                queryState={ queryState }
+                pageId={ pageId }
+                panelId={ panelId }
+                queryId={ queryId }
+                onPageChange={ pageChangeListener }
+              />
             </MqttConnector>
           </AccessTokenRefresh>
         </Provider>;
