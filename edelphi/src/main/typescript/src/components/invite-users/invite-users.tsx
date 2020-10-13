@@ -204,7 +204,14 @@ export default class InviteUsers extends React.Component<Props, State> {
             onChange={ this.onEmailInputChange }
             placeholder={ strings.panelAdmin.inviteUsers.inviteBlock.emailPlaceholder }
           />
-          <Button color="blue" size="tiny" disabled={ !EmailValidator.validate(this.state.inviteEmail) } onClick={ this.onAddInviteUserClick }>{ strings.panelAdmin.inviteUsers.inviteBlock.addUser }</Button>
+          <Button
+            color="blue"
+            size="tiny"
+            disabled={ !EmailValidator.validate(this.state.inviteEmail) }
+            onClick={ this.onAddInviteUserClick }
+          >
+            { strings.panelAdmin.inviteUsers.inviteBlock.addUser }
+          </Button>
         </div>
       </>
     );
