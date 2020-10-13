@@ -371,8 +371,10 @@ public class KeycloakController {
   /**
    * Resolves an access token for realm, client, username and password
    * 
+   * @param serverUrl server URL
    * @param realm realm
    * @param clientId clientId
+   * @param clientSecret client secret
    * @param username username
    * @param password password
    * @return an access token

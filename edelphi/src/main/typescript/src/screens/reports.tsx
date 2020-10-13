@@ -6,7 +6,6 @@ import { connect } from "react-redux";
 import PanelAdminLayout from "../components/generic/panel-admin-layout";
 import { Panel, Query, QueryPage, ReportFormat, ReportType, User } from "../generated/client/models";
 import "../styles/reports.scss";
-import { PanelsApi, QueriesApi, ReportsApi, UsersApi } from "../generated/client/apis";
 import * as queryString from "query-string";
 import { Grid, Container, List, Modal, Button, Icon, SemanticShorthandCollection, BreadcrumbSectionProps } from "semantic-ui-react";
 import strings from "../localization/strings";
@@ -221,16 +220,18 @@ class Reports extends React.Component<Props, State> {
    */
   private requestReport = async (type: ReportType, format: ReportFormat) => {
     const { accessToken } = this.props;
+    const { panel, selectedQueryId, expertiseGroupIds, filterQueryPageId, panelUserGroupIds, commentCategoryIds } = this.state;
+
     if (!accessToken) {
       return;
     }
 
     try {
-      if (!this.state.panel || !this.state.panel.id) {
+      if (!panel || !panel.id) {
         throw new Error("Could not load panel");
       }
 
-      if (!this.state.selectedQueryId) {
+      if (!selectedQueryId) {
         throw new Error("Query not selected");
       }
 
@@ -238,13 +239,13 @@ class Reports extends React.Component<Props, State> {
         reportRequest: {
           format: format,
           type: type,
-          panelId: this.state.panel.id,
-          queryId: this.state.selectedQueryId,
+          panelId: panel.id,
+          queryId: selectedQueryId,
           options: {
-            expertiseGroupIds: this.state.expertiseGroupIds == "ALL" ? undefined : this.state.expertiseGroupIds,
-            queryPageIds: this.state.filterQueryPageId == "ALL" ? undefined : [ this.state.filterQueryPageId ],
-            panelUserGroupIds: this.state.panelUserGroupIds == "ALL" ? undefined : this.state.panelUserGroupIds,
-            commentCategoryIds: this.state.commentCategoryIds == "ALL" ? undefined : this.state.commentCategoryIds
+            expertiseGroupIds: expertiseGroupIds == "ALL" ? undefined : expertiseGroupIds,
+            queryPageIds: filterQueryPageId == "ALL" ? undefined : [ filterQueryPageId ],
+            panelUserGroupIds: panelUserGroupIds == "ALL" ? undefined : panelUserGroupIds,
+            commentCategoryIds: commentCategoryIds == "ALL" ? undefined : commentCategoryIds
           }
         }
       });
