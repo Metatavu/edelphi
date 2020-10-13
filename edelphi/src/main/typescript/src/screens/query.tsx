@@ -83,7 +83,16 @@ window.addEventListener('load', () => {
         <Provider store={store}>
           <AccessTokenRefresh>
             <MqttConnector>
-              <QueryComments setPageChangeListener={ setPageChangeListener } panelId={ panelId } canManageComments={ canManageComments }  viewDiscussion={ viewDiscussion } commentable={ commentable } pageId={ pageId } queryId={ queryId } queryReplyId={ queryReplyId }/>
+              <QueryComments
+                setPageChangeListener={ setPageChangeListener }
+                panelId={ panelId }
+                canManageComments={ canManageComments }
+                viewDiscussion={ viewDiscussion }
+                commentable={ commentable }
+                pageId={ pageId }
+                queryId={ queryId }
+                queryReplyId={ queryReplyId }
+              />
             </MqttConnector>
           </AccessTokenRefresh>
         </Provider>;
@@ -103,7 +112,12 @@ window.addEventListener('load', () => {
         <Provider store={store}>
           <AccessTokenRefresh>
             <MqttConnector>
-              <QueryPageLive2d pageId={pageId} panelId={panelId} queryId={queryId} queryReplyId={queryReplyId} />
+              <QueryPageLive2d
+                pageId={ pageId }
+                panelId={ panelId }
+                queryId={ queryId }
+                queryReplyId={ queryReplyId }
+              />
             </MqttConnector>
           </AccessTokenRefresh>
         </Provider>;
@@ -123,7 +137,13 @@ window.addEventListener('load', () => {
         <Provider store={store}>
           <AccessTokenRefresh>
             <MqttConnector>
-              <QueryNavigation queryState={ queryState } pageId={pageId} panelId={panelId} queryId={queryId} onPageChange={ pageChangeListener }/>
+              <QueryNavigation
+                queryState={ queryState }
+                pageId={ pageId }
+                panelId={ panelId }
+                queryId={ queryId }
+                onPageChange={ pageChangeListener }
+              />
             </MqttConnector>
           </AccessTokenRefresh>
         </Provider>;
