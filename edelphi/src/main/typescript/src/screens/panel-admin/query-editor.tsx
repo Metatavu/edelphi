@@ -51,7 +51,11 @@ window.addEventListener('load', () => {
       const component =
         <Provider store={store}>
           <AccessTokenRefresh>
-            <PanelAdminQueryEditor panelId={ panelId } queryId={ queryId } openCopyDialog={ openCopyDialog }/>
+            <PanelAdminQueryEditor
+              panelId={ panelId }
+              queryId={ queryId }
+              openCopyDialog={ openCopyDialog }
+            />
           </AccessTokenRefresh>
         </Provider>;
 

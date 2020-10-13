@@ -73,7 +73,7 @@ export default class InviteUsers extends React.Component<Props, State> {
   /**
    * Component will mount life-cycle event
    */
-  public async componentDidMount() {
+  public componentDidMount = async () => {
     const { accessToken, panelId } = this.props;
     const { token, userId } = accessToken;
 
@@ -102,7 +102,7 @@ export default class InviteUsers extends React.Component<Props, State> {
   /**
    * Component will unmount life-cycle event
    */
-  public componentWillUnmount() {
+  public componentWillUnmount = () => {
     if (this.timer) {
       clearInterval(this.timer);
     }
@@ -179,8 +179,6 @@ export default class InviteUsers extends React.Component<Props, State> {
       return null;
     }
 
-    const panelId: number = this.state.panel.id;
-
     return (
       <div className="block">
         { this.renderInviteUserInput() }
@@ -202,8 +200,21 @@ export default class InviteUsers extends React.Component<Props, State> {
       <>
         <h2>{ strings.panelAdmin.inviteUsers.inviteBlock.title }</h2>
         <div>
-          <Input type="email" style={{ width: "100%", marginTop: 10, marginBottom: 10 }} value={ this.state.inviteEmail } onChange={ this.onEmailInputChange } placeholder={ strings.panelAdmin.inviteUsers.inviteBlock.emailPlaceholder }/>
-          <Button color="blue" size="tiny" disabled={ !EmailValidator.validate(this.state.inviteEmail) } onClick={ this.onAddInviteUserClick }>{ strings.panelAdmin.inviteUsers.inviteBlock.addUser }</Button>
+          <Input
+            type="email"
+            style={{ width: "100%", marginTop: 10, marginBottom: 10 }}
+            value={ this.state.inviteEmail }
+            onChange={ this.onEmailInputChange }
+            placeholder={ strings.panelAdmin.inviteUsers.inviteBlock.emailPlaceholder }
+          />
+          <Button
+            color="blue"
+            size="tiny"
+            disabled={ !EmailValidator.validate(this.state.inviteEmail) }
+            onClick={ this.onAddInviteUserClick }
+          >
+            { strings.panelAdmin.inviteUsers.inviteBlock.addUser }
+          </Button>
         </div>
       </>
     );
@@ -216,7 +227,12 @@ export default class InviteUsers extends React.Component<Props, State> {
     return (
       <>
         <h3>{ strings.panelAdmin.inviteUsers.inviteBlock.csvFieldLabel }</h3>
-        <Input accept="text/csv" type="file" style={{ width: "100%" }} onChange={ this.onCsvInputChange } />
+        <Input
+          accept="text/csv"
+          type="file"
+          style={{ width: "100%" }}
+          onChange={ this.onCsvInputChange }
+        />
         <div className="example-csv-container">
           <a href={ `/_files/userimportexample_${strings.getLanguage()}.csv` }>{ strings.panelAdmin.inviteUsers.inviteBlock.csvExampleLinkLabel }</a>
         </div>
@@ -261,7 +277,13 @@ export default class InviteUsers extends React.Component<Props, State> {
       <div key={ invitationState }>
         <h3> 
           <span>{ listStrings.title }</span>
-          <span className="resend-all-link" color="blue" onClick={ () => this.resendInvitations(invitations) }>{ strings.panelAdmin.inviteUsers.usersListBlock.resendInvitationToAll }</span> 
+          <span
+            className="resend-all-link"
+            color="blue"
+            onClick={ () => this.resendInvitations(invitations) }
+          >
+            { strings.panelAdmin.inviteUsers.usersListBlock.resendInvitationToAll }
+          </span> 
         </h3>
         <List divided relaxed>
           { invitations.map(this.renderUsersListInvitation) }
@@ -286,7 +308,13 @@ export default class InviteUsers extends React.Component<Props, State> {
         <List.Content>
           <List.Header>
             <span>{ invitation.email }{ invitationTargetLabel }</span>
-            <span className="resend-link" color="blue" onClick={ () => this.resendInvitations([invitation]) }>{ strings.panelAdmin.inviteUsers.usersListBlock.resendInvitationToUser }</span> 
+            <span
+              className="resend-link"
+              color="blue"
+              onClick={ () => this.resendInvitations([invitation]) }
+            >
+              { strings.panelAdmin.inviteUsers.usersListBlock.resendInvitationToUser }
+            </span> 
           </List.Header>
           <List.Description>{ strings.formatString(listStrings.timeLabel, time) }</List.Description>
         </List.Content>
@@ -328,8 +356,12 @@ export default class InviteUsers extends React.Component<Props, State> {
   private renderMailTemplate = () => {
     return (
       <div>
-        <h3> { strings.panelAdmin.inviteUsers.inviteBlock.invitationFieldLabel } </h3>        
-        <TextArea className="invite-template" value={ this.state.mailTemplate } onChange={ this.onMailTemplateChange }/>
+        <h3>{ strings.panelAdmin.inviteUsers.inviteBlock.invitationFieldLabel }</h3>        
+        <TextArea
+          className="invite-template"
+          value={ this.state.mailTemplate }
+          onChange={ this.onMailTemplateChange }
+        />
         { this.renderMailTemplateValidation() }        
       </div>
     );
@@ -373,7 +405,12 @@ export default class InviteUsers extends React.Component<Props, State> {
     return (
       <div>
         <h3> { strings.panelAdmin.inviteUsers.inviteBlock.invitationTarget } </h3>
-        <Select style={{ width: "100%" }} options={ options } value={ this.state.invitationTarget } onChange={ this.onInvitationTargetChange }/>
+        <Select
+          style={{ width: "100%" }}
+          options={ options }
+          value={ this.state.invitationTarget }
+          onChange={ this.onInvitationTargetChange }
+        />
       </div>
     );
   }
@@ -395,7 +432,13 @@ export default class InviteUsers extends React.Component<Props, State> {
   private renderSendInvitationsButton = () => {
     return (
       <div>
-        <Button  disabled={ !this.state.containsAcceptLink || this.state.inviteEmails.length === 0 } color="blue" onClick={ this.onSendInvitationsClick }>{ strings.panelAdmin.inviteUsers.inviteBlock.sendInvitationsButtonLabel }</Button>
+        <Button
+        disabled={ !this.state.containsAcceptLink || this.state.inviteEmails.length === 0 }
+        color="blue"
+        onClick={ this.onSendInvitationsClick }
+       >
+         { strings.panelAdmin.inviteUsers.inviteBlock.sendInvitationsButtonLabel }
+       </Button>
       </div>
     );
   }

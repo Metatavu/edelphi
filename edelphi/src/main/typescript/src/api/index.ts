@@ -79,40 +79,40 @@ export default class Api {
   }
 
   /**
-   * Gets initialized api
+   * Gets initialized query question answers api
    *
-   * @param token access token
-   * @returns initialized api
+   * @param accessToken access token
+   * @returns initialized query question answers api
    */
   public static getQueryQuestionAnswersApi(accessToken: string) {
     return new QueryQuestionAnswersApi(Api.getConfiguration(accessToken));
   }
 
   /**
-   * Gets initialized api
+   * Gets initialized query question comment categories api
    *
-   * @param token access token
-   * @returns initialized api
+   * @param accessToken access token
+   * @returns initialized query question comment categories api
    */
   public static getQueryQuestionCommentCategoriesApi(accessToken: string) {
     return new QueryQuestionCommentCategoriesApi(Api.getConfiguration(accessToken));
   }
 
   /**
-   * Gets initialized api
+   * Gets initialized panel expertise api
    *
-   * @param token access token
-   * @returns initialized api
+   * @param accessToken access token
+   * @returns initialized panel expertise api
    */
   public static getPanelExpertiseApi(accessToken: string) {
     return new PanelExpertiseApi(Api.getConfiguration(accessToken));
   }
 
   /**
-   * Gets initialized api
+   * Gets initialized panel invitations api
    *
-   * @param token access token
-   * @returns initialized api
+   * @param accessToken access token
+   * @returns initialized panel invitations api
    */
   public static getPanelInvitationsApi(accessToken: string) {
     return new PanelInvitationsApi(Api.getConfiguration(accessToken));
@@ -121,7 +121,8 @@ export default class Api {
   /**
    * Gets api configuration
    *
-   * @param token acess token
+   * @param accessToken acess token
+   * @returns api configuration
    */
   private static getConfiguration(accessToken: string) {
     return new Configuration({

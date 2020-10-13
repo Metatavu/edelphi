@@ -39,7 +39,7 @@ class InviteUsersScreen extends React.Component<Props, State> {
   /** 
    * Component render method
    */
-  public render() {
+  public render = () => {
     const { accessToken, location } = this.props;
     if (!accessToken) {
       return null;

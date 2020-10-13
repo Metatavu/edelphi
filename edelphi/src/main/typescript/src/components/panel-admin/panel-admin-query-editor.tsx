@@ -86,14 +86,14 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
   /**
    * Component will mount life-cycle event
    */
-  public componentWillMount() {
+  public componentWillMount = () => {
     LegacyUtils.addCommandListener(this.onReactCommand);  
   }
   
   /**
    * Component will unmount life-cycle event
    */
-  public async componentWillUnmount() {
+  public componentWillUnmount = async () => {
     LegacyUtils.removeCommandListener(this.onReactCommand);
   }
   
@@ -276,7 +276,7 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
   /**
    * Renders query comment options editor
    */
-  private renderQueryCommentOptionsEditor() {
+  private renderQueryCommentOptionsEditor = () => {
     const { accessToken } = this.props;
     if (!accessToken) {
       return null;
@@ -296,7 +296,7 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
   /**
    * Renders page comment options editor
    */
-  private renderPageCommentOptionsEditor() {
+  private renderPageCommentOptionsEditor = () => {
     const { accessToken, panelId, queryId } = this.props;
     const { pageData, pageCommentOptionsOpen, pageId } = this.state;
 

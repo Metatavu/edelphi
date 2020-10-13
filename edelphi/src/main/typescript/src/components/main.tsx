@@ -48,9 +48,9 @@ class MainPage extends React.Component<Props, State> {
 
     return (
       <div>
-        <Route exact path="/panel/admin/liveview.page" component={LiveView}/>
-        <Route exact path="/panel/admin/reports.page" component={Reports}/>
-        <Route exact path="/panel/admin/inviteusers.page" component={InviteUsersScreen}/>
+        <Route exact path="/panel/admin/liveview.page" component={ LiveView }/>
+        <Route exact path="/panel/admin/reports.page" component={ Reports }/>
+        <Route exact path="/panel/admin/inviteusers.page" component={ InviteUsersScreen }/>
       </div>
     );
   }
