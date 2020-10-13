@@ -429,7 +429,13 @@ export default class InviteUsers extends React.Component<Props, State> {
   private renderSendInvitationsButton = () => {
     return (
       <div>
-        <Button  disabled={ !this.state.containsAcceptLink || this.state.inviteEmails.length === 0 } color="blue" onClick={ this.onSendInvitationsClick }>{ strings.panelAdmin.inviteUsers.inviteBlock.sendInvitationsButtonLabel }</Button>
+        <Button
+        disabled={ !this.state.containsAcceptLink || this.state.inviteEmails.length === 0 }
+        color="blue"
+        onClick={ this.onSendInvitationsClick }
+       >
+         { strings.panelAdmin.inviteUsers.inviteBlock.sendInvitationsButtonLabel }
+       </Button>
       </div>
     );
   }
