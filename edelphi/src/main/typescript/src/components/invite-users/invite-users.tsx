@@ -176,8 +176,6 @@ export default class InviteUsers extends React.Component<Props, State> {
       return null;
     }
 
-    const panelId: number = this.state.panel.id;
-
     return (
       <div className="block">
         { this.renderInviteUserInput() }
