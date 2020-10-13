@@ -353,8 +353,12 @@ export default class InviteUsers extends React.Component<Props, State> {
   private renderMailTemplate = () => {
     return (
       <div>
-        <h3> { strings.panelAdmin.inviteUsers.inviteBlock.invitationFieldLabel } </h3>        
-        <TextArea className="invite-template" value={ this.state.mailTemplate } onChange={ this.onMailTemplateChange }/>
+        <h3>{ strings.panelAdmin.inviteUsers.inviteBlock.invitationFieldLabel }</h3>        
+        <TextArea
+          className="invite-template"
+          value={ this.state.mailTemplate }
+          onChange={ this.onMailTemplateChange }
+        />
         { this.renderMailTemplateValidation() }        
       </div>
     );
