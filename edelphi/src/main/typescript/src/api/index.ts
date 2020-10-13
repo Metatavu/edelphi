@@ -9,10 +9,10 @@ const basePath = `${location.protocol}//${location.hostname}:${location.port}/ap
 export default class Api {
 
   /**
-   * Gets initialized api
+   * Gets initialized queries api
    *
-   * @param token access token
-   * @returns initialized api
+   * @param accessToken access token
+   * @returns initialized queries api
    */
   public static getQueriesApi(accessToken: string) {
     return new QueriesApi(Api.getConfiguration(accessToken));
