@@ -29,10 +29,10 @@ export default class Api {
   }
 
   /**
-   * Gets initialized api
+   * Gets initialized user groups api
    *
-   * @param token access token
-   * @returns initialized api
+   * @param accessToken access token
+   * @returns initialized user groups api
    */
   public static getUserGroupsApi(accessToken: string) {
     return new UserGroupsApi(Api.getConfiguration(accessToken));
