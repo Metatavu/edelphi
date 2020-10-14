@@ -1890,6 +1890,137 @@
         }
       }
     },
+    "/panels/{panelId}/invitations" : {
+      "get" : {
+        "tags" : [ "PanelInvitations" ],
+        "summary" : "List panel invitations",
+        "description" : "List panel invitations",
+        "operationId" : "listPanelInvitations",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of panel invitations",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PanelInvitation"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panels/{panelId}/invitationRequests" : {
+      "post" : {
+        "tags" : [ "PanelInvitations" ],
+        "summary" : "Creates a panel invitation request",
+        "description" : "Creates a panel invitation request",
+        "operationId" : "createPanelInvitationRequest",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "Payload",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/PanelInvitationRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "202" : {
+            "description" : "Panel invitation request has been accepted"
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/users/{userId}" : {
       "get" : {
         "tags" : [ "Users" ],
@@ -1915,6 +2046,71 @@
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request was sent to the server",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403" : {
+            "description" : "Attempted to make a call with unauthorized client",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/panels/{panelId}/userGroups" : {
+      "get" : {
+        "tags" : [ "UserGroups" ],
+        "summary" : "List panel user groups",
+        "description" : "List defined user groups from a panel",
+        "operationId" : "listUserGroups",
+        "parameters" : [ {
+          "name" : "panelId",
+          "in" : "path",
+          "description" : "panel id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of panel user groups",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/PanelUserGroup"
+                  }
                 }
               }
             }
@@ -2335,6 +2531,21 @@
           }
         }
       },
+      "PanelUserGroup" : {
+        "required" : [ "name" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "description" : "Id",
+            "format" : "int64",
+            "readOnly" : true
+          },
+          "name" : {
+            "type" : "string"
+          }
+        }
+      },
       "QueryQuestionComment" : {
         "required" : [ "comment", "queryPageId", "queryReplyId" ],
         "type" : "object",
@@ -2466,6 +2677,14 @@
               "format" : "int64"
             }
           },
+          "panelUserGroupIds" : {
+            "type" : "array",
+            "description" : "Include only speficied panel user group ids",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          },
           "commentCategoryIds" : {
             "type" : "array",
             "description" : "Include only comments from speficied comment category ids",
@@ -2479,6 +2698,95 @@
             "description" : "Show 2d answers as 1d graphs instead of 2d graphs"
           }
         }
+      },
+      "PanelInvitationRequest" : {
+        "required" : [ "emails", "skipInvitation" ],
+        "type" : "object",
+        "properties" : {
+          "emails" : {
+            "type" : "array",
+            "description" : "List of emails the invitation will be sent to",
+            "items" : {
+              "type" : "string",
+              "format" : "email"
+            }
+          },
+          "invitationMessage" : {
+            "type" : "string",
+            "description" : "Inviation email content"
+          },
+          "targetQueryId" : {
+            "type" : "integer",
+            "description" : "Specify target query for invitation link. If this is left blank, link will lead to panel index page",
+            "format" : "int64"
+          },
+          "skipInvitation" : {
+            "type" : "boolean",
+            "description" : "If skip invitation is true, users will be added directly without invitation"
+          },
+          "password" : {
+            "type" : "string",
+            "description" : "Initial password for users. This field is used only when skipInvitation is true"
+          }
+        }
+      },
+      "PanelInvitation" : {
+        "required" : [ "comment", "state" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "description" : "Invitation id",
+            "format" : "int64",
+            "readOnly" : true
+          },
+          "panelId" : {
+            "type" : "integer",
+            "description" : "Panel id",
+            "format" : "int64"
+          },
+          "queryId" : {
+            "type" : "integer",
+            "description" : "Invitation's target query id",
+            "format" : "int64"
+          },
+          "email" : {
+            "type" : "string",
+            "description" : "Invitation email",
+            "format" : "email"
+          },
+          "state" : {
+            "$ref" : "#/components/schemas/PanelInvitationState"
+          },
+          "creatorId" : {
+            "type" : "string",
+            "description" : "Comment's creator id",
+            "format" : "uuid",
+            "readOnly" : true
+          },
+          "lastModifierId" : {
+            "type" : "string",
+            "description" : "Comment's last modifier id",
+            "format" : "uuid",
+            "readOnly" : true
+          },
+          "created" : {
+            "type" : "string",
+            "description" : "Comment's creation time",
+            "format" : "date-time",
+            "readOnly" : true
+          },
+          "lastModified" : {
+            "type" : "string",
+            "description" : "Comment's last modification time",
+            "format" : "date-time",
+            "readOnly" : true
+          }
+        }
+      },
+      "PanelInvitationState" : {
+        "type" : "string",
+        "enum" : [ "IN_QUEUE", "BEING_SENT", "SEND_FAIL", "PENDING", "ADDED", "ACCEPTED", "DECLINED" ]
       },
       "ErrorResponse" : {
         "type" : "object",

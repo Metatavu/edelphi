@@ -1,12 +1,13 @@
 import * as React from "react";
 import * as actions from "../../actions";
 import * as _ from "lodash";
-import { StoreState, CommandEvent, PageChangeEvent } from "../../types";
+import { StoreState, CommandEvent, PageChangeEvent, AccessToken } from "../../types";
 import { connect } from "react-redux";
 import { Grid, Button, Popup, List, Segment, Dimmer, Loader, Icon } from "semantic-ui-react";
-import Api, { QueryPage, Panel, QueryState } from "edelphi-client";
-import { QueryPagesService, PanelsService } from "edelphi-client/dist/api/api";
+import { QueryPage, Panel, QueryState } from "../../generated/client/models";
 import strings from "../../localization/strings";
+import Api from "../../api";
+import LegacyUtils from "../../utils/legacy-utils";
 
 declare const JSONUtils: any;
 
@@ -14,7 +15,7 @@ declare const JSONUtils: any;
  * Interface representing component properties
  */
 interface Props {
-  accessToken: string,
+  accessToken?: AccessToken,
   panelId: number,
   queryId: number,
   pageId: number,
@@ -60,15 +61,15 @@ class QueryNavigation extends React.Component<Props, State> {
   /**
    * Component will mount life-cycle event
    */
-  public componentWillMount() {
-    document.addEventListener("react-command", this.onReactCommand);  
+  public componentWillMount = () => {
+    LegacyUtils.addCommandListener(this.onReactCommand);  
   }
   
   /**
    * Component will unmount life-cycle event
    */
-  public async componentWillUnmount() {
-    document.removeEventListener("react-command", this.onReactCommand);
+  public componentWillUnmount = async () => {
+    LegacyUtils.removeCommandListener(this.onReactCommand);
   }
   
   /**
@@ -309,7 +310,9 @@ class QueryNavigation extends React.Component<Props, State> {
    * Loads component data
    */
   private loadData = async () => {
-    if (!this.props.accessToken) {
+    const { accessToken, panelId, queryId } = this.props;
+
+    if (!accessToken) {
       return;
     }
 
@@ -317,8 +320,15 @@ class QueryNavigation extends React.Component<Props, State> {
       loading: true
     });
     
-    const pages = await this.getQueryPagesService().listQueryPages(this.props.panelId, this.props.queryId, false);
-    const panel = await this.getPanelsService().findPanel(this.props.panelId);
+    const pages = await Api.getQueryPagesApi(accessToken.token).listQueryPages({
+      panelId: panelId,
+      queryId: queryId,
+      includeHidden: false
+    });
+    
+    const panel = await Api.getPanelsApi(accessToken.token).findPanel({
+      panelId: panelId
+    });
 
     this.setState({
       loading: false,
@@ -334,24 +344,6 @@ class QueryNavigation extends React.Component<Props, State> {
     return new Promise((resolve) => {
       setTimeout(resolve, timeout);
     });
-  }
-
-  /**
-   * Returns query pages API
-   * 
-   * @returns query pages API
-   */
-  private getQueryPagesService(): QueryPagesService {
-    return Api.getQueryPagesService(this.props.accessToken);
-  }
-
-  /**
-   * Returns panels API
-   * 
-   * @returns panels API
-   */
-  private getPanelsService(): PanelsService {
-    return Api.getPanelsService(this.props.accessToken);
   }
 
   /**
@@ -426,7 +418,7 @@ class QueryNavigation extends React.Component<Props, State> {
 function mapStateToProps(state: StoreState) {
   return {
     queryValidationMessage: state.queryValidationMessage,
-    accessToken: state.accessToken ? state.accessToken.token : null,
+    accessToken: state.accessToken,
     locale: state.locale
   };
 }
@@ -442,5 +434,4 @@ function mapDispatchToProps(dispatch: React.Dispatch<actions.AppAction>) {
   };
 }
 
-const QueryComment = connect(mapStateToProps, mapDispatchToProps)(QueryNavigation);
-export default QueryComment;
+export default connect(mapStateToProps, mapDispatchToProps)(QueryNavigation);

@@ -12,6 +12,7 @@
     <property name="locale" value="#{jobParameters['locale']}" />
     <property name="deliveryEmail" value="#{jobParameters['deliveryEmail']}" />
     <property name="expertiseGroupIds" value="#{jobParameters['expertiseGroupIds']}" />
+    <property name="panelUserGroupIds" value="#{jobParameters['panelUserGroupIds']}" />
     <property name="queryReplyIds" value="#{jobParameters['queryReplyIds']}" />
   </properties>
         

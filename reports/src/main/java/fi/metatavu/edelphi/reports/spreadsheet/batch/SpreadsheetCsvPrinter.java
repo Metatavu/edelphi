@@ -60,10 +60,6 @@ public class SpreadsheetCsvPrinter extends AbstractSpreadsheetPrinter {
   @Inject
   @JobProperty
   private Locale locale;
-
-  @Inject
-  @JobProperty
-  private Long[] expertiseGroupIds;
   
   @Override
   public String process() throws Exception { 

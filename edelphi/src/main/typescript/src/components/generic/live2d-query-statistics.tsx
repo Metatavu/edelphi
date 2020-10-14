@@ -1,5 +1,5 @@
 import * as React from "react";
-import { QueryPageStatistics } from "src/types";
+import { QueryPageStatistics } from "../../types";
 import { Grid } from "semantic-ui-react";
 import strings from "../../localization/strings";
 

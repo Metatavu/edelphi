@@ -15,6 +15,7 @@ public class TextReportPageContext {
   private String baseURL;
   private Locale locale;
   private PanelStamp stamp;
+  private Long[] panelUserGroupIds;
   private Long[] expertiseGroupIds;
   private Long[] queryReplyIds;
   private Long[] commentCategoryIds;
@@ -33,15 +34,17 @@ public class TextReportPageContext {
    * @param baseURL application base URL
    * @param locale locale
    * @param stamp panel stamp
+   * @param panelUserGroupIds panel user group ids
    * @param commentCategoryIds included comment category ids
    * @param expertiseGroupIds expertise group ids
    * @param page query page
    */
-  public TextReportPageContext(String baseURL, Locale locale, PanelStamp stamp, Long[] expertiseGroupIds, Long[] queryReplyIds, Long[] commentCategoryIds, QueryPage page) {
+  public TextReportPageContext(String baseURL, Locale locale, PanelStamp stamp, Long[] panelUserGroupIds, Long[] expertiseGroupIds, Long[] queryReplyIds, Long[] commentCategoryIds, QueryPage page) {
     super();
     this.baseURL = baseURL;
     this.locale = locale;
     this.stamp = stamp;
+    this.panelUserGroupIds = panelUserGroupIds;
     this.expertiseGroupIds = expertiseGroupIds;
     this.queryReplyIds = queryReplyIds;
     this.commentCategoryIds = commentCategoryIds;
@@ -100,6 +103,24 @@ public class TextReportPageContext {
    */
   public void setStamp(PanelStamp stamp) {
     this.stamp = stamp;
+  }
+  
+  /**
+   * Sets panel user group ids
+   * 
+   * @param panelUserGroupIds panel user group ids
+   */
+  public void setPanelUserGroupIds(Long[] panelUserGroupIds) {
+    this.panelUserGroupIds = panelUserGroupIds;
+  }
+  
+  /**
+   * Returns panel user group ids
+   * 
+   * @return panel user group ids
+   */
+  public Long[] getPanelUserGroupIds() {
+    return panelUserGroupIds;
   }
   
   /**

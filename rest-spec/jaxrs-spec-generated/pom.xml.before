@@ -4,7 +4,7 @@
   <artifactId>edelphi-api-spec</artifactId>
   <packaging>jar</packaging>
   <name>edelphi-api-spec</name>
-  <version>1.0.38-SNAPSHOT</version>
+  <version>1.0.43-SNAPSHOT</version>
   <description>Specifications for eDelphi API</description>
   <url>https://github.com/Metatavu/edelphi</url>
 

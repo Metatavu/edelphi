@@ -54,10 +54,6 @@ public abstract class AbstractSpreadsheetPrinter extends AbstractPrinter {
   @Inject
   @JobProperty
   private Locale locale;
-
-  @Inject
-  @JobProperty
-  private Long[] expertiseGroupIds;
   
   /**
    * Export data as CSV

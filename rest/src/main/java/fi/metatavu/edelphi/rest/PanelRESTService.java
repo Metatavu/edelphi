@@ -1,6 +1,7 @@
 package fi.metatavu.edelphi.rest;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -34,6 +35,7 @@ import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageType;
 import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
+import fi.metatavu.edelphi.invitations.batch.PanelInvitationBatchProperties;
 import fi.metatavu.edelphi.mqtt.MqttController;
 import fi.metatavu.edelphi.panels.PanelController;
 import fi.metatavu.edelphi.permissions.DelfoiActionName;
@@ -48,6 +50,7 @@ import fi.metatavu.edelphi.queries.QuerySectionController;
 import fi.metatavu.edelphi.queries.batch.CopyQueryBatchProperties;
 import fi.metatavu.edelphi.resources.ResourceController;
 import fi.metatavu.edelphi.rest.api.PanelsApi;
+import fi.metatavu.edelphi.rest.model.PanelInvitationRequest;
 import fi.metatavu.edelphi.rest.model.QueryPageLive2DAnswersVisibleOption;
 import fi.metatavu.edelphi.rest.model.QueryPageLive2DOptions;
 import fi.metatavu.edelphi.rest.model.QueryQuestionComment;
@@ -57,7 +60,9 @@ import fi.metatavu.edelphi.rest.mqtt.QueryQuestionCommentNotification;
 import fi.metatavu.edelphi.rest.translate.PanelExpertiseClassTranslator;
 import fi.metatavu.edelphi.rest.translate.PanelExpertiseGroupTranslator;
 import fi.metatavu.edelphi.rest.translate.PanelInterestClassTranslator;
+import fi.metatavu.edelphi.rest.translate.PanelInvitationTranslator;
 import fi.metatavu.edelphi.rest.translate.PanelTranslator;
+import fi.metatavu.edelphi.rest.translate.PanelUserGroupTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryPageTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryQuestionAnswerTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryQuestionCommentCategoryTranslator;
@@ -137,6 +142,12 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Inject
   private PanelExpertiseGroupTranslator panelExpertiseGroupTranslator;
+
+  @Inject
+  private PanelUserGroupTranslator panelUserGroupTranslator;
+
+  @Inject
+  private PanelInvitationTranslator panelInvitationTranslator;
   
   @Override
   @RolesAllowed("user")
@@ -935,6 +946,90 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     }
     
     return createOk(panelController.listPanelUserExpertiseGroups(panel, panel.getCurrentStamp()).stream().map(this.panelExpertiseGroupTranslator::translate).collect(Collectors.toList()));
+  }
+
+  @Override
+  @RolesAllowed("user") 
+  public Response listUserGroups(Long panelId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    return createOk(panelController.listPanelUserGroups(panel, panel.getCurrentStamp()).stream().map(this.panelUserGroupTranslator::translate).collect(Collectors.toList()));
+  }
+
+  @Override
+  @RolesAllowed("user") 
+  public Response createPanelInvitationRequest(PanelInvitationRequest body, Long panelId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null) {
+      return createNotFound();
+    }
+    
+    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+
+    Query targetQuery = null;
+    if (body.getTargetQueryId() != null) {
+      targetQuery = queryController.findQueryById(body.getTargetQueryId());
+      
+      if (targetQuery == null || queryController.isQueryArchived(targetQuery)) {
+        return createBadRequest(String.format("Invalid target query id %d", body.getTargetQueryId()));
+      }
+      
+      if (!queryController.isPanelsQuery(targetQuery, panel)) {
+        return createBadRequest(String.format("Invalid target query id %d", body.getTargetQueryId()));
+      }
+    }
+    
+    User loggedUser = getLoggedUser();
+    List<Long> invitationIds = new ArrayList<>();
+    
+    for (String email : body.getEmails()) {
+      invitationIds.add(panelController.createPanelInvitation(panel, targetQuery, email, loggedUser).getId());      
+    }
+
+    Properties properties = new Properties();
+    properties.put(PanelInvitationBatchProperties.LOCALE, getLocale().toString());
+    properties.put(PanelInvitationBatchProperties.PANEL_ID, panel.getId().toString());
+    properties.put(PanelInvitationBatchProperties.LOGGED_USER_ID, getLoggedUserId().toString());
+    properties.put(PanelInvitationBatchProperties.BASE_URL, getBaseUrl());
+    properties.put(PanelInvitationBatchProperties.PANEL_INVITATION_IDS, StringUtils.join(invitationIds, ","));
+    properties.put(PanelInvitationBatchProperties.INVITATION_MESSAGE, body.getInvitationMessage());
+    properties.put(PanelInvitationBatchProperties.PASSWORD, body.getPassword());
+    properties.put(PanelInvitationBatchProperties.SKIP_INVITAION, String.valueOf(body.isisSkipInvitation()));
+    
+    JobOperator jobOperator = BatchRuntime.getJobOperator();
+    
+    long jobId = jobOperator.start("panelInvitationsJob", properties);
+    if (jobId > 0) {
+      return Response.status(Status.ACCEPTED).build();
+    }
+    
+    return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to submit job").build();
+  }
+
+  @Override
+  @RolesAllowed("user") 
+  public Response listPanelInvitations(Long panelId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+    
+    User loggedUser = getLoggedUser();
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+    
+    return createOk(panelController.listPanelInvitations(panel).stream().map(this.panelInvitationTranslator::translate).collect(Collectors.toList()));
   }
   
   /**

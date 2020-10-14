@@ -154,6 +154,7 @@
       "queriesListDates": "Luotu: {0}, Muokattu: {0}",
       "exportFilter": "Suodata",
       "exportFilterByExpertise": "Intressit ja asiantuntijuudet",
+      "exportFilterByUserGroup": "Käyttäjäryhmät",
       "exportFilterByPage": "Sivu(t)",
       "exportFilterByPageAll": "Kaikki",
       "exportFilterByCommentCategory": "Kommenttikategoriat",
@@ -170,6 +171,71 @@
       "reportToEmailMessageDelivery": "Raportti tullaan toimittamaan profiilissa määrittelemääsi sähköpostiin",
       "reportToEmailMessageDeliveryTime": "Raportti saapuu 5 - 60 minuutin sisään pyynnön lähettämisestä",
       "reportToEmailMessageLeave": "Raportin luonti tapahtuu taustalla, joten voitte poistua nyt tästä näkymästä"
+    },
+
+    "inviteUsers": {
+      "title": "Käyttäjien kutsuminen paneeliin",
+      "breadcrumb": "Käyttäjien kutsuminen paneeliin",
+      "passwordHeader": "Uusille käyttäjille tullaan luomaan oletussalasana",
+      "passwordText": "Salasana tulee olemaan ",
+      "invitationsSentHeader": "Kutsut on lähetetty.",
+      "invitationsSentText": "{0} kutsua on lisätty lähetysjonon ja ne toimitetaan pian paneelilaisille.",
+      "inviteBlock": {
+        "title": "Kutsu / liitä käyttäjiä",
+        "emailPlaceholder": "Kirjoita käyttäjän sähköpostiosoite",
+        "csvFieldLabel": "CSV-tiedosto",
+        "csvUploadButton": "Lataa CSV",
+        "csvExampleLinkLabel": "Lataa esimerkki-CSV-tiedosto",
+        "usersToBeInvitedLabel": "Kutsuttavat käyttäjät",
+        "invitationFieldLabel": "Käyttäjille lähetettävä kutsu",
+        "addUsersWithoutInvitationLabel": "Liitä käyttäjät suoraan (kutsua ei lähetetä)",
+        "singleUseLabel": "Kertakäyttöinen kutsu",
+        "sendInvitationsButtonLabel": "Lähetä kutsu",
+        "invitationTarget": "Kutsun hyväksyminen vie sivulle",
+        "panelTarget": "Paneelin etusivu",
+        "addUser": "Lisää",
+        "mailTemplate": "Teid\u00E4t on kutsuttu eDelphi-paneeliin [PANEELIN NIMI]. Jos haluatte hyv\u00E4kysy\u00E4 kutsun, klikatkaa seuraavaa linkki\u00E4:\n\n[HYV\u00C4KSYMISLINKKI]\n\nMik\u00E4li haluatte hyl\u00E4t\u00E4 kutsun, klikatkaa seuraavaa linkki\u00E4:\n\n[HYLK\u00C4YSLINKKI]\n\nHUOM: Kutsun hyl\u00E4tty\u00E4nne ette saa en\u00E4\u00E4 paneeliin liittyvi\u00E4 s\u00E4hk\u00F6posti-ilmoituksia. Mik\u00E4li hylk\u00E4\u00E4tte kutsun vahingossa, voitte yh\u00E4 hyv\u00E4ksy\u00E4 kutsun ensimm\u00E4ist\u00E4 linkki\u00E4 klikkaamalla.\n\nHuomaathan, ett\u00E4 linkit ovat henkil\u00F6kohtaisia! \u00C4L\u00C4 siis jaa niit\u00E4 muille.\n\nTerveisin,\n[L\u00C4HETT\u00C4J\u00C4N NIMI]",
+        "acceptReplaceMissing": "Kutsusta puuttuu kutsun hyväksymislinkki. Ole hyvä ja lisää kutsutekstiin \"[HYVÄKSYMISLINKKI]\"",
+        "acceptReplace": "[HYVÄKSYMISLINKKI]"
+      },
+      "usersListBlock": {
+        "title": "Kutsutut / liitetyt käyttäjät",
+        "addedByManagerLabel": "Managerin liittämät käyttäjät",
+        "addedDateTimeLabel": "Liitetty",
+        "resendInvitationToAll": "Lähetä uusi kutsu kaikille",
+        "resendInvitationToUser": "Lähetä uusi kutsu",
+
+        "lists": {
+          "ADDED": {
+            "title": "Managerin lisäämät",
+            "timeLabel": "Lisätty {0}"
+          },
+          "IN_QUEUE": {
+            "title": "Lähetetään",
+            "timeLabel": "Lähetys aloitettu {0}"
+          },
+          "BEING_SENT": {
+            "title": "Postitusjonossa olevat kutsut",
+            "timeLabel": "Lisätty jonoon {0}"
+          },
+          "SEND_FAIL": {
+            "title": "Kutsun lähettäminen epäonnistui",
+            "timeLabel": "Epäonnistui {0}"
+          },
+          "PENDING": {
+            "title": "Odottaa kutsun hyväksyntää",
+            "timeLabel": "Kutsuttu {0}"
+          },
+          "ACCEPTED": {
+            "title": "Hyväksytyt kutsut",
+            "timeLabel": "Hyväksynyt {0}"
+          },
+          "DECLINED": {
+            "title": "Kutsun hylänneet käyttäjät",
+            "timeLabel": "Hylännyt {0}"
+          }
+        }
+      }
     }
   }
 }

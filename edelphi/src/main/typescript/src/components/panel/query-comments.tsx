@@ -2,12 +2,13 @@ import * as React from "react";
 import * as actions from "../../actions";
 import { StoreState, AccessToken, PageChangeEvent } from "../../types";
 import { connect } from "react-redux";
-import { QueryQuestionCommentCategoriesService } from "edelphi-client/dist/api/api";
-import Api, { QueryQuestionCommentCategory } from "edelphi-client";
+import { QueryQuestionCommentCategoriesApi } from "../../generated/client/apis";
+import { QueryQuestionCommentCategory } from "../../generated/client/models";
 import QueryCommentEditor from "./query-comment-editor";
 import QueryCommentList from "./query-comment-list";
 import { Tab, Menu, Confirm } from 'semantic-ui-react'
 import strings from "../../localization/strings";
+import Api from "../../api";
 
 /**
  * Interface representing component properties
@@ -127,11 +128,18 @@ class QueryComments extends React.Component<Props, State> {
    * @param category category
    */
   private renderCategory = (category: QueryQuestionCommentCategory | null) => {      
+    const { accessToken } = this.props;
+    if (!accessToken) {
+      return null;
+    }
+
     return (
       <div key={ category ? category.id : "ROOT" }>
         { this.props.commentable ? this.renderCommentEditor(category) : null }
         { this.props.viewDiscussion ?
           <QueryCommentList
+            accessToken={ accessToken.token }
+            loggedUserId={ accessToken.userId }
             category={ category }
             canManageComments={ this.props.canManageComments }
             panelId={ this.props.panelId } queryId={ this.props.queryId }
@@ -218,7 +226,9 @@ class QueryComments extends React.Component<Props, State> {
    * Loads a comment
    */
   private loadData = async () => {
-    if (!this.props.accessToken) {
+    const { accessToken, panelId, pageId, queryId } = this.props;
+
+    if (!accessToken) {
       return;
     }
 
@@ -226,9 +236,18 @@ class QueryComments extends React.Component<Props, State> {
       loading: true
     });
 
-    const queryQuestionCommentCategoriesService = await this.getQueryQuestionCommentCategoriesService(this.props.accessToken.token);
-    const pageCategories = await queryQuestionCommentCategoriesService.listQueryQuestionCommentCategories(this.props.panelId, this.props.pageId, this.props.queryId);
-    const queryCategories = await queryQuestionCommentCategoriesService.listQueryQuestionCommentCategories(this.props.panelId, undefined, this.props.queryId);
+    const queryQuestionCommentCategoriesApi = Api.getQueryQuestionCommentCategoriesApi(accessToken.token);
+
+    const pageCategories = await queryQuestionCommentCategoriesApi.listQueryQuestionCommentCategories({
+      panelId: panelId,
+      pageId: pageId,
+      queryId: queryId
+    });
+    
+    const queryCategories = await queryQuestionCommentCategoriesApi.listQueryQuestionCommentCategories({
+      panelId: panelId,
+      queryId: queryId
+    });
 
     this.setState({
       categories: pageCategories.concat(queryCategories),
@@ -236,14 +255,6 @@ class QueryComments extends React.Component<Props, State> {
     });
   }
 
-  /**
-   * Returns query question comments API
-   * 
-   * @returns query question comments API
-   */
-  private getQueryQuestionCommentCategoriesService(accessToken: string): QueryQuestionCommentCategoriesService {
-    return Api.getQueryQuestionCommentCategoriesService(accessToken);
-  }
 }
 
 /**

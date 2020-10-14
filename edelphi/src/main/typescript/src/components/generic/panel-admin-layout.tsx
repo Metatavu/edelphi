@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Redirect } from "react-router-dom";
 import HeaderBackground from "../../gfx/header_background.png";
-import { Panel, User } from "edelphi-client";
+import { Panel, User } from "../../generated/client/models";
 import "../../styles/generic.scss";
 import { Container, Grid, Dimmer, Loader, Breadcrumb, SemanticShorthandCollection, BreadcrumbSectionProps } from "semantic-ui-react";
 import strings from "../../localization/strings";

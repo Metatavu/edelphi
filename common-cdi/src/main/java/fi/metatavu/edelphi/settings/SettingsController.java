@@ -6,9 +6,11 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 import fi.metatavu.edelphi.dao.base.DelfoiDAO;
+import fi.metatavu.edelphi.dao.base.DelfoiDefaultsDAO;
 import fi.metatavu.edelphi.dao.system.SettingDAO;
 import fi.metatavu.edelphi.dao.system.SettingKeyDAO;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
+import fi.metatavu.edelphi.domainmodel.base.DelfoiDefaults;
 import fi.metatavu.edelphi.domainmodel.system.Setting;
 import fi.metatavu.edelphi.domainmodel.system.SettingKey;
 
@@ -30,6 +32,9 @@ public class SettingsController {
   
   @Inject
   private SettingDAO settingDAO; 
+
+  @Inject
+  private DelfoiDefaultsDAO delfoiDefaultsDAO;
   
   /**
    * Returns used theme version
@@ -100,6 +105,16 @@ public class SettingsController {
    */
   public Delfoi getDelfoi() {
     return delfoiDAO.findById(getDelfoiId());
+  }
+
+  /**
+   * Finds defaults by delfoi
+   * 
+   * @param delfoi delfoi
+   * @return defaults
+   */
+  public DelfoiDefaults getDefaults(Delfoi delfoi) {
+    return delfoiDefaultsDAO.findByDelfoi(delfoi);
   }
   
   /**

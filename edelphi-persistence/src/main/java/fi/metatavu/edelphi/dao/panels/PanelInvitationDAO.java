@@ -3,6 +3,7 @@ package fi.metatavu.edelphi.dao.panels;
 import java.util.Date;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -17,6 +18,7 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelUserRole;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
+@ApplicationScoped
 public class PanelInvitationDAO extends GenericDAO<PanelInvitation> {
 
   public PanelInvitation create(Panel panel, Query query, String email, String hash, PanelUserRole role, PanelInvitationState state, User creator) {

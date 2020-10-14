@@ -48,6 +48,10 @@ public class TextReportPageHtmlProcessor extends TypedItemProcessor<QueryPage, S
   @Inject
   @JobProperty
   private Long[] expertiseGroupIds;
+
+  @Inject
+  @JobProperty
+  private Long[] panelUserGroupIds;
   
   @Inject
   @JobProperty
@@ -66,7 +70,7 @@ public class TextReportPageHtmlProcessor extends TypedItemProcessor<QueryPage, S
     
     logger.info("Processing query page {}", queryPage.getId());
 
-    return htmlReportController.getPageHtml(new TextReportPageContext(baseUrl, locale, stamp, expertiseGroupIds, queryReplyIds, commentCategoryIds, queryPage));
+    return htmlReportController.getPageHtml(new TextReportPageContext(baseUrl, locale, stamp, panelUserGroupIds, expertiseGroupIds, queryReplyIds, commentCategoryIds, queryPage));
   }
 
 }

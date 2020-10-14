@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { StoreState, AccessToken } from "../types";
 import * as actions from "../actions";
 import ErrorDialog from "./error-dialog";
-import * as moment from "moment";
+import moment from "moment";
 
 /**
  * Component props
@@ -75,7 +75,11 @@ class AccessTokenRefresh extends React.Component<Props, State> {
       return <ErrorDialog error={ this.state.error } onClose={ () => this.setState({ error: undefined }) } /> 
     }
 
-    return null;
+    return (
+      <>
+        { this.props.children }
+      </>
+    );
   }
 
   /**
