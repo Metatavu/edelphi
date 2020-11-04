@@ -18,6 +18,7 @@ import fi.metatavu.edelphi.mail.Mailer;
 import fi.metatavu.edelphi.queries.QueryController;
 import fi.metatavu.edelphi.reports.i18n.ReportMessages;
 import fi.metatavu.edelphi.resources.ResourceController;
+import fi.metatavu.edelphi.settings.SettingsController;
 
 /**
  * Batchlet for sending files via email
@@ -29,6 +30,9 @@ public class FileSenderBatchlet extends AbstractPrinter {
 
   @Inject
   private Logger logger;
+
+  @Inject
+  private SettingsController settingsController;
 
   @Inject
   private QueryController queryController;
@@ -85,7 +89,7 @@ public class FileSenderBatchlet extends AbstractPrinter {
       String content = reportMessages.getText(locale, emailContentLocale, now, filters, settings);
     
       Email email = EmailBuilder.startingBlank()
-        .from("noreply@edelphi.org")
+        .from(settingsController.getEmailFromAddress())
         .to(deliveryEmail)
         .withSubject(subject)
         .withHTMLText(content)

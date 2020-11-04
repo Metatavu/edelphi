@@ -150,6 +150,20 @@ public class SettingsController {
   }
   
   /**
+   * Returns system email from address
+   * 
+   * @return system email from address
+   */
+  public String getEmailFromAddress() {
+    String result = System.getenv("EMAIL_FROM_ADDRESS");
+    if (StringUtils.isNotBlank(result)) {
+      return result;
+    }
+    
+    return "noreply@edelphi.org";
+  }
+  
+  /**
    * Returns a setting value for given key
    * 
    * @param key key

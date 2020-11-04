@@ -24,6 +24,7 @@ import fi.metatavu.edelphi.reports.i18n.ReportMessages;
 import fi.metatavu.edelphi.reports.pdf.PdfPrinter;
 import fi.metatavu.edelphi.reports.text.TextReportController;
 import fi.metatavu.edelphi.resources.ResourceController;
+import fi.metatavu.edelphi.settings.SettingsController;
 
 /**
  * Batchlet for printing and delivering text reports as PDFs
@@ -35,6 +36,9 @@ public class TextReportPdfPrinter extends AbstractPrinter {
 
   @Inject
   private Logger logger;
+
+  @Inject
+  private SettingsController settingsController;
   
   @Inject
   private TextReportBatchContext reportHtmlBatchContext;
@@ -100,7 +104,7 @@ public class TextReportPdfPrinter extends AbstractPrinter {
       String file = String.format("%s-%s.pdf", panel.getUrlName(), query.getUrlName());
     
       Email email = EmailBuilder.startingBlank()
-        .from("noreply@edelphi.org")
+        .from(settingsController.getEmailFromAddress())
         .to(deliveryEmail)
         .withSubject(subject)
         .withHTMLText(contents)

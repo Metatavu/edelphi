@@ -28,6 +28,7 @@ import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.mail.Mailer;
 import fi.metatavu.edelphi.queries.QueryController;
 import fi.metatavu.edelphi.queries.QueryPageController;
+import fi.metatavu.edelphi.settings.SettingsController;
 
 /**
  * Batchlet for finalizing query copy batch operation
@@ -39,6 +40,9 @@ public class CopyQueryFinalizeBatchlet extends AbstractBatchlet {
 
   @Inject
   private Logger logger;
+
+  @Inject
+  private SettingsController settingsController;
 
   @Inject
   private QueryController queryController;
@@ -92,7 +96,7 @@ public class CopyQueryFinalizeBatchlet extends AbstractBatchlet {
     String content = batchMessages.getText(locale, "batch.copyQuery.success.mail.contents", newQueryName, newQueryUrl);
 
     Email email = EmailBuilder.startingBlank()
-      .from("noreply@edelphi.org")
+      .from(settingsController.getEmailFromAddress())
       .to(deliveryEmail)
       .withSubject(subject)
       .withHTMLText(content)

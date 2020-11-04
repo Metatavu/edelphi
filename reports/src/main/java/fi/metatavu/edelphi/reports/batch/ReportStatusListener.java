@@ -21,6 +21,7 @@ import fi.metatavu.edelphi.mail.Mailer;
 import fi.metatavu.edelphi.queries.QueryController;
 import fi.metatavu.edelphi.reports.i18n.ReportMessages;
 import fi.metatavu.edelphi.resources.ResourceController;
+import fi.metatavu.edelphi.settings.SettingsController;
 
 /**
  * Batch listener for notifying report recipients about failed report generation
@@ -32,6 +33,9 @@ public class ReportStatusListener extends AbstractJobListener {
   
   @Inject
   private Logger logger;
+
+  @Inject
+  private SettingsController settingsController;
 
   @Inject
   private Mailer mailer;
@@ -97,7 +101,7 @@ public class ReportStatusListener extends AbstractJobListener {
     String content = reportMessages.getText(locale, "reports.generateError.mail.content", panel.getId(), query.getId());
     
     Email email = EmailBuilder.startingBlank()
-      .from("noreply@edelphi.org")
+      .from(settingsController.getEmailFromAddress())
       .to(deliveryEmail)
       .withSubject(subject)
       .withHTMLText(content)

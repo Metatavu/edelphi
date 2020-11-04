@@ -17,6 +17,7 @@ import fi.metatavu.edelphi.mail.Mailer;
 import fi.metatavu.edelphi.queries.QueryController;
 import fi.metatavu.edelphi.reports.i18n.ReportMessages;
 import fi.metatavu.edelphi.resources.ResourceController;
+import fi.metatavu.edelphi.settings.SettingsController;
 
 /**
  * Batchlet for printing and delivering spreadsheet reports as CSVs
@@ -28,6 +29,9 @@ public class SpreadsheetCsvPrinter extends AbstractSpreadsheetPrinter {
 
   @Inject
   private Logger logger;
+
+  @Inject
+  private SettingsController settingsController;
   
   @Inject
   private Mailer mailer;
@@ -79,7 +83,7 @@ public class SpreadsheetCsvPrinter extends AbstractSpreadsheetPrinter {
     String file = String.format("%s-%s.csv", panel.getUrlName(), query.getUrlName());
   
     Email email = EmailBuilder.startingBlank()
-      .from("noreply@edelphi.org")
+      .from(settingsController.getEmailFromAddress())
       .to(deliveryEmail)
       .withSubject(subject)
       .withHTMLText(contents)

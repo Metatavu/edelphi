@@ -22,6 +22,7 @@ import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.mail.Mailer;
 import fi.metatavu.edelphi.queries.QueryController;
 import fi.metatavu.edelphi.resources.ResourceController;
+import fi.metatavu.edelphi.settings.SettingsController;
 
 /**
  * Batch listener for notifying report recipients about failed query copy failures
@@ -33,6 +34,9 @@ public class QueryCopyStatusListener extends AbstractJobListener {
   
   @Inject
   private Logger logger;
+
+  @Inject
+  private SettingsController settingsController;
 
   @Inject
   private Mailer mailer;
@@ -98,7 +102,7 @@ public class QueryCopyStatusListener extends AbstractJobListener {
     String content = batchMessages.getText(locale, "batch.copyQuery.error.mail.content", panel.getId(), query.getId());
     
     Email email = EmailBuilder.startingBlank()
-      .from("noreply@edelphi.org")
+      .from(settingsController.getEmailFromAddress())
       .to(deliveryEmail)
       .withSubject(subject)
       .withHTMLText(content)
