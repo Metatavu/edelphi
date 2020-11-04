@@ -24,6 +24,7 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelUserJoinType;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.mail.Mailer;
 import fi.metatavu.edelphi.panels.PanelController;
+import fi.metatavu.edelphi.settings.SettingsController;
 import fi.metatavu.edelphi.users.UserController;
 
 /**
@@ -36,6 +37,9 @@ public class PanelInvitationSendWriter extends TypedItemWriter<PanelInvitation> 
 
   @Inject
   private Logger logger;
+
+  @Inject
+  private SettingsController settingsController;
 
   @Inject
   private PanelController panelController;
@@ -150,7 +154,7 @@ public class PanelInvitationSendWriter extends TypedItemWriter<PanelInvitation> 
       panelInvitationDAO.updateState(panelInvitation, PanelInvitationState.BEING_SENT, loggedUser);
       
       Email email = EmailBuilder.startingBlank()
-        .from("noreply@edelphi.org")
+        .from(settingsController.getEmailFromAddress())
         .to(panelInvitation.getEmail())
         .withSubject(mailSubject)
         .withPlainText(mailContent)
