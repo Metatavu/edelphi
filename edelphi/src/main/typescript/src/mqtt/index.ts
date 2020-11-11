@@ -35,7 +35,7 @@ export class MqttConnection {
   private connected: boolean;
   private connecting: boolean;
   private pending: Array<PendingMessage>;
-  private config: MqttConfig;
+  private config?: MqttConfig;
   private client?: mqtt.MqttClient;
   private subscribers: Map<String, Array<OnMessageCallback>>;
 
@@ -95,7 +95,7 @@ export class MqttConnection {
    */
   public publish(subtopic: string, message: any): Promise<mqtt.Packet> {
     return new Promise((resolve, reject) => {
-      if (!this.client) {
+      if (!this.config || !this.client) {
         this.pending.push({
           subtopic: subtopic,
           message: message
@@ -193,6 +193,10 @@ export class MqttConnection {
    * Handles client message event
    */
   private onClientMessage(topic: string, payload: Buffer, packet: mqtt.Packet) {
+    if (!this.config) {
+      return;
+    }
+
     const message = JSON.parse(payload.toString());
     const subtopic = _.trim(topic.substr(this.config.topic.length), "/");
     const topicSubscribers = this.subscribers.get(subtopic) || [];

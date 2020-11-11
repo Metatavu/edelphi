@@ -29,6 +29,7 @@ import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseGroup;
+import fi.metatavu.edelphi.domainmodel.panels.PanelUserGroup;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionMultiOptionAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionNumericAnswer;
@@ -76,7 +77,7 @@ public class QueryReplyController {
   
   @Inject
   private PanelExpertiseGroupUserDAO expertiseGroupUserDAO;
-  
+    
   @Inject
   private QueryQuestionCommentDAO queryQuestionCommentDAO;
   
@@ -182,6 +183,26 @@ public class QueryReplyController {
     return replies.stream()
       .filter(reply -> reply.getUser() != null)
       .filter(reply -> expertiseGroupUserIds.contains(reply.getUser().getId()))
+      .collect(Collectors.toList());
+  }
+  
+  /**
+   * Filters reply list by user's membership in given list of panel user groups
+   * 
+   * @param replies replies
+   * @param panelUserGroups panel user groups
+   * @return filtered replies
+   */
+  public List<QueryReply> filterQueryRepliesByPanelUserGroup(List<QueryReply> replies, List<PanelUserGroup> panelUserGroups) {
+    Set<Long> userIds = panelUserGroups.stream()
+      .map(PanelUserGroup::getUsers)
+      .flatMap(List::stream)
+      .map(User::getId)
+      .collect(Collectors.toSet());
+       
+    return replies.stream()
+      .filter(reply -> reply.getUser() != null)
+      .filter(reply -> userIds.contains(reply.getUser().getId()))
       .collect(Collectors.toList());
   }
 

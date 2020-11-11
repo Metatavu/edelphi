@@ -22,6 +22,7 @@ import fi.metatavu.edelphi.mail.Mailer;
 import fi.metatavu.edelphi.queries.QueryController;
 import fi.metatavu.edelphi.reports.i18n.ReportMessages;
 import fi.metatavu.edelphi.resources.ResourceController;
+import fi.metatavu.edelphi.settings.SettingsController;
 
 /**
  * Batchlet for printing and delivering spreadsheet reports as Google Sheets
@@ -33,6 +34,9 @@ public class SpreadsheetGoogleSheetsPrinter extends AbstractSpreadsheetPrinter {
 
   @Inject
   private Logger logger;
+
+  @Inject
+  private SettingsController settingsController;
   
   @Inject
   private Mailer mailer;
@@ -72,10 +76,6 @@ public class SpreadsheetGoogleSheetsPrinter extends AbstractSpreadsheetPrinter {
   @Inject
   @JobProperty
   private Locale locale;
-
-  @Inject
-  @JobProperty
-  private Long[] expertiseGroupIds;
   
   @Override
   public String process() throws Exception { 
@@ -98,7 +98,7 @@ public class SpreadsheetGoogleSheetsPrinter extends AbstractSpreadsheetPrinter {
     String contents = reportMessages.getText(locale, "reports.googlesheets.mail.contents", now, filters, settings, fileUrl);
     
     Email email = EmailBuilder.startingBlank()
-      .from("noreply@edelphi.org")
+      .from(settingsController.getEmailFromAddress())
       .to(deliveryEmail)
       .withSubject(subject)
       .withHTMLText(contents)

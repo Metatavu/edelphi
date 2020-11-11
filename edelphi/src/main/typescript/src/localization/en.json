@@ -6,7 +6,8 @@
     "eDelphi": "eDelphi.org",
     "welcomeUser": "Welcome {0}",
     "profileLink": "Profile",
-    "logoutLink": "Logout"
+    "logoutLink": "Logout",
+    "panelAdminBreadcrumb": "Management"
   },
 
   "errorDialog": {
@@ -153,6 +154,7 @@
       "queriesListDates": "Created: {0}, Modified: {0}",
       "exportFilter": "Filter",
       "exportFilterByExpertise": "Interest and Expertise Groups",
+      "exportFilterByUserGroup": "User groups",
       "exportFilterByPage": "Page(s)",
       "exportFilterByPageAll": "All",
       "exportFilterByCommentCategory": "Comment categories",
@@ -169,6 +171,71 @@
       "reportToEmailMessageDelivery": "The report will be sent to the email you specified in your profile",
       "reportToEmailMessageDeliveryTime": "The report arrives in 5 - 30 minutes from the request",
       "reportToEmailMessageLeave": "Report is generated in the background so you are now free to navigate from this view"
+    },
+
+    "inviteUsers": {
+      "title": "Invite Users To Panel",
+      "breadcrumb": "Invite Users To Panel",
+      "passwordHeader": "A default password will be generated for new users",
+      "passwordText": "The password will be ",
+      "invitationsSentHeader": "Invitations have been sent",
+      "invitationsSentText": "{0} invitations have been added to send queue and will be delivered soon to panelists.",
+      "inviteBlock": {
+        "title": "Invite / Add Users",
+        "emailPlaceholder": "Type user's email address",
+        "csvFieldLabel": "CSV File",
+        "csvUploadButton": "Upload CSV",
+        "csvExampleLinkLabel": "Download Example CSV File",
+        "usersToBeInvitedLabel": "Users To Be Invited",
+        "invitationFieldLabel": "Invitation",
+        "addUsersWithoutInvitationLabel": "Add Users Directly (Invitation will not be sent)",
+        "singleUseLabel": "Single Use Invitation",
+        "sendInvitationsButtonLabel": "Send Invitations",
+        "invitationTarget": "Accepting the Invitation Redirects To",
+        "panelTarget": "Panel front page",
+        "addUser": "Add",
+        "mailTemplate": "You have been invited to an eDelphi panel [PANEL NAME]. To accept the invitation, please click the link below:\n\n[ACCEPT URL]\n\nTo decline the invitation, please click the link below:\n\n[DECLINE URL]\n\nNote that after declining, you won't get any more e-mail notifications about the panel. If you decline an invitation by accident, you can still accept it by clicking the accept link.\n\nPlease notice that the links are personal! Do NOT share them to others.\n\nBest Regards,\n[SENDER NAME]",
+        "acceptReplaceMissing": "The invitation is missing an accept link. Please add \"[ACCEPT URL]\" to the invitation text",
+        "acceptReplace": "[ACCEPT URL]"
+      },
+      "usersListBlock": {
+        "title": "Invited / Added Users",
+        "addedByManagerLabel": "Users Added By Manager",
+        "addedDateTimeLabel": "Added",
+        "resendInvitationToAll": "Resend Invitations To All Users",
+        "resendInvitationToUser": "Resend Invitation",
+
+        "lists": {
+          "ADDED": {
+            "title": "Added by manager",
+            "timeLabel": "Added {0}"
+          },
+          "IN_QUEUE": {
+            "title": "Invitations in Mail Queue",
+            "timeLabel": "Added to Queue {0}"
+          },
+          "BEING_SENT": {
+            "title": "Being sent",
+            "timeLabel": "Started sending {0}"
+          },
+          "SEND_FAIL": {
+            "title": "Sending an Invitation Failed",
+            "timeLabel": "Failed {0}"
+          },
+          "PENDING": {
+            "title": "Pending Invitations",
+            "timeLabel": "Invited {0}"
+          },
+          "ACCEPTED": {
+            "title": "Accepted Invitations",
+            "timeLabel": "Accepted {0}"
+          },
+          "DECLINED": {
+            "title": "Declined Invitations",
+            "timeLabel": "Declined {0}"
+          }
+        }
+      }
     }
   }
 }

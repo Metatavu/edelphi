@@ -1,24 +1,24 @@
 import * as React from "react";
-import * as moment from "moment";
+import moment from "moment";
 import * as actions from "../../actions";
 import * as _ from "lodash";
 import QueryCommentContainer from "./query-comment-container";
 import strings from "../../localization/strings";
 import { StoreState, QueryQuestionCommentNotification } from "../../types";
 import { connect } from "react-redux";
-import Api, { QueryQuestionComment, QueryQuestionCommentCategory } from "edelphi-client";
-import { QueryQuestionCommentsService } from "edelphi-client/dist/api/api";
+import { QueryQuestionComment, QueryQuestionCommentCategory } from "../../generated/client/models";
+import { QueryQuestionCommentsApi } from "../../generated/client/apis";
 import { mqttConnection, OnMessageCallback } from "../../mqtt";
 import styles from "../../constants/styles";
 import { Confirm } from "semantic-ui-react";
+import Api from "../../api";
 
 /**
  * Interface representing component properties
  */
 interface Props {
-  accessToken?: string,
-  logggedUserId?: string,
-  locale: string,
+  accessToken: string,
+  loggedUserId: string,
   comment: QueryQuestionComment,
   panelId: number,
   queryId: number,
@@ -47,8 +47,8 @@ interface State {
 class QueryCommentClass extends React.Component<Props, State> {
 
   private queryQuestionCommentsListener: OnMessageCallback;
-  private commentEditor: HTMLTextAreaElement | null;
-  private replyEditor: HTMLTextAreaElement | null;
+  private commentEditor: HTMLTextAreaElement | null = null;
+  private replyEditor: HTMLTextAreaElement | null = null;
 
   /**
    * Constructor
@@ -92,7 +92,7 @@ class QueryCommentClass extends React.Component<Props, State> {
         <div className={ this.state.folded ? "queryCommentShowHideButton hideIcon" : "queryCommentShowHideButton showIcon" } onClick={ () => this.onHoldClick() }></div>
         <div className="queryCommentHeader" style={{ clear: "both" }}>
           <div className="queryCommentDate">{ strings.formatString(strings.panel.query.comments.commentDate, this.formatDateTime(this.props.comment.created)) } </div>
-          { this.props.comment.creatorId == this.props.logggedUserId ? <p style={{ fontStyle: "italic", fontWeight: "bold" }}> { strings.panel.query.comments.yourComment } </p> : null }
+          { this.props.comment.creatorId == this.props.loggedUserId ? <p style={{ fontStyle: "italic", fontWeight: "bold" }}> { strings.panel.query.comments.yourComment } </p> : null }
         </div>
         {
           this.renderFoldableContent()
@@ -212,7 +212,20 @@ class QueryCommentClass extends React.Component<Props, State> {
    * Renders child comments
    */
   private renderChildComments() {
-    return <QueryCommentContainer onCommentsChanged={ this.onCommentsChanged } category={ this.props.category } className="queryCommentChildren" canManageComments={ this.props.canManageComments } parentId={ this.props.comment.id! } queryReplyId={this.props.queryReplyId} pageId={ this.props.pageId } panelId={ this.props.panelId } queryId={ this.props.queryId }/>
+    const { accessToken, loggedUserId, category, canManageComments, comment, queryReplyId, pageId, panelId, queryId } = this.props;
+
+    return <QueryCommentContainer 
+      accessToken={ accessToken }
+      loggedUserId={ loggedUserId }
+      onCommentsChanged={ this.onCommentsChanged } 
+      category={ category } 
+      className="queryCommentChildren" 
+      canManageComments={ canManageComments } 
+      parentId={ comment.id! } 
+      queryReplyId={ queryReplyId } 
+      pageId={ pageId } 
+      panelId={ panelId } 
+      queryId={ queryId }/>
   }
 
   /**
@@ -221,7 +234,20 @@ class QueryCommentClass extends React.Component<Props, State> {
   private renderLinks() {
     return (
       <div className="queryCommentMeta">
-        <div className="queryCommentNewComment"><a style={ this.state.updating ? styles.disabledLink : {} } href="#" onClick={ (event: React.MouseEvent<HTMLElement>) => this.onNewCommentClick(event) }  className="queryCommentNewCommentLink">{ this.props.comment.creatorId == this.props.logggedUserId ? strings.panel.query.comments.elaborate : strings.panel.query.comments.reply }</a></div>
+        <div className="queryCommentNewComment">
+          <a
+            style={ this.state.updating ? styles.disabledLink : {} }
+            href="#"
+            onClick={ (event: React.MouseEvent<HTMLElement>) => this.onNewCommentClick(event) }
+            className="queryCommentNewCommentLink"
+          >
+            {
+              this.props.comment.creatorId == this.props.loggedUserId ?
+              strings.panel.query.comments.elaborate :
+              strings.panel.query.comments.reply
+            }
+          </a>
+        </div>
         {
           this.renderShowHideComment()
         }
@@ -265,7 +291,7 @@ class QueryCommentClass extends React.Component<Props, State> {
    * @returns whether user may edit a comment or not
    */
   private canEditComment = () => {
-    return this.state.hasChildren == false && (this.props.canManageComments || this.props.logggedUserId == this.props.comment.creatorId);
+    return this.state.hasChildren == false && (this.props.canManageComments || this.props.loggedUserId == this.props.comment.creatorId);
   }
 
   /**
@@ -286,16 +312,7 @@ class QueryCommentClass extends React.Component<Props, State> {
    * @return formatted date time
    */
   private formatDateTime(dateTime?: Date | string) {
-    return moment(dateTime).locale(this.props.locale).format("LLL"); 
-  }
-
-  /**
-   * Returns query question comments API
-   * 
-   * @returns query question comments API
-   */
-  private getQueryQuestionCommentsService(accessToken: string): QueryQuestionCommentsService {
-    return Api.getQueryQuestionCommentsService(accessToken);
+    return moment(dateTime).locale(strings.getLanguage()).format("LLL"); 
   }
 
   /**
@@ -340,11 +357,13 @@ class QueryCommentClass extends React.Component<Props, State> {
    * Event handler for comment delete dialog confirm click
    */
   private onCommentDeleteConfirm() {
-    if (!this.props.accessToken || !this.props.comment.id) {
+    const { accessToken, comment, panelId } = this.props;
+
+    if (!accessToken || !comment.id) {
       return;
     }
 
-    if (this.state.updating || !this.props.accessToken || !this.props.comment.id) {
+    if (this.state.updating || !accessToken || !comment.id) {
       return;
     }
 
@@ -353,8 +372,12 @@ class QueryCommentClass extends React.Component<Props, State> {
       updating: true
     });
 
-    const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken);
-    queryQuestionCommentsService.deleteQueryQuestionComment(this.props.panelId, this.props.comment.id);
+    const queryQuestionCommentsApi = Api.getQueryQuestionCommentsApi(accessToken);
+
+    queryQuestionCommentsApi.deleteQueryQuestionComment({
+      panelId: panelId,
+      commentId: comment.id
+    });
   }
 
   /**
@@ -363,9 +386,11 @@ class QueryCommentClass extends React.Component<Props, State> {
    * @param event event
    */
   private onEditCommentSaveClick(event: React.MouseEvent<HTMLElement>) {
+    const { accessToken, comment, panelId } = this.props;
+    
     event.preventDefault();
 
-    if (!this.commentEditor || this.state.updating || !this.props.accessToken || !this.props.comment.id) {
+    if (!this.commentEditor || this.state.updating || !accessToken || !comment.id) {
       return;
     }
 
@@ -376,8 +401,13 @@ class QueryCommentClass extends React.Component<Props, State> {
       updating: true
     });
 
-    const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken);
-    queryQuestionCommentsService.updateQueryQuestionComment({ ... this.props.comment, contents: contents }, this.props.panelId, this.props.comment.id);
+    const queryQuestionCommentsApi = Api.getQueryQuestionCommentsApi(accessToken);
+
+    queryQuestionCommentsApi.updateQueryQuestionComment({
+      commentId: comment.id,
+      panelId: panelId,
+      queryQuestionComment: { ... comment, contents: contents }
+    });
   }
     
   /**
@@ -386,6 +416,8 @@ class QueryCommentClass extends React.Component<Props, State> {
    * @param event event
    */
   private onNewCommentSaveClick(event: React.MouseEvent<HTMLElement>) {
+    const { accessToken } = this.props;
+
     event.preventDefault();
 
     if (!this.replyEditor || this.state.updating || !this.props.accessToken || !this.props.comment.id) {
@@ -401,15 +433,19 @@ class QueryCommentClass extends React.Component<Props, State> {
 
     const categoryId = this.props.category ? this.props.category.id : 0;
 
-    const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken);
-    queryQuestionCommentsService.createQueryQuestionComment({
-      contents: contents,
-      hidden: false,
-      parentId: this.props.comment.id,
-      queryPageId: this.props.pageId,
-      queryReplyId: this.props.queryReplyId,
-      categoryId: categoryId
-    }, this.props.panelId);
+    const queryQuestionCommentsApi = Api.getQueryQuestionCommentsApi(accessToken);
+
+    queryQuestionCommentsApi.createQueryQuestionComment({
+      panelId: this.props.panelId,
+      queryQuestionComment: {
+        contents: contents,
+        hidden: false,
+        parentId: this.props.comment.id,
+        queryPageId: this.props.pageId,
+        queryReplyId: this.props.queryReplyId,
+        categoryId: categoryId
+      }
+    });
   }
 
   /**
@@ -431,9 +467,11 @@ class QueryCommentClass extends React.Component<Props, State> {
    * @param event event
    */
   private onShowClick(event: React.MouseEvent<HTMLElement>) {
+    const { accessToken, comment, panelId } = this.props;
+
     event.preventDefault();
 
-    if (this.state.updating || !this.props.accessToken || !this.props.comment.id) {
+    if (this.state.updating || !accessToken || !comment.id) {
       return;
     }
 
@@ -441,8 +479,13 @@ class QueryCommentClass extends React.Component<Props, State> {
       updating: true
     });
 
-    const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken);
-    queryQuestionCommentsService.updateQueryQuestionComment({ ... this.props.comment, hidden: false }, this.props.panelId, this.props.comment.id);
+    const queryQuestionCommentsApi = Api.getQueryQuestionCommentsApi(accessToken);
+    
+    queryQuestionCommentsApi.updateQueryQuestionComment({
+      commentId: comment.id,
+      panelId: panelId,
+      queryQuestionComment: { ... comment, hidden: false }
+    });
   }
 
   /**
@@ -451,9 +494,11 @@ class QueryCommentClass extends React.Component<Props, State> {
    * @param event event
    */
   private onHideClick(event: React.MouseEvent<HTMLElement>) {
+    const { accessToken, comment, panelId } = this.props;
+
     event.preventDefault();
 
-    if (this.state.updating || !this.props.accessToken || !this.props.comment.id) {
+    if (this.state.updating || !accessToken || !comment.id) {
       return;
     }
 
@@ -461,8 +506,13 @@ class QueryCommentClass extends React.Component<Props, State> {
       updating: true
     });
 
-    const queryQuestionCommentsService = this.getQueryQuestionCommentsService(this.props.accessToken);
-    queryQuestionCommentsService.updateQueryQuestionComment({ ... this.props.comment, hidden: true }, this.props.panelId, this.props.comment.id);
+    const queryQuestionCommentsApi = Api.getQueryQuestionCommentsApi(accessToken);
+
+    queryQuestionCommentsApi.updateQueryQuestionComment({
+      commentId: comment.id,
+      panelId: panelId,
+      queryQuestionComment: { ... comment, hidden: true }
+    });
   }
 
   private onHoldClick() {
@@ -496,27 +546,4 @@ class QueryCommentClass extends React.Component<Props, State> {
   }
 }
 
-/**
- * Redux mapper for mapping store state to component props
- * 
- * @param state store state
- */
-function mapStateToProps(state: StoreState) {
-  return {
-    accessToken: state.accessToken ? state.accessToken.token : null,
-    logggedUserId: state.accessToken ? state.accessToken.userId : null,
-    locale: state.locale
-  };
-}
-
-/**
- * Redux mapper for mapping component dispatches 
- * 
- * @param dispatch dispatch method
- */
-function mapDispatchToProps(dispatch: React.Dispatch<actions.AppAction>) {
-  return { };
-}
-
-const QueryComment = connect(mapStateToProps, mapDispatchToProps)(QueryCommentClass);
-export default QueryComment;
+export default QueryCommentClass;

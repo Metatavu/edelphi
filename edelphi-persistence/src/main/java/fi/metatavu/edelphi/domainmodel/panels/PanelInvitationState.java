@@ -6,5 +6,6 @@ public enum PanelInvitationState {
   SEND_FAIL,
   PENDING,
   ACCEPTED,
-  DECLINED
+  DECLINED,
+  ADDED
 }

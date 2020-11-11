@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Modal, Button, Icon } from "semantic-ui-react";
 import strings from "../localization/strings";
-import * as moment from "moment";
+import moment from "moment";
 
 /**
  * Interface representing component properties

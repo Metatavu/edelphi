@@ -4,23 +4,23 @@ import * as actions from "../../actions";
 import QueryComment from "./query-comment";
 import { StoreState, QueryQuestionCommentNotification } from "../../types";
 import { connect } from "react-redux";
-import Api, { QueryQuestionComment, QueryQuestionCommentCategory } from "edelphi-client";
-import { QueryQuestionCommentsService } from "edelphi-client/dist/api/api";
+import { QueryQuestionComment, QueryQuestionCommentCategory } from "../../generated/client/models";
+import { QueryQuestionCommentsApi } from "../../generated/client/apis";
 import { Loader } from "semantic-ui-react";
 import { mqttConnection, OnMessageCallback } from "../../mqtt";
+import Api from "../../api";
 
 /**
  * Interface representing component properties
  */
 interface Props {
+  accessToken: string,
+  loggedUserId: string,
   queryId: number,
   panelId: number,
   pageId: number,
   parentId: number,
   queryReplyId: number,
-  accessToken?: string,
-  loggedUserId?: string,
-  locale: string,
   className: string,
   canManageComments: boolean,
   category: QueryQuestionCommentCategory | null,
@@ -82,14 +82,26 @@ class QueryCommentContainer extends React.Component<Props, State> {
    * Render comments container
    */
   public render() {
-    if (!this.state.comments || !this.props.accessToken) {
+    const { className, accessToken, loggedUserId, category, canManageComments, queryReplyId, pageId, panelId, queryId } = this.props;
+    const { comments } = this.state;
+
+    if (!comments || !accessToken) {
       return <Loader/>;
     }
 
-    return <div className={ this.props.className }>
+    return <div className={ className }>
       {
-        this.state.comments.map((comment) => {
-          return <QueryComment key={ comment.id } category={ this.props.category } canManageComments={ this.props.canManageComments } comment={ comment } queryReplyId={this.props.queryReplyId} pageId={ this.props.pageId } panelId={ this.props.panelId} queryId={ this.props.queryId }/>
+        comments.map((comment) => {
+          return <QueryComment key={ comment.id } 
+            accessToken={ accessToken }
+            loggedUserId={ loggedUserId }
+            category={ category } 
+            canManageComments={ canManageComments } 
+            comment={ comment } 
+            queryReplyId={ queryReplyId }
+            pageId={ pageId } 
+            panelId={ panelId} 
+            queryId={ queryId }/>
         })
       } 
     </div>
@@ -101,18 +113,24 @@ class QueryCommentContainer extends React.Component<Props, State> {
    * @param message message
    */
   private async onQueryQuestionCommentNotification(message: QueryQuestionCommentNotification) {
-    if (message.pageId != this.props.pageId || message.panelId != this.props.panelId || message.queryId != this.props.queryId) {
+    const { pageId, panelId, queryId, accessToken, parentId } = this.props;
+
+    if (message.pageId != pageId || message.panelId != panelId || message.queryId != queryId) {
       return;
     }
 
-    if (!this.state.comments || !this.props.accessToken) {
+    if (!this.state.comments || !accessToken) {
       return;
     }
 
     const parentCommentId = message.parentCommentId || 0;
 
-    if (message.type == "CREATED" && parentCommentId == this.props.parentId) {
-      const comment = await this.getQueryQuestionCommentsService(this.props.accessToken).findQueryQuestionComment(this.props.panelId, message.commentId);
+    if (message.type == "CREATED" && parentCommentId == parentId) {
+      const comment = await Api.getQueryQuestionCommentsApi(accessToken).findQueryQuestionComment({
+        panelId: panelId, 
+        commentId: message.commentId
+      });
+
       this.setState({
         comments: this.state.comments.concat([comment]).sort(this.compareComments)
       });      
@@ -123,7 +141,10 @@ class QueryCommentContainer extends React.Component<Props, State> {
         const comment = this.state.comments[i];
         if (message.commentId == comment.id) {
           if (message.type == "UPDATED") {
-            comments.push(await this.getQueryQuestionCommentsService(this.props.accessToken).findQueryQuestionComment(this.props.panelId, message.commentId));
+            comments.push(await Api.getQueryQuestionCommentsApi(accessToken).findQueryQuestionComment({
+              panelId: panelId,
+              commentId: message.commentId
+            }));
           }
         } else {
           if (!(message.type == "DELETED" && message.commentId == comment.id)) {
@@ -166,47 +187,25 @@ class QueryCommentContainer extends React.Component<Props, State> {
    * Loads child comments
    */
   private async loadChildComments() {
-    if (!this.state.comments && this.props.accessToken) {
-      const categoryId = this.props.category ? this.props.category.id : 0;
-      const comments = await (this.getQueryQuestionCommentsService(this.props.accessToken)).listQueryQuestionComments(this.props.panelId, this.props.queryId, this.props.pageId, undefined, undefined, this.props.parentId, this.props.parentId == 0 ? categoryId : undefined);
+    const { pageId, panelId, queryId, accessToken, parentId, category } = this.props;
+
+    if (!this.state.comments && accessToken) {
+      const categoryId = category ? category.id : 0;
+      
+      const comments = await Api.getQueryQuestionCommentsApi(accessToken).listQueryQuestionComments({
+        panelId: panelId,
+        queryId: queryId,
+        pageId: pageId,
+        parentId: parentId,
+        categoryId: parentId == 0 ? categoryId : undefined
+      });
 
       this.setState({
         comments: comments.sort(this.compareComments)
       });
     }
-  } 
-
-  /**
-   * Returns query question comments API
-   * 
-   * @returns query question comments API
-   */
-  private getQueryQuestionCommentsService(accessToken: string): QueryQuestionCommentsService {
-    return Api.getQueryQuestionCommentsService(accessToken);
   }
 
 }
 
-/**
- * Redux mapper for mapping store state to component props
- * 
- * @param state store state
- */
-function mapStateToProps(state: StoreState) {
-  return {
-    accessToken: state.accessToken ? state.accessToken.token : null,
-    loggedUserId: state.accessToken ? state.accessToken.userId : null,
-    locale: state.locale
-  };
-}
-
-/**
- * Redux mapper for mapping component dispatches 
- * 
- * @param dispatch dispatch method
- */
-function mapDispatchToProps(dispatch: React.Dispatch<actions.AppAction>) {
-  return { };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(QueryCommentContainer);
+export default QueryCommentContainer;

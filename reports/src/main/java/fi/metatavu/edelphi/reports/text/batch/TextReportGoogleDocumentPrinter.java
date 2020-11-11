@@ -26,6 +26,7 @@ import fi.metatavu.edelphi.reports.batch.AbstractPrinter;
 import fi.metatavu.edelphi.reports.i18n.ReportMessages;
 import fi.metatavu.edelphi.reports.text.TextReportController;
 import fi.metatavu.edelphi.resources.ResourceController;
+import fi.metatavu.edelphi.settings.SettingsController;
 
 /**
  * Batchlet for printing and delivering text reports as Google Documents
@@ -37,6 +38,9 @@ public class TextReportGoogleDocumentPrinter extends AbstractPrinter {
 
   @Inject
   private Logger logger;
+
+  @Inject
+  private SettingsController settingsController;
   
   @Inject
   private TextReportBatchContext reportHtmlBatchContext;
@@ -82,10 +86,6 @@ public class TextReportGoogleDocumentPrinter extends AbstractPrinter {
   @Inject
   @JobProperty
   private Locale locale;
-
-  @Inject
-  @JobProperty
-  private Long[] expertiseGroupIds;
   
   @Override
   public String process() throws Exception { 
@@ -111,7 +111,7 @@ public class TextReportGoogleDocumentPrinter extends AbstractPrinter {
     String contents = reportMessages.getText(locale, "reports.googledocuments.mail.contents", now, filters, settings, fileUrl);
     
     Email email = EmailBuilder.startingBlank()
-      .from("noreply@edelphi.org")
+      .from(settingsController.getEmailFromAddress())
       .to(deliveryEmail)
       .withSubject(subject)
       .withHTMLText(contents)

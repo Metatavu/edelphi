@@ -1,18 +1,17 @@
 import * as React from "react";
-import * as actions from "../../actions";
 import * as _ from "lodash";
-import { StoreState, AccessToken, EditPageLegacyPageData } from "../../types";
-import { connect } from "react-redux";
+import { AccessToken, EditPageLegacyPageData } from "../../types";
 import { Modal, Button, Input, InputOnChangeData, Grid, Loader, Dimmer, Confirm } from "semantic-ui-react";
-import Api, { QueryQuestionCommentCategory } from "edelphi-client";
-import { QueryQuestionCommentCategoriesService } from "edelphi-client/dist/api/api";
+import { QueryQuestionCommentCategory } from "../../generated/client/models";
+import { QueryQuestionCommentCategoriesApi } from "../../generated/client/apis";
 import strings from "../../localization/strings";
+import Api from "../../api";
 
 /**
  * Interface representing component properties
  */
 interface Props {
-  accessToken?: AccessToken,
+  accessToken: AccessToken,
   pageId: number,
   panelId: number,
   queryId: number,
@@ -34,7 +33,7 @@ interface State {
 /**
  * React component for comment editor
  */
-class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, State> {
+export default class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, State> {
 
   /**
    * Constructor
@@ -155,7 +154,9 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
    * Loads a comment
    */
   private loadData = async () => {
-    if (!this.props.accessToken || !this.props.pageId) {
+    const { accessToken, pageId, panelId, queryId } = this.props;
+
+    if (!pageId) {
       return;
     }
 
@@ -163,8 +164,11 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
       loading: true
     });
 
-    const queryQuestionCommentCategoriesService = await this.getQueryQuestionCommentCategoriesService(this.props.accessToken.token);
-    const categories = await queryQuestionCommentCategoriesService.listQueryQuestionCommentCategories(this.props.panelId, this.props.pageId, this.props.queryId);
+    const categories = await Api.getQueryQuestionCommentCategoriesApi(accessToken.token).listQueryQuestionCommentCategories({
+      panelId: panelId,
+      pageId: pageId,
+      queryId: queryId
+    });
 
     this.setState({
       categories: categories,
@@ -173,31 +177,22 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
   }
 
   /**
-   * Returns query question comments API
-   * 
-   * @returns query question comments API
-   */
-  private getQueryQuestionCommentCategoriesService(accessToken: string): QueryQuestionCommentCategoriesService {
-    return Api.getQueryQuestionCommentCategoriesService(accessToken);
-  }
-
-  /**
    * Deletes a category
    * 
    * @param category category
    */
   private deleteCategory = async (index: number) => {
-    if (!this.props.accessToken) {
-      return;
-    }
+    const { accessToken } = this.props;
 
     const category: QueryQuestionCommentCategory = this.state.categories[index];
     const categories = _.clone(this.state.categories);
     categories.splice(index, 1); 
 
     if (category.id) {
-      const queryQuestionCommentCategoriesService = await this.getQueryQuestionCommentCategoriesService(this.props.accessToken.token);
-      await queryQuestionCommentCategoriesService.deleteQueryQuestionCommentCategory(this.props.panelId, category.id);
+      await Api.getQueryQuestionCommentCategoriesApi(accessToken.token).deleteQueryQuestionCommentCategory({
+        panelId: this.props.panelId,
+        categoryId: category.id
+      });
     } 
 
     this.setState({
@@ -216,24 +211,28 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
    * Event handler for save click
    */
   private onSaveClick = async () => {
-    if (!this.props.accessToken) {
-      return;
-    }
-    
+    const { accessToken } = this.props;
+
     this.setState({
       updating: true
     });
 
-    const queryQuestionCommentCategoriesService = await this.getQueryQuestionCommentCategoriesService(this.props.accessToken.token);
     const categories = [];
 
     for (let i = 0; i < this.state.categories.length; i++) {
       const category = this.state.categories[i];
       
       if (category.id) {
-        categories.push(await queryQuestionCommentCategoriesService.updateQueryQuestionCommentCategory(category, this.props.panelId, category.id));
+        categories.push(await Api.getQueryQuestionCommentCategoriesApi(accessToken.token).updateQueryQuestionCommentCategory({
+          categoryId: category.id,
+          panelId: this.props.panelId,
+          queryQuestionCommentCategory: category
+        }));
       } else {
-        categories.push(await queryQuestionCommentCategoriesService.createQueryQuestionCommentCategory(category, this.props.panelId));
+        categories.push(await Api.getQueryQuestionCommentCategoriesApi(accessToken.token).createQueryQuestionCommentCategory({
+          panelId:this.props.panelId,
+          queryQuestionCommentCategory: category
+        }));
       }
     }
 
@@ -277,26 +276,3 @@ class PanelAdminQueryPageCommentOptionsEditor extends React.Component<Props, Sta
     });
   }
 }
-
-/**
- * Redux mapper for mapping store state to component props
- * 
- * @param state store state
- */
-function mapStateToProps(state: StoreState) {
-  return {
-    accessToken: state.accessToken,
-    locale: state.locale
-  };
-}
-
-/**
- * Redux mapper for mapping component dispatches 
- * 
- * @param dispatch dispatch method
- */
-function mapDispatchToProps(dispatch: React.Dispatch<actions.AppAction>) {
-  return { };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(PanelAdminQueryPageCommentOptionsEditor);

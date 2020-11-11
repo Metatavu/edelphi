@@ -11,7 +11,8 @@ export interface IStrings extends LocalizedStringsMethods {
     eDelphi: string;
     welcomeUser: string;
     profileLink: string;
-    logoutLink: string
+    logoutLink: string;
+    panelAdminBreadcrumb: string;
   },
 
   errorDialog: {
@@ -160,6 +161,7 @@ export interface IStrings extends LocalizedStringsMethods {
       queriesListDates: string;
       exportFilter: string;
       exportFilterByExpertise: string;
+      exportFilterByUserGroup: string;
       exportFilterByPage: string;
       exportFilterByPageAll: string;
       exportFilterByCommentCategory: string;
@@ -176,6 +178,73 @@ export interface IStrings extends LocalizedStringsMethods {
       reportToEmailMessageDelivery: string
       reportToEmailMessageDeliveryTime: string;
       reportToEmailMessageLeave: string
+    },
+
+    inviteUsers: {
+      title: string;
+      breadcrumb: string;
+      passwordHeader: string;
+      passwordText: string;
+      invitationsSentHeader: string;
+      invitationsSentText: string;
+
+      inviteBlock: {
+        title: string;
+        emailPlaceholder: string;
+        csvFieldLabel: string;
+        csvUploadButton: string;
+        csvExampleLinkLabel: string;
+        usersToBeInvitedLabel: string;
+        invitationFieldLabel: string;
+        addUsersWithoutInvitationLabel: string;
+        singleUseLabel: string;
+        sendInvitationsButtonLabel: string;
+        invitationTarget: string;
+        panelTarget: string;
+        addUser: string;
+        mailTemplate: string;
+        acceptReplaceMissing: string;
+        acceptReplace: string;
+      },
+      usersListBlock: {
+        title: string;
+        addedByManagerLabel: string;
+        addedDateTimeLabel: string;
+        resendInvitationToAll: string;
+        resendInvitationToUser: string;
+
+        lists: {
+          ADDED: {
+            title: string;
+            timeLabel: string;
+          };
+          
+          IN_QUEUE: {
+            title: string;
+            timeLabel: string;
+          };
+          BEING_SENT: {
+            title: string;
+            timeLabel: string;
+          };
+          SEND_FAIL: {
+            title: string;
+            timeLabel: string;
+          };
+          PENDING: {
+            title: string;
+            timeLabel: string;
+          };
+          ACCEPTED: {
+            title: string;
+            timeLabel: string;
+          };
+          DECLINED: {
+            title: string;
+            timeLabel: string;
+          };
+        }
+      }
     }
   }
   

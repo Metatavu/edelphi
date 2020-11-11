@@ -100,6 +100,11 @@ public class LegacyReportPageHtmlProvider extends AbstractReportPageHtmlProvider
       reportContext.addFilter("EXPERTISE", filter);
     }
     
+    if (exportContext.getPanelUserGroupIds() != null) {
+      String filter = Arrays.stream(exportContext.getPanelUserGroupIds()).map(String::valueOf).collect(Collectors.joining(","));
+      reportContext.addFilter("USER_GROUPS", filter);
+    }
+    
     ObjectMapper objectMApper = new ObjectMapper();
     return Base64.encodeBase64URLSafeString(objectMApper.writeValueAsBytes(reportContext)); 
   }

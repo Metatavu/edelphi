@@ -4,40 +4,42 @@ import * as _ from "lodash";
 import { StoreState, AccessToken } from "../types";
 import { connect } from "react-redux";
 import PanelAdminLayout from "../components/generic/panel-admin-layout";
-import Api, { Panel, Query, QueryPage, ReportFormat, ReportType, User } from "edelphi-client";
+import { Panel, PanelUserGroup, Query, QueryPage, ReportFormat, ReportType, User } from "../generated/client/models";
 import "../styles/reports.scss";
-import { PanelsService, QueriesService, ReportsService, UsersService } from "edelphi-client/dist/api/api";
 import * as queryString from "query-string";
 import { Grid, Container, List, Modal, Button, Icon, SemanticShorthandCollection, BreadcrumbSectionProps } from "semantic-ui-react";
 import strings from "../localization/strings";
 import PanelAdminReportsQueryListItem from "../components/panel-admin/panel-admin-reports-query-list-item";
 import PanelAdminReportsOptions from "../components/panel-admin/panel-admin-reports-options";
 import ErrorDialog from "../components/error-dialog";
+import Api from "../api";
 
 /**
  * Interface representing component properties
  */
 interface Props {
-  accessToken: AccessToken,
-  location: any
+  accessToken?: AccessToken;
+  location: any;
 }
 
 /**
  * Interface representing component state
  */
 interface State {
-  error?: Error,
-  loggedUser?: User,
-  panel?: Panel,
-  queries: Query[],
-  loading: boolean,
-  redirectTo?: string,
-  selectedQueryId?: number
-  queryPages: QueryPage[],
-  reportToEmailDialogVisible: boolean,
-  filterQueryPageId: number | "ALL",
-  expertiseGroupIds: number[] | "ALL",
-  commentCategoryIds: number[] | "ALL"
+  error?: Error;
+  loggedUser?: User;
+  panel?: Panel;
+  queries: Query[];
+  loading: boolean;
+  redirectTo?: string;
+  selectedQueryId?: number;
+  queryPages: QueryPage[];
+  panelUserGroups: PanelUserGroup[];
+  reportToEmailDialogVisible: boolean;
+  filterQueryPageId: number | "ALL";
+  expertiseGroupIds: number[] | "ALL";
+  panelUserGroupIds: number[];
+  commentCategoryIds: number[] | "ALL";
 }
 
 /**
@@ -57,8 +59,10 @@ class Reports extends React.Component<Props, State> {
       queries: [],
       reportToEmailDialogVisible: false,
       queryPages: [],
+      panelUserGroups: [],
       filterQueryPageId: "ALL",
       expertiseGroupIds: "ALL",
+      panelUserGroupIds: [],
       commentCategoryIds: "ALL"
     };
   }
@@ -66,7 +70,12 @@ class Reports extends React.Component<Props, State> {
   /**
    * Component will mount life-cycle event
    */
-  public async componentDidMount() {
+  public componentDidMount = async () => {
+    const { accessToken } = this.props;
+    if (!accessToken) {
+      return;
+    }
+
     const queryParams = queryString.parse(this.props.location.search);
     
     const panelId = parseInt(queryParams.panelId as string);
@@ -74,15 +83,18 @@ class Reports extends React.Component<Props, State> {
     this.setState({
       loading: true
     });
-    
-    const panel = await this.getPanelsService().findPanel(panelId);
-    const queries = await this.getQueriesService().listQueries(panelId);
-    const loggedUser = await this.getUsersService().findUser(this.props.accessToken.userId);
+
+    const panel = await Api.getPanelsApi(accessToken.token).findPanel({ panelId: panelId });
+    const queries = await Api.getQueriesApi(accessToken.token).listQueries({ panelId: panelId });
+    const panelUserGroups = await Api.getUserGroupsApi(accessToken.token).listUserGroups({panelId: panelId});
+    const loggedUser = await Api.getUsersApi(accessToken.token).findUser({ userId: accessToken.userId });
 
     this.setState({
       loading: false,
       panel: panel,
       queries: queries,
+      panelUserGroupIds: panelUserGroups.map(panelUserGroup => panelUserGroup.id!!),
+      panelUserGroups: panelUserGroups,
       loggedUser: loggedUser
     });
   }
@@ -102,6 +114,7 @@ class Reports extends React.Component<Props, State> {
     const breadcrumbs: SemanticShorthandCollection<BreadcrumbSectionProps> = [
       { key: "home", content: strings.generic.eDelphi, href: "/" },
       { key: "panel", content: this.state.panel.name, href: `/${this.state.panel.urlName}` },
+      { key: "panel-admin", content: strings.generic.panelAdminBreadcrumb, href: `/panel/admin/dashboard.page?panelId=${this.state.panel.id}` },
       { key: "reports", content: this.state.panel.name, active: true }      
     ];
 
@@ -176,21 +189,32 @@ class Reports extends React.Component<Props, State> {
       return null;
     }
 
+    const { accessToken } = this.props;
+
+    if (!accessToken) {
+      return null;
+    }
+
     return (
-      <PanelAdminReportsOptions panelId={ this.state.panel.id } 
+      <PanelAdminReportsOptions 
+        accessToken={ accessToken.token }
+        panelId={ this.state.panel.id } 
         queryId={ this.state.selectedQueryId } 
         queryPageId={ this.state.filterQueryPageId }
         expertiseGroupIds={ this.state.expertiseGroupIds }
+        panelUserGroupIds={ this.state.panelUserGroupIds }
         commentCategoryIds={ this.state.commentCategoryIds }
+        panelUserGroups={ this.state.panelUserGroups }
         onQueryPageChange={ this.onQueryPageFilterChange }
         onExpertiseGroupsChanged={ this.onExpertiseGroupsChanged }
+        onPanelUserGroupsChanged={ this.onPanelUserGroupsChanged }
         onCommentCategoriesChanged={ this.onCommentCategoriesChanged }
         onExportReportContentsPdfClick={ this.onExportReportContentsPdfClick } 
         onExportReportSpreadsheetCsvClick={ this.onExportReportSpreadsheetCsvClick }
         onExportReportSpreadsheetGoogleSheetsClick={ this.onExportReportSpreadsheetGoogleSheetClick }
         onExportReportContentsGoogleDocumentClick={ this.onExportReportContentsGoogleDocumentClick }
         onExportReportImagesPngClick={ this.onExportReportImagesPngClick }
-        />
+      />
     );
   }
 
@@ -201,26 +225,34 @@ class Reports extends React.Component<Props, State> {
    * @param format report format
    */
   private requestReport = async (type: ReportType, format: ReportFormat) => {
+    const { accessToken } = this.props;
+    const { panel, selectedQueryId, expertiseGroupIds, filterQueryPageId, panelUserGroupIds, commentCategoryIds } = this.state;
+
+    if (!accessToken) {
+      return;
+    }
+
     try {
-      if (!this.state.panel || !this.state.panel.id) {
+      if (!panel || !panel.id) {
         throw new Error("Could not load panel");
       }
 
-      if (!this.state.selectedQueryId) {
+      if (!selectedQueryId) {
         throw new Error("Query not selected");
       }
 
-      const reportsService = this.getReportsService();
-
-      await reportsService.createReportRequest({
-        format: format,
-        type: type,
-        panelId: this.state.panel.id,
-        queryId: this.state.selectedQueryId,
-        options: {
-          expertiseGroupIds: this.state.expertiseGroupIds == "ALL" ? undefined : this.state.expertiseGroupIds,
-          queryPageIds: this.state.filterQueryPageId == "ALL" ? undefined : [ this.state.filterQueryPageId ],
-          commentCategoryIds: this.state.commentCategoryIds == "ALL" ? undefined : this.state.commentCategoryIds
+      await Api.getReportsApi(accessToken.token).createReportRequest({
+        reportRequest: {
+          format: format,
+          type: type,
+          panelId: panel.id,
+          queryId: selectedQueryId,
+          options: {
+            expertiseGroupIds: expertiseGroupIds == "ALL" ? undefined : expertiseGroupIds,
+            queryPageIds: filterQueryPageId == "ALL" ? undefined : [ filterQueryPageId ],
+            panelUserGroupIds: panelUserGroupIds.length === 0 ? undefined : panelUserGroupIds,
+            commentCategoryIds: commentCategoryIds == "ALL" ? undefined : commentCategoryIds
+          }
         }
       });
 
@@ -233,42 +265,6 @@ class Reports extends React.Component<Props, State> {
       });
     }
   }
-
-  /**
-   * Returns queries API
-   * 
-   * @returns queries API
-   */
-  private getQueriesService(): QueriesService {
-    return Api.getQueriesService(this.props.accessToken.token);
-  }
-
-  /**
-   * Returns users API
-   * 
-   * @returns users API
-   */
-  private getUsersService(): UsersService {
-    return Api.getUsersService(this.props.accessToken.token);
-  }
-
-  /**
-   * Returns panels API
-   * 
-   * @returns panels API
-   */
-  private getPanelsService(): PanelsService {
-    return Api.getPanelsService(this.props.accessToken.token);
-  }
-
-  /**
-   * Returns reports API
-   * 
-   * @returns reports API
-   */
-  private getReportsService(): ReportsService {
-    return Api.getReportsService(this.props.accessToken.token);
-  } 
 
   /**
    * Event handler for query page filter change
@@ -292,6 +288,19 @@ class Reports extends React.Component<Props, State> {
     });
   }
 
+  /**
+   * Event handler for user group ids filter change
+   * 
+   * @param panelUserGroupIds user group ids or ALL if filter is not applied
+   */
+  private onPanelUserGroupsChanged = (panelUserGroupIds: number[]) => {
+    this.setState({
+      panelUserGroupIds: panelUserGroupIds
+    });
+  }
+
+  
+
   private onCommentCategoriesChanged = (commentCategoryIds: number[] | "ALL") => {
     this.setState({
       commentCategoryIds: commentCategoryIds
@@ -302,35 +311,35 @@ class Reports extends React.Component<Props, State> {
    * Event handler for export as PDF click
    */
   private onExportReportContentsPdfClick = async () => {
-    await this.requestReport("TEXT", "PDF");
+    await this.requestReport(ReportType.TEXT, ReportFormat.PDF);
   }
 
   /**
    * Event handler for export as CSV click
    */
   private onExportReportSpreadsheetCsvClick = async () => {
-    await this.requestReport("SPREADSHEET", "CSV");
+    await this.requestReport(ReportType.SPREADSHEET, ReportFormat.CSV);
   }
 
   /**
    * Event handler for export as Google Sheet click
    */
   private onExportReportSpreadsheetGoogleSheetClick = async () => {
-    await this.requestReport("SPREADSHEET", "GOOGLE_SHEET");
+    await this.requestReport(ReportType.SPREADSHEET, ReportFormat.GOOGLESHEET);
   } 
 
   /**
    * Event handler for export as Google Document click
    */
   private onExportReportContentsGoogleDocumentClick  = async () => {
-    await this.requestReport("TEXT", "GOOGLE_DOCUMENT");
+    await this.requestReport(ReportType.TEXT, ReportFormat.GOOGLEDOCUMENT);
   } 
 
   /**
    * Event handler for export images as PNGs click
    */
   private onExportReportImagesPngClick  = async () => {
-    await this.requestReport("IMAGES", "PNG");
+    await this.requestReport(ReportType.IMAGES, ReportFormat.PNG);
   } 
 
 }

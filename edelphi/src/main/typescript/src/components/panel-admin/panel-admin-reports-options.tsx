@@ -4,30 +4,32 @@ import * as _ from "lodash";
 import strings from "../../localization/strings";
 import { StoreState } from "../../types";
 import { connect } from "react-redux";
-import Api, { QueryPage, PanelExpertiseGroup, PanelInterestClass, PanelExpertiseClass, QueryQuestionCommentCategory } from "edelphi-client";
-import { QueryPagesService, PanelExpertiseService, QueryQuestionCommentCategoriesService } from "edelphi-client/dist/api/api";
+import { QueryPage, PanelExpertiseGroup, PanelInterestClass, PanelExpertiseClass, QueryQuestionCommentCategory, PanelUserGroup } from "../../generated/client/models";
+import { QueryPagesApi, PanelExpertiseApi, QueryQuestionCommentCategoriesApi, UserGroupsApi } from "../../generated/client/apis";
 import { Segment, Dimmer, Loader, DropdownItemProps, Select, DropdownProps, Table, Icon, Checkbox } from "semantic-ui-react";
+import Api from "../../api";
 
 /**
  * Interface representing component properties
  */
 interface Props {
-  accessToken: string,
-  logggedUserId?: string,
-  locale: string,
-  panelId: number,
-  queryId: number,
-  queryPageId: number | "ALL",
-  expertiseGroupIds: number[] | "ALL",
-  commentCategoryIds: number[] | "ALL",
-  onExpertiseGroupsChanged: (expertiseGroupIds: number[] | "ALL") => void,
-  onCommentCategoriesChanged: (selectedCommentCategories: number[] | "ALL") => void,
-  onQueryPageChange: (queryPageId: number | "ALL") => void,
-  onExportReportContentsPdfClick: () => void,
-  onExportReportSpreadsheetCsvClick: () => void,
-  onExportReportSpreadsheetGoogleSheetsClick: () => void,
-  onExportReportContentsGoogleDocumentClick: () => void,
-  onExportReportImagesPngClick: () => void
+  accessToken: string;
+  panelId: number;
+  queryId: number;
+  panelUserGroups: PanelUserGroup[];
+  queryPageId: number | "ALL";
+  expertiseGroupIds: number[] | "ALL";
+  panelUserGroupIds: number[];
+  commentCategoryIds: number[] | "ALL";
+  onExpertiseGroupsChanged: (expertiseGroupIds: number[] | "ALL") => void;
+  onPanelUserGroupsChanged: (userGroupIds: number[]) => void;
+  onCommentCategoriesChanged: (selectedCommentCategories: number[] | "ALL") => void;
+  onQueryPageChange: (queryPageId: number | "ALL") => void;
+  onExportReportContentsPdfClick: () => void;
+  onExportReportSpreadsheetCsvClick: () => void;
+  onExportReportSpreadsheetGoogleSheetsClick: () => void;
+  onExportReportContentsGoogleDocumentClick: () => void;
+  onExportReportImagesPngClick: () => void;
 }
 
 /**
@@ -70,16 +72,30 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
    * Component will mount life-cycle event
    */
   public async componentDidMount() {
+    const { panelId, queryId } = this.props;
+
     this.setState({
       loading: true
     });
 
-    const queryPagesService = this.getQueryPagesService();
-    const queryPages = await queryPagesService.listQueryPages(this.props.panelId, this.props.queryId, true);
+    const queryPages = await this.getQueryPagesApi().listQueryPages({
+      panelId: panelId,
+      queryId: queryId,
+      includeHidden: true
+    });
 
-    const panelExpertiseGroups = await this.getPanelExpertiseService().listExpertiseGroups(this.props.panelId);
-    const panelInterestClasses = await this.getPanelExpertiseService().listInterestClasses(this.props.panelId);
-    const panelExpertiseClasses = await this.getPanelExpertiseService().listExpertiseClasses(this.props.panelId);
+    const panelExpertiseGroups = await this.getPanelExpertiseApi().listExpertiseGroups({
+      panelId: panelId
+    });
+    
+    const panelInterestClasses = await this.getPanelExpertiseApi().listInterestClasses({
+      panelId: panelId
+    });
+
+    const panelExpertiseClasses = await this.getPanelExpertiseApi().listExpertiseClasses({
+      panelId: panelId
+    });
+
     const commentCategories: QueryQuestionCommentCategory[] = await this.loadCommentCategories();
 
     this.setState({
@@ -105,8 +121,12 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
         loading: true
       });
 
-      const queryPagesService = this.getQueryPagesService();
-      const queryPages = await queryPagesService.listQueryPages(this.props.panelId, this.props.queryId, true);
+      const queryPages = await this.getQueryPagesApi().listQueryPages({
+        panelId: this.props.panelId,
+        queryId: this.props.queryId,
+        includeHidden: true
+      });
+      
       const commentCategories = await this.loadCommentCategories();
 
       this.setState({
@@ -164,6 +184,7 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
         <h2> { strings.panelAdmin.reports.exportFilter } </h2>
         <h3> { strings.panelAdmin.reports.exportFilterByExpertise } </h3>
         { this.renderExpertiseMatrixFilter() }
+        { this.renderUserGroupsFilter() }
         <h3> { strings.panelAdmin.reports.exportFilterByPage } </h3>
         <div>
           <Select value={ this.props.queryPageId } options={ queryPageFilterOptions } onChange={ this.onPageSelected } />
@@ -260,6 +281,50 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
   }
 
   /**
+   * Renders user groups filter
+   */
+  private renderUserGroupsFilter = () => {
+    const { panelUserGroups } = this.props;
+
+    if (!panelUserGroups || panelUserGroups.length == 0) {
+      return null;
+    }
+
+    return (
+      <>
+        <h3> { strings.panelAdmin.reports.exportFilterByUserGroup } </h3>
+        <div>
+          {
+            panelUserGroups.map(this.renderUserGroupFilter) 
+          }  
+        </div>
+      </>
+    );
+  }
+
+  /**
+   * Renders single user group filter checkbox
+   * 
+   * @param panelUserGroup panel user group
+   */
+  private renderUserGroupFilter = (panelUserGroup: PanelUserGroup) => {
+    const { panelUserGroupIds } = this.props;
+
+    const checked = !!panelUserGroupIds.find(userGroupId => userGroupId === panelUserGroup.id);
+    
+    return (
+      <div key={ panelUserGroup.id } style={{ marginTop: 5, marginBottom:5 }}>
+        {
+          <Checkbox 
+            label={ panelUserGroup.name } 
+            checked={ checked } 
+            onClick={ () => this.onUserGroupClick(panelUserGroup.id!) }/>
+        }  
+      </div>
+    );
+  }
+
+  /**
    * Event handler for expertise group click
    * 
    * @param expertiseGroupId clicked expertise group id
@@ -271,6 +336,18 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
       const result = this.props.expertiseGroupIds.indexOf(expertiseGroupId) != -1 ? _.without(this.props.expertiseGroupIds, expertiseGroupId) : [expertiseGroupId].concat(this.props.expertiseGroupIds);
       this.props.onExpertiseGroupsChanged(result.length ? result : "ALL");
     }
+  }
+
+  /**
+   * Event handler for user group click
+   * 
+   * @param userGroupId clicked user group id
+   */
+  private onUserGroupClick = (userGroupId: number) => {
+    const { panelUserGroupIds } = this.props;
+
+    const result = panelUserGroupIds.indexOf(userGroupId) != -1 ? _.without(panelUserGroupIds, userGroupId) : [userGroupId].concat(panelUserGroupIds);
+      this.props.onPanelUserGroupsChanged(result);
   }
   
   /**
@@ -352,8 +429,12 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
    */
   private loadCommentCategories = async () => {
     try {
-      const queryQuestionCommentCategoriesService = this.getQueryQuestionCommentCategoriesService();
-      return await queryQuestionCommentCategoriesService.listQueryQuestionCommentCategories(this.props.panelId, 0, this.props.queryId);
+      const queryQuestionCommentCategoriesApi = this.getQueryQuestionCommentCategoriesApi();
+      return await queryQuestionCommentCategoriesApi.listQueryQuestionCommentCategories({
+        panelId: this.props.panelId,
+        pageId: 0,
+        queryId: this.props.queryId
+      });
     } catch (e) {
       return [];
     }
@@ -441,8 +522,8 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
    * 
    * @returns query pages API
    */
-  private getQueryPagesService(): QueryPagesService {
-    return Api.getQueryPagesService(this.props.accessToken);
+  private getQueryPagesApi(): QueryPagesApi {
+    return Api.getQueryPagesApi(this.props.accessToken);
   }
 
   /**
@@ -450,8 +531,8 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
    * 
    * @returns query comment categories API
    */
-  private getQueryQuestionCommentCategoriesService(): QueryQuestionCommentCategoriesService {
-    return Api.getQueryQuestionCommentCategoriesService(this.props.accessToken);
+  private getQueryQuestionCommentCategoriesApi(): QueryQuestionCommentCategoriesApi {
+    return Api.getQueryQuestionCommentCategoriesApi(this.props.accessToken);
   }
 
   /**
@@ -459,32 +540,19 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
    * 
    * @returns panel expertise service
    */
-  private getPanelExpertiseService(): PanelExpertiseService {
-    return Api.getPanelExpertiseService(this.props.accessToken);
+  private getPanelExpertiseApi(): PanelExpertiseApi {
+    return Api.getPanelExpertiseApi(this.props.accessToken);
+  }
+
+  /**
+   * Returns user groups api
+   * 
+   * @returns user groups api
+   */
+  private getUserGroupsApi(): UserGroupsApi {
+    return Api.getUserGroupsApi(this.props.accessToken);
   }
   
 }
 
-/**
- * Redux mapper for mapping store state to component props
- * 
- * @param state store state
- */
-function mapStateToProps(state: StoreState) {
-  return {
-    accessToken: state.accessToken ? state.accessToken.token : null,
-    logggedUserId: state.accessToken ? state.accessToken.userId : null,
-    locale: state.locale
-  };
-}
-
-/**
- * Redux mapper for mapping component dispatches 
- * 
- * @param dispatch dispatch method
- */
-function mapDispatchToProps(dispatch: React.Dispatch<actions.AppAction>) {
-  return { };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(PanelAdminReportsOptions);
+export default PanelAdminReportsOptions;

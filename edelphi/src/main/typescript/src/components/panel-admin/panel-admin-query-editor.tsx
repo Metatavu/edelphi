@@ -1,21 +1,22 @@
 import * as React from "react";
 import * as actions from "../../actions";
-import { StoreState, CommandEvent, EditPageLegacyPageData } from "../../types";
+import { StoreState, CommandEvent, EditPageLegacyPageData, AccessToken } from "../../types";
 import { connect } from "react-redux";
 import PanelAdminQueryPageCommentOptionsEditor from "./panel-admin-query-page-comment-options-editor";
 import PanelAdminQueryCommentOptionsEditor from "./panel-admin-query-comment-options-editor";
 import PanelAdminQueryPageLive2dOptionsEditor from "./panel-admin-query-page-live2d-options-editor";
 import { Confirm, Modal, Header, Button, Icon } from "semantic-ui-react";
 import strings from "../../localization/strings";
-import Api from "edelphi-client";
 import * as QRCode from "qrcode";
 import PanelAdminQueryCopyDialog from "./panel-admin-query-copy-dialog";
+import Api from "../../api";
+import LegacyUtils from "../../utils/legacy-utils";
 
 /**
  * Interface representing component properties
  */
 interface Props {
-  accessToken: string,
+  accessToken?: AccessToken,
   panelId: number,
   queryId: number,
   openCopyDialog: boolean;
@@ -85,15 +86,15 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
   /**
    * Component will mount life-cycle event
    */
-  public componentWillMount() {
-    document.addEventListener("react-command", this.onReactCommand);  
+  public componentWillMount = () => {
+    LegacyUtils.addCommandListener(this.onReactCommand);  
   }
   
   /**
    * Component will unmount life-cycle event
    */
-  public async componentWillUnmount() {
-    document.removeEventListener("react-command", this.onReactCommand);
+  public componentWillUnmount = async () => {
+    LegacyUtils.removeCommandListener(this.onReactCommand);
   }
   
   /** 
@@ -216,7 +217,7 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
       <PanelAdminQueryCopyDialog 
         queryId={ this.props.queryId } 
         panelId={ this.props.panelId} 
-        accessToken={ this.props.accessToken } 
+        accessToken={ this.props.accessToken.token } 
         open={ this.state.copyQueryDialogOpen } 
         onClose={ this.onCopyQueryDialogClose }/>
     );
@@ -275,9 +276,15 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
   /**
    * Renders query comment options editor
    */
-  private renderQueryCommentOptionsEditor() {
+  private renderQueryCommentOptionsEditor = () => {
+    const { accessToken } = this.props;
+    if (!accessToken) {
+      return null;
+    }
+
     return (
       <PanelAdminQueryCommentOptionsEditor 
+        accessToken={ accessToken }
         panelId={ this.props.panelId} 
         open={ this.state.queryCommentOptionsOpen } 
         queryId={ this.props.queryId } 
@@ -289,12 +296,26 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
   /**
    * Renders page comment options editor
    */
-  private renderPageCommentOptionsEditor() {
-    if (!this.state.pageData) {
+  private renderPageCommentOptionsEditor = () => {
+    const { accessToken, panelId, queryId } = this.props;
+    const { pageData, pageCommentOptionsOpen, pageId } = this.state;
+
+    if (!accessToken) {
+      return null;
+    }
+    
+    if (!pageData) {
       return null;
     }
 
-    return <PanelAdminQueryPageCommentOptionsEditor pageData={ this.state.pageData } open={ this.state.pageCommentOptionsOpen } pageId={ this.state.pageId } panelId={ this.props.panelId} queryId={ this.props.queryId } onClose={ this.onPageCommentOptionsEditorClose }/>
+    return <PanelAdminQueryPageCommentOptionsEditor 
+      accessToken={ accessToken }
+      pageData={ pageData } 
+      open={ pageCommentOptionsOpen } 
+      pageId={ pageId } 
+      panelId={ panelId } 
+      queryId={ queryId } 
+      onClose={ this.onPageCommentOptionsEditorClose }/>
   }
 
   /**
@@ -312,8 +333,15 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
    * Removes query answers
    */
   private removeQueryAnswers = async () => {
-    const queryQuestionAnswersService = this.getQueryQuestionAnswersService();
-    await queryQuestionAnswersService.deleteQueryQuestionAnswers(this.props.panelId, this.props.queryId, undefined, undefined);
+    const { accessToken, panelId, queryId } = this.props;
+    if (!accessToken) {
+      return;
+    }
+
+    await Api.getQueryQuestionAnswersApi(accessToken.token).deleteQueryQuestionAnswers({
+      panelId: panelId,
+      queryId: queryId
+    });
   }
 
   /**
@@ -324,15 +352,6 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
   private getAnonymousLoginUrl = () => {
     const location = window.location;
     return `${location.protocol}//${location.host}/panel/anonymouslogin.page?panelId=${this.props.panelId}&queryId=${this.props.queryId}`;
-  }
-
-  /**
-   * Returns query question answers service
-   * 
-   * @returns query question answers service
-   */
-  private getQueryQuestionAnswersService = () => {
-    return Api.getQueryQuestionAnswersService(this.props.accessToken);
   }
 
   /**
@@ -413,7 +432,7 @@ class PanelAdminQueryEditor extends React.Component<Props, State> {
  */
 function mapStateToProps(state: StoreState) {
   return {
-    accessToken: state.accessToken ? state.accessToken.token : null,
+    accessToken: state.accessToken
   };
 }
 

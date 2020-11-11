@@ -61,6 +61,10 @@ public class ImageReportChartWriter extends TypedItemWriter<QueryPage> {
   @Inject
   @JobProperty
   private Long[] expertiseGroupIds;
+
+  @Inject
+  @JobProperty
+  private Long[] panelUserGroupIds;
   
   @Inject
   @JobProperty
@@ -111,7 +115,7 @@ public class ImageReportChartWriter extends TypedItemWriter<QueryPage> {
       throw new ReportException(String.format("Could not find panel stamp %d", stampId));
     }
     
-    ImageReportPageContext exportContext = new ImageReportPageContext(baseUrl, locale, stamp, expertiseGroupIds, queryReplyIds, queryPage);
+    ImageReportPageContext exportContext = new ImageReportPageContext(baseUrl, locale, stamp, panelUserGroupIds, expertiseGroupIds, queryReplyIds, queryPage);
     List<ChartData> chartDatas = imageReportController.getPageCharts(exportContext);
     List<BinaryFile> result = new ArrayList<>(chartDatas.size());
     
