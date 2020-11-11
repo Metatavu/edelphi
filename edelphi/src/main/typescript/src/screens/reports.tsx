@@ -4,7 +4,7 @@ import * as _ from "lodash";
 import { StoreState, AccessToken } from "../types";
 import { connect } from "react-redux";
 import PanelAdminLayout from "../components/generic/panel-admin-layout";
-import { Panel, Query, QueryPage, ReportFormat, ReportType, User } from "../generated/client/models";
+import { Panel, PanelUserGroup, Query, QueryPage, ReportFormat, ReportType, User } from "../generated/client/models";
 import "../styles/reports.scss";
 import * as queryString from "query-string";
 import { Grid, Container, List, Modal, Button, Icon, SemanticShorthandCollection, BreadcrumbSectionProps } from "semantic-ui-react";
@@ -18,27 +18,28 @@ import Api from "../api";
  * Interface representing component properties
  */
 interface Props {
-  accessToken?: AccessToken,
-  location: any
+  accessToken?: AccessToken;
+  location: any;
 }
 
 /**
  * Interface representing component state
  */
 interface State {
-  error?: Error,
-  loggedUser?: User,
-  panel?: Panel,
-  queries: Query[],
-  loading: boolean,
-  redirectTo?: string,
-  selectedQueryId?: number
-  queryPages: QueryPage[],
-  reportToEmailDialogVisible: boolean,
-  filterQueryPageId: number | "ALL",
-  expertiseGroupIds: number[] | "ALL",
-  panelUserGroupIds: number[] | "ALL",
-  commentCategoryIds: number[] | "ALL"
+  error?: Error;
+  loggedUser?: User;
+  panel?: Panel;
+  queries: Query[];
+  loading: boolean;
+  redirectTo?: string;
+  selectedQueryId?: number;
+  queryPages: QueryPage[];
+  panelUserGroups: PanelUserGroup[];
+  reportToEmailDialogVisible: boolean;
+  filterQueryPageId: number | "ALL";
+  expertiseGroupIds: number[] | "ALL";
+  panelUserGroupIds: number[];
+  commentCategoryIds: number[] | "ALL";
 }
 
 /**
@@ -58,9 +59,10 @@ class Reports extends React.Component<Props, State> {
       queries: [],
       reportToEmailDialogVisible: false,
       queryPages: [],
+      panelUserGroups: [],
       filterQueryPageId: "ALL",
       expertiseGroupIds: "ALL",
-      panelUserGroupIds: "ALL",
+      panelUserGroupIds: [],
       commentCategoryIds: "ALL"
     };
   }
@@ -84,12 +86,15 @@ class Reports extends React.Component<Props, State> {
 
     const panel = await Api.getPanelsApi(accessToken.token).findPanel({ panelId: panelId });
     const queries = await Api.getQueriesApi(accessToken.token).listQueries({ panelId: panelId });
+    const panelUserGroups = await Api.getUserGroupsApi(accessToken.token).listUserGroups({panelId: panelId});
     const loggedUser = await Api.getUsersApi(accessToken.token).findUser({ userId: accessToken.userId });
 
     this.setState({
       loading: false,
       panel: panel,
       queries: queries,
+      panelUserGroupIds: panelUserGroups.map(panelUserGroup => panelUserGroup.id!!),
+      panelUserGroups: panelUserGroups,
       loggedUser: loggedUser
     });
   }
@@ -199,6 +204,7 @@ class Reports extends React.Component<Props, State> {
         expertiseGroupIds={ this.state.expertiseGroupIds }
         panelUserGroupIds={ this.state.panelUserGroupIds }
         commentCategoryIds={ this.state.commentCategoryIds }
+        panelUserGroups={ this.state.panelUserGroups }
         onQueryPageChange={ this.onQueryPageFilterChange }
         onExpertiseGroupsChanged={ this.onExpertiseGroupsChanged }
         onPanelUserGroupsChanged={ this.onPanelUserGroupsChanged }
@@ -244,7 +250,7 @@ class Reports extends React.Component<Props, State> {
           options: {
             expertiseGroupIds: expertiseGroupIds == "ALL" ? undefined : expertiseGroupIds,
             queryPageIds: filterQueryPageId == "ALL" ? undefined : [ filterQueryPageId ],
-            panelUserGroupIds: panelUserGroupIds == "ALL" ? undefined : panelUserGroupIds,
+            panelUserGroupIds: panelUserGroupIds.length === 0 ? undefined : panelUserGroupIds,
             commentCategoryIds: commentCategoryIds == "ALL" ? undefined : commentCategoryIds
           }
         }
@@ -287,7 +293,7 @@ class Reports extends React.Component<Props, State> {
    * 
    * @param panelUserGroupIds user group ids or ALL if filter is not applied
    */
-  private onPanelUserGroupsChanged = (panelUserGroupIds: number[] | "ALL") => {
+  private onPanelUserGroupsChanged = (panelUserGroupIds: number[]) => {
     this.setState({
       panelUserGroupIds: panelUserGroupIds
     });

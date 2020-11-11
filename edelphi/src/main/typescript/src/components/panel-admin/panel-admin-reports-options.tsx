@@ -16,12 +16,13 @@ interface Props {
   accessToken: string;
   panelId: number;
   queryId: number;
+  panelUserGroups: PanelUserGroup[];
   queryPageId: number | "ALL";
   expertiseGroupIds: number[] | "ALL";
-  panelUserGroupIds: number[] | "ALL";
+  panelUserGroupIds: number[];
   commentCategoryIds: number[] | "ALL";
   onExpertiseGroupsChanged: (expertiseGroupIds: number[] | "ALL") => void;
-  onPanelUserGroupsChanged: (userGroupIds: number[] | "ALL") => void;
+  onPanelUserGroupsChanged: (userGroupIds: number[]) => void;
   onCommentCategoriesChanged: (selectedCommentCategories: number[] | "ALL") => void;
   onQueryPageChange: (queryPageId: number | "ALL") => void;
   onExportReportContentsPdfClick: () => void;
@@ -40,7 +41,6 @@ interface State {
   panelExpertiseGroups: PanelExpertiseGroup[],
   panelInterestClasses: PanelInterestClass[],
   panelExpertiseClasses: PanelExpertiseClass[],
-  panelUserGroups: PanelUserGroup[],
   commentCategories: QueryQuestionCommentCategory[],
   commentCategoryMap: { [key: string] : QueryQuestionCommentCategory[] }
 }
@@ -63,7 +63,6 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
       panelExpertiseGroups: [],
       panelInterestClasses: [],
       panelExpertiseClasses: [],
-      panelUserGroups: [],
       commentCategories: [],
       commentCategoryMap: {}
     };
@@ -97,10 +96,6 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
       panelId: panelId
     });
 
-    const panelUserGroups = await this.getUserGroupsApi().listUserGroups({
-      panelId: panelId
-    });
-
     const commentCategories: QueryQuestionCommentCategory[] = await this.loadCommentCategories();
 
     this.setState({
@@ -109,7 +104,6 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
       panelExpertiseGroups: panelExpertiseGroups,
       panelInterestClasses: panelInterestClasses,
       panelExpertiseClasses: panelExpertiseClasses,
-      panelUserGroups: panelUserGroups,
       commentCategories: commentCategories,
       commentCategoryMap: this.getCommentCategoryMap(commentCategories)
     });
@@ -290,7 +284,7 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
    * Renders user groups filter
    */
   private renderUserGroupsFilter = () => {
-    const { panelUserGroups } = this.state;
+    const { panelUserGroups } = this.props;
 
     if (!panelUserGroups || panelUserGroups.length == 0) {
       return null;
@@ -316,7 +310,7 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
   private renderUserGroupFilter = (panelUserGroup: PanelUserGroup) => {
     const { panelUserGroupIds } = this.props;
 
-    const checked = panelUserGroupIds === "ALL" ? true : !!panelUserGroupIds.find(userGroupId => userGroupId === panelUserGroup.id);
+    const checked = !!panelUserGroupIds.find(userGroupId => userGroupId === panelUserGroup.id);
     
     return (
       <div key={ panelUserGroup.id } style={{ marginTop: 5, marginBottom:5 }}>
@@ -352,12 +346,8 @@ class PanelAdminReportsOptions extends React.Component<Props, State> {
   private onUserGroupClick = (userGroupId: number) => {
     const { panelUserGroupIds } = this.props;
 
-    if (panelUserGroupIds == "ALL") {
-      this.props.onPanelUserGroupsChanged([userGroupId]);
-    } else {
-      const result = panelUserGroupIds.indexOf(userGroupId) != -1 ? _.without(panelUserGroupIds, userGroupId) : [userGroupId].concat(panelUserGroupIds);
-      this.props.onPanelUserGroupsChanged(result.length ? result : "ALL");
-    }
+    const result = panelUserGroupIds.indexOf(userGroupId) != -1 ? _.without(panelUserGroupIds, userGroupId) : [userGroupId].concat(panelUserGroupIds);
+      this.props.onPanelUserGroupsChanged(result);
   }
   
   /**
