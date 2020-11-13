@@ -14,6 +14,7 @@ import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitation;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitationState;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitation_;
+import fi.metatavu.edelphi.domainmodel.panels.PanelState;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserRole;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
@@ -53,6 +54,7 @@ public class PanelInvitationDAO extends GenericDAO<PanelInvitation> {
           criteriaBuilder.equal(root.get(PanelInvitation_.panel), panel),
           criteriaBuilder.equal(root.get(PanelInvitation_.email), email),
           criteriaBuilder.isNull(root.get(PanelInvitation_.query)),
+          criteriaBuilder.notEqual(root.get(PanelInvitation_.state), PanelInvitationState.ADDED),
           criteriaBuilder.equal(root.get(PanelInvitation_.archived), Boolean.FALSE)
         )
       );
@@ -63,6 +65,7 @@ public class PanelInvitationDAO extends GenericDAO<PanelInvitation> {
           criteriaBuilder.equal(root.get(PanelInvitation_.panel), panel),
           criteriaBuilder.equal(root.get(PanelInvitation_.email), email),
           criteriaBuilder.equal(root.get(PanelInvitation_.query), query),
+          criteriaBuilder.notEqual(root.get(PanelInvitation_.state), PanelInvitationState.ADDED),
           criteriaBuilder.equal(root.get(PanelInvitation_.archived), Boolean.FALSE)
         )
       );
