@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
@@ -257,7 +258,14 @@ public abstract class AbstractApi {
    * @return request locale
    */
   protected Locale getLocale() {
-    return getHttpServletRequest().getLocale();
+    HttpServletRequest request = getHttpServletRequest();
+    
+    String language = request.getHeader("edelphiLanguage");
+    if (StringUtils.isNotBlank(language)) {
+      return LocaleUtils.toLocale(language);
+    }
+    
+    return request.getLocale();
   }
   
   /**

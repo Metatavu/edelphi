@@ -1,4 +1,5 @@
 import { Configuration, PanelExpertiseApi, PanelInvitationsApi, PanelsApi, QueriesApi, QueryPagesApi, QueryQuestionAnswersApi, QueryQuestionCommentCategoriesApi, QueryQuestionCommentsApi, ReportsApi, UserGroupsApi, UsersApi } from "../generated/client";
+import strings from "../localization/strings";
 
 const location = window.location;
 const basePath = `${location.protocol}//${location.hostname}:${location.port}/api/v1`;
@@ -127,7 +128,10 @@ export default class Api {
   private static getConfiguration(accessToken: string) {
     return new Configuration({
       basePath: basePath,
-      apiKey: `Bearer ${accessToken}`
+      apiKey: `Bearer ${accessToken}`,
+      headers: {
+        edelphiLanguage: strings.getLanguage()
+      }
     });
   }
 
