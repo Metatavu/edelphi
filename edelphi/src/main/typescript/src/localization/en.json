@@ -194,7 +194,7 @@
         "invitationTarget": "Accepting the Invitation Redirects To",
         "panelTarget": "Panel front page",
         "addUser": "Add",
-        "mailTemplate": "You have been invited to an eDelphi panel [PANEL NAME]. To accept the invitation, please click the link below:\n\n[ACCEPT URL]\n\nTo decline the invitation, please click the link below:\n\n[DECLINE URL]\n\nNote that after declining, you won't get any more e-mail notifications about the panel. If you decline an invitation by accident, you can still accept it by clicking the accept link.\n\nPlease notice that the links are personal! Do NOT share them to others.\n\nBest Regards,\n[SENDER NAME]",
+        "mailTemplate": "You have been invited to an eDelphi panel [PANEL NAME]. To accept the invitation, please click the link below:\n\n[ACCEPT URL]\n\nTo decline the invitation, please click the link below:\n\n[DECLINE URL]\n\nNote that after declining, you won't get any more e-mail notifications about the panel. If you decline an invitation by accident, you can still accept it by clicking the accept link.\n\nPlease notice that the links are personal! Do NOT share them with others.\n\neDelphi privacy policy is fully GDPR (EU General Data Protection Regulation 2016/679) and US Privacy Law compliant (see https://www.edelphi.org/privacypolicy.page). \n\nBest Regards,\n\n[SENDER NAME]",
         "acceptReplaceMissing": "The invitation is missing an accept link. Please add \"[ACCEPT URL]\" to the invitation text",
         "acceptReplace": "[ACCEPT URL]"
       },
