@@ -22,6 +22,7 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.jsons.JSONController;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.UserUtils;
 
 public class CreateUserJSONRequestController extends JSONController {
 
@@ -45,7 +46,7 @@ public class CreateUserJSONRequestController extends JSONController {
     User creator = userDAO.findById(jsonRequestContext.getLoggedUserId());
     
     Panel panel = panelDAO.findById(jsonRequestContext.getLong("panelId"));
-    User user = userDAO.create(firstName, lastName, nickname, creator, Defaults.NEW_USER_SUBSCRIPTION_LEVEL, null, null, locale.getLanguage());
+    User user = UserUtils.createUser(firstName, lastName, nickname, creator, locale);
     
     Delfoi delfoi = RequestUtils.getDelfoi(jsonRequestContext);
     DelfoiUserDAO delfoiUserDAO = new DelfoiUserDAO();

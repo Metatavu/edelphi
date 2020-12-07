@@ -16,6 +16,7 @@ import fi.metatavu.edelphi.dao.users.UserDAO;
 import fi.metatavu.edelphi.dao.users.UserEmailDAO;
 import fi.metatavu.edelphi.dao.users.UserIdentificationDAO;
 import fi.metatavu.edelphi.dao.users.UserPictureDAO;
+import fi.metatavu.edelphi.dao.users.UserSettingDAO;
 import fi.metatavu.edelphi.domainmodel.base.AuthSource;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiDefaults;
@@ -25,6 +26,7 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.domainmodel.users.UserIdentification;
 import fi.metatavu.edelphi.domainmodel.users.UserPicture;
+import fi.metatavu.edelphi.domainmodel.users.UserSettingKey;
 import fi.metatavu.edelphi.keycloak.KeycloakController;
 import fi.metatavu.edelphi.keycloak.KeycloakException;
 import fi.metatavu.edelphi.settings.SettingsController;
@@ -65,6 +67,9 @@ public class UserController {
 
   @Inject
   private DelfoiUserDAO delfoiUserDAO;
+
+  @Inject
+  private UserSettingDAO userSettingDAO;  
   
   /**
    * Creates new user to the system. Method check whether user already exists and uses existing user if one is available.
@@ -88,6 +93,7 @@ public class UserController {
     
     if (user == null) {
       user = userDAO.create(firstName, lastName, null, creator, Defaults.NEW_USER_SUBSCRIPTION_LEVEL, null, null, locale.getLanguage());
+      userSettingDAO.create(user, UserSettingKey.MAIL_COMMENT_REPLY, "1");
       userEmail = userEmailDAO.create(user, email);
       userDAO.addUserEmail(user, userEmail, true, creator);
     }
