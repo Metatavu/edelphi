@@ -1,6 +1,7 @@
 package fi.metatavu.edelphi.utils;
 
 import java.util.List;
+import java.util.Locale;
 
 import fi.metatavu.edelphi.dao.panels.PanelExpertiseGroupUserDAO;
 import fi.metatavu.edelphi.dao.panels.PanelUserDAO;
@@ -10,6 +11,7 @@ import fi.metatavu.edelphi.dao.users.UserDAO;
 import fi.metatavu.edelphi.dao.users.UserEmailDAO;
 import fi.metatavu.edelphi.dao.users.UserIdentificationDAO;
 import fi.metatavu.edelphi.dao.users.UserPictureDAO;
+import fi.metatavu.edelphi.dao.users.UserSettingDAO;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiUser;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelExpertiseGroupUser;
@@ -19,8 +21,29 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.domainmodel.users.UserIdentification;
 import fi.metatavu.edelphi.domainmodel.users.UserPicture;
+import fi.metatavu.edelphi.domainmodel.users.UserSettingKey;
+import fi.metatavu.edelphi.Defaults;
 
 public class UserUtils {
+
+  /**
+   * Creates new user
+   * 
+   * @param firstName first name
+   * @param lastName last name
+   * @param nickname nickname
+   * @param creator creator
+   * @param locale locale
+   * @return created user
+   */
+  public static User createUser(String firstName, String lastName, String nickname, User creator, Locale locale) {
+    UserDAO userDAO = new UserDAO();
+    UserSettingDAO userSettingDAO = new UserSettingDAO();
+
+    User user = userDAO.create(firstName, lastName, nickname, creator, Defaults.NEW_USER_SUBSCRIPTION_LEVEL, null, null, locale.getLanguage());
+    userSettingDAO.create(user, UserSettingKey.MAIL_COMMENT_REPLY, "1");
+    return user;
+  }
 
   public static void archivePanelUser(PanelUser panelUser, User modifier) {
     PanelUserDAO panelUserDAO = new PanelUserDAO();
