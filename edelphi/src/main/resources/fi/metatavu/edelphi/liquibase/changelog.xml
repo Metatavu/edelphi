@@ -3411,4 +3411,15 @@
     </sql>
   </changeSet>
   
+  <changeSet id="fix-time-serie-typo" author="antti.leppa">
+    <sql>
+      UPDATE
+        LocalizedValue
+      SET
+        text = 'Time Series'
+      WHERE
+        entry_id = (SELECT name_id FROM QueryPageTemplate WHERE iconName = 'timeserie') AND locale = 'en'
+    </sql>
+  </changeSet>
+  
 </databaseChangeLog>
