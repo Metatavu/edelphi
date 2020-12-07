@@ -29,6 +29,7 @@ import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
 import fi.metatavu.edelphi.utils.AuthUtils;
 import fi.metatavu.edelphi.utils.KeycloakUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.UserUtils;
 
 public class JoinPanelPageController extends PageController {
 
@@ -97,7 +98,7 @@ public class JoinPanelPageController extends PageController {
           // No one is logged in and the invitation email is available
           // -> automatically create a new account
           
-          user = userDAO.create(null, null, null,  null, Defaults.NEW_USER_SUBSCRIPTION_LEVEL, null, null, locale.getLanguage());
+          user = UserUtils.createUser(null, null, null, null, locale);          
           userEmail = userEmailDAO.create(user, panelInvitation.getEmail());
           userDAO.addUserEmail(user, userEmail, true, user);
           Delfoi delfoi = RequestUtils.getDelfoi(pageRequestContext);

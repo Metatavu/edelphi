@@ -24,6 +24,7 @@ import fi.metatavu.edelphi.i18n.Messages;
 import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.UserUtils;
 
 public abstract class AbstractAuthenticationStrategy implements AuthenticationProvider {
   
@@ -52,8 +53,8 @@ public abstract class AbstractAuthenticationStrategy implements AuthenticationPr
     User creatorModifier = null;
     
     // Create User
-    User user = userDAO.create(firstName, lastName, null, creatorModifier, Defaults.NEW_USER_SUBSCRIPTION_LEVEL, null, null, locale.getLanguage());
-
+    User user = UserUtils.createUser(firstName, lastName, null, creatorModifier, locale);
+    
     if (email != null) {
       // Create UserEmail
       UserEmail userEmail = userEmailDAO.create(user, email);

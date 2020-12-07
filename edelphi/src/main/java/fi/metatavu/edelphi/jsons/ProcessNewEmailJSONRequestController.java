@@ -17,6 +17,7 @@ import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.jsons.JSONController;
 import fi.metatavu.edelphi.utils.AuthUtils;
 import fi.metatavu.edelphi.utils.RequestUtils;
+import fi.metatavu.edelphi.utils.UserUtils;
 
 public class ProcessNewEmailJSONRequestController extends JSONController {
 
@@ -46,7 +47,7 @@ public class ProcessNewEmailJSONRequestController extends JSONController {
       DelfoiUserDAO delfoiUserDAO = new DelfoiUserDAO();
       UserEmail userEmail = userEmailDAO.findByAddress(email);
       if (userEmail == null) {
-        User user = userDAO.create(null, null, null, null, Defaults.NEW_USER_SUBSCRIPTION_LEVEL, null, null, locale.getLanguage());
+        User user = UserUtils.createUser(null, null, null, null, locale);
         userEmail = userEmailDAO.create(user, email);
         userDAO.addUserEmail(user, userEmail, true, user);
         Delfoi delfoi = RequestUtils.getDefaults(jsonRequestContext).getDelfoi();
