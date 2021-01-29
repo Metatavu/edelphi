@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as actions from "../../actions";
 import * as _ from "lodash";
-import { StoreState, CommandEvent, PageChangeEvent, AccessToken } from "../../types";
+import { StoreState, CommandEvent, AccessToken } from "../../types";
 import { connect } from "react-redux";
 import { Grid, Button, Popup, List, Segment, Dimmer, Loader, Icon } from "semantic-ui-react";
 import { QueryPage, Panel, QueryState } from "../../generated/client/models";
@@ -21,7 +21,6 @@ interface Props {
   pageId: number,
   queryState: QueryState,
   queryValidationMessage: string | null,
-  onPageChange: (event: PageChangeEvent) => void,
   queryValidationMessageUpdate: (queryValidationMessage: string | null) => void
 }
 
@@ -246,9 +245,11 @@ class QueryNavigation extends React.Component<Props, State> {
    * Handles page change click event
    */
   private changePage = async (page: QueryPage | null, save: boolean, finish: boolean) => {
-    await this.props.onPageChange({ });
-    
     if (save) {
+      document.dispatchEvent(new CustomEvent('before-page-save', { 
+        bubbles: true
+      }));
+
       await this.saveLegacyForm(finish);
     }
 

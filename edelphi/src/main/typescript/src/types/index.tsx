@@ -9,13 +9,6 @@ export interface StoreState {
 }
 
 /**
- * Interface for page change event 
- */
-export interface PageChangeEvent {
-
-}
-
-/**
  * Interface describing an access token
  */
 export interface AccessToken {
