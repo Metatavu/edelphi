@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as actions from "../../actions";
-import { StoreState, AccessToken, PageChangeEvent } from "../../types";
+import { StoreState, AccessToken } from "../../types";
 import { connect } from "react-redux";
 import { QueryQuestionCommentCategoriesApi } from "../../generated/client/apis";
 import { QueryQuestionCommentCategory } from "../../generated/client/models";
@@ -21,8 +21,7 @@ interface Props {
   queryId: number,
   viewDiscussion: boolean,
   commentable: boolean,
-  canManageComments: boolean,
-  setPageChangeListener: (listener: (event: PageChangeEvent) => void) => void
+  canManageComments: boolean
 }
 
 /**
@@ -159,13 +158,12 @@ class QueryComments extends React.Component<Props, State> {
   private renderCommentEditor = (category: QueryQuestionCommentCategory | null) => {
     return (
       <QueryCommentEditor
-      onCommentChange={ this.onCommentChange }
-      setPageChangeListener={ this.props.setPageChangeListener }
-      category={ category }
-      pageId={ this.props.pageId }
-      panelId={ this.props.panelId }
-      queryId={ this.props.queryId }
-      queryReplyId={ this.props.queryReplyId }
+        onCommentChange={ this.onCommentChange }
+        category={ category }
+        pageId={ this.props.pageId }
+        panelId={ this.props.panelId }
+        queryId={ this.props.queryId }
+        queryReplyId={ this.props.queryReplyId }
       />
     );
   }

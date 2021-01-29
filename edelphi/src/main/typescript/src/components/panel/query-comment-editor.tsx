@@ -1,7 +1,7 @@
 import * as React from "react";
 import { TextArea, TextAreaProps } from "semantic-ui-react";
 import * as actions from "../../actions";
-import { StoreState, AccessToken, PageChangeEvent } from "../../types";
+import { StoreState, AccessToken } from "../../types";
 import { connect } from "react-redux";
 import { QueryQuestionCommentsApi } from "../../generated/client/apis";
 import { QueryQuestionCommentCategory } from "../../generated/client/models";
@@ -19,7 +19,6 @@ interface Props {
   panelId: number,
   queryId: number,
   category: QueryQuestionCommentCategory | null,
-  setPageChangeListener: (listener: (event: PageChangeEvent) => void) => void
 
   /**
    * On comment change handler from parent
@@ -59,7 +58,9 @@ class QueryCommentEditor extends React.Component<Props, State> {
       loaded: false
     };
 
-    this.props.setPageChangeListener(this.onPageChange);
+    (document as any).addEventListener("before-page-save", async () => {
+      await this.save();
+    });
   }
   
   /**
@@ -97,13 +98,6 @@ class QueryCommentEditor extends React.Component<Props, State> {
         </div>
       </div>
     );
-  }
-
-  /**
-   * Event handler for a page change
-   */
-  private onPageChange = async (event: PageChangeEvent) => {
-    await this.save();
   }
 
   /**

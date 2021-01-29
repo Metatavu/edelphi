@@ -3,7 +3,7 @@ import * as ReactDOM from "react-dom";
 import AccessTokenRefresh from "../components/access-token-refresh";
 import MqttConnector from "../components/mqtt-connector";
 import { createStore } from 'redux';
-import { StoreState, CommandEvent, PageChangeEvent } from "../types";
+import { StoreState, CommandEvent } from "../types";
 import { AppAction } from "../actions";
 import { reducer } from "../reducers";
 import { Provider } from "react-redux";
@@ -57,11 +57,6 @@ window.addEventListener('load', () => {
   const queryPageLive2D = document.getElementById("query-page-live2d");
   const queryNavigation = document.getElementById("query-navigation");
   
-  let pageChangeListener = (event: PageChangeEvent) => { }; 
-  const setPageChangeListener = (listener: (event: PageChangeEvent) => void) => {
-    pageChangeListener = listener;
-  }
-
   const initalStoreState: StoreState = {
     locale: locale,
     queryValidationMessage: initialQueryValidationMessage || null
@@ -84,7 +79,6 @@ window.addEventListener('load', () => {
           <AccessTokenRefresh>
             <MqttConnector>
               <QueryComments
-                setPageChangeListener={ setPageChangeListener }
                 panelId={ panelId }
                 canManageComments={ canManageComments }
                 viewDiscussion={ viewDiscussion }
@@ -142,7 +136,6 @@ window.addEventListener('load', () => {
                 pageId={ pageId }
                 panelId={ panelId }
                 queryId={ queryId }
-                onPageChange={ pageChangeListener }
               />
             </MqttConnector>
           </AccessTokenRefresh>
