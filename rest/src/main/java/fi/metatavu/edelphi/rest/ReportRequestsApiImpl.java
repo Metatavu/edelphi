@@ -41,6 +41,8 @@ import fi.metatavu.edelphi.rest.model.ReportRequest;
 import fi.metatavu.edelphi.rest.model.ReportRequestOptions;
 import fi.metatavu.edelphi.rest.model.ReportType;
 
+import org.slf4j.Logger;
+
 /**
  * Report requests API implementation
  * 
@@ -52,7 +54,10 @@ import fi.metatavu.edelphi.rest.model.ReportType;
 @Consumes (MediaType.APPLICATION_JSON)
 @SecurityDomain("keycloak")
 public class ReportRequestsApiImpl extends AbstractApi implements ReportRequestsApi {
-  
+
+  @Inject
+  private Logger logger;
+
   @Inject
   private PermissionController permissionController;
   
@@ -79,6 +84,8 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
     if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.MANAGE_PANEL)) {
       return createForbidden("Forbidden");
     }
+
+    logger.info("Requested a report with locale {}", getLocale());
 
     Query query = queryController.findQueryById(body.getQueryId());
     if (query == null || queryController.isQueryArchived(query)) {
@@ -176,7 +183,6 @@ public class ReportRequestsApiImpl extends AbstractApi implements ReportRequests
     }
     
     properties.put(ReportBatchProperties.QUERY_REPLY_IDS, replies.stream().map(QueryReply::getId).map(String::valueOf).collect(Collectors.joining(",")));
-    
     long jobId = requestReport(body.getType(), body.getFormat(), properties);
     if (jobId > 0) {
       return Response.status(Status.ACCEPTED).build();
