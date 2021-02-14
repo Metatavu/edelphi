@@ -102,7 +102,9 @@ public class TextReportPdfPrinter extends AbstractPrinter {
       String subject = reportMessages.getText(locale, "reports.pdf.mail.subject", panelName, queryName);
       String contents = reportMessages.getText(locale, "reports.pdf.mail.contents", now, filters, settings);
       String file = String.format("%s-%s.pdf", panel.getUrlName(), query.getUrlName());
-    
+
+      logger.info("Sending report. Email locale {}, subject {}", locale, subject);
+
       Email email = EmailBuilder.startingBlank()
         .from(settingsController.getEmailFromAddress())
         .to(deliveryEmail)
