@@ -144,12 +144,18 @@ export default class PanelAdminQueryCopyDialog extends React.Component<Props, St
 
     return (
       <Modal open={ true } >
-        <Modal.Header><Icon name="exclamation" color="yellow" /> { strings.panelAdmin.queryEditor.copyQueryDialog.validationErrorDialogTitle }</Modal.Header>
+        <Modal.Header>
+          <Icon name="exclamation" color="yellow" /> { strings.panelAdmin.queryEditor.copyQueryDialog.validationErrorDialogTitle }
+        </Modal.Header>
         <Modal.Content> 
           <p><b>{ validationError }</b></p>
         </Modal.Content>
         <Modal.Actions>
-          <Button color='green' onClick={ this.onValidationErrorDialogClose } inverted>
+          <Button
+            color="green"
+            onClick={ this.onValidationErrorDialogClose }
+            inverted
+          >
             <Icon name='checkmark' /> 
             { strings.generic.ok }
           </Button>
@@ -289,7 +295,8 @@ export default class PanelAdminQueryCopyDialog extends React.Component<Props, St
     });
 
     try {
-        await Api.getQueriesApi(accessToken).copyQuery({
+        const queriesApi = Api.getQueriesApi(accessToken);
+        await queriesApi.copyQuery({
           copyData: copyData,
           newName: name,
           panelId: panelId,
