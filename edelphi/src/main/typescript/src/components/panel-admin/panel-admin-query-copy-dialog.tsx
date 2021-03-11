@@ -2,31 +2,33 @@ import * as React from "react";
 import * as _ from "lodash";
 import { Modal, Button, Loader, Dimmer, Icon, Input, InputOnChangeData, DropdownItemProps, Select, DropdownProps } from "semantic-ui-react";
 import { Panel } from "../../generated/client/models";
-import {  PanelsApi, QueriesApi } from "../../generated/client/apis";
 import strings from "../../localization/strings";
 import Api from "../../api";
+import ErrorDialog from "../../components/error-dialog";
 
 /**
  * Interface representing component properties
  */
 interface Props {
-  accessToken: string,
-  panelId: number,
-  queryId: number,
-  open: boolean,
-  onClose: () => void
+  accessToken: string;
+  panelId: number;
+  queryId: number;
+  open: boolean;
+  onClose: () => void;
 }
 
 /**
  * Interface representing component state
  */
 interface State {
-  loading: boolean,
-  panels: Panel[],
-  name: string,
-  targetPanelId: number,
-  copyData: boolean,
-  emailDialogVisible: boolean
+  loading: boolean;
+  panels: Panel[];
+  name: string;
+  targetPanelId: number;
+  copyData: boolean;
+  emailDialogVisible: boolean;
+  validationError?: string;
+  error?: Error;
 }
 
 /**
@@ -75,7 +77,17 @@ export default class PanelAdminQueryCopyDialog extends React.Component<Props, St
    * Component render method
    */
   public render() {
-    if (this.state.emailDialogVisible) {
+    const { error, validationError, emailDialogVisible } = this.state;
+
+    if (error) {
+      return this.renderErrorDialog();
+    }
+
+    if (validationError) {
+      return this.renderValidationErrorModal();
+    }
+    
+    if (emailDialogVisible) {
       return this.renderEmailModal();
     }
 
@@ -93,10 +105,10 @@ export default class PanelAdminQueryCopyDialog extends React.Component<Props, St
           { this.renderCopyModalContent() }
         </Modal.Content>
         <Modal.Actions>
-          <Button color="green" onClick={ this.onCopyButtonClick } inverted>
+          <Button color="green" onClick={ this.onCopyButtonClick } inverted>
             <Icon name="checkmark" /> { strings.panelAdmin.queryEditor.copyQueryDialog.okButton }
           </Button>
-          <Button color="red" onClick={ this.onCancelButtonClick } inverted>
+          <Button color="red" onClick={ this.onCancelButtonClick } inverted>
             { strings.panelAdmin.queryEditor.copyQueryDialog.cancelButton }
           </Button>
         </Modal.Actions>
@@ -125,9 +137,31 @@ export default class PanelAdminQueryCopyDialog extends React.Component<Props, St
   }
 
   /**
+   * Renders validation error modal
+   */
+  private renderValidationErrorModal = () => {
+    const { validationError } = this.state;
+
+    return (
+      <Modal open={ true } >
+        <Modal.Header><Icon name="exclamation" color="yellow" /> { strings.panelAdmin.queryEditor.copyQueryDialog.validationErrorDialogTitle }</Modal.Header>
+        <Modal.Content> 
+          <p><b>{ validationError }</b></p>
+        </Modal.Content>
+        <Modal.Actions>
+          <Button color='green' onClick={ this.onValidationErrorDialogClose } inverted>
+            <Icon name='checkmark' /> 
+            { strings.generic.ok }
+          </Button>
+        </Modal.Actions>
+      </Modal>
+    );
+  }
+
+  /**
    * Renders modal's content
    */
-  private renderCopyModalContent = () => {
+  private renderCopyModalContent = () => {
     if (this.state.loading) {
       return (
         <div style={{ minHeight: "200px" }}>
@@ -172,6 +206,24 @@ export default class PanelAdminQueryCopyDialog extends React.Component<Props, St
   }
 
   /**
+   * Renders error dialog
+   */
+  private renderErrorDialog = () => {
+    const { error } = this.state;
+
+    if (!error) {
+      return null;
+    }
+
+    return (
+      <ErrorDialog
+          error={ error }
+          onClose={ this.onErrorDialogClose }
+      />
+    )
+  }
+
+  /**
    * Event handler for email dialog close
    */
   private onEmailDialogClose = () => {
@@ -197,7 +249,7 @@ export default class PanelAdminQueryCopyDialog extends React.Component<Props, St
   /**
    * Event for visible dropdown change
    */
-  private onTargetPanelChange = (event: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
+  private onTargetPanelChange = (event: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
     this.setState({
       targetPanelId: data.value as number
     });
@@ -206,7 +258,7 @@ export default class PanelAdminQueryCopyDialog extends React.Component<Props, St
   /**
    * Event for visible dropdown change
    */
-  private onDataChange = (event: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
+  private onDataChange = (event: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
     this.setState({
       copyData: data.value as boolean
     });
@@ -222,7 +274,7 @@ export default class PanelAdminQueryCopyDialog extends React.Component<Props, St
   /**
    * Event handler for save click
    */
-  private onCopyButtonClick  = async () => {
+  private onCopyButtonClick  = async () => {
     const { accessToken, panelId, queryId } = this.props;
     const { copyData, name, targetPanelId } = this.state;
 
@@ -230,28 +282,60 @@ export default class PanelAdminQueryCopyDialog extends React.Component<Props, St
       loading: true
     });
 
-    await Api.getQueriesApi(accessToken).copyQuery({
-      copyData: copyData,
-      newName: name,
-      panelId: panelId,
-      queryId: queryId,
-      targetPanelId: targetPanelId
-    });
-    
+    try {
+        await Api.getQueriesApi(accessToken).copyQuery({
+          copyData: copyData,
+          newName: name,
+          panelId: panelId,
+          queryId: queryId,
+          targetPanelId: targetPanelId
+        });
+
+        this.setState({
+          emailDialogVisible: true
+        });
+    } catch (e) {
+      if (e instanceof Response && e.status == 400) {
+        const body = await e.json();
+        const validationError = body?.message || "Unknonwn error";
+        this.setState({
+          validationError: validationError
+        });
+      } else {
+        this.setState({
+          error: e
+        });
+      }
+    }
+
     this.setState({
       loading: false
-    });
-
-    this.setState({      
-      emailDialogVisible: true 
     });
   }
   
   /**
    * Event handler for close click
    */
-  private onCancelButtonClick  = async () => {
+  private onCancelButtonClick  = async () => {
     this.props.onClose();
+  }
+
+  /**
+   * Event handler for error dialog close
+   */
+  private onErrorDialogClose = () => {
+    this.setState({ 
+      error: undefined 
+    });
+  }
+
+  /**
+   * Event handler for error dialog close
+   */
+  private onValidationErrorDialogClose = () => {
+    this.setState({ 
+      validationError: undefined
+    });
   }
 
 }

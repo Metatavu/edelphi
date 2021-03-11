@@ -142,6 +142,7 @@ export interface IStrings extends LocalizedStringsMethods {
         newName: string;
         emailDialogTitle: string;
         emailDialogMessage: string
+        validationErrorDialogTitle: string;
       }
 
     },
