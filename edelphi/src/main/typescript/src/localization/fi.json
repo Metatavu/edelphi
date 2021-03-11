@@ -134,7 +134,8 @@
         "cancelButton": "Peruuta",
         "newName": "Uusi nimi",
         "emailDialogTitle": "Kyselyä kopioidaan...",
-        "emailDialogMessage": "Kyselyä kopioidaan taustalla. Tieto kopion valmistumisesta tullaan toimittamaan profiilissa määrittelemääsi sähköpostiin"
+        "emailDialogMessage": "Kyselyä kopioidaan taustalla. Tieto kopion valmistumisesta tullaan toimittamaan profiilissa määrittelemääsi sähköpostiin",
+        "validationErrorDialogTitle": "Kyselyn kopiointi epäonnistui"
       }
 
     },

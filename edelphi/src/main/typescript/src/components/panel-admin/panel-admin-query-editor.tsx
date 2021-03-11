@@ -16,9 +16,9 @@ import LegacyUtils from "../../utils/legacy-utils";
  * Interface representing component properties
  */
 interface Props {
-  accessToken?: AccessToken,
-  panelId: number,
-  queryId: number,
+  accessToken?: AccessToken;
+  panelId: number;
+  queryId: number;
   openCopyDialog: boolean;
 }
 
@@ -26,17 +26,17 @@ interface Props {
  * Interface representing component state
  */
 interface State {
-  queryCommentOptionsOpen: boolean,
-  queryCommentOptionsHasAnswers: boolean,
-  removeQueryAnswersOpen: boolean,
-  pageCommentOptionsOpen: boolean,
-  pageLive2dOptionsOpen: boolean,
-  anonymousLoginDialogOpen: boolean,
-  copyQueryDialogOpen: boolean,
-  pageData?: EditPageLegacyPageData,
-  pageId: number,
-  anonymousLoginQrCode?: string
-  anonymousLoginQrCodePrintable?: string
+  queryCommentOptionsOpen: boolean;
+  queryCommentOptionsHasAnswers: boolean;
+  removeQueryAnswersOpen: boolean;
+  pageCommentOptionsOpen: boolean;
+  pageLive2dOptionsOpen: boolean;
+  anonymousLoginDialogOpen: boolean;
+  copyQueryDialogOpen: boolean;
+  pageData?: EditPageLegacyPageData;
+  pageId: number;
+  anonymousLoginQrCode?: string;
+  anonymousLoginQrCodePrintable?: string;
 }
 
 /**

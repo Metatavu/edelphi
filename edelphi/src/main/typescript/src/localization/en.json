@@ -135,7 +135,8 @@
         "cancelButton": "Cancel",
         "newName": "New name",
         "emailDialogTitle": "Query is being copied...",
-        "emailDialogMessage": "Query is copied in the background. You will be notified about the completion of the copy into the email you specified in your profile"
+        "emailDialogMessage": "Query is copied in the background. You will be notified about the completion of the copy into the email you specified in your profile",
+        "validationErrorDialogTitle": "Failed to copy the query"
       }
     },
     "liveView": {

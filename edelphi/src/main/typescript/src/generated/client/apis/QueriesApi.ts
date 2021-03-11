@@ -21,9 +21,6 @@ import {
     Query,
     QueryFromJSON,
     QueryToJSON,
-    QueryQuestionComment,
-    QueryQuestionCommentFromJSON,
-    QueryQuestionCommentToJSON,
 } from '../models';
 
 export interface CopyQueryRequest {
@@ -47,7 +44,7 @@ export class QueriesApi extends runtime.BaseAPI {
      * Creates copy of an query
      * Create copy of an query
      */
-    async copyQueryRaw(requestParameters: CopyQueryRequest): Promise<runtime.ApiResponse<QueryQuestionComment>> {
+    async copyQueryRaw(requestParameters: CopyQueryRequest): Promise<runtime.ApiResponse<void>> {
         if (requestParameters.panelId === null || requestParameters.panelId === undefined) {
             throw new runtime.RequiredError('panelId','Required parameter requestParameters.panelId was null or undefined when calling copyQuery.');
         }
@@ -95,16 +92,15 @@ export class QueriesApi extends runtime.BaseAPI {
             query: queryParameters,
         });
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => QueryQuestionCommentFromJSON(jsonValue));
+        return new runtime.VoidApiResponse(response);
     }
 
     /**
      * Creates copy of an query
      * Create copy of an query
      */
-    async copyQuery(requestParameters: CopyQueryRequest): Promise<QueryQuestionComment> {
-        const response = await this.copyQueryRaw(requestParameters);
-        return await response.value();
+    async copyQuery(requestParameters: CopyQueryRequest): Promise<void> {
+        await this.copyQueryRaw(requestParameters);
     }
 
     /**
