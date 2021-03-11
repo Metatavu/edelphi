@@ -144,7 +144,9 @@ export default class PanelAdminQueryCopyDialog extends React.Component<Props, St
 
     return (
       <Modal open={ true } >
-        <Modal.Header><Icon name="exclamation" color="yellow" /> { strings.panelAdmin.queryEditor.copyQueryDialog.validationErrorDialogTitle }</Modal.Header>
+        <Modal.Header>
+          <Icon name="exclamation" color="yellow" /> { strings.panelAdmin.queryEditor.copyQueryDialog.validationErrorDialogTitle }
+        </Modal.Header>
         <Modal.Content> 
           <p><b>{ validationError }</b></p>
         </Modal.Content>
