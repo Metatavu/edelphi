@@ -19,7 +19,7 @@ interface State {
 }
 
 /**
- * React component for live 2d chart
+ * React component for generic error dialog
  */
 export default class ErrorDialog extends React.Component<Props, State> {
 

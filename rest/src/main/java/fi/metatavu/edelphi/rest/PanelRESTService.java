@@ -1,11 +1,7 @@
 package fi.metatavu.edelphi.rest;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
@@ -21,6 +17,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import fi.metatavu.edelphi.batch.i18n.BatchMessages;
+import fi.metatavu.edelphi.queries.batch.CopyQueryException;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.ejb3.annotation.SecurityDomain;
 
@@ -148,6 +146,9 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Inject
   private PanelInvitationTranslator panelInvitationTranslator;
+
+  @Inject
+  private BatchMessages batchMessages;
   
   @Override
   @RolesAllowed("user")
@@ -774,6 +775,8 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   @Override
   @RolesAllowed("user")
   public Response copyQuery(Long panelId, Long queryId, Long targetPanelId, Boolean copyData, String newName) {
+    Locale locale = getLocale();
+
     Panel targetPanel = panelController.findPanelById(targetPanelId);
     if (targetPanel == null || panelController.isPanelArchived(targetPanel)) {
       return createNotFound();
@@ -792,14 +795,19 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     if (!permissionController.hasPanelAccess(sourcePanel, getLoggedUser(), DelfoiActionName.MANAGE_PANEL)) {
       return createForbidden("Forbidden");
     }
-    
+
+    List<QueryPage> expertisePages = queryController.listQueryPagesByType(query, QueryPageType.EXPERTISE);
+    if (!expertisePages.isEmpty() && !sourcePanel.getId().equals(targetPanel.getId())) {
+      return createBadRequest(batchMessages.getText(locale, "batch.copyQuery.error.cannotCopyExpertiseQuery"));
+    }
+
     List<Long> queryPageIds = queryPageController.listQueryPages(query).stream()
         .map(QueryPage::getId)
         .collect(Collectors.toList());
     
     Properties properties = new Properties();
     properties.put(CopyQueryBatchProperties.QUERY_ID, query.getId().toString());
-    properties.put(CopyQueryBatchProperties.LOCALE, getLocale().toString());
+    properties.put(CopyQueryBatchProperties.LOCALE, locale.toString());
     properties.put(CopyQueryBatchProperties.COPY_ANSWERS, copyData.toString());
     properties.put(CopyQueryBatchProperties.COPY_COMMENTS, copyData.toString());
     properties.put(CopyQueryBatchProperties.LOGGED_USER_ID, getLoggedUserId().toString());

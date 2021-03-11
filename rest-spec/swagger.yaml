@@ -175,12 +175,8 @@ paths:
           schema:
             type: string
       responses:
-        "200":
-          description: Created query question comment
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/QueryQuestionComment"
+        "201":
+          description: Accepted
         "400":
           description: Invalid request was sent to the server
           content:
