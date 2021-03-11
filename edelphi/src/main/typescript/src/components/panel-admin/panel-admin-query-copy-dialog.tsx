@@ -248,6 +248,9 @@ export default class PanelAdminQueryCopyDialog extends React.Component<Props, St
 
   /**
    * Event for visible dropdown change
+   * 
+   * @param event event
+   * @param data data
    */
   private onTargetPanelChange = (event: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
     this.setState({
@@ -257,6 +260,9 @@ export default class PanelAdminQueryCopyDialog extends React.Component<Props, St
 
   /**
    * Event for visible dropdown change
+   * 
+   * @param event event
+   * @param data data
    */
   private onDataChange = (event: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
     this.setState({
