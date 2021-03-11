@@ -151,7 +151,11 @@ export default class PanelAdminQueryCopyDialog extends React.Component<Props, St
           <p><b>{ validationError }</b></p>
         </Modal.Content>
         <Modal.Actions>
-          <Button color='green' onClick={ this.onValidationErrorDialogClose } inverted>
+          <Button
+            color="green"
+            onClick={ this.onValidationErrorDialogClose }
+            inverted
+          >
             <Icon name='checkmark' /> 
             { strings.generic.ok }
           </Button>
