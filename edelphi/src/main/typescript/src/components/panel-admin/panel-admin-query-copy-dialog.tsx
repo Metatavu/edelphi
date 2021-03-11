@@ -289,7 +289,8 @@ export default class PanelAdminQueryCopyDialog extends React.Component<Props, St
     });
 
     try {
-        await Api.getQueriesApi(accessToken).copyQuery({
+        const queriesApi = Api.getQueriesApi(accessToken);
+        await queriesApi.copyQuery({
           copyData: copyData,
           newName: name,
           panelId: panelId,
