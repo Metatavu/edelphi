@@ -113,7 +113,7 @@ public class PanelInvitationSendWriter extends TypedItemWriter<PanelInvitation> 
       String senderReplace = batchMessages.getText(locale, "batch.inviteUsers.senderReplace");
   
       if (invitationMessage == null || invitationMessage.indexOf(acceptReplace) == -1) {
-        throw new PanelInvitationException("Accept link is missing");
+        throw new PanelInvitationException(String.format("Accept link %s is missing from %s", acceptReplace, invitationMessage));
       }
       
       Panel panel = panelController.findPanelById(panelId);
