@@ -3002,7 +3002,7 @@ QueryEditorSectionEditor = Class.create(QueryEditorElementEditor, {
     this._titleContainer = this._createTextFormField('title', getLocale().getText('panelAdmin.block.query.sectionTitle'), sectionData.title, true);
     this._visibleContainer = this._createCheckBoxField('visible', getLocale().getText('panelAdmin.block.query.sectionVisibleTitle'), "1" == sectionData.visible);
     this._commentableContainer = this._createCheckBoxField('commentable', getLocale().getText('panelAdmin.block.query.sectionCommentableTitle'), "0" != sectionData.commentable);
-    this._showLiveReportsContainer = this._createCheckBoxField('showLiveReports', getLocale().getText('panelAdmin.block.query.sectionShowLiveReportsTitle'), true);
+    this._showLiveReportsContainer = this._createCheckBoxField('showLiveReports', getLocale().getText('panelAdmin.block.query.sectionShowLiveReportsTitle'), "1" == sectionData.showLiveReports);
     this._viewDiscussionsContainer = this._createCheckBoxField('viewDiscussions', getLocale().getText('panelAdmin.block.query.sectionViewDiscussionTitle'), "0" != sectionData.viewDiscussions);
 
     this.getBlockController().appendFormField(this._titleContainer);
