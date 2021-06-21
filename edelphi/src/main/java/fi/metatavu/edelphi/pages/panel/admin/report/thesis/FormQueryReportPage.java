@@ -63,7 +63,7 @@ public class FormQueryReportPage extends QueryReportPageController {
     PanelStamp panelStamp = RequestUtils.getActiveStamp(requestContext);
     
     List<FormFieldAnswerBean> beans = new ArrayList<FormFieldAnswerBean>();
-    List<QueryReply> queryReplies = queryReplyDAO.listByQueryAndStampAndArchived(queryPage.getQuerySection().getQuery(), panelStamp, Boolean.FALSE);
+    List<QueryReply> queryReplies = queryReplyDAO.listByQueryAndStampAndArchived(queryPage. getQuerySection().getQuery(), panelStamp, Boolean.FALSE);
 
     JSONObject fieldJson = null;
     for (int i = 0, l = fieldsJson.size(); i < l; i++) {
@@ -77,8 +77,7 @@ public class FormQueryReportPage extends QueryReportPageController {
       QueryField queryField = queryFieldDAO.findByQueryPageAndName(queryPage, fieldName);
       if (queryField == null) {
         throw new IllegalArgumentException("Field '" + fieldName + "' not found");
-      }
-      else {
+      } else {
         switch (fieldType) {
         case MEMO:
         case TEXT:
@@ -99,14 +98,10 @@ public class FormQueryReportPage extends QueryReportPageController {
         }
       }
     }
-    Collections.sort(beans, new Comparator<FormFieldAnswerBean>() {
-      @Override
-      public int compare(FormFieldAnswerBean o1, FormFieldAnswerBean o2) {
-        return o1.getReplyId() == null || o2.getReplyId() == null || o1.getReplyId().equals(o2.getReplyId())
-            ? o1.getFieldIndex().compareTo(o2.getFieldIndex())
-            : o1.getReplyId().compareTo(o2.getReplyId());
-      }
-    });
+
+    Collections.sort(beans, Comparator.comparing(FormFieldAnswerBean::getFieldIndex)
+      .thenComparing((o1, o2) -> o1.getReplyId() == o2.getReplyId() ? 0 : o1.getReplyId() == null ? -1 : o2.getReplyId() == null ? 1 : o1.getReplyId().compareTo(o2.getReplyId()))
+    );
 
     return new FormQueryReportPageData(queryPage, "/jsp/blocks/panel_admin_report/thesis_form.jsp", beans);
   }
@@ -159,14 +154,11 @@ public class FormQueryReportPage extends QueryReportPageController {
         }
       }
     }
-    Collections.sort(fieldBeans, new Comparator<FormFieldAnswerBean>() {
-      @Override
-      public int compare(FormFieldAnswerBean o1, FormFieldAnswerBean o2) {
-        return o1.getReplyId() == null || o2.getReplyId() == null || o1.getReplyId().equals(o2.getReplyId())
-            ? o1.getFieldIndex().compareTo(o2.getFieldIndex())
-            : o1.getReplyId().compareTo(o2.getReplyId());
-      }
-    });
+
+    Collections.sort(fieldBeans, Comparator.comparing(FormFieldAnswerBean::getFieldIndex)
+      .thenComparing((o1, o2) -> o1.getReplyId() == o2.getReplyId() ? 0 : o1.getReplyId() == null ? -1 : o2.getReplyId() == null ? 1 : o1.getReplyId().compareTo(o2.getReplyId()))
+    );
+
     reportPage.addFields(fieldBeans);
 
     return reportPage;

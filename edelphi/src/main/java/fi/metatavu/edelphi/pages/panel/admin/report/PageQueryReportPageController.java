@@ -3,6 +3,8 @@ package fi.metatavu.edelphi.pages.panel.admin.report;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
@@ -32,6 +34,8 @@ import fi.metatavu.edelphi.utils.SystemUtils;
  * Single query page report for export purposes. 
  */
 public class PageQueryReportPageController extends PanelPageController {
+
+  private static Logger logger = Logger.getLogger(PageQueryReportPageController.class.getName());
   
   public PageQueryReportPageController() {
   }
@@ -43,20 +47,26 @@ public class PageQueryReportPageController extends PanelPageController {
 
   @Override
   public void processPageRequest(PageRequestContext pageRequestContext) {
+    logger.info("Exporting query report page");
+
     QueryPageDAO queryPageDAO = new QueryPageDAO();
     Locale locale = pageRequestContext.getRequest().getLocale();
-    
+
     String internalAuthorization = AuthUtils.getInternalAuthorization(pageRequestContext.getRequest());
     if (StringUtils.isBlank(internalAuthorization)) {
+      logger.warning("Failed to export report page: Unauthorized");
       throw new AccessDeniedException(locale);
     }
-    
+
     if (!internalAuthorization.equals(SystemUtils.getSettingValue("system.internalAuthorizationHash"))) {
+      logger.warning("Failed to export report page: Forbidden");
       throw new AccessDeniedException(locale);
     }
     
     Long pageId = pageRequestContext.getLong("pageId");
     ReportChartFormat chartFormat = ReportChartFormat.valueOf(pageRequestContext.getString("chartFormat"));
+
+    logger.info(String.format("Export query report page in using following settings: pageId: %d, locale %s, chartFormat: %s", pageId, locale, chartFormat));
 
     ReportContext reportContext = null;
     String serializedContext = pageRequestContext.getString("serializedContext");
@@ -67,8 +77,7 @@ public class PageQueryReportPageController extends PanelPageController {
       reportContext = om.readValue(stringifiedData, ReportContext.class); 
     }
     catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      logger.log(Level.SEVERE, "Failed to deserialize serialized context", e);
     }
     
     QueryPage queryPage = queryPageDAO.findById(pageId);
