@@ -71,7 +71,6 @@ public class LegacyReportPageHtmlProvider extends AbstractReportPageHtmlProvider
 
       URL url = new URL(baseURL + "/panel/admin/report/page.page?chartFormat=PNG&pageId=" + queryPage.getId() + "&panelId=" + panelStamp.getPanel().getId() + "&serializedContext=" + serializedContext);
       logger.info(String.format("Downloading legacy report from %s", url.toExternalForm()));
-      logger.info(String.format("Using InternalAuthorization %s", internalAuthorizationHash));
 
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
       connection.setInstanceFollowRedirects(true);
