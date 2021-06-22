@@ -13,7 +13,8 @@ services:
       MYSQL_USER: edelphi      
       MYSQL_PASSWORD: password
   edelphi:
-    build: .    
+    hostname: ${HOST}
+    build: .
     ports:
       - 8080:8080
     depends_on:
