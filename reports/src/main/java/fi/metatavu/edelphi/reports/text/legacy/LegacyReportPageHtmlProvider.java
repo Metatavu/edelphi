@@ -12,6 +12,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -67,8 +68,10 @@ public class LegacyReportPageHtmlProvider extends AbstractReportPageHtmlProvider
       String serializedContext = getSerializedContext(exportContext);
       
       String internalAuthorizationHash = settingsController.getInternalAuthorizationHash();
-  
+
       URL url = new URL(baseURL + "/panel/admin/report/page.page?chartFormat=PNG&pageId=" + queryPage.getId() + "&panelId=" + panelStamp.getPanel().getId() + "&serializedContext=" + serializedContext);
+      logger.info(String.format("Downloading legacy report from %s", url.toExternalForm()));
+
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
       connection.setInstanceFollowRedirects(true);
       connection.setRequestProperty("Authorization", "InternalAuthorization " + internalAuthorizationHash);
