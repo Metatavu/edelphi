@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -90,8 +91,16 @@ public class PanelInvitationDAO extends GenericDAO<PanelInvitation> {
 
     return getSingleResult(entityManager.createQuery(criteria)); 
   }
-  
-  public List<PanelInvitation> listByPanel(Panel panel) {
+
+  /**
+   * Lists invitations by panel
+   *
+   * @param panel panel
+   * @param firstResult first result
+   * @param maxResults max results
+   * @return invitations
+   */
+  public List<PanelInvitation> listByPanel(Panel panel, Integer firstResult, Integer maxResults) {
     EntityManager entityManager = getEntityManager();
 
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -105,7 +114,17 @@ public class PanelInvitationDAO extends GenericDAO<PanelInvitation> {
       )
     );
 
-    return entityManager.createQuery(criteria).getResultList(); 
+    TypedQuery<PanelInvitation> query = entityManager.createQuery(criteria);
+
+    if (firstResult != null) {
+      query.setFirstResult(firstResult);
+    }
+
+    if (maxResults != null) {
+      query.setMaxResults(maxResults);
+    }
+
+    return query.getResultList();
   }
   
   public List<PanelInvitation> listByEmailAndState(String email, PanelInvitationState state) {

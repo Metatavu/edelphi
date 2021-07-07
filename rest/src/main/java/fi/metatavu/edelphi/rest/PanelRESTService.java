@@ -18,6 +18,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import fi.metatavu.edelphi.batch.i18n.BatchMessages;
+import fi.metatavu.edelphi.domainmodel.panels.PanelInvitation;
 import fi.metatavu.edelphi.queries.batch.CopyQueryException;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.ejb3.annotation.SecurityDomain;
@@ -1036,8 +1037,18 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
       return createForbidden("Forbidden");
     }
-    
-    return createOk(panelController.listPanelInvitations(panel).stream().map(this.panelInvitationTranslator::translate).collect(Collectors.toList()));
+
+    if (firstResult == null) {
+      firstResult = 0;
+    }
+
+    if (maxResults == null) {
+      maxResults = 10;
+    }
+
+    List<PanelInvitation> panelInvitations = panelController.listPanelInvitations(panel, firstResult, maxResults);
+
+    return createOk(panelInvitations.stream().map(this.panelInvitationTranslator::translate).collect(Collectors.toList()));
   }
   
   /**

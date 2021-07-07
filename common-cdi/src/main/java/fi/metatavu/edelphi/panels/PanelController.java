@@ -209,10 +209,12 @@ public class PanelController {
    * Returns list of panel invitations
    * 
    * @param panel panel
+   * @param firstResult first result
+   * @param maxResults max results
    * @return list of panel invitations
    */
-  public List<PanelInvitation> listPanelInvitations(Panel panel) {
-    return panelInvitationDAO.listByPanel(panel);
+  public List<PanelInvitation> listPanelInvitations(Panel panel, Integer firstResult, Integer maxResults) {
+    return panelInvitationDAO.listByPanel(panel, firstResult, maxResults);
   }
 
   /**

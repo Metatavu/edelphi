@@ -33,6 +33,8 @@ export interface CreatePanelInvitationRequestRequest {
 
 export interface ListPanelInvitationsRequest {
     panelId: number;
+    firstResult?: number;
+    maxResults?: number;
 }
 
 /**
@@ -92,6 +94,14 @@ export class PanelInvitationsApi extends runtime.BaseAPI {
         }
 
         const queryParameters: runtime.HTTPQuery = {};
+
+        if (requestParameters.firstResult !== undefined) {
+            queryParameters['firstResult'] = requestParameters.firstResult;
+        }
+
+        if (requestParameters.maxResults !== undefined) {
+            queryParameters['maxResults'] = requestParameters.maxResults;
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 

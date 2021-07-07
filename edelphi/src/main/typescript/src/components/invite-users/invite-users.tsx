@@ -81,10 +81,23 @@ export default class InviteUsers extends React.Component<Props, State> {
       loading: true
     });
     
-    const panel = await Api.getPanelsApi(token).findPanel({ panelId: panelId });
-    const queries = await Api.getQueriesApi(token).listQueries({ panelId: panelId });
-    const panelInvitations = await Api.getPanelInvitationsApi(token).listPanelInvitations({ panelId: panelId });
-    const loggedUser = await Api.getUsersApi(token).findUser({ userId: userId });
+    const panel = await Api.getPanelsApi(token).findPanel({ 
+      panelId: panelId
+    });
+
+    const queries = await Api.getQueriesApi(token).listQueries({ 
+      panelId: panelId 
+    });
+
+    const panelInvitations = await Api.getPanelInvitationsApi(token).listPanelInvitations({ 
+      panelId: panelId,
+      firstResult: 0,
+      maxResults: 10
+    });
+
+    const loggedUser = await Api.getUsersApi(token).findUser({ 
+      userId: userId 
+    });
 
     this.setState({
       loading: false,
