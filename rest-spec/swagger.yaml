@@ -1240,6 +1240,11 @@ paths:
           schema:
             type: integer
             format: int64
+        - name: state
+          in: query
+          description: Filter results by invitation state
+          schema:
+            $ref: '#/components/schemas/PanelInvitationState'
         - name: firstResult
           in: query
           description: First result. Defaults to 0
