@@ -1901,6 +1901,16 @@
             "format" : "int64"
           }
         }, {
+          "name" : "state",
+          "in" : "query",
+          "description" : "Filter results by invitation state",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/PanelInvitationState"
+          }
+        }, {
           "name" : "firstResult",
           "in" : "query",
           "description" : "First result. Defaults to 0",
