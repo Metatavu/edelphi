@@ -15,7 +15,7 @@ import javax.validation.Valid;
 
 @Path("/panels")
 @Api(description = "the panels API")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2020-10-11T17:13:34.345+03:00[Europe/Helsinki]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2021-07-07T08:04:41.772+03:00[Europe/Helsinki]")
 public interface PanelsApi {
 
     @POST
@@ -24,7 +24,7 @@ public interface PanelsApi {
     @ApiOperation(value = "Create copy of an query", notes = "Creates copy of an query", authorizations = {
         @Authorization(value = "bearer")    }, tags={ "Queries" })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "Created query question comment", response = QueryQuestionComment.class),
+        @ApiResponse(code = 201, message = "Accepted", response = Void.class),
         @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class),
         @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class),
         @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class) })
@@ -196,7 +196,7 @@ public interface PanelsApi {
         @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class, responseContainer = "List"),
         @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class, responseContainer = "List"),
         @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class, responseContainer = "List") })
-    Response listPanelInvitations(@PathParam("panelId")  Long panelId);
+    Response listPanelInvitations(@PathParam("panelId")  Long panelId,@QueryParam("firstResult")     Integer firstResult,@QueryParam("maxResults")     Integer maxResults);
     @GET
     @Path("/")
     @Produces({ "application/json" })
