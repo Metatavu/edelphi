@@ -1240,6 +1240,16 @@ paths:
           schema:
             type: integer
             format: int64
+        - name: firstResult
+          in: query
+          description: First result. Defaults to 0
+          schema:
+            type: integer
+        - name: maxResults
+          in: query
+          description: Max results. Defaults to 10
+          schema:
+            type: integer
       responses:
         "200":
           description: List of panel invitations

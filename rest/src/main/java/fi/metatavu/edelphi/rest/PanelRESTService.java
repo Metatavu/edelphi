@@ -1026,7 +1026,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Override
   @RolesAllowed("user") 
-  public Response listPanelInvitations(Long panelId) {
+  public Response listPanelInvitations(Long panelId, Integer firstResult, Integer maxResults) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
