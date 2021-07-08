@@ -15,7 +15,7 @@ import javax.validation.Valid;
 
 @Path("/panels")
 @Api(description = "the panels API")
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2021-07-07T09:10:40.495+03:00[Europe/Helsinki]")
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJAXRSSpecServerCodegen", date = "2021-07-08T19:02:13.489+03:00[Europe/Helsinki]")
 public interface PanelsApi {
 
     @POST
@@ -196,7 +196,7 @@ public interface PanelsApi {
         @ApiResponse(code = 400, message = "Invalid request was sent to the server", response = ErrorResponse.class, responseContainer = "List"),
         @ApiResponse(code = 403, message = "Attempted to make a call with unauthorized client", response = ErrorResponse.class, responseContainer = "List"),
         @ApiResponse(code = 500, message = "Internal server error", response = ErrorResponse.class, responseContainer = "List") })
-    Response listPanelInvitations(@PathParam("panelId")  Long panelId,@QueryParam("state")     PanelInvitationState state,@QueryParam("firstResult")     Integer firstResult,@QueryParam("maxResults")     Integer maxResults);
+    Response listPanelInvitations(@PathParam("panelId")  Long panelId,@QueryParam("state") @NotNull     PanelInvitationState state,@QueryParam("firstResult")     Integer firstResult,@QueryParam("maxResults")     Integer maxResults);
     @GET
     @Path("/")
     @Produces({ "application/json" })

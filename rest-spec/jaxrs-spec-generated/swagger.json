@@ -1904,7 +1904,7 @@
           "name" : "state",
           "in" : "query",
           "description" : "Filter results by invitation state",
-          "required" : false,
+          "required" : true,
           "style" : "form",
           "explode" : true,
           "schema" : {
@@ -1934,6 +1934,17 @@
         "responses" : {
           "200" : {
             "description" : "List of panel invitations",
+            "headers" : {
+              "X-Total-Count" : {
+                "description" : "Total count of invitations with given filters.",
+                "style" : "simple",
+                "explode" : false,
+                "schema" : {
+                  "type" : "integer",
+                  "format" : "int64"
+                }
+              }
+            },
             "content" : {
               "application/json" : {
                 "schema" : {
