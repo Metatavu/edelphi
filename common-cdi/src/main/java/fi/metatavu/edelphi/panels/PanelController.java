@@ -209,12 +209,24 @@ public class PanelController {
    * Returns list of panel invitations
    * 
    * @param panel panel
+   * @param state state
    * @param firstResult first result
    * @param maxResults max results
    * @return list of panel invitations
    */
-  public List<PanelInvitation> listPanelInvitations(Panel panel, Integer firstResult, Integer maxResults) {
-    return panelInvitationDAO.listByPanel(panel, firstResult, maxResults);
+  public List<PanelInvitation> listPanelInvitations(Panel panel, PanelInvitationState state, Integer firstResult, Integer maxResults) {
+    return panelInvitationDAO.listByPanelAndState(panel, state, firstResult, maxResults);
+  }
+
+  /**
+   * Counts panel invitations
+   *
+   * @param panel panel
+   * @param state state
+   * @return count of panel invitations
+   */
+  public Long countPanelInvitations(Panel panel, PanelInvitationState state) {
+    return panelInvitationDAO.countByPanelAndState(panel, state);
   }
 
   /**

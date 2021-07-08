@@ -20,6 +20,8 @@ import javax.ws.rs.core.Response.Status;
 import fi.metatavu.edelphi.batch.i18n.BatchMessages;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitation;
 import fi.metatavu.edelphi.queries.batch.CopyQueryException;
+import fi.metatavu.edelphi.rest.model.*;
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.ejb3.annotation.SecurityDomain;
 
@@ -49,11 +51,6 @@ import fi.metatavu.edelphi.queries.QuerySectionController;
 import fi.metatavu.edelphi.queries.batch.CopyQueryBatchProperties;
 import fi.metatavu.edelphi.resources.ResourceController;
 import fi.metatavu.edelphi.rest.api.PanelsApi;
-import fi.metatavu.edelphi.rest.model.PanelInvitationRequest;
-import fi.metatavu.edelphi.rest.model.QueryPageLive2DAnswersVisibleOption;
-import fi.metatavu.edelphi.rest.model.QueryPageLive2DOptions;
-import fi.metatavu.edelphi.rest.model.QueryQuestionComment;
-import fi.metatavu.edelphi.rest.model.QueryQuestionCommentCategory;
 import fi.metatavu.edelphi.rest.mqtt.QueryQuestionAnswerNotification;
 import fi.metatavu.edelphi.rest.mqtt.QueryQuestionCommentNotification;
 import fi.metatavu.edelphi.rest.translate.PanelExpertiseClassTranslator;
@@ -1027,7 +1024,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Override
   @RolesAllowed("user") 
-  public Response listPanelInvitations(Long panelId, Integer firstResult, Integer maxResults) {
+  public Response listPanelInvitations(Long panelId, PanelInvitationState state, Integer firstResult, Integer maxResults) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
@@ -1046,9 +1043,20 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       maxResults = 10;
     }
 
-    List<PanelInvitation> panelInvitations = panelController.listPanelInvitations(panel, firstResult, maxResults);
+    fi.metatavu.edelphi.domainmodel.panels.PanelInvitationState invitationState = null;
+    if (state != null) {
+      invitationState = EnumUtils.getEnum(fi.metatavu.edelphi.domainmodel.panels.PanelInvitationState.class, state.name());
+      if (invitationState == null) {
+        return createBadRequest("Invalid state parameter value");
+      }
+    } else {
+      return createBadRequest("Invalid state parameter is required");
+    }
 
-    return createOk(panelInvitations.stream().map(this.panelInvitationTranslator::translate).collect(Collectors.toList()));
+    List<PanelInvitation> panelInvitations = panelController.listPanelInvitations(panel, invitationState, firstResult, maxResults);
+    Long invitationCount = panelController.countPanelInvitations(panel, invitationState);
+
+    return createOk(panelInvitations.stream().map(this.panelInvitationTranslator::translate).collect(Collectors.toList()), invitationCount);
   }
   
   /**

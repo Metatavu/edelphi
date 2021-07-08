@@ -1241,6 +1241,7 @@ paths:
             type: integer
             format: int64
         - name: state
+          required: true
           in: query
           description: Filter results by invitation state
           schema:
@@ -1264,6 +1265,12 @@ paths:
                 type: array
                 items: 
                   $ref: "#/components/schemas/PanelInvitation"
+          headers:
+            X-Total-Count:
+              schema:
+                type: integer
+                format: int64
+              description: Total count of invitations with given filters.
         "400":
           description: Invalid request was sent to the server
           content:

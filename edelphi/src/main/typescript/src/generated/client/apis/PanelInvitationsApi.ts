@@ -24,6 +24,9 @@ import {
     PanelInvitationRequest,
     PanelInvitationRequestFromJSON,
     PanelInvitationRequestToJSON,
+    PanelInvitationState,
+    PanelInvitationStateFromJSON,
+    PanelInvitationStateToJSON,
 } from '../models';
 
 export interface CreatePanelInvitationRequestRequest {
@@ -33,6 +36,7 @@ export interface CreatePanelInvitationRequestRequest {
 
 export interface ListPanelInvitationsRequest {
     panelId: number;
+    state: PanelInvitationState;
     firstResult?: number;
     maxResults?: number;
 }
@@ -93,7 +97,15 @@ export class PanelInvitationsApi extends runtime.BaseAPI {
             throw new runtime.RequiredError('panelId','Required parameter requestParameters.panelId was null or undefined when calling listPanelInvitations.');
         }
 
+        if (requestParameters.state === null || requestParameters.state === undefined) {
+            throw new runtime.RequiredError('state','Required parameter requestParameters.state was null or undefined when calling listPanelInvitations.');
+        }
+
         const queryParameters: runtime.HTTPQuery = {};
+
+        if (requestParameters.state !== undefined) {
+            queryParameters['state'] = requestParameters.state;
+        }
 
         if (requestParameters.firstResult !== undefined) {
             queryParameters['firstResult'] = requestParameters.firstResult;

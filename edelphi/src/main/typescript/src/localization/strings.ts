@@ -211,7 +211,7 @@ export interface IStrings extends LocalizedStringsMethods {
         title: string;
         addedByManagerLabel: string;
         addedDateTimeLabel: string;
-        resendInvitationToAll: string;
+        resendInvitationToAllInPage: string;
         resendInvitationToUser: string;
 
         lists: {
