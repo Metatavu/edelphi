@@ -55,6 +55,7 @@ interface State {
   password: string;
   message?: string;
   containsAcceptLink: boolean;
+  windowWidth: number;
 }
 
 /**
@@ -86,7 +87,8 @@ export default class InviteUsers extends React.Component<Props, State> {
       skipInvitation: false,
       invitationTarget: 0,
       password: (Math.random() + 0.1).toString(36).slice(2).substring(0, 8),
-      containsAcceptLink: true
+      containsAcceptLink: true,
+      windowWidth: window.outerWidth
     };
   }
 
@@ -127,12 +129,15 @@ export default class InviteUsers extends React.Component<Props, State> {
       panel: panel,
       queries: queries,
       invitationMap: invitationMap,
-      loggedUser: loggedUser
+      loggedUser: loggedUser,
+      windowWidth: window.outerWidth
     });
 
     this.timer = setInterval(() => {
       this.updateInvitations();
     }, 1000 * 30);
+
+    window.addEventListener("resize", this.onWindowResize);
   }
 
   /**
@@ -142,6 +147,8 @@ export default class InviteUsers extends React.Component<Props, State> {
     if (this.timer) {
       clearInterval(this.timer);
     }
+    
+    window.removeEventListener("resize", this.onWindowResize);
   }
 
   /** 
@@ -344,17 +351,14 @@ export default class InviteUsers extends React.Component<Props, State> {
   private renderUsersListPagination = (invitationState: PanelInvitationState) => {
     const { invitationMap } = this.state;
     const invitations = invitationMap[invitationState];
-    
+    const siblingRange = this.getPaginationSiblingRange();
+
     return (
       <Pagination
-        firstItem={ true }
-        lastItem={ true }
-        ellipsisItem={ true }
-        nextItem={ true }
-        prevItem={ true }
+        siblingRange={ siblingRange }
         activePage={ invitations.page + 1 }
         totalPages={ invitations.pageCount }
-        boundaryRange={ 5 }
+        boundaryRange={ 0 }
         size="mini"
         onPageChange={ async (event, data ) => {
           this.setState({
@@ -522,6 +526,18 @@ export default class InviteUsers extends React.Component<Props, State> {
        </Button>
       </div>
     );
+  }
+
+  /**
+   * Returns sibling range for pagination component based on the window size
+   * 
+   * @returns sibling range for pagination
+   */
+  private getPaginationSiblingRange = () => {
+    const { windowWidth } = this.state;
+    const min = 1;
+    const max = 5;
+    return Math.max(min, max, Math.min(max - Math.ceil((1440 - windowWidth) / 180)));
   }
 
   /**
@@ -832,6 +848,15 @@ export default class InviteUsers extends React.Component<Props, State> {
       loading: false,
       inviteEmails: []
     })
+  }
+
+  /**
+   * Event handler for window resize
+   */
+  private onWindowResize = () => {
+    this.setState({
+      windowWidth: window.outerWidth
+    });
   }
 
 }
