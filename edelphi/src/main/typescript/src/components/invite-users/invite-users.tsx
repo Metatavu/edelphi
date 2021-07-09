@@ -351,7 +351,7 @@ export default class InviteUsers extends React.Component<Props, State> {
   private renderUsersListPagination = (invitationState: PanelInvitationState) => {
     const { invitationMap } = this.state;
     const invitations = invitationMap[invitationState];
-    const siblingRange = this.getPaginationSiblingRange();
+    const siblingRange = this.getPaginationSiblingRange(invitations.page);
 
     return (
       <Pagination
@@ -531,13 +531,15 @@ export default class InviteUsers extends React.Component<Props, State> {
   /**
    * Returns sibling range for pagination component based on the window size
    * 
+   * @param page current page
    * @returns sibling range for pagination
    */
-  private getPaginationSiblingRange = () => {
+  private getPaginationSiblingRange = (page: number) => {
     const { windowWidth } = this.state;
     const min = 1;
     const max = 5;
-    return Math.max(min, max, Math.min(max - Math.ceil((1440 - windowWidth) / 180)));
+    const correction = (page < 90 ? 0 : 2);
+    return Math.max(min, max, Math.min(max - Math.ceil((1440 - windowWidth) / 180) - correction));
   }
 
   /**
