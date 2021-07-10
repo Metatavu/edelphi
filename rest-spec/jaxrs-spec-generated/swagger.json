@@ -264,15 +264,8 @@
           }
         } ],
         "responses" : {
-          "200" : {
-            "description" : "Created query question comment",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/QueryQuestionComment"
-                }
-              }
-            }
+          "201" : {
+            "description" : "Accepted"
           },
           "400" : {
             "description" : "Invalid request was sent to the server",
@@ -1907,10 +1900,51 @@
             "type" : "integer",
             "format" : "int64"
           }
+        }, {
+          "name" : "state",
+          "in" : "query",
+          "description" : "Filter results by invitation state",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "$ref" : "#/components/schemas/PanelInvitationState"
+          }
+        }, {
+          "name" : "firstResult",
+          "in" : "query",
+          "description" : "First result. Defaults to 0",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "name" : "maxResults",
+          "in" : "query",
+          "description" : "Max results. Defaults to 10",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer"
+          }
         } ],
         "responses" : {
           "200" : {
             "description" : "List of panel invitations",
+            "headers" : {
+              "X-Total-Count" : {
+                "description" : "Total count of invitations with given filters.",
+                "style" : "simple",
+                "explode" : false,
+                "schema" : {
+                  "type" : "integer",
+                  "format" : "int64"
+                }
+              }
+            },
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -2731,7 +2765,7 @@
         }
       },
       "PanelInvitation" : {
-        "required" : [ "comment", "state" ],
+        "required" : [ "email", "state" ],
         "type" : "object",
         "properties" : {
           "id" : {

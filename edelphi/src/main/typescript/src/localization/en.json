@@ -203,7 +203,7 @@
         "title": "Invited / Added Users",
         "addedByManagerLabel": "Users Added By Manager",
         "addedDateTimeLabel": "Added",
-        "resendInvitationToAll": "Resend Invitations To All Users",
+        "resendInvitationToAllInPage": "Resend invitations to users in page",
         "resendInvitationToUser": "Resend Invitation",
 
         "lists": {

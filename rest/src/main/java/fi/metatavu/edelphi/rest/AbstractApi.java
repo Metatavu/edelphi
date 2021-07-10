@@ -178,7 +178,7 @@ public abstract class AbstractApi {
     return Response
       .status(Response.Status.OK)
       .entity(entity)
-      .header("Total-Results", totalHits)
+      .header("X-Total-Count", totalHits)
       .build();
   }
   

@@ -203,7 +203,7 @@
         "title": "Kutsutut / liitetyt käyttäjät",
         "addedByManagerLabel": "Managerin liittämät käyttäjät",
         "addedDateTimeLabel": "Liitetty",
-        "resendInvitationToAll": "Lähetä uusi kutsu kaikille",
+        "resendInvitationToAllInPage": "Lähetä uusi kutsu sivun käyttäjille",
         "resendInvitationToUser": "Lähetä uusi kutsu",
 
         "lists": {
