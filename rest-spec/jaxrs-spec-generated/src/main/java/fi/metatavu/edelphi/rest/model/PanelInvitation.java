@@ -78,8 +78,9 @@ public class PanelInvitation   {
   }
 
   
-  @ApiModelProperty(value = "Invitation email")
+  @ApiModelProperty(required = true, value = "Invitation email")
   @JsonProperty("email")
+  @NotNull
   public String getEmail() {
     return email;
   }

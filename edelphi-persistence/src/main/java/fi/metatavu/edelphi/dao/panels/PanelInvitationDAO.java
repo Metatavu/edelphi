@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -90,8 +91,17 @@ public class PanelInvitationDAO extends GenericDAO<PanelInvitation> {
 
     return getSingleResult(entityManager.createQuery(criteria)); 
   }
-  
-  public List<PanelInvitation> listByPanel(Panel panel) {
+
+  /**
+   * Lists invitations by panel and state
+   *
+   * @param panel panel
+   * @param state state
+   * @param firstResult first result
+   * @param maxResults max results
+   * @return invitations
+   */
+  public List<PanelInvitation> listByPanelAndState(Panel panel, PanelInvitationState state, Integer firstResult, Integer maxResults) {
     EntityManager entityManager = getEntityManager();
 
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -101,11 +111,47 @@ public class PanelInvitationDAO extends GenericDAO<PanelInvitation> {
     criteria.where(
       criteriaBuilder.and(
         criteriaBuilder.equal(root.get(PanelInvitation_.panel), panel),
+        criteriaBuilder.equal(root.get(PanelInvitation_.state), state),
         criteriaBuilder.equal(root.get(PanelInvitation_.archived), Boolean.FALSE)
       )
     );
 
-    return entityManager.createQuery(criteria).getResultList(); 
+    TypedQuery<PanelInvitation> query = entityManager.createQuery(criteria);
+
+    if (firstResult != null) {
+      query.setFirstResult(firstResult);
+    }
+
+    if (maxResults != null) {
+      query.setMaxResults(maxResults);
+    }
+
+    return query.getResultList();
+  }
+
+  /**
+   * Count invitations by panel and state
+   *
+   * @param panel panel
+   * @param state state
+   * @return count of invitations
+   */
+  public Long countByPanelAndState(Panel panel, PanelInvitationState state) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
+    Root<PanelInvitation> root = criteria.from(PanelInvitation.class);
+    criteria.select(criteriaBuilder.count(root));
+    criteria.where(
+      criteriaBuilder.and(
+        criteriaBuilder.equal(root.get(PanelInvitation_.panel), panel),
+        criteriaBuilder.equal(root.get(PanelInvitation_.state), state),
+        criteriaBuilder.equal(root.get(PanelInvitation_.archived), Boolean.FALSE)
+      )
+    );
+
+    return getSingleResult(entityManager.createQuery(criteria));
   }
   
   public List<PanelInvitation> listByEmailAndState(String email, PanelInvitationState state) {

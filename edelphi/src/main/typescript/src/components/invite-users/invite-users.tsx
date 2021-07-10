@@ -3,7 +3,7 @@ import * as _ from "lodash";
 import PanelAdminLayout from "../../components/generic/panel-admin-layout";
 import { Panel, PanelInvitation, PanelInvitationState, Query, User } from "../../generated/client/models";
 import "../../styles/invitations.scss";
-import { Grid, Container, List, Button, Icon, SemanticShorthandCollection, BreadcrumbSectionProps, Input, InputOnChangeData, Label, TextArea, TextAreaProps, Select, DropdownItemProps, Checkbox, CheckboxProps, DropdownProps, Message } from "semantic-ui-react";
+import { Grid, Container, List, Button, Icon, SemanticShorthandCollection, BreadcrumbSectionProps, Input, InputOnChangeData, Label, TextArea, TextAreaProps, Select, DropdownItemProps, Checkbox, CheckboxProps, DropdownProps, Message, Pagination } from "semantic-ui-react";
 import strings from "../../localization/strings";
 import ErrorDialog from "../../components/error-dialog";
 import Api from "../../api";
@@ -22,6 +22,21 @@ interface Props {
 }
 
 /**
+ * Type for invitation list
+ */
+type InvitationList = {
+  items: PanelInvitation[],
+  page: number;
+  pageCount: number;
+  totalCount: number;
+};
+
+/**
+ * Type for state invitation list map
+ */
+type InvitationMap = { [key in PanelInvitationState ]: InvitationList };
+
+/**
  * Interface representing component state
  */
 interface State {
@@ -34,13 +49,19 @@ interface State {
   inviteEmails: string[];
   mailTemplate: string;
   queries: Query[];
-  panelInvitations: PanelInvitation[];
+  invitationMap: InvitationMap;
   skipInvitation: boolean;
   invitationTarget: number;
   password: string;
   message?: string;
   containsAcceptLink: boolean;
+  windowWidth: number;
 }
+
+/**
+ * Amount of invitations per page
+ */
+const INVITATION_PAGE_SIZE = 10;
 
 /**
  * React component for invite users
@@ -60,13 +81,14 @@ export default class InviteUsers extends React.Component<Props, State> {
       loading: false,
       queries: [],
       mailTemplate: strings.panelAdmin.inviteUsers.inviteBlock.mailTemplate,
-      panelInvitations: [],
+      invitationMap: this.emptyInvitationMap(),
       inviteEmail: "",
       inviteEmails: [],
       skipInvitation: false,
       invitationTarget: 0,
       password: (Math.random() + 0.1).toString(36).slice(2).substring(0, 8),
-      containsAcceptLink: true
+      containsAcceptLink: true,
+      windowWidth: window.outerWidth
     };
   }
 
@@ -80,23 +102,42 @@ export default class InviteUsers extends React.Component<Props, State> {
     this.setState({
       loading: true
     });
+
+    const loads: Promise<any>[] = [];
     
-    const panel = await Api.getPanelsApi(token).findPanel({ panelId: panelId });
-    const queries = await Api.getQueriesApi(token).listQueries({ panelId: panelId });
-    const panelInvitations = await Api.getPanelInvitationsApi(token).listPanelInvitations({ panelId: panelId });
-    const loggedUser = await Api.getUsersApi(token).findUser({ userId: userId });
+    loads.push(Api.getPanelsApi(token).findPanel({ 
+      panelId: panelId
+    }));
+
+    loads.push(Api.getQueriesApi(token).listQueries({ 
+      panelId: panelId 
+    }));
+
+    loads.push(Api.getUsersApi(token).findUser({ 
+      userId: userId 
+    }));
+
+    loads.push(this.loadInvitations({
+      panelId: panelId,
+      token: token
+    }));
+
+    const [ panel, queries, loggedUser, invitationMap ] = await Promise.all(loads);
 
     this.setState({
       loading: false,
       panel: panel,
       queries: queries,
-      panelInvitations: panelInvitations,
-      loggedUser: loggedUser
+      invitationMap: invitationMap,
+      loggedUser: loggedUser,
+      windowWidth: window.outerWidth
     });
 
     this.timer = setInterval(() => {
       this.updateInvitations();
     }, 1000 * 30);
+
+    window.addEventListener("resize", this.onWindowResize);
   }
 
   /**
@@ -106,6 +147,8 @@ export default class InviteUsers extends React.Component<Props, State> {
     if (this.timer) {
       clearInterval(this.timer);
     }
+    
+    window.removeEventListener("resize", this.onWindowResize);
   }
 
   /** 
@@ -266,10 +309,12 @@ export default class InviteUsers extends React.Component<Props, State> {
    * Renders users list
    */
   private renderUsersList = (invitationState: PanelInvitationState) => {
-    const invitations = this.state.panelInvitations.filter(panelInvitation => panelInvitation.state == invitationState);
+    const { invitationMap } = this.state;
+    
+    const invitations = invitationMap[invitationState];
     const listStrings = strings.panelAdmin.inviteUsers.usersListBlock.lists[invitationState];
 
-    if (invitations.length === 0) {
+    if (invitations.totalCount === 0) {
       return null;
     }
     
@@ -280,15 +325,55 @@ export default class InviteUsers extends React.Component<Props, State> {
           <span
             className="resend-all-link"
             color="blue"
-            onClick={ () => this.resendInvitations(invitations) }
+            onClick={ () => this.resendInvitations(invitations.items) }
           >
-            { strings.panelAdmin.inviteUsers.usersListBlock.resendInvitationToAll }
+            { strings.panelAdmin.inviteUsers.usersListBlock.resendInvitationToAllInPage }
           </span> 
         </h3>
         <List divided relaxed>
-          { invitations.map(this.renderUsersListInvitation) }
+          { invitations.items.map(this.renderUsersListInvitation) }
         </List>
+        <Grid>
+          <Grid.Column textAlign="center">
+            { this.renderUsersListPagination(invitationState) }
+          </Grid.Column>
+        </Grid>
       </div>
+    );
+  }
+
+  /**
+   * Renders users list pagination
+   * 
+   * @param invitationState invitation state
+   * @returns users list pagination
+   */
+  private renderUsersListPagination = (invitationState: PanelInvitationState) => {
+    const { invitationMap } = this.state;
+    const invitations = invitationMap[invitationState];
+    const siblingRange = this.getPaginationSiblingRange(invitations.page);
+
+    return (
+      <Pagination
+        siblingRange={ siblingRange }
+        activePage={ invitations.page + 1 }
+        totalPages={ invitations.pageCount }
+        boundaryRange={ 0 }
+        size="mini"
+        onPageChange={ async (event, data ) => {
+          this.setState({
+            loading: true
+          })
+
+          const updatedMap = { ...invitationMap };
+          updatedMap[invitationState] = await this.loadStateInvitations((data.activePage as number) - 1, invitationState);
+
+          this.setState({
+            invitationMap: updatedMap,
+            loading: false
+          })
+        }}
+      />
     );
   }
 
@@ -444,6 +529,20 @@ export default class InviteUsers extends React.Component<Props, State> {
   }
 
   /**
+   * Returns sibling range for pagination component based on the window size
+   * 
+   * @param page current page
+   * @returns sibling range for pagination
+   */
+  private getPaginationSiblingRange = (page: number) => {
+    const { windowWidth } = this.state;
+    const min = 1;
+    const max = 5;
+    const correction = (page < 90 ? 0 : 2);
+    return Math.max(min, max, Math.min(max - Math.ceil((1440 - windowWidth) / 180) - correction));
+  }
+
+  /**
    * Returns invitation target label
    * 
    * @param invitation invitation
@@ -484,7 +583,7 @@ export default class InviteUsers extends React.Component<Props, State> {
    * 
    * @param invitations invitations
    */
-  private resendInvitations = (invitations: PanelInvitation[]) => {
+   private resendInvitations = (invitations: PanelInvitation[]) => {
     const inviteEmails = invitations.map(invitation => invitation.email);
 
     this.setState({
@@ -496,13 +595,92 @@ export default class InviteUsers extends React.Component<Props, State> {
    * Updates invitation list
    */
   private updateInvitations = async () => {
-    const { accessToken } = this.props;
-    
-    const panelInvitations = await Api.getPanelInvitationsApi(accessToken.token).listPanelInvitations({ panelId: this.props.panelId });
+    const { accessToken, panelId } = this.props;
 
+    const updatedMap = await this.loadInvitations({
+      panelId: panelId,
+      token: accessToken.token
+    })
+    
     this.setState({
-      panelInvitations: panelInvitations
+      invitationMap: updatedMap
     });
+  }
+
+  /**
+   * Loads invitation map
+   * 
+   * @param opts options
+   * @returns invitation map
+   */
+  private loadInvitations = async (opts: { panelId: number, token: string }): Promise<InvitationMap> => {
+    const { invitationMap } = this.state;
+
+    const invitations = this.emptyInvitationMap();
+
+    await Promise.all(Object.values(PanelInvitationState).map(async state => {            
+      invitations[state] = await this.loadStateInvitations(invitationMap[state].page, state);
+    }))
+
+    return invitations;
+  }
+
+  /**
+   * Loads invitation list for a state
+   * 
+   * @param page page
+   * @param state state
+   * @returns invitation list for a state
+   */
+  private loadStateInvitations = async (page: number, state: PanelInvitationState): Promise<InvitationList> => {
+    const { accessToken, panelId } = this.props;
+    
+    const response = await Api.getPanelInvitationsApi(accessToken.token).listPanelInvitationsRaw({ 
+      panelId: panelId,
+      state: state,
+      firstResult: page * INVITATION_PAGE_SIZE,
+      maxResults: INVITATION_PAGE_SIZE
+    });
+
+    const totalCount = parseInt(response.raw.headers.get("X-Total-Count") || "0") || 0;
+
+    return {
+      page: page,
+      totalCount: totalCount,
+      pageCount: Math.ceil(totalCount / INVITATION_PAGE_SIZE),
+      items: await response.value()
+    }
+  }
+
+  /**
+   * Returns empty invitation map
+   * 
+   * @returns empty invitation map
+   */
+  private emptyInvitationMap = (): InvitationMap => {
+    return {
+      ACCEPTED: this.emptyInvitationList(),
+      ADDED: this.emptyInvitationList(),
+      BEING_SENT: this.emptyInvitationList(),
+      DECLINED: this.emptyInvitationList(),
+      IN_QUEUE: this.emptyInvitationList(),
+      PENDING: this.emptyInvitationList(),
+      SEND_FAIL: this.emptyInvitationList()
+    };
+  }
+
+  /**
+   * Returns empty invitation list
+   * 
+   * @returns empty invitation list
+   */
+  private emptyInvitationList = (): InvitationList => {
+    return {
+      items: [],
+      page: 0,
+      pageCount: 0,
+      totalCount: 0
+    };
   }
 
   /**
@@ -672,6 +850,15 @@ export default class InviteUsers extends React.Component<Props, State> {
       loading: false,
       inviteEmails: []
     })
+  }
+
+  /**
+   * Event handler for window resize
+   */
+  private onWindowResize = () => {
+    this.setState({
+      windowWidth: window.outerWidth
+    });
   }
 
 }
