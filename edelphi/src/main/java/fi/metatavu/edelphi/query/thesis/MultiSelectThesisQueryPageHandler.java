@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -110,20 +111,14 @@ public class MultiSelectThesisQueryPageHandler extends AbstractScaleThesisQueryP
           QueryPageUtils.setSetting(queryPage, queryOption.getName(), settings.get(queryOption.getName()), modifier);
       }
     }
-        
+
     if (!hasAnswers) {
       QueryOptionFieldDAO queryOptionFieldDAO = new QueryOptionFieldDAO();
       QueryOptionFieldOptionDAO queryOptionFieldOptionDAO = new QueryOptionFieldOptionDAO();
       QueryQuestionOptionAnswerDAO queryQuestionOptionAnswerDAO = new QueryQuestionOptionAnswerDAO();
   
       QueryOption optionsOption = getDefinedOption("multiselect.options");
-  
-      List<String> oldOptions = getListOptionValue(queryPage, optionsOption);
-      List<String> oldOptionValues = new ArrayList<String>();
-      for (int i = 0, l = oldOptions.size(); i < l; i++) {
-        oldOptionValues.add(String.valueOf(i));
-      }
-  
+
       // TODO: Mandarory ???
   
       Boolean mandatory = false;
@@ -136,9 +131,14 @@ public class MultiSelectThesisQueryPageHandler extends AbstractScaleThesisQueryP
       } else {
         queryField = queryOptionFieldDAO.create(queryPage, fieldName, mandatory, queryPage.getTitle());
       }
+
+      List<String> oldFieldOptions = new ArrayList(queryOptionFieldOptionDAO.listByQueryField(queryField).stream()
+        .map(QueryOptionFieldOption::getValue)
+        .collect(Collectors.toList()));
   
       int i = 0;
       List<String> options = QueryPageUtils.parseSerializedList(settings.get(optionsOption.getName()));
+
       for (String option : options) {
         String optionValue = String.valueOf(i);
   
@@ -148,13 +148,13 @@ public class MultiSelectThesisQueryPageHandler extends AbstractScaleThesisQueryP
         } else {
           queryOptionFieldOptionDAO.updateText(optionFieldOption, option);
         }
-  
-        oldOptionValues.remove(optionValue);
+
+        oldFieldOptions.remove(optionValue);
   
         i++;
       }
-  
-      for (String optionValue : oldOptionValues) {
+
+      for (String optionValue : oldFieldOptions) {
         QueryOptionFieldOption optionFieldOption = queryOptionFieldOptionDAO.findByQueryFieldAndValue(queryField, optionValue);
         if (optionFieldOption != null) {
           long answerCount = queryQuestionOptionAnswerDAO.countByQueryOptionFieldOption(optionFieldOption);
