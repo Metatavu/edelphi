@@ -40,7 +40,7 @@
       "noAnswer": "You have not answered the question",
       "live2d": {
         "statistics": {
-          "title": "Statistics",
+          "title": "Distribution of answers",
           "axisX": "X-axis",
           "axisY": "Y-axis",
           "answerCount": "Answer count",

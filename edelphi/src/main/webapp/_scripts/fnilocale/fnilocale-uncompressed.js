@@ -931,7 +931,7 @@ fni.locale.FNILocale = Class.create(
     this._locales = new Object();
     this._settings = new Object();
     this._loadedLocales = new Hash();
-    this._defaultLocale = 'en_US';
+    this._defaultLocale = 'en';
   },
   /**
    * Returns timestamp as string formatted by pattern specified in "dateFormatLong" or "dateFormatShort" setting. 
@@ -1003,7 +1003,7 @@ fni.locale.FNILocale = Class.create(
     if (localeVault) {
       var localizedText = localeVault[text];
       if (localizedText == undefined) {
-        localizedText = '[[' + text + ']]';
+        localizedText = '[[' + text + ':L' + locale + ':WV]]';
       } else {
         for (var i = 2; i < args.length; i++) {
           localizedText = localizedText.replace('\{' + (i - 2) + '\}', arguments[i]);
@@ -1012,7 +1012,7 @@ fni.locale.FNILocale = Class.create(
         
       return localizedText;  
     } else {
-      return '[[' + text + ']]';
+      return '[[' + text + ':L' + locale + ':NV]]';
     }
   },
   /**

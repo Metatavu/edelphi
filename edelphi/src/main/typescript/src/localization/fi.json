@@ -39,13 +39,13 @@
       "noAnswer": "Et ole vielä vastannut kysymykseen",
       "live2d": {
         "statistics": {
-          "title": "Tilastotietoja",
+          "title": "Vastausten jakauma",
           "axisX": "X-akseli",
           "axisY": "Y-akseli",
           "answerCount": "Vastausmäärä",
           "lowerQuartile": "Alakvartiili (Q1)",
           "median": "Mediaani (Q2)",
-          "upperQuartile": "yläkvartiili (Q3)"
+          "upperQuartile": "Yläkvartiili (Q3)"
         }
       },
       "commentEditor": {
