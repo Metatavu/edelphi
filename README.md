@@ -87,4 +87,3 @@ Wait for our team to review the changes. If our reviewers (or review systems) fi
 When pull-request has passed the review process, our team will merge it to the develop -branch and the changes will end up in the product. 
 
 In some rare cases if the code has some major issues, for example major quality issues or the change would be have other undesired effects, the pull-request can be closed without merging. 
-
