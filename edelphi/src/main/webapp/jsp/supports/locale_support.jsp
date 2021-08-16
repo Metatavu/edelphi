@@ -5,7 +5,7 @@
   <c:when test="${localeSupportIncluded != true}">    
     <jsp:include page="events_support.jsp"></jsp:include>
 
-    <script type="text/javascript" src="//cdn.metatavu.io/assets/edelphi/_scripts/fnilocale/fnilocale.js"></script>
+    <script type="text/javascript" src="//cdn.metatavu.io/assets/edelphi/_scripts/fnilocale-1.1/fnilocale-uncompressed.js"></script>
     <script type="text/javascript">
       var __LOCALE = null;
 
