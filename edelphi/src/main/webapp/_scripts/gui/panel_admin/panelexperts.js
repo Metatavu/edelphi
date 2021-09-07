@@ -58,8 +58,16 @@ PanelExpertsMatrixController = Class.create({
     });
   },
   setup: function() {
+    this._glassPane = new Element("div", { className: "modalPopupGlassPane" });
+    
+    this._glassPane.setStyle({
+      display: 'none'
+    });
+
     this.setupUsersPanel();
     this.setupMatrix();
+
+    $(document.documentElement).down("body").appendChild(this._glassPane);
   },
   setupUsersPanel: function () {
     for (var i = 0, l = this._panelUsers.length; i < l; i++) {
@@ -121,6 +129,8 @@ PanelExpertsMatrixController = Class.create({
     }
   },
   setupMatrix: function () {
+    var _this = this;
+
     var rowDiv = new Element("div", { className: "panelExpertsMatrixHeaderRow" });
     this._matrixContainer.appendChild(rowDiv);
 
@@ -168,7 +178,9 @@ PanelExpertsMatrixController = Class.create({
         rowDiv.appendChild(groupCell);
         
         Droppables.add(groupCell, {
-          onDrop: this._onDroppedName
+          onDrop: function (draggable, droparea) {
+            _this._onDroppedName(draggable, droparea);
+          }
         });
         
         var groupUsers = this._panelExpertiseGroupUsers[group.id];
@@ -182,6 +194,7 @@ PanelExpertsMatrixController = Class.create({
   },
   _onDroppedName: function (draggable, droparea) {
     var mgmt = draggable._management;
+    var _this = this;
 
     var userExists = false;
     var expertiseGroupId = droparea._expertiseGroupId;
@@ -198,6 +211,8 @@ PanelExpertsMatrixController = Class.create({
     
     if (!userExists) {
       if (draggable._panelGroupUserId) {
+        this._startSaveGroupUser();
+
         JSONUtils.request(CONTEXTPATH + '/panel/updatepanelexpertgroupuser.json', {
           parameters: {
             panelId: panelId,
@@ -229,9 +244,14 @@ PanelExpertsMatrixController = Class.create({
             
             var elem = mgmt._createUserElement(panelUserId, name, email, panelGroupUserId);
             droparea.appendChild(elem);
+          },
+          onComplete: function () {
+            _this._endSaveGroupUser();
           }
         });
       } else {
+        this._startSaveGroupUser();
+
         JSONUtils.request(CONTEXTPATH + '/panel/createpanelexpertgroupuser.json', {
           parameters: {
             panelId: panelId,
@@ -252,11 +272,27 @@ PanelExpertsMatrixController = Class.create({
             
             var elem = mgmt._createUserElement(panelUserId, name, email, panelGroupUserId);
             droparea.appendChild(elem);
+          },
+          onComplete: function () {
+            _this._endSaveGroupUser();
           }
         });
       }
     }
   },
+
+  _startSaveGroupUser: function () {
+    this._glassPane.setStyle({
+      display: 'block'
+    });
+  },
+
+  _endSaveGroupUser: function () {
+    this._glassPane.setStyle({
+      display: 'none'
+    });
+  },
+
   _createUserElement: function (panelUserId, name, email, panelGroupUserId) {
     var elem = new Element("div", { className: "panelExpertsUser" });
     var elemUsername = new Element("div", { className: "panelExpertsUserName" });
