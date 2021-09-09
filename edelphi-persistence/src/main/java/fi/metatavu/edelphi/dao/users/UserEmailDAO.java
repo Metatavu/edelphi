@@ -7,12 +7,14 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail_;
+import fi.metatavu.edelphi.domainmodel.users.User_;
 
 @ApplicationScoped
 public class UserEmailDAO extends GenericDAO<UserEmail> {
@@ -50,7 +52,15 @@ public class UserEmailDAO extends GenericDAO<UserEmail> {
     
     return entityManager.createQuery(criteria).getResultList();
   }
-  
+
+  /**
+   * Lists users using address like query
+   *
+   * @param address address
+   * @param firstResult first result
+   * @param maxResults max results
+   * @return users matching the query
+   */
   public List<User> listUsersByAddressLike(String address, Integer firstResult, Integer maxResults) {
     EntityManager entityManager = getEntityManager();
 
@@ -58,7 +68,14 @@ public class UserEmailDAO extends GenericDAO<UserEmail> {
     CriteriaQuery<User> criteria = criteriaBuilder.createQuery(User.class);
     Root<UserEmail> root = criteria.from(UserEmail.class);
     criteria.select(root.get(UserEmail_.user)).distinct(true);
-    criteria.where(criteriaBuilder.like(root.get(UserEmail_.address), address));
+    Join<UserEmail, User> userJoin = root.join(UserEmail_.user);
+
+    criteria.where(
+      criteriaBuilder.and(
+        criteriaBuilder.like(root.get(UserEmail_.address), address),
+        criteriaBuilder.isFalse(userJoin.get(User_.archived))
+      )
+    );
     
     TypedQuery<User> query = entityManager.createQuery(criteria);
     
