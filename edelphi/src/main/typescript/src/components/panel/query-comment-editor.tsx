@@ -122,7 +122,11 @@ class QueryCommentEditor extends React.Component<Props, State> {
       pageId: pageId,
       userId: accessToken.userId,
       parentId: 0,
-      categoryId: categoryId
+      categoryId: categoryId,
+      firstResult: 0,
+      // TODO: Fix this later!!!
+      maxResults: 10000,
+      oldestFirst: false
     });
 
     if (comments.length > 1) {

@@ -51,15 +51,53 @@
     <maven.javadoc.skip>true</maven.javadoc.skip>
     <edelphi-rest-spec.version>1.0.47</edelphi-rest-spec.version>
   </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <!-- RELEASE_VERSION -->
+        <version>5.1.0</version>
+        <!-- /RELEASE_VERSION -->
+        <executions>
+          <execution>
+            <id>openapi-generate-jaxrs-spec</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/../rest-spec/swagger.yaml</inputSpec>
+              <generatorName>jaxrs-spec</generatorName>
+              <configOptions>
+                <sourceFolder>src/gen/java/main</sourceFolder>'
+                <dateLibrary>java8</dateLibrary>
+                <java8>true</java8>
+                <interfaceOnly>true</interfaceOnly>
+                <groupId>fi.metatavu.edelphi</groupId>
+                <artifactId>rest-spec</artifactId>
+                <apiPackage>fi.metatavu.edelphi.rest.api</apiPackage>
+                <modelPackage>fi.metatavu.edelphi.rest.model</modelPackage>
+                <returnResponse>true</returnResponse>
+              </configOptions>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
   
   <dependencies>
-  
+
+    <!-- Swagger -->
+
     <dependency>
-      <groupId>fi.metatavu.edelphi</groupId>
-      <artifactId>edelphi-api-spec</artifactId>
-      <version>${edelphi-rest-spec.version}</version>
+      <groupId>io.swagger</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <scope>provided</scope>
+      <version>1.5.3</version>
     </dependency>
-    
+
     <!-- Batch -->
     
     <dependency>

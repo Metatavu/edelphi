@@ -74,14 +74,83 @@ public class QueryQuestionCommentController {
    * @param onlyRootComments return only root comments. 
    * @param category return only comments of specified category. Ignored if null
    * @param onlyNullCategories return only comments without category. Ignored if null
+   * @param firstResult first result
+   * @param maxResults max results
+   * @param oldestFirst sort by oldest first
    * @return a list of comments
    */
-  public List<QueryQuestionComment> listQueryQuestionComments(Panel panel, PanelStamp stamp, QueryPage queryPage, Query query, QueryQuestionComment parentComment, User user, boolean onlyRootComments, fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category, boolean onlyNullCategories) {
+  public List<QueryQuestionComment> listQueryQuestionComments(
+    Panel panel,
+    PanelStamp stamp,
+    QueryPage queryPage,
+    Query query,
+    QueryQuestionComment parentComment,
+    User user,
+    boolean onlyRootComments,
+    fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category,
+    boolean onlyNullCategories,
+    Integer firstResult,
+    Integer maxResults,
+    boolean oldestFirst
+  ) {
     if (stamp == null) {
       stamp = panel.getCurrentStamp();
     }
     
-    return queryQuestionCommentDAO.list(queryPage, stamp, query, panel.getRootFolder(), parentComment, onlyRootComments, user, category, onlyNullCategories, Boolean.FALSE);
+    return queryQuestionCommentDAO.list(
+      queryPage,
+      stamp,
+      query,
+      panel.getRootFolder(),
+      parentComment,
+      onlyRootComments,
+      user,
+      category,
+      onlyNullCategories,
+      Boolean.FALSE,
+      firstResult,
+      maxResults,
+      oldestFirst
+    );
+  }
+
+  /**
+   * Counts not archived comments by given parameters.
+   *
+   * @param panel panel. Required
+   * @param stamp filter by panel stamp. Defaults to panel's current stamp
+   * @param queryPage filter by comment's query page. Ignored if null
+   * @param query filter by query. Ignored if null
+   * @param parentComment filter by parent comment. Ignored if null
+   * @param user filter by user. Ignored if null.
+   * @param onlyRootComments return only root comments.
+   * @param category return only comments of specified category. Ignored if null
+   * @param onlyNullCategories return only comments without category. Ignored if null
+   * @return count of comments
+   */
+  public Long countQueryQuestionComments(
+    Panel panel,
+    PanelStamp stamp,
+    QueryPage queryPage,
+    Query query,
+    QueryQuestionComment parentComment,
+    User user,
+    boolean onlyRootComments,
+    fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category,
+    boolean onlyNullCategories
+  ) {
+    return queryQuestionCommentDAO.count(
+      queryPage,
+      stamp,
+      query,
+      panel.getRootFolder(),
+      parentComment,
+      onlyRootComments,
+      user,
+      category,
+      onlyNullCategories,
+      Boolean.FALSE
+    );
   }
 
   /**
