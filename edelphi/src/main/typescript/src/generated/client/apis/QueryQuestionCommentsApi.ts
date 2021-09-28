@@ -40,6 +40,9 @@ export interface FindQueryQuestionCommentRequest {
 
 export interface ListQueryQuestionCommentsRequest {
     panelId: number;
+    firstResult: number;
+    maxResults: number;
+    oldestFirst: boolean;
     queryId?: number;
     pageId?: number;
     userId?: string;
@@ -190,6 +193,18 @@ export class QueryQuestionCommentsApi extends runtime.BaseAPI {
             throw new runtime.RequiredError('panelId','Required parameter requestParameters.panelId was null or undefined when calling listQueryQuestionComments.');
         }
 
+        if (requestParameters.firstResult === null || requestParameters.firstResult === undefined) {
+            throw new runtime.RequiredError('firstResult','Required parameter requestParameters.firstResult was null or undefined when calling listQueryQuestionComments.');
+        }
+
+        if (requestParameters.maxResults === null || requestParameters.maxResults === undefined) {
+            throw new runtime.RequiredError('maxResults','Required parameter requestParameters.maxResults was null or undefined when calling listQueryQuestionComments.');
+        }
+
+        if (requestParameters.oldestFirst === null || requestParameters.oldestFirst === undefined) {
+            throw new runtime.RequiredError('oldestFirst','Required parameter requestParameters.oldestFirst was null or undefined when calling listQueryQuestionComments.');
+        }
+
         const queryParameters: runtime.HTTPQuery = {};
 
         if (requestParameters.queryId !== undefined) {
@@ -214,6 +229,18 @@ export class QueryQuestionCommentsApi extends runtime.BaseAPI {
 
         if (requestParameters.categoryId !== undefined) {
             queryParameters['categoryId'] = requestParameters.categoryId;
+        }
+
+        if (requestParameters.firstResult !== undefined) {
+            queryParameters['firstResult'] = requestParameters.firstResult;
+        }
+
+        if (requestParameters.maxResults !== undefined) {
+            queryParameters['maxResults'] = requestParameters.maxResults;
+        }
+
+        if (requestParameters.oldestFirst !== undefined) {
+            queryParameters['oldestFirst'] = requestParameters.oldestFirst;
         }
 
         const headerParameters: runtime.HTTPHeaders = {};

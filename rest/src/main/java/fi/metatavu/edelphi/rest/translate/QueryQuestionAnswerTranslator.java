@@ -30,7 +30,7 @@ public class QueryQuestionAnswerTranslator extends AbstractTranslator<QueryQuest
     String id = String.format("%d-%d", queryPageId, queryReplyId);
     
     fi.metatavu.edelphi.rest.model.QueryQuestionAnswer result = new fi.metatavu.edelphi.rest.model.QueryQuestionAnswer();
-    result.setData(createData(queryPage, data));
+    result.setData((fi.metatavu.edelphi.rest.model.QueryQuestionLive2dAnswerData) createData(queryPage, data));
     result.setId(id);
     result.setQueryPageId(queryPageId);
     result.setQueryReplyId(queryReplyId);

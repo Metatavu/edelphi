@@ -63,7 +63,9 @@ class QueryCommentList extends React.Component<Props, State> {
           parentId={ 0 } 
           pageId={ pageId } 
           panelId={ panelId } 
-          queryId={ queryId }/>
+          queryId={ queryId }
+          renderPagination
+        />
       </div>
     );
   }

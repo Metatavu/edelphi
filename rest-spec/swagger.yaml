@@ -524,6 +524,24 @@ paths:
           schema:
             type: integer
             format: int64
+        - name: firstResult
+          in: query
+          required: true
+          description: First result. Defaults to 0
+          schema:
+            type: integer
+        - name: maxResults
+          in: query
+          required: true
+          description: Max results. Defaults to 10
+          schema:
+            type: integer
+        - name: oldestFirst
+          in: query
+          required: true
+          description: Sort by older first
+          schema:
+            type: boolean
       responses:
         "200":
           description: List of query question comments
@@ -533,6 +551,12 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/QueryQuestionComment"
+          headers:
+            X-Total-Count:
+              schema:
+                type: integer
+                format: int64
+              description: Total count of comments with given filters.
         "400":
           description: Invalid request was sent to the server
           content:
@@ -1604,8 +1628,7 @@ components:
         commentOptions:
           $ref: '#/components/schemas/QueryPageCommentOptions'
         queryOptions:
-          oneOf:
-            - $ref: '#/components/schemas/QueryPageLive2DOptions'
+          $ref: '#/components/schemas/QueryPageLive2DOptions'
     
     QueryPageCommentOptions:
       type: object
@@ -1679,8 +1702,7 @@ components:
           type: integer
           format: int64
         data:
-          oneOf:
-            - $ref: '#/components/schemas/QueryQuestionLive2dAnswerData'          
+          $ref: '#/components/schemas/QueryQuestionLive2dAnswerData'
     QueryQuestionLive2dAnswerData:
       required: 
         - x

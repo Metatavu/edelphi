@@ -177,10 +177,26 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
    * @param category return only comments of specified category. Ignored if null
    * @param onlyNullCategories return only comments without category
    * @param archived filter by archived. Ignored if null
-   * 
+   * @param firstResult first result
+   * @param maxResults max results
+   * @param oldestFirst sort by oldest first
    * @return a list of comments
    */
-  public List<QueryQuestionComment> list(QueryPage queryPage, PanelStamp stamp, Query query, Folder queryParentFolder, QueryQuestionComment parentComment, boolean onlyRootComments, User user, fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category, boolean onlyNullCategories, Boolean archived) {
+  public List<QueryQuestionComment> list(
+    QueryPage queryPage,
+    PanelStamp stamp,
+    Query query,
+    Folder queryParentFolder,
+    QueryQuestionComment parentComment,
+    boolean onlyRootComments,
+    User user,
+    fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category,
+    boolean onlyNullCategories,
+    Boolean archived,
+    Integer firstResult,
+    Integer maxResults,
+    boolean oldestFirst
+  ) {
     EntityManager entityManager = getEntityManager();
 
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -238,8 +254,106 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
     criteria.select(root);
     criteria.where(criteriaBuilder.and(criterias.toArray(new Predicate[0])));
 
-    return entityManager.createQuery(criteria).getResultList();
-  }  
+    if (oldestFirst) {
+      criteria.orderBy(criteriaBuilder.asc(root.get(QueryQuestionComment_.created)));
+    } else {
+      criteria.orderBy(criteriaBuilder.desc(root.get(QueryQuestionComment_.created)));
+    }
+
+    TypedQuery<QueryQuestionComment> typedQuery = entityManager.createQuery(criteria);
+    typedQuery.setFirstResult(firstResult);
+    typedQuery.setMaxResults(maxResults);
+
+    return typedQuery.getResultList();
+  }
+
+  /**
+   * Counts comments by given parameters. All parameters are optional
+   *
+   * @param queryPage filter by comment's query page
+   * @param stamp filter by panel stamp
+   * @param query filter by query. Ignored if null
+   * @param queryParentFolder filter by query parent folder
+   * @param parentComment filter by parent comment. Ignored if null
+   * @param onlyRootComments return only root comments.
+   * @param user filter by user. Ignored if null
+   * @param category return only comments of specified category. Ignored if null
+   * @param onlyNullCategories return only comments without category
+   * @param archived filter by archived. Ignored if null
+   * @return count of comments
+   */
+  public Long count(
+    QueryPage queryPage,
+    PanelStamp stamp,
+    Query query,
+    Folder queryParentFolder,
+    QueryQuestionComment parentComment,
+    boolean onlyRootComments,
+    User user,
+    fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category,
+    boolean onlyNullCategories,
+    Boolean archived
+  ) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
+    Root<QueryQuestionComment> root = criteria.from(QueryQuestionComment.class);
+
+    Join<QueryQuestionComment, QueryPage> queryPageJoin = root.join(QueryQuestionComment_.queryPage);
+    Join<QueryPage, QuerySection> querySectionJoin = queryPageJoin.join(QueryPage_.querySection);
+    Join<QueryQuestionComment, QueryReply> queryReplyJoin = root.join(QueryQuestionComment_.queryReply);
+    Join<QuerySection, Query> queryJoin = querySectionJoin.join(QuerySection_.query);
+    Join<Query, Folder> queryFolderJoin = queryJoin.join(Query_.parentFolder);
+
+    List<Predicate> criterias = new ArrayList<>();
+
+    if (queryPage != null) {
+      criterias.add(criteriaBuilder.equal(root.get(QueryQuestionComment_.queryPage), queryPage));
+    }
+
+    if (stamp != null) {
+      criterias.add(criteriaBuilder.equal(queryReplyJoin.get(QueryReply_.stamp), stamp));
+    }
+
+    if (query != null) {
+      criterias.add(criteriaBuilder.equal(querySectionJoin.get(QuerySection_.query), query));
+    }
+
+    if (queryParentFolder != null) {
+      criterias.add(criteriaBuilder.equal(queryJoin.get(Query_.parentFolder), queryParentFolder));
+    }
+
+    if (onlyRootComments) {
+      criterias.add(criteriaBuilder.isNull(root.get(QueryQuestionComment_.parentComment)));
+    } else if (parentComment != null) {
+      criterias.add(criteriaBuilder.equal(root.get(QueryQuestionComment_.parentComment), parentComment));
+    }
+
+    if (onlyNullCategories) {
+      criterias.add(criteriaBuilder.isNull(root.get(QueryQuestionComment_.category)));
+    } else if (category != null) {
+      criterias.add(criteriaBuilder.equal(root.get(QueryQuestionComment_.category), category));
+    }
+
+    if (user != null) {
+      criterias.add(criteriaBuilder.equal(queryReplyJoin.get(QueryReply_.user), user));
+    }
+
+    if (archived != null) {
+      criterias.add(criteriaBuilder.equal(queryJoin.get(Query_.archived), archived));
+      criterias.add(criteriaBuilder.equal(queryReplyJoin.get(QueryReply_.archived), archived));
+      criterias.add(criteriaBuilder.equal(queryPageJoin.get(QueryPage_.archived), archived));
+      criterias.add(criteriaBuilder.equal(querySectionJoin.get(QuerySection_.archived), archived));
+      criterias.add(criteriaBuilder.equal(queryFolderJoin.get(Folder_.archived), archived));
+      criterias.add(criteriaBuilder.equal(root.get(QueryQuestionComment_.archived), archived));
+    }
+
+    criteria.select(criteriaBuilder.count(root));
+    criteria.where(criteriaBuilder.and(criterias.toArray(new Predicate[0])));
+
+    return getSingleResult(entityManager.createQuery(criteria));
+  }
 
   /**
    * Lists all nonarchived comments left on the given query page in the given panel stamp.

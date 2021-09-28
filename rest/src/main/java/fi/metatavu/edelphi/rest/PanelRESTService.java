@@ -10,6 +10,8 @@ import javax.batch.runtime.BatchRuntime;
 import javax.ejb.Stateful;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -150,7 +152,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   
   @Override
   @RolesAllowed("user")
-  public Response createQueryQuestionComment(QueryQuestionComment body, Long panelId) {
+  public Response createQueryQuestionComment(Long panelId, QueryQuestionComment body) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
@@ -191,7 +193,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     }
         
     String contents = body.getContents();
-    Boolean hidden = body.isisHidden();
+    Boolean hidden = body.getHidden();
     Date created = new Date(System.currentTimeMillis());
     User creator = getLoggedUser();
     Long categoryId = body.getCategoryId();
@@ -278,7 +280,18 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Override
   @RolesAllowed("user")
-  public Response listQueryQuestionComments(Long panelId, Long queryId, Long pageId, UUID userId, Long stampId, Long parentId, Long categoryId) {
+  public Response listQueryQuestionComments(
+    Long panelId,
+    @NotNull Integer firstResult,
+    @NotNull Integer maxResults,
+    @NotNull Boolean oldestFirst,
+    Long queryId,
+    Long pageId,
+    UUID userId,
+    Long stampId,
+    Long parentId,
+    Long categoryId
+  ) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
@@ -335,15 +348,40 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
         }
       }
     }
+
+    Long invitationCount = queryQuestionCommentController.countQueryQuestionComments(
+      panel,
+      stamp,
+      queryPage,
+      query,
+      parentComment,
+      user,
+      onlyRootComments,
+      category,
+      onlyNullCategories
+    );
     
-    return createOk(queryQuestionCommentController.listQueryQuestionComments(panel, stamp, queryPage, query, parentComment, user, onlyRootComments, category, onlyNullCategories).stream()
+    return createOk(queryQuestionCommentController.listQueryQuestionComments(
+      panel,
+      stamp,
+      queryPage,
+      query,
+      parentComment,
+      user,
+      onlyRootComments,
+      category,
+      onlyNullCategories,
+      firstResult,
+      maxResults,
+      oldestFirst
+    ).stream()
       .map(queryQuestionCommentTranslator::translate)
-      .collect(Collectors.toList()));
+      .collect(Collectors.toList()), invitationCount);
   }
 
   @Override
   @RolesAllowed("user")  
-  public Response updateQueryQuestionComment(QueryQuestionComment body, Long panelId, Long commentId) {
+  public Response updateQueryQuestionComment(Long panelId, Long commentId, QueryQuestionComment body) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound(String.format("Panel with id %s not found", panelId));
@@ -365,7 +403,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     }
  
     String contents = body.getContents();
-    Boolean hidden = body.isisHidden();
+    Boolean hidden = body.getHidden();
     Date modified = new Date(System.currentTimeMillis());
     User modifier = getLoggedUser();
     Long categoryId = body.getCategoryId();
@@ -518,7 +556,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Override
   @RolesAllowed("user")  
-  public Response upsertQueryQuestionAnswer(fi.metatavu.edelphi.rest.model.QueryQuestionAnswer body, Long panelId, String answerId) {
+  public Response upsertQueryQuestionAnswer(Long panelId, String answerId, fi.metatavu.edelphi.rest.model.QueryQuestionAnswer body) {
     QueryQuestionAnswer<?> answerData = queryReplyController.findQueryQuestionAnswerData(answerId);
     if (answerData == null) {
       return createNotFound();
@@ -584,7 +622,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   
   @Override
   @RolesAllowed("user")  
-  public Response updateQueryPage(fi.metatavu.edelphi.rest.model.QueryPage body, Long panelId, Long queryPageId) {
+  public Response updateQueryPage(Long panelId, Long queryPageId, fi.metatavu.edelphi.rest.model.QueryPage body) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
@@ -629,7 +667,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Override
   @RolesAllowed("user")  
-  public Response createQueryQuestionCommentCategory(QueryQuestionCommentCategory body, Long panelId) {
+  public Response createQueryQuestionCommentCategory(Long panelId, QueryQuestionCommentCategory body) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
@@ -747,7 +785,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Override
   @RolesAllowed("user") 
-  public Response updateQueryQuestionCommentCategory(QueryQuestionCommentCategory body, Long panelId, Long categoryId) {
+  public Response updateQueryQuestionCommentCategory(Long panelId, Long categoryId, QueryQuestionCommentCategory body) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
       return createNotFound();
@@ -972,7 +1010,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Override
   @RolesAllowed("user") 
-  public Response createPanelInvitationRequest(PanelInvitationRequest body, Long panelId) {
+  public Response createPanelInvitationRequest(Long panelId, PanelInvitationRequest body) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null) {
       return createNotFound();
@@ -1010,7 +1048,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     properties.put(PanelInvitationBatchProperties.PANEL_INVITATION_IDS, StringUtils.join(invitationIds, ","));
     properties.put(PanelInvitationBatchProperties.INVITATION_MESSAGE, body.getInvitationMessage());
     properties.put(PanelInvitationBatchProperties.PASSWORD, body.getPassword());
-    properties.put(PanelInvitationBatchProperties.SKIP_INVITAION, String.valueOf(body.isisSkipInvitation()));
+    properties.put(PanelInvitationBatchProperties.SKIP_INVITAION, String.valueOf(body.getSkipInvitation()));
     
     JobOperator jobOperator = BatchRuntime.getJobOperator();
     
