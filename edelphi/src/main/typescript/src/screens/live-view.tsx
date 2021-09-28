@@ -657,7 +657,11 @@ class LiveView extends React.Component<Props, State> {
         panelId: panel.id,
         queryId: queryId,
         pageId: pageId,
-        categoryId: categoryId
+        categoryId: categoryId,
+        firstResult: 0,
+      // TODO: Fix this later!!!
+        maxResults: 10000,
+        oldestFirst: false
       });
       
       const answers = await queryQuestionAnswersApi.listQueryQuestionAnswers({

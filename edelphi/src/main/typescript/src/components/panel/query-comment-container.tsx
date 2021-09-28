@@ -1,37 +1,40 @@
 import * as _ from "lodash";
 import * as React from "react";
-import * as actions from "../../actions";
 import QueryComment from "./query-comment";
-import { StoreState, QueryQuestionCommentNotification } from "../../types";
-import { connect } from "react-redux";
+import { QueryQuestionCommentNotification } from "../../types";
 import { QueryQuestionComment, QueryQuestionCommentCategory } from "../../generated/client/models";
-import { QueryQuestionCommentsApi } from "../../generated/client/apis";
-import { Loader } from "semantic-ui-react";
+import { Dimmer, Loader, Pagination, Segment } from "semantic-ui-react";
 import { mqttConnection, OnMessageCallback } from "../../mqtt";
 import Api from "../../api";
+import strings from "../../localization/strings";
 
 /**
  * Interface representing component properties
  */
 interface Props {
-  accessToken: string,
-  loggedUserId: string,
-  queryId: number,
-  panelId: number,
-  pageId: number,
-  parentId: number,
-  queryReplyId: number,
-  className: string,
-  canManageComments: boolean,
-  category: QueryQuestionCommentCategory | null,
-  onCommentsChanged?: (comments: QueryQuestionComment[]) => void
+  accessToken: string;
+  loggedUserId: string;
+  queryId: number;
+  panelId: number;
+  pageId: number;
+  parentId: number;
+  queryReplyId: number;
+  className: string;
+  canManageComments: boolean;
+  category: QueryQuestionCommentCategory | null;
+  onCommentsChanged?: (comments: QueryQuestionComment[]) => void;
+  renderPagination?: boolean;
 }
 
 /**
  * Interface representing component state
  */
 interface State {
-  comments?: QueryQuestionComment[]
+  comments?: QueryQuestionComment[];
+  activePage: number;
+  commentsPerPage: number;
+  pageCount: number;
+  loading: boolean;
 }
 
 /**
@@ -48,7 +51,12 @@ class QueryCommentContainer extends React.Component<Props, State> {
    */
   constructor(props: Props) {
     super(props);
-    this.state = { };
+    this.state = {
+      activePage: 1,
+      commentsPerPage: 10,
+      pageCount: 1,
+      loading: true
+    };
     this.queryQuestionCommentsListener = this.onQueryQuestionCommentNotification.bind(this);
   }
 
@@ -57,7 +65,7 @@ class QueryCommentContainer extends React.Component<Props, State> {
    */
   public async componentWillMount() {
     mqttConnection.subscribe("queryquestioncomments", this.queryQuestionCommentsListener);
-    await this.loadChildComments();
+    await this.loadComments();
   }
 
   /**
@@ -71,10 +79,12 @@ class QueryCommentContainer extends React.Component<Props, State> {
    * Component did update life-cycle event
   */
   public async componentDidUpdate(prevProps: Props, prevState: State) {
-    await this.loadChildComments();
+    const { onCommentsChanged } = this.props;
+    const { comments } = this.state;
 
-    if (this.props.onCommentsChanged && this.state.comments && !_.isEqual(this.state.comments, prevState.comments)) {
-      this.props.onCommentsChanged(this.state.comments);
+    if (onCommentsChanged && comments && !_.isEqual(comments, prevState.comments)) {
+      await this.loadComments();
+      onCommentsChanged(comments);
     }
   }
 
@@ -82,11 +92,17 @@ class QueryCommentContainer extends React.Component<Props, State> {
    * Render comments container
    */
   public render() {
-    const { className, accessToken, loggedUserId, category, canManageComments, queryReplyId, pageId, panelId, queryId } = this.props;
-    const { comments } = this.state;
+    const { className, accessToken, loggedUserId, category, canManageComments, queryReplyId, pageId, panelId, queryId, renderPagination } = this.props;
+    const { comments, loading } = this.state;
 
-    if (!comments || !accessToken) {
-      return <Loader/>;
+    if (!comments || !accessToken || loading) {
+      return (
+        <Segment style={{ minHeight: "200px" }}>
+          <Dimmer inverted active>
+            <Loader>{ strings.generic.loading }</Loader>
+          </Dimmer>
+        </Segment>
+      );
     }
 
     return <div className={ className }>
@@ -103,8 +119,30 @@ class QueryCommentContainer extends React.Component<Props, State> {
             panelId={ panelId} 
             queryId={ queryId }/>
         })
-      } 
+      }
+      { renderPagination && this.renderPagination() }
     </div>
+  }
+
+  /**
+   * Renders pagination
+   */
+  private renderPagination = () => {
+    const { pageCount, activePage, commentsPerPage } = this.state;
+
+    return (
+      <Pagination
+        siblingRange={ commentsPerPage }
+        activePage={ activePage }
+        totalPages={ pageCount }
+        boundaryRange={ 0 }
+        size="mini"
+        onPageChange={ async (event, data) => {
+          const activePage = data.activePage as number;
+          this.setState({ activePage: activePage }, () => this.loadComments());
+        }}
+      />
+    );
   }
 
   /**
@@ -186,24 +224,37 @@ class QueryCommentContainer extends React.Component<Props, State> {
   /**
    * Loads child comments
    */
-  private async loadChildComments() {
-    const { pageId, panelId, queryId, accessToken, parentId, category } = this.props;
+  private loadComments = async () => {
+    const { pageId, panelId, queryId, accessToken, parentId, category, renderPagination } = this.props;
+    const { commentsPerPage, activePage } = this.state;
 
-    if (!this.state.comments && accessToken) {
-      const categoryId = category ? category.id : 0;
-      
-      const comments = await Api.getQueryQuestionCommentsApi(accessToken).listQueryQuestionComments({
-        panelId: panelId,
-        queryId: queryId,
-        pageId: pageId,
-        parentId: parentId,
-        categoryId: parentId == 0 ? categoryId : undefined
-      });
-
-      this.setState({
-        comments: comments.sort(this.compareComments)
-      });
+    if (!accessToken) {
+      return;
     }
+
+    this.setState({ loading: true });
+
+    const categoryId = category ? category.id : 0;
+    
+    const response = await Api.getQueryQuestionCommentsApi(accessToken).listQueryQuestionCommentsRaw({
+      panelId: panelId,
+      queryId: queryId,
+      pageId: pageId,
+      parentId: parentId,
+      categoryId: parentId == 0 ? categoryId : undefined,
+      firstResult: renderPagination ? ((activePage - 1) * commentsPerPage) : 0,
+      maxResults: renderPagination ? commentsPerPage : 10,
+      oldestFirst: false
+    });
+
+    const totalCount = parseInt(response.raw.headers.get("X-Total-Count") || "0") || 0;
+    const comments = await response.value();
+
+    this.setState({
+      pageCount: Math.ceil(totalCount / commentsPerPage),
+      comments: comments.sort(this.compareComments),
+      loading: false
+    });
   }
 
 }
