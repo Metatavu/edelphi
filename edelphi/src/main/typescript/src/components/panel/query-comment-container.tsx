@@ -3,7 +3,7 @@ import * as React from "react";
 import QueryComment from "./query-comment";
 import { QueryQuestionCommentNotification } from "../../types";
 import { QueryQuestionComment, QueryQuestionCommentCategory } from "../../generated/client/models";
-import { Dimmer, Loader, Pagination, Segment } from "semantic-ui-react";
+import { Dimmer, Loader, Segment } from "semantic-ui-react";
 import { mqttConnection, OnMessageCallback } from "../../mqtt";
 import Api from "../../api";
 import strings from "../../localization/strings";
@@ -23,7 +23,6 @@ interface Props {
   canManageComments: boolean;
   category: QueryQuestionCommentCategory | null;
   onCommentsChanged?: (comments: QueryQuestionComment[]) => void;
-  renderPagination?: boolean;
 }
 
 /**
@@ -31,9 +30,6 @@ interface Props {
  */
 interface State {
   comments?: QueryQuestionComment[];
-  activePage: number;
-  commentsPerPage: number;
-  pageCount: number;
   loading: boolean;
 }
 
@@ -52,10 +48,7 @@ class QueryCommentContainer extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      activePage: 1,
-      commentsPerPage: 10,
-      pageCount: 1,
-      loading: true
+      loading: false
     };
     this.queryQuestionCommentsListener = this.onQueryQuestionCommentNotification.bind(this);
   }
@@ -63,7 +56,7 @@ class QueryCommentContainer extends React.Component<Props, State> {
   /**
    * Component will mount life-cycle event
    */
-  public async componentWillMount() {
+  public componentWillMount = async () => {
     mqttConnection.subscribe("queryquestioncomments", this.queryQuestionCommentsListener);
     await this.loadComments();
   }
@@ -71,7 +64,7 @@ class QueryCommentContainer extends React.Component<Props, State> {
   /**
    * Component will unmount life-cycle event
    */
-  public componentWillUnmount() {
+  public componentWillUnmount = () => {
     mqttConnection.unsubscribe("queryquestioncomments", this.queryQuestionCommentsListener);
   }
 
@@ -82,22 +75,22 @@ class QueryCommentContainer extends React.Component<Props, State> {
     const { onCommentsChanged } = this.props;
     const { comments } = this.state;
 
-    if (onCommentsChanged && comments && !_.isEqual(comments, prevState.comments)) {
-      await this.loadComments();
-      onCommentsChanged(comments);
-    }
+    // if (onCommentsChanged && comments && !_.isEqual(comments, prevState.comments)) {
+    //   await this.loadComments();
+    //   onCommentsChanged(comments);
+    // }
   }
 
   /** 
    * Render comments container
    */
-  public render() {
-    const { className, accessToken, loggedUserId, category, canManageComments, queryReplyId, pageId, panelId, queryId, renderPagination } = this.props;
+  public render = () => {
+    const { className, accessToken, loggedUserId, category, canManageComments, queryReplyId, pageId, panelId, queryId,  parentId } = this.props;
     const { comments, loading } = this.state;
 
     if (!comments || !accessToken || loading) {
       return (
-        <Segment style={{ minHeight: "200px" }}>
+        <Segment style={{ minHeight: "100px" }}>
           <Dimmer inverted active>
             <Loader>{ strings.generic.loading }</Loader>
           </Dimmer>
@@ -105,43 +98,25 @@ class QueryCommentContainer extends React.Component<Props, State> {
       );
     }
 
-    return <div className={ className }>
-      {
-        comments.map((comment) => {
-          return <QueryComment key={ comment.id } 
-            accessToken={ accessToken }
-            loggedUserId={ loggedUserId }
-            category={ category } 
-            canManageComments={ canManageComments } 
-            comment={ comment } 
-            queryReplyId={ queryReplyId }
-            pageId={ pageId } 
-            panelId={ panelId} 
-            queryId={ queryId }/>
-        })
-      }
-      { renderPagination && this.renderPagination() }
-    </div>
-  }
-
-  /**
-   * Renders pagination
-   */
-  private renderPagination = () => {
-    const { pageCount, activePage, commentsPerPage } = this.state;
-
     return (
-      <Pagination
-        siblingRange={ commentsPerPage }
-        activePage={ activePage }
-        totalPages={ pageCount }
-        boundaryRange={ 0 }
-        size="mini"
-        onPageChange={ async (event, data) => {
-          const activePage = data.activePage as number;
-          this.setState({ activePage: activePage }, () => this.loadComments());
-        }}
-      />
+      <div className={ className }>
+        {
+          comments.map(comment => {
+            return <QueryComment
+              key={ comment.id } 
+              accessToken={ accessToken }
+              loggedUserId={ loggedUserId }
+              category={ category } 
+              canManageComments={ canManageComments } 
+              comment={ comment } 
+              queryReplyId={ queryReplyId }
+              pageId={ pageId } 
+              panelId={ panelId} 
+              queryId={ queryId }
+            />
+          })
+        }
+      </div>
     );
   }
 
@@ -152,49 +127,52 @@ class QueryCommentContainer extends React.Component<Props, State> {
    */
   private async onQueryQuestionCommentNotification(message: QueryQuestionCommentNotification) {
     const { pageId, panelId, queryId, accessToken, parentId } = this.props;
+    const { comments } = this.state;
 
-    if (message.pageId != pageId || message.panelId != panelId || message.queryId != queryId) {
-      return;
-    }
+    console.log("NEW MESSAGE!!!!!!!!!!!!!");
 
-    if (!this.state.comments || !accessToken) {
-      return;
-    }
+    // if (message.pageId != pageId || message.panelId != panelId || message.queryId != queryId) {
+    //   return;
+    // }
 
-    const parentCommentId = message.parentCommentId || 0;
+    // if (!comments || !accessToken) {
+    //   return;
+    // }
 
-    if (message.type == "CREATED" && parentCommentId == parentId) {
-      const comment = await Api.getQueryQuestionCommentsApi(accessToken).findQueryQuestionComment({
-        panelId: panelId, 
-        commentId: message.commentId
-      });
+    // const parentCommentId = message.parentCommentId || 0;
 
-      this.setState({
-        comments: this.state.comments.concat([comment]).sort(this.compareComments)
-      });      
-    } else {
-      const comments = [];
+    // if (message.type == "CREATED" && parentCommentId == parentId) {
+    //   const comment = await Api.getQueryQuestionCommentsApi(accessToken).findQueryQuestionComment({
+    //     panelId: panelId, 
+    //     commentId: message.commentId
+    //   });
 
-      for (let i = 0; i < this.state.comments.length; i++) {
-        const comment = this.state.comments[i];
-        if (message.commentId == comment.id) {
-          if (message.type == "UPDATED") {
-            comments.push(await Api.getQueryQuestionCommentsApi(accessToken).findQueryQuestionComment({
-              panelId: panelId,
-              commentId: message.commentId
-            }));
-          }
-        } else {
-          if (!(message.type == "DELETED" && message.commentId == comment.id)) {
-            comments.push(comment);
-          }
-        }
-      }
+    //   this.setState({
+    //     comments: [ ...comments, comment ].sort(this.compareComments)
+    //   });      
+    // } else {
+    //   const commentList = [];
 
-      this.setState({
-        comments: comments.sort(this.compareComments)
-      });
-    }
+    //   for (let i = 0; i < comments.length; i++) {
+    //     const comment = comments[i];
+    //     if (message.commentId == comment.id) {
+    //       if (message.type == "UPDATED") {
+    //         commentList.push(await Api.getQueryQuestionCommentsApi(accessToken).findQueryQuestionComment({
+    //           panelId: panelId,
+    //           commentId: message.commentId
+    //         }));
+    //       }
+    //     } else {
+    //       if (!(message.type == "DELETED" && message.commentId == comment.id)) {
+    //         commentList.push(comment);
+    //       }
+    //     }
+    //   }
+
+    //   this.setState({
+    //     comments: commentList.sort(this.compareComments)
+    //   });
+    // }
   }
 
   /**
@@ -225,8 +203,7 @@ class QueryCommentContainer extends React.Component<Props, State> {
    * Loads child comments
    */
   private loadComments = async () => {
-    const { pageId, panelId, queryId, accessToken, parentId, category, renderPagination } = this.props;
-    const { commentsPerPage, activePage } = this.state;
+    const { pageId, panelId, queryId, accessToken, parentId, category } = this.props;
 
     if (!accessToken) {
       return;
@@ -235,26 +212,27 @@ class QueryCommentContainer extends React.Component<Props, State> {
     this.setState({ loading: true });
 
     const categoryId = category ? category.id : 0;
-    
-    const response = await Api.getQueryQuestionCommentsApi(accessToken).listQueryQuestionCommentsRaw({
-      panelId: panelId,
-      queryId: queryId,
-      pageId: pageId,
-      parentId: parentId,
-      categoryId: parentId == 0 ? categoryId : undefined,
-      firstResult: renderPagination ? ((activePage - 1) * commentsPerPage) : 0,
-      maxResults: renderPagination ? commentsPerPage : 10,
-      oldestFirst: false
-    });
+    try {
+      const response = await Api.getQueryQuestionCommentsApi(accessToken).listQueryQuestionCommentsRaw({
+        panelId: panelId,
+        queryId: queryId,
+        pageId: pageId,
+        parentId: parentId,
+        categoryId: categoryId,
+        firstResult: 0,
+        maxResults: 1000,
+        oldestFirst: false
+      });
+  
+      const comments = await response.value();
 
-    const totalCount = parseInt(response.raw.headers.get("X-Total-Count") || "0") || 0;
-    const comments = await response.value();
-
-    this.setState({
-      pageCount: Math.ceil(totalCount / commentsPerPage),
-      comments: comments.sort(this.compareComments),
-      loading: false
-    });
+      this.setState({
+        comments: comments.sort(this.compareComments),
+        loading: false
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }
 
 }

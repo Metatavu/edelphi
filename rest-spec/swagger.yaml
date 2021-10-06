@@ -1601,6 +1601,7 @@ components:
         - THESIS_MULTI_SELECT
         - THESIS_TIMELINE
         - THESIS_GROUPING
+        - THESIS_MULTIPLE_1D_SCALES
         - THESIS_MULTIPLE_2D_SCALES
         - LIVE_2D
         - COLLAGE_2D
@@ -1831,6 +1832,10 @@ components:
         contents:
           description: Comment's contents
           type: string
+        childCount:
+          description: Total child comment
+          type: integer
+          format: int32
         creatorId:
           description: Comment's creator id
           type: string

@@ -6,7 +6,8 @@
     "eDelphi": "eDelphi.org",
     "welcomeUser": "Tervetuloa {0}",
     "profileLink": "Käyttäjäprofiili",
-    "logoutLink": "Kirjaudu ulos"
+    "logoutLink": "Kirjaudu ulos",
+    "select": "Valitse"
   },
 
   "errorDialog": {
@@ -69,7 +70,13 @@
         "confirmRemoveCancel": "Peruuta",
         "confirmRemoveText": "Oletko varma, että haluat poistaa kommentin \"{0}\" sekä kaikki siihen liittyvät vastaukset?",
         "noComments": "Kysymykseen ei ole vielä jätetty kommentteja",
-        "yourComment": "Tämä on sinun kommenttisi"
+        "yourComment": "Tämä on sinun kommenttisi",
+        "selectAmount": "Kerralla näytettävien kommenttien määrä",
+        "showReplies": "Näytä vastaukset ({0})",
+        "hideReplies": "Piilota vastaukset",
+        "newCommentCount": "Uusia kommentteja ({0})",
+        "oldestFirst": "Vanhin ensin",
+        "newestFirst": "Uusin ensin"
       }
     }
   },

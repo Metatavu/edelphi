@@ -153,6 +153,35 @@ public class QueryQuestionCommentController {
     );
   }
 
+  public int countChildComments(int total, Panel panel, QueryQuestionComment parentComment) {
+
+    List<QueryQuestionComment> comments = this.listQueryQuestionComments(
+      panel,
+      null,
+      null,
+      null,
+      parentComment,
+      null,
+      false,
+      null,
+      false,
+      0,
+      1000,
+      false
+    );
+
+    int size = comments.size();
+
+    if (size > 0) {
+      total = total + size;
+      for (QueryQuestionComment comment : comments) {
+        return this.countChildComments(total, panel, comment);
+      }
+    }
+
+    return total;
+  }
+
   /**
    * Updates query question comment
    * 
