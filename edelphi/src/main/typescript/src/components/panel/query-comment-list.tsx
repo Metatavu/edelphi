@@ -2,7 +2,7 @@ import * as React from "react";
 import strings from "../../localization/strings";
 import QueryComment from "./query-comment";
 import { QueryQuestionCommentCategory, QueryQuestionComment } from "../../generated/client/models";
-import { Button, Checkbox, Dimmer, DropdownItemProps, DropdownProps, Loader, Pagination, Segment, Select } from "semantic-ui-react";
+import { Checkbox, Dimmer, DropdownItemProps, DropdownProps, Loader, Pagination, Segment, Select } from "semantic-ui-react";
 import Api from "../../api";
 import { CommentUtils } from "../../utils/comments";
 import { QueryQuestionCommentNotification } from "../../types";
@@ -34,8 +34,6 @@ interface State {
   oldestFirst: boolean;
   loading: boolean;
   comments: QueryQuestionComment[];
-  newComments: QueryQuestionComment[];
-  loadedChildCommentIds: number[];
 }
 
 /**
@@ -59,14 +57,20 @@ class QueryCommentList extends React.Component<Props, State> {
       pageCount: 1,
       oldestFirst: false,
       loading: true,
-      comments: [],
-      newComments: [],
-      loadedChildCommentIds: []
+      comments: []
     };
 
     this.queryQuestionCommentsListener = this.onQueryQuestionCommentNotification.bind(this);
-
   }
+
+  /**
+   * Dropdown amount options
+   */
+  private amountOptions: DropdownItemProps[] = [
+    { key: 10, value: 10, text: "10" },
+    { key: 25, value: 25, text: "25" },
+    { key: 50, value: 50, text: "50" },
+  ];
 
     /**
    * Component will mount life-cycle event
@@ -79,7 +83,7 @@ class QueryCommentList extends React.Component<Props, State> {
    * Component did mount life cycle handler
    */
   public componentDidMount = async () => {
-    await this.fetchComments();
+    await this.loadRootComments();
   }
 
   /**
@@ -93,31 +97,37 @@ class QueryCommentList extends React.Component<Props, State> {
    * Render edit pest view
    */
   public render = () => {
-    const { commentsPerPage, oldestFirst, newComments } = this.state;
+    const { commentsPerPage, oldestFirst } = this.state;
 
     return (
       <div className="queryCommentList">
-        <h2 className="querySubTitle queryCommentListSubTitle">{ strings.panel.query.comments.title }</h2>
-        { newComments &&
-          <Button color="blue" onClick={ this.onLoadNewCommentsClick }>
-            { strings.formatString(strings.panel.query.comments.newCommentCount, newComments.length) }
-          </Button>
-        }
-        <p> { strings.panel.query.comments.selectAmount }</p>
-        <Select
-          placeholder={ strings.generic.select }
-          onChange={ this.onDropdownChange }
-          value={ commentsPerPage }
-          options={ this.getAmountOptions() }
-        />
-        <div style={{ display: "flex" }}>
-          <p> { strings.panel.query.comments.newestFirst }</p>
-          <Checkbox
-            onChange={ this.onToggleChange }
-            toggle
-            checked={ oldestFirst }
+        <h2 className="querySubTitle queryCommentListSubTitle">
+          { strings.panel.query.comments.title }
+        </h2>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <p>{ strings.panel.query.comments.selectAmount }</p>
+          <Select
+            placeholder={ strings.generic.select }
+            onChange={ this.onDropdownChange }
+            value={ commentsPerPage }
+            options={ this.amountOptions }
+            compact
           />
-          <p> { strings.panel.query.comments.oldestFirst }</p>
+        </div>
+        <div style={{ display: "flex" }}>
+          <p style={{ marginTop: 10, marginRight: 10 }}>
+            { strings.panel.query.comments.newestFirst }
+          </p>
+          <div style={{ marginTop: 10 }}>
+            <Checkbox
+              onChange={ this.onToggleChange }
+              toggle
+              checked={ oldestFirst }
+            />
+          </div>
+          <p style={{ marginTop: 10, marginLeft: 10 }}>
+            { strings.panel.query.comments.oldestFirst }
+          </p>
         </div>
         { this.renderContent() }
         { this.renderPagination() }
@@ -149,10 +159,6 @@ class QueryCommentList extends React.Component<Props, State> {
     const rootComments = comments.filter(comment => !comment.parentId);
     const childComments = comments.filter(_comment => _comment.parentId);
 
-    console.log("ALL COMMENTS: ", comments);
-    console.log("ROOT COMMENTS: ", rootComments);
-    console.log("CHILD COMMENTS FOR ROOT COMMENTS: ", childComments);
-
     return rootComments.map(comment => (
       <QueryComment
         key={ comment.id } 
@@ -180,52 +186,38 @@ class QueryCommentList extends React.Component<Props, State> {
     const { pageCount, activePage, commentsPerPage } = this.state;
 
     return (
-      <Pagination
-        siblingRange={ commentsPerPage }
-        activePage={ activePage }
-        totalPages={ pageCount }
-        boundaryRange={ 0 }
-        size="mini"
-        onPageChange={ async (event, data) => {
-          const activePage = data.activePage as number;
-          this.setState({ activePage: activePage, loading: true }, () => this.fetchComments());
-        }}
-      />
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <Pagination
+          siblingRange={ commentsPerPage }
+          activePage={ activePage }
+          totalPages={ pageCount }
+          boundaryRange={ 0 }
+          size="mini"
+          onPageChange={ async (event, data) => {
+            const activePage = data.activePage as number;
+            this.setState({ activePage: activePage, loading: true }, () => this.loadRootComments());
+          }}
+
+        />
+      </div>
     );
   }
 
   /**
-   * Gets comment amount options
+   * Event handler for on toggle change
    */
-  private getAmountOptions = (): DropdownItemProps[] => {
-    return [
-      { key: 10, value: 10, text: "10" },
-      { key: 25, value: 25, text: "25" },
-      { key: 50, value: 50, text: "50" },
-    ];
-  }
-
-  private onLoadNewCommentsClick = async (event: React.MouseEvent<HTMLElement>) => {
-    const { comments, newComments } = this.state;
-    event.preventDefault();
-
-    console.log({
-      title: "onLoadNewCommentsClick",
-      comments,
-      newComments
-    });
-
-    this.setState({
-      comments: [ ...comments, ...newComments ],
-      newComments: []
-    });
-  }
-
   private onToggleChange = () => {
     const { oldestFirst } = this.state;
-    this.setState({ oldestFirst: !oldestFirst, loading: true }, () => this.fetchComments());
+
+    this.setState({ oldestFirst: !oldestFirst, loading: true }, () => this.loadRootComments());
   }
 
+  /**
+   * Event handler for on drop down change
+   *
+   * @param event React event
+   * @param data dropdown data
+   */
   private onDropdownChange = (event: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
     const { value } = data;
 
@@ -235,21 +227,16 @@ class QueryCommentList extends React.Component<Props, State> {
       return;
     }
 
-    this.setState({ commentsPerPage: Number(value) }, () => this.fetchComments());
+    this.setState({
+      commentsPerPage: Number(value),
+      activePage: 1
+    }, () => this.loadRootComments());
   }
 
   /**
-   * Event called when container comments array have changed
-   *
-   * @param comments comments
+   * Fetches new root comments
    */
-  private onCommentsChanged = (comments: QueryQuestionComment[]) => {
-    this.setState({
-      empty: comments.length == 0
-    });
-  }
-
-  private fetchComments = async () => {
+  private loadRootComments = async () => {
     const { pageId, panelId, queryId, accessToken, category } = this.props;
     const { commentsPerPage, activePage, oldestFirst } = this.state;
 
@@ -273,11 +260,6 @@ class QueryCommentList extends React.Component<Props, State> {
     const totalCount = parseInt(response.raw.headers.get("X-Total-Count") || "0") || 0;
     const comments = await response.value();
 
-    console.log({
-      "ROOT TOTAL COUNT": totalCount,
-      "ROOT TOTAL COMMENTS": comments
-    });
-
     this.setState({
       pageCount: Math.ceil(totalCount / commentsPerPage),
       comments: comments.sort(CommentUtils.compareComments),
@@ -286,16 +268,15 @@ class QueryCommentList extends React.Component<Props, State> {
   }
 
   /**
-   * Loads child comments
+   * Loads child comments with parent ID
+   *
+   * @param parentId parent ID
    */
   private loadComments = async (parentId: number) => {
     const { pageId, panelId, queryId, accessToken, category } = this.props;
-    const { comments, loadedChildCommentIds } = this.state;
-    const childCommentIds = [ ...loadedChildCommentIds ];
+    const { comments } = this.state;
 
-    console.log("loadComments");
-
-    if (!accessToken || loadedChildCommentIds.includes(parentId)) {
+    if (!accessToken) {
       return;
     }
 
@@ -312,12 +293,20 @@ class QueryCommentList extends React.Component<Props, State> {
         oldestFirst: false
       });
 
-      console.log("LOADED CHILD COMMENTS FROM API: ", childComments);
-      childCommentIds.push(parentId);
+      const combinedComments = [ ...comments ];
+      childComments.forEach(
+        childComment => {
+          const childIndex = combinedComments.findIndex(comment => comment.id === childComment.id);
+          if (childIndex > -1) {
+            combinedComments.splice(childIndex, 1, childComment);
+          } else {
+            combinedComments.push(childComment);
+          }
+        }
+      )
 
       this.setState({
-        comments: [ ...comments, ...childComments ],
-        loadedChildCommentIds: childCommentIds
+        comments: combinedComments
       });
     } catch (error) {
       console.error(error);
@@ -330,71 +319,112 @@ class QueryCommentList extends React.Component<Props, State> {
    * @param message message
    */
   private onQueryQuestionCommentNotification = async (message: QueryQuestionCommentNotification) => {
-    const { pageId, panelId, accessToken } = this.props;
-    const { newComments, comments } = this.state;
+    const { pageId, panelId } = this.props;
 
-    const newCommentList = [ ...newComments ];
-    const commentList = [ ...comments ];
+    if (message.pageId !== pageId || message.panelId !== panelId) {
+      return;
+    }
 
-    console.log("NEW MESSAGE TO QUERY-COMMENT-LIST!!!", message);
-    switch (message.type) {
-      case "UPDATED":
-        if (message.pageId === pageId && message.panelId ===panelId) {
-          try {
-            const updatedComment = await Api.getQueryQuestionCommentsApi(accessToken).findQueryQuestionComment({
-              panelId: panelId,
-              commentId: message.commentId
-            });
-  
-            const index = commentList.findIndex(comment => comment.id === updatedComment.id);
-  
-            if (index < 0) {
-              commentList.push(updatedComment);
-            } else {
-              commentList.splice(index, 1, updatedComment);
-            }
+    const { commentId, parentCommentId, type } = message;
 
-            this.setState({ comments: commentList });
-          } catch (error) {
-            console.error(error);
-          }
-        }
-        break;
+    switch (type) {
       case "CREATED":
-        if (message.pageId === pageId && message.panelId ===panelId) {
-          console.log(`GOT NEW MESSAGE FOR PANEL ${panelId} PAGE ${pageId}`);
-          try {
-            const newComment = await Api.getQueryQuestionCommentsApi(accessToken).findQueryQuestionComment({
-              panelId: panelId,
-              commentId: message.commentId
-            });
-
-            const index = commentList.findIndex(comment => comment.id === newComment.parentId);
-
-            if (index > -1) {
-              const parent = commentList[index];
-              commentList.splice(index, 1, { ...parent, childCount: (parent.childCount || 0) + 1 });
-            }
-
-            newCommentList.push(newComment);
-
-            this.setState({ newComments: newCommentList, comments: commentList });
-          } catch (error) {
-            console.error(error);
-          }
-        }
+        this.onCreate(commentId);
+        break;
+      case "UPDATED":
+        this.onUpdate(commentId);
         break;
       case "DELETED":
-        const index = commentList.findIndex(comment => comment.id === message.parentCommentId);
-
-        if (index > -1) {
-          const parent = commentList[index];
-          commentList.splice(index, 1, { ...parent, childCount: parent.childCount ? parent.childCount - 1 : undefined });
-        }
-
-        this.setState({ comments: commentList.filter(comment => comment.id !== message.commentId) });
+        this.onDelete(commentId, parentCommentId);
         break;
     }
+  }
+
+  /**
+   * Event handler for CREATED MQTT message
+   *
+   * @param commentId comment ID
+   */
+  private onCreate = async (commentId: number) => {
+    const { panelId, accessToken } = this.props;
+    const { comments } = this.state;
+
+    const commentList = [ ...comments ];
+
+    try {
+      const newComment = await Api.getQueryQuestionCommentsApi(accessToken).findQueryQuestionComment({
+        panelId: panelId,
+        commentId: commentId
+      });
+
+      if (newComment.parentId) {
+        const parentIndex = commentList.findIndex(comment => comment.id === newComment.parentId);
+
+        if (parentIndex > -1) {
+          const parent = commentList[parentIndex];
+          commentList.splice(parentIndex, 1, { ...parent, childCount: (parent.childCount || 0) + 1 });
+        }
+
+        this.setState({ comments: [ newComment, ...commentList ] }, () => this.loadComments(newComment.parentId!));
+
+      } else {
+        this.setState({ comments: [ newComment, ...commentList ] });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  /**
+   * Event handler for UPDATED MQTT message
+   *
+   * @param commentId comment ID
+   */
+  private onUpdate = async (commentId: number) => {
+    const { panelId, accessToken } = this.props;
+    const { comments } = this.state;
+
+    const commentList = [ ...comments ];
+    try {
+      const updatedComment = await Api.getQueryQuestionCommentsApi(accessToken).findQueryQuestionComment({
+        panelId: panelId,
+        commentId: commentId
+      });
+
+      const index = commentList.findIndex(comment => comment.id === updatedComment.id);
+
+      if (index < 0) {
+        commentList.push(updatedComment);
+      } else {
+        commentList.splice(index, 1, updatedComment);
+      }
+
+      this.setState({ comments: commentList });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  /**
+   * Handler for DELETED MQTT message
+   *
+   * @param commentId comment ID
+   * @param parentCommentId parent comment ID or null
+   */
+  private onDelete = async (commentId: number, parentCommentId: number | null) => {
+    const { comments } = this.state;
+
+    const commentList = [ ...comments ];
+    const index = commentList.findIndex(comment => comment.id === parentCommentId);
+
+    if (index > -1) {
+      const parent = commentList[index];
+      commentList.splice(index, 1, { ...parent, childCount: parent.childCount ? parent.childCount - 1 : undefined });
+    }
+
+    this.setState({ 
+      comments: commentList.filter(comment => comment.id !== commentId)
+    });
   }
 
 }
