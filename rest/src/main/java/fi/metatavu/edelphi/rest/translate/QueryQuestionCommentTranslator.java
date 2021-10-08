@@ -45,12 +45,6 @@ public class QueryQuestionCommentTranslator extends AbstractTranslator<QueryQues
       return null;
     }
 
-    int childCount = queryQuestionCommentController.countChildComments(0, panel, entity);
-
-    System.out.println("---------------------------------");
-    System.out.println("COUNT: " + childCount);
-    System.out.println("---------------------------------");
-
     fi.metatavu.edelphi.rest.model.QueryQuestionComment result = new fi.metatavu.edelphi.rest.model.QueryQuestionComment();
     result.setContents(entity.getComment());
     result.setHidden(entity.getHidden());
@@ -59,7 +53,7 @@ public class QueryQuestionCommentTranslator extends AbstractTranslator<QueryQues
     result.setCategoryId(entity.getCategory() != null ? entity.getCategory().getId() : null);
     result.setQueryPageId(entity.getQueryPage() != null ? entity.getQueryPage().getId() : null);
     result.setQueryReplyId(entity.getQueryReply() != null ? entity.getQueryReply().getId() : null);
-    result.setChildCount(childCount);
+    result.setChildCount(queryQuestionCommentController.countChildComments(panel, entity));
     result.setLastModified(translateDate(entity.getLastModified()));
     result.setLastModifierId(translateUserId(entity.getLastModifier()));
     result.setCreated(translateDate(entity.getCreated()));

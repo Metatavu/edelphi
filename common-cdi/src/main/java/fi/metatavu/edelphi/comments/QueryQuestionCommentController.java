@@ -153,9 +153,16 @@ public class QueryQuestionCommentController {
     );
   }
 
-  public int countChildComments(int total, Panel panel, QueryQuestionComment parentComment) {
+  /**
+   * Counts child comments
+   *
+   * @param panel panel
+   * @param parentComment parent comment
+   * @return count of child comments
+   */
+  public int countChildComments(Panel panel, QueryQuestionComment parentComment) {
 
-    List<QueryQuestionComment> comments = this.listQueryQuestionComments(
+    return this.listQueryQuestionComments(
       panel,
       null,
       null,
@@ -168,18 +175,7 @@ public class QueryQuestionCommentController {
       0,
       1000,
       false
-    );
-
-    int size = comments.size();
-
-    if (size > 0) {
-      total = total + size;
-      for (QueryQuestionComment comment : comments) {
-        return this.countChildComments(total, panel, comment);
-      }
-    }
-
-    return total;
+    ).size();
   }
 
   /**
@@ -190,7 +186,7 @@ public class QueryQuestionCommentController {
    * @param hidden whether comment should be hidden
    * @param modifier modifier
    * @param modified modification time 
-   * @return
+   * @return updated comment
    */
   public QueryQuestionComment updateQueryQuestionComment(QueryQuestionComment queryQuestionComment, QueryQuestionCommentCategory category, String comment, Boolean hidden, User modifier, Date modified) {
     queryQuestionCommentDAO.updateHidden(queryQuestionComment, hidden, modifier);

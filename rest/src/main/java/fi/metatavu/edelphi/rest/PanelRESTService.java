@@ -215,7 +215,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
     publishCommentMqttNotification(QueryQuestionCommentNotification.Type.CREATED, panel, comment);
     
-    return createOk(queryQuestionCommentTranslator.translate(comment));
+    return createOk(queryQuestionCommentTranslator.translate(comment, panel));
   }
 
   @Override
@@ -273,7 +273,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createNotFound("Comment does not belong to given panel");
     }
     
-    return createOk(queryQuestionCommentTranslator.translate(comment));
+    return createOk(queryQuestionCommentTranslator.translate(comment, panel));
   }
 
   @Override
@@ -425,7 +425,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
     publishCommentMqttNotification(QueryQuestionCommentNotification.Type.UPDATED, panel, comment);
     
-    return createOk(queryQuestionCommentTranslator.translate(updatedComment));
+    return createOk(queryQuestionCommentTranslator.translate(updatedComment, panel));
   }
 
   @Override
