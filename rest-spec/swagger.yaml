@@ -1833,7 +1833,7 @@ components:
           description: Comment's contents
           type: string
         childCount:
-          description: Total child comment
+          description: Child comment count
           type: integer
           format: int32
         creatorId:
