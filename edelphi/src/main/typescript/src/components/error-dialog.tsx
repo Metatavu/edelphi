@@ -7,7 +7,7 @@ import moment from "moment";
  * Interface representing component properties
  */
 interface Props {
-  error: Error,
+  error: Error | unknown;
   onClose: () => void
 }
 
@@ -98,14 +98,20 @@ export default class ErrorDialog extends React.Component<Props, State> {
    * @returns an error message
    */
   private getErrorMessage = () => {
-    return this.props.error.message || "";
+    const { error } = this.props;
+
+    if (error instanceof Error) {
+      return error.message || "";
+    }
+
+    return "Unknown error";
   }
 
   /**
    * Reload button click event handler
    */
   private onReloadClick = () => {
-    window.location.reload(true);
+    window.location.reload();
   }
 
 }

@@ -7,6 +7,7 @@ import Api from "../../api";
 import { CommentUtils } from "../../utils/comments";
 import { QueryQuestionCommentNotification } from "../../types";
 import { mqttConnection, OnMessageCallback } from "../../mqtt";
+import ErrorDialog from "../error-dialog";
 
 
 /**
@@ -34,6 +35,7 @@ interface State {
   oldestFirst: boolean;
   loading: boolean;
   comments: QueryQuestionComment[];
+  error?: Error | unknown;
 }
 
 /**
@@ -97,6 +99,12 @@ class QueryCommentList extends React.Component<Props, State> {
    * Render edit pest view
    */
   public render = () => {
+    const { error } = this.state;
+
+    if (error) {
+      return <ErrorDialog error={ error } onClose={ () => this.setState({ error: undefined }) } /> 
+    }
+
     return (
       <div className="queryCommentList">
         { this.renderTitleSection() }
@@ -269,7 +277,8 @@ class QueryCommentList extends React.Component<Props, State> {
 
     this.setState({
       commentsPerPage: Number(value),
-      activePage: 1
+      activePage: 1,
+      loading: true
     }, () => this.loadRootComments());
   }
 
@@ -284,27 +293,33 @@ class QueryCommentList extends React.Component<Props, State> {
       return;
     }
 
-    const categoryId = category ? category.id : 0;
+    try {
+      const categoryId = category ? category.id : 0;
 
-    const response = await Api.getQueryQuestionCommentsApi(accessToken).listQueryQuestionCommentsRaw({
-      panelId: panelId,
-      queryId: queryId,
-      pageId: pageId,
-      parentId: 0,
-      categoryId: categoryId,
-      firstResult: (activePage - 1) * commentsPerPage,
-      maxResults: commentsPerPage,
-      oldestFirst: oldestFirst
-    });
-
-    const totalCount = parseInt(response.raw.headers.get("X-Total-Count") || "0") || 0;
-    const comments = await response.value();
-
-    this.setState({
-      pageCount: Math.ceil(totalCount / commentsPerPage),
-      comments: comments.sort(CommentUtils.compareComments),
-      loading: false
-    });
+      const response = await Api.getQueryQuestionCommentsApi(accessToken).listQueryQuestionCommentsRaw({
+        panelId: panelId,
+        queryId: queryId,
+        pageId: pageId,
+        parentId: 0,
+        categoryId: categoryId,
+        firstResult: (activePage - 1) * commentsPerPage,
+        maxResults: commentsPerPage,
+        oldestFirst: oldestFirst
+      });
+  
+      const totalCount = parseInt(response.raw.headers.get("X-Total-Count") || "0") || 0;
+      const comments = await response.value();
+  
+      this.setState({
+        pageCount: Math.ceil(totalCount / commentsPerPage),
+        comments: comments.sort(CommentUtils.compareComments),
+        loading: false
+      });
+    } catch (e) {
+      this.setState({
+        error: e
+      });
+    }
   }
 
   /**
@@ -349,7 +364,9 @@ class QueryCommentList extends React.Component<Props, State> {
         comments: combinedComments
       });
     } catch (error) {
-      console.error(error);
+      this.setState({
+        error: error
+      });
     }
   }
 
@@ -411,7 +428,9 @@ class QueryCommentList extends React.Component<Props, State> {
         this.setState({ comments: [ newComment, ...commentList ] });
       }
     } catch (error) {
-      console.error(error);
+      this.setState({
+        error: error
+      });
     }
   }
 
@@ -441,7 +460,9 @@ class QueryCommentList extends React.Component<Props, State> {
 
       this.setState({ comments: commentList });
     } catch (error) {
-      console.error(error);
+      this.setState({
+        error: error
+      });
     }
   }
 
