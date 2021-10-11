@@ -1836,6 +1836,7 @@ components:
           description: Child comment count
           type: integer
           format: int32
+          readOnly: true
         creatorId:
           description: Comment's creator id
           type: string
