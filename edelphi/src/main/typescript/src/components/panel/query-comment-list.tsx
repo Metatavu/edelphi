@@ -97,40 +97,80 @@ class QueryCommentList extends React.Component<Props, State> {
    * Render edit pest view
    */
   public render = () => {
-    const { commentsPerPage, oldestFirst } = this.state;
-
     return (
       <div className="queryCommentList">
-        <h2 className="querySubTitle queryCommentListSubTitle">
-          { strings.panel.query.comments.title }
-        </h2>
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <p>{ strings.panel.query.comments.selectAmount }</p>
-          <Select
-            placeholder={ strings.generic.select }
-            onChange={ this.onDropdownChange }
-            value={ commentsPerPage }
-            options={ this.amountOptions }
-            compact
-          />
-        </div>
-        <div style={{ display: "flex" }}>
-          <p style={{ marginTop: 10, marginRight: 10 }}>
-            { strings.panel.query.comments.newestFirst }
-          </p>
-          <div style={{ marginTop: 10 }}>
-            <Checkbox
-              onChange={ this.onToggleChange }
-              toggle
-              checked={ oldestFirst }
-            />
-          </div>
-          <p style={{ marginTop: 10, marginLeft: 10 }}>
-            { strings.panel.query.comments.oldestFirst }
-          </p>
-        </div>
+        { this.renderTitleSection() }
         { this.renderContent() }
         { this.renderPagination() }
+      </div>
+    );
+  }
+
+  /**
+   * Renders title section
+   */
+  private renderTitleSection = () => {
+    return (
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #DDE7ED", paddingBottom: "8px" }}>
+        { this.renderTitle() }
+        { this.renderCommentAmount() }
+        { this.renderSort() }
+      </div>
+    );      
+  }
+
+  /**
+   * Renders comment title
+   */
+  private renderTitle = () => {
+    return (
+      <h2 className="querySubTitle queryCommentListSubTitle" style={{ display: "flex", padding: 0, borderBottom: 0 }}>
+        { strings.panel.query.comments.title }
+      </h2>
+    );
+  }
+
+  /**
+   * Renders comment amount input
+   */
+  private renderCommentAmount = () => {
+    const { commentsPerPage } = this.state;
+    
+    return (
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <p style={{ margin: 0, marginRight: "10px" }}>{ strings.panel.query.comments.selectAmount }</p>
+        <Select
+          placeholder={ strings.generic.select }
+          onChange={ this.onDropdownChange }
+          value={ commentsPerPage }
+          options={ this.amountOptions }
+          compact
+        />
+      </div>
+    );
+  }
+
+  /**
+   * Renders sort input
+   */
+  private renderSort = () => {
+    const { oldestFirst } = this.state;
+
+    return (
+      <div style={{ display: "flex" }}>
+        <p style={{ marginTop: 10, marginRight: 10 }}>
+          { strings.panel.query.comments.newestFirst }
+        </p>
+        <div style={{ marginTop: 10 }}>
+          <Checkbox
+            onChange={ this.onToggleChange }
+            toggle
+            checked={ oldestFirst }
+          />
+        </div>
+        <p style={{ marginTop: 10, marginLeft: 10 }}>
+          { strings.panel.query.comments.oldestFirst }
+        </p>
       </div>
     );
   }
