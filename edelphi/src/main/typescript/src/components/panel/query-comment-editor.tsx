@@ -36,7 +36,7 @@ interface State {
   commentId?: number,
   changed: boolean,
   loaded: boolean,
-  error?: Error
+  error?: Error | unknown
 }
 
 /**

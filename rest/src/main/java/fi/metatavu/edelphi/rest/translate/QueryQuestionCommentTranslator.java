@@ -1,7 +1,10 @@
 package fi.metatavu.edelphi.rest.translate;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
+import fi.metatavu.edelphi.comments.QueryQuestionCommentController;
+import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 
 /**
@@ -11,6 +14,9 @@ import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
  */
 @ApplicationScoped
 public class QueryQuestionCommentTranslator extends AbstractTranslator<QueryQuestionComment, fi.metatavu.edelphi.rest.model.QueryQuestionComment> {
+
+  @Inject
+  private QueryQuestionCommentController queryQuestionCommentController;
 
   @Override
   public fi.metatavu.edelphi.rest.model.QueryQuestionComment translate(QueryQuestionComment entity) {
@@ -26,6 +32,7 @@ public class QueryQuestionCommentTranslator extends AbstractTranslator<QueryQues
     result.setCategoryId(entity.getCategory() != null ? entity.getCategory().getId() : null);
     result.setQueryPageId(entity.getQueryPage() != null ? entity.getQueryPage().getId() : null);
     result.setQueryReplyId(entity.getQueryReply() != null ? entity.getQueryReply().getId() : null);
+    result.setChildCount(queryQuestionCommentController.countChildComments(entity));
     result.setLastModified(translateDate(entity.getLastModified()));
     result.setLastModifierId(translateUserId(entity.getLastModifier()));
     result.setCreated(translateDate(entity.getCreated()));

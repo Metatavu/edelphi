@@ -7,7 +7,8 @@
     "welcomeUser": "Welcome {0}",
     "profileLink": "Profile",
     "logoutLink": "Logout",
-    "panelAdminBreadcrumb": "Management"
+    "panelAdminBreadcrumb": "Management",
+    "select": "Select"
   },
 
   "errorDialog": {
@@ -70,7 +71,13 @@
         "confirmRemoveCancel": "Cancel",
         "confirmRemoveText": "Are you sure that you want to delete comment \"{0}\" including all its replies?",
         "noComments": "There are no comments yet",
-        "yourComment": "This is your own comment"
+        "yourComment": "This is your own comment",
+        "selectAmount": "Select the amount of shown comments",
+        "showReplies": "Show replies ({0})",
+        "hideReplies": "Hide replies",
+        "newCommentCount": "New comments ({0})",
+        "oldestFirst": "Oldest first",
+        "newestFirst": "Newest first"
       }
     }
   },

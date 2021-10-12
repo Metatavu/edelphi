@@ -154,6 +154,27 @@ public class QueryQuestionCommentController {
   }
 
   /**
+   * Counts child comments
+   *
+   * @param parentComment parent comment
+   * @return count of child comments
+   */
+  public int countChildComments(QueryQuestionComment parentComment) {
+    return queryQuestionCommentDAO.count(
+      parentComment.getQueryPage(),
+      null,
+      null,
+      null,
+      parentComment,
+      false,
+      null,
+      null,
+      false,
+      false
+    ).intValue();
+  }
+
+  /**
    * Updates query question comment
    * 
    * @param queryQuestionComment comment to be updated
@@ -161,7 +182,7 @@ public class QueryQuestionCommentController {
    * @param hidden whether comment should be hidden
    * @param modifier modifier
    * @param modified modification time 
-   * @return
+   * @return updated comment
    */
   public QueryQuestionComment updateQueryQuestionComment(QueryQuestionComment queryQuestionComment, QueryQuestionCommentCategory category, String comment, Boolean hidden, User modifier, Date modified) {
     queryQuestionCommentDAO.updateHidden(queryQuestionComment, hidden, modifier);

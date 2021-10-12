@@ -2,11 +2,11 @@
 
 /*
  * Generic
- * 
+ *
  */
 
 html {
-  
+
 }
 
 .blockTitle h2 {
@@ -14,7 +14,7 @@ html {
   color:#fff;
   padding:8px;
   font-size: 1.35em;
-  min-height: 1.35em; 
+  min-height: 1.35em;
   font-family: 'Open Sans Condensed', Verdana, sans-serif;
   text-transform: uppercase;
   margin:0;
@@ -37,13 +37,13 @@ html {
   color:#1e1e1e;
   padding: 4px 8px;
   text-transform:uppercase;
-  font-size: 1.25em; 
+  font-size: 1.25em;
   font-family: 'Open Sans Condensed', Verdana, sans-serif;
   margin:15px 0px 10px 0px;
 }
 
 .index-page-document-contents h1 {
-  text-transform: uppercase; 
+  text-transform: uppercase;
 }
 
 .index-page-document-contents h1,
@@ -78,8 +78,8 @@ h2.newsEntryTitle {
   font-family: 'PT Sans', Verdana, sans-serif;
   margin: 10px 0px 5px 0px;
   padding:4px 6px;
-  text-transform: uppercase; 
-  font-size: 1em;  
+  text-transform: uppercase;
+  font-size: 1em;
 }
 
 #panelAdminInviteUsersListBlockContent h3 {
@@ -88,18 +88,18 @@ h2.newsEntryTitle {
   font-family: 'PT Sans', Verdana, sans-serif;
   margin: 0px 0px 5px 0px;
   padding:4px 6px;
-  text-transform: uppercase; 
-  font-size: 1em;  
+  text-transform: uppercase;
+  font-size: 1em;
 }
 
 #manageUsergroupsUsergroupViewColumnContent h3 {
   color: #1e1e1e;
-  background:#eaeaea;  
+  background:#eaeaea;
   font-family: 'PT Sans', Verdana, sans-serif;
   margin: 10px 0px 5px 0px;
   padding:4px 6px;
-  text-transform: uppercase; 
-  font-size: 1em;  
+  text-transform: uppercase;
+  font-size: 1em;
 }
 
 #GUI_panelQueriesContainer h3,
@@ -109,8 +109,8 @@ h2.newsEntryTitle {
   font-family: 'PT Sans', Verdana, sans-serif;
   margin:0;
   padding:4px 6px;
-  text-transform: uppercase; 
-  font-size: 1em;  
+  text-transform: uppercase;
+  font-size: 1em;
 }
 
 .queryExpertiseFilter h3 {
@@ -119,8 +119,8 @@ h2.newsEntryTitle {
   font-family: 'PT Sans', Verdana, sans-serif;
   margin:0px 0px 10px 0px;
   padding:4px 6px;
-  text-transform: uppercase; 
-  font-size: 1em;  
+  text-transform: uppercase;
+  font-size: 1em;
 }
 
 .pageTitle h1 {
@@ -133,12 +133,12 @@ h2.newsEntryTitle {
 }
 
 .pagePanel {
-  
+
 }
 
 .block {
   border:1px solid #dde7ed;
-  padding:8px;    
+  padding:8px;
   position:relative;
   box-shadow: 0px 0px 8px rgba(0,0,0,0.1);
 }
@@ -155,9 +155,9 @@ h2.newsEntryTitle {
   max-width: none;
 }
 
-/* 
- * Removing Generic Block Rules 
- * 
+/*
+ * Removing Generic Block Rules
+ *
  */
 
 #GUI_indexNewsPanel .block,
@@ -179,9 +179,9 @@ h2.newsEntryTitle {
 
 /*
  * Error Pages
- * 
+ *
  */
- 
+
 .errorPageContentWrapper {
   margin:20px auto 20px auto;
   max-width: 800px;
@@ -280,9 +280,9 @@ h2.newsEntryTitle {
 
 /*
  * Site Layout min-1024 max-1280 (only effective for views used by panelists)
- * 
+ *
  */
- 
+
 body.environment .GUI_header_outer_wrapper,
 body.panel .GUI_header_outer_wrapper {
   background:url('../gfx/ui/header_background.png') #186089 no-repeat left top;
@@ -291,7 +291,7 @@ body.panel .GUI_header_outer_wrapper {
 
 body.environment .GUI_header_inner_wrapper,
 body.panel .GUI_header_inner_wrapper {
-  background:url('../gfx/ui/header_gradient.png') repeat-x center top;  
+  background:url('../gfx/ui/header_gradient.png') repeat-x center top;
   min-width: 980px;
 }
 
@@ -319,22 +319,22 @@ body.panel .GUI_breadcrumb {
   margin: 0 auto;
   max-width: 1200px;
   min-width:940px;
-  position: relative;  
+  position: relative;
   padding:0px 20px;
 }
 
 /*
  * Site Layout min-1280 max-1280
- * 
+ *
  */
- 
+
 .GUI_header_outer_wrapper {
   background:url('../gfx/ui/header_background.png') #186089 no-repeat left top;
   min-width: 1240px;
 }
 
 .GUI_header_inner_wrapper {
-  background:url('../gfx/ui/header_gradient.png') repeat-x center top;  
+  background:url('../gfx/ui/header_gradient.png') repeat-x center top;
   min-width: 1240px;
 }
 
@@ -369,7 +369,7 @@ body.panel .GUI_breadcrumb {
   margin: 0 auto;
   max-width: 1200px;
   min-width:1200px; /* 990px */
-  position: relative;  
+  position: relative;
   padding:0px 20px;
 }
 
@@ -411,7 +411,7 @@ body.panel .GUI_breadcrumb {
   margin-top:20px;
 }
 
-.GUI_footer_links_container { 
+.GUI_footer_links_container {
   margin-left: auto;
   margin-right: auto;
   max-width: 1220px;
@@ -423,7 +423,7 @@ body.panel .GUI_breadcrumb {
 .GUI_footer_links_container a {
   text-transform:uppercase;
   color:#c9c9c9;
-  text-decoration:none;  
+  text-decoration:none;
   display:inline-block;
   padding:5px 4px;
 }
@@ -434,9 +434,9 @@ body.panel .GUI_breadcrumb {
 
 /*
  * Front Page Header / Panel Header
- * 
+ *
  */
- 
+
 .GUI_header_logo {
   position:absolute;
   right:50px;
@@ -481,17 +481,17 @@ body.panel .GUI_breadcrumb {
 
 .GUI_panel_header_text_wrapper a {
   color:#fff;
-  font-size: 2.4em; 
+  font-size: 2.4em;
   font-family: 'Open Sans Condensed', Verdana, sans-serif;
   text-decoration:none;
 }
 
 .GUI_panel_header_text_panelname {
   color:#fff;
-  font-size: 2.2em; 
+  font-size: 2.2em;
   font-family: 'Open Sans Condensed', Verdana, sans-serif;
 }
- 
+
 .environment .GUI_header,
 .environment_admin .GUI_header {
   height:200px;
@@ -507,25 +507,25 @@ body.panel .GUI_breadcrumb {
 .GUI_header_shadow_wrapper {
   height:13px;
   background:url(../gfx/ui/header_shadow_background.png) repeat-x;
-  border-top:1px solid #294a60;  
+  border-top:1px solid #294a60;
 }
 
 .GUI_header_shadow {
-  height:13px;  
+  height:13px;
   background:url('../gfx/ui/header_shadow_background_middle.png') center center;
 }
 
 /*
  * Front Page Logged In User
- * 
+ *
  */
- 
+
 .GUI_header_user_container {
   position:absolute;
   right:10px;
   top:10px;
   height:74px;
-  padding:10px;  
+  padding:10px;
 }
 
 .headerUserInfo {
@@ -566,7 +566,7 @@ body.panel .GUI_breadcrumb {
 
 /*
  * Header Locale Switch
- * 
+ *
  */
 
 .headerLocaleContainer {
@@ -579,7 +579,7 @@ body.panel .GUI_breadcrumb {
   display:inline-block;
   margin:0px 5px 0px 5px;
   padding:5px 10px;
-  color:#fff;  
+  color:#fff;
   text-decoration:none;
 }
 
@@ -587,30 +587,30 @@ body.panel .GUI_breadcrumb {
   background-color:#30739e;
   border-bottom-left-radius:3px;
   border-bottom-right-radius:3px;
-  box-shadow:0px 0px 8px rgba(0, 0, 0, 0.2);  
+  box-shadow:0px 0px 8px rgba(0, 0, 0, 0.2);
 }
 
 /*
  * Front Page Footer
- * 
+ *
  */
- 
+
 .GUI_footer_shadow_wrapper {
   height:13px;
   background:url(../gfx/ui/footer_shadow_background.png) repeat-x;
-  border-top:1px solid #294a60;  
+  border-top:1px solid #294a60;
 }
 
 .GUI_footer_shadow {
-  height:13px;  
+  height:13px;
   background:url('../gfx/ui/footer_shadow_background_middle.png') center center;
-} 
+}
 
 /*
  * Front Page Navigation
- * 
+ *
  */
- 
+
 .GUI_navigation .menu {
   margin:0px 0px -7px 0px;
   padding:0px 10px 0px 10px;
@@ -631,7 +631,7 @@ body.panel .GUI_breadcrumb {
   font-family: 'Open Sans Condensed', Verdana, sans-serif;
   font-size:1.35em;
   text-transform:uppercase;
-  text-decoration:none;  
+  text-decoration:none;
   border-top-left-radius:3px;
   border-top-right-radius:3px;
 }
@@ -648,18 +648,18 @@ body.panel .GUI_breadcrumb {
 }
 
 /*
- * Front Page Column Layout 
- * 
+ * Front Page Column Layout
+ *
  */
 
-#GUI_indexIdentificationPanel, 
+#GUI_indexIdentificationPanel,
 #GUI_profileIdentificationPanel {
   /*position: absolute;*/
   float:left;
   width: 280px;
 }
 
-#GUI_indexNewsPanel, 
+#GUI_indexNewsPanel,
 #GUI_indexProfilePanel,
 #GUI_panelsProfilePanel {
   margin-left: 310px;
@@ -667,7 +667,7 @@ body.panel .GUI_breadcrumb {
   min-height: 680px;
 }
 
-#GUI_indexOpenPanelsPanel, 
+#GUI_indexOpenPanelsPanel,
 #GUI_profileOpenPanelsPanel {
   min-height:300px;
   max-height: 680px;
@@ -678,14 +678,14 @@ body.panel .GUI_breadcrumb {
   width: 284px;
   background:#f2f2f4;
   border-radius:3px;
-  padding:8px;  
+  padding:8px;
 }
 
 /*
  * Front Page Login
- * 
+ *
  */
- 
+
 #indexLoginBlockContent {
   margin-bottom:20px;
   border:1px solid #d9f0d9;
@@ -709,11 +709,11 @@ li.loginWithFacebook {
 }
 
 li.loginWithGoogle {
-  background:url('../gfx/icons/24x24/apps/google.png') no-repeat center left;   
+  background:url('../gfx/icons/24x24/apps/google.png') no-repeat center left;
 }
 
 li.loginWithTwitter {
-  background:url('../gfx/icons/24x24/apps/twitter.png') no-repeat center left;  
+  background:url('../gfx/icons/24x24/apps/twitter.png') no-repeat center left;
 }
 
 li.loginWithTupas {
@@ -730,9 +730,9 @@ li.loginWithTupas {
 
 /*
  * Front Page Register
- * 
+ *
  */
- 
+
 #indexRegisterBlockContent {
 
 }
@@ -743,13 +743,13 @@ li.loginWithTupas {
 
 /*
  * Front Page My Panels
- * 
+ *
  */
- 
+
  .myPanelsContainer {
   margin: 0;
   padding:6px 5px 6px 5px;
-  border-bottom:1px solid #eee; 
+  border-bottom:1px solid #eee;
 }
 
 #myPanelsBlockContent {
@@ -764,7 +764,7 @@ li.loginWithTupas {
 .myPanelsInvitation {
   font-style:italic;
   color:#4c4c4c;
-  padding:6px;  
+  padding:6px;
   border-radius:3px;
   margin:5px 0px 5px 0px;
   border:1px solid #dfd895;
@@ -794,9 +794,9 @@ li.loginWithTupas {
 
 /*
  * Front Page Create Panel
- * 
+ *
  */
- 
+
 #indexCreatePanelBlockContent {
   margin-bottom:20px;
 }
@@ -816,22 +816,22 @@ li.loginWithTupas {
 
 /*
  * Front Page My Panels
- * 
+ *
  */
- 
+
 #indexMyPanelsBlockContent {
 
 }
 
 /*
  * Front Page Create Panel Modal
- * 
+ *
  */
- 
+
 .createPanelBlock_createPanelPageContainer {
   box-shadow: 0px 0px 100px 12px #000;
   border-radius:10px;
-  padding:8px;    
+  padding:8px;
   position:fixed;
   top:100px;
   left:50%;
@@ -840,7 +840,7 @@ li.loginWithTupas {
   background:#ffffff;
   z-index:1001;
 }
- 
+
  .createPanelBlock_createPanelDialogOverlay {
   background:#000;
   opacity:0.4;
@@ -851,7 +851,7 @@ li.loginWithTupas {
   bottom:0;
   z-index:999;
 }
- 
+
 .createPanelBlock_createPanelCloseModalButton {
   background: url("../gfx/icons/16x16/actions/modal_close.png") no-repeat scroll center center #FFFFFF;
   border-radius: 14px 14px 14px 14px;
@@ -885,14 +885,14 @@ li.loginWithTupas {
   min-height:100px;
   border-radius: 2px;
   padding: 4px 6px;
-  border: 3px solid #e5e5e5; 
+  border: 3px solid #e5e5e5;
 }
 
 .createPanel_pageContentTitle {
   background-color:#1b628a;
   color:#fff;
   padding:8px;
-  font-size: 1.35em; 
+  font-size: 1.35em;
   font-family: 'Open Sans Condensed', Verdana, sans-serif;
   text-transform: uppercase;
   margin-bottom:10px;
@@ -905,7 +905,7 @@ li.loginWithTupas {
 }
 
 .createPanel_panelType {
-  border: 3px solid #ffffff;  
+  border: 3px solid #ffffff;
   float:left;
   width: 200px;
   padding:5px;
@@ -916,7 +916,7 @@ li.loginWithTupas {
   border: 3px solid #eeeeee;
   cursor: pointer;
 }
-  
+
 .createPanel_panelTypeImage {
   background:#eee;
   height:60px;
@@ -968,13 +968,13 @@ li.loginWithTupas {
   background-color: #ccc;
   cursor: default;
 }
- 
+
 
 /*
- * Front Page Open Panels 
- * 
+ * Front Page Open Panels
+ *
  */
- 
+
  .openPanelContainer {
   padding: 6px 5px 6px 5px;
 }
@@ -996,7 +996,7 @@ li.loginWithTupas {
 
 /*
  * Front Page News
- * 
+ *
  */
 
 .newsEntryContainer {
@@ -1017,14 +1017,14 @@ li.loginWithTupas {
 }
 
 .newsEntryReadMore {
-margin:5px 0px 0px 0px;  
+margin:5px 0px 0px 0px;
 }
 
 /*
- * Panel Front Page Column Layout 
- * 
+ * Panel Front Page Column Layout
+ *
  */
- 
+
 #GUI_panelMaterialsContainer {
   width:29%;
   margin-right:1%;
@@ -1046,10 +1046,10 @@ margin:5px 0px 0px 0px;
  * Panel Generic
  *
  */
- 
+
 .panelGenericTitle {
   font-size:1.15em;
-  margin:0px 0px 5px 0px;  
+  margin:0px 0px 5px 0px;
 }
 
 .panelGenericDescription {
@@ -1064,14 +1064,14 @@ margin:5px 0px 0px 0px;
 
 /*
  * Panel Materials Column
- * 
+ *
  */
 
 .materialRow,
 .panelDocumentRow,
 .panelImageRow,
 .panelReportRow {
-  border-bottom:1px solid #eee; 
+  border-bottom:1px solid #eee;
   position:relative;
   padding:6px 5px 6px 5px;
 }
@@ -1087,14 +1087,14 @@ margin:5px 0px 0px 0px;
 }
 
 .materialRow .panelGenericTitle,
-.panelDocumentRow .panelGenericTitle, 
+.panelDocumentRow .panelGenericTitle,
 .panelImageRow .panelGenericTitle,
 .panelReportRow .panelGenericTitle {
-  padding:0px 78px 0px 0px;    
+  padding:0px 78px 0px 0px;
 }
 
 .materialRow .panelGenericTitle a,
-.panelDocumentRow .panelGenericTitle a, 
+.panelDocumentRow .panelGenericTitle a,
 .panelImageRow .panelGenericTitle a,
 .panelReportRow .panelGenericTitle a {
   color:#006600;
@@ -1104,20 +1104,20 @@ margin:5px 0px 0px 0px;
   text-align:center;
   font-style:italic;
   margin:10px 5px 5px 5px;
-}  
+}
 
 /*
  * Panel Queries Column
- * 
+ *
  */
- 
+
 .panelQueryRow {
   border-bottom:1px solid #eee;
   position:relative;
   padding:6px 10px 10px 5px;
-  min-height:55px;  
+  min-height:55px;
 }
- 
+
 .panelQueryRow img {
   max-width: 100%;
 }
@@ -1126,9 +1126,9 @@ margin:5px 0px 0px 0px;
   border:0;
   position:relative;
   padding:6px 10px 10px 5px;
-  min-height:55px;  
+  min-height:55px;
 }
- 
+
  .panelQueryRow .panelGenericTitle {
   color:#0984c9;
   padding-right:90px;
@@ -1153,7 +1153,7 @@ margin:5px 0px 0px 0px;
 }
 
 .panelQueryMetaQueryClosed {
-  text-transform:uppercase;  
+  text-transform:uppercase;
 }
 
 .queriesEmptyDescription {
@@ -1175,7 +1175,7 @@ margin:5px 0px 0px 0px;
 
  /*
  * Panel Updates Column
- * 
+ *
  */
 
 .panelBulletinRow,
@@ -1204,11 +1204,11 @@ margin:5px 0px 0px 0px;
   font-size:0.9em;
   color:#838383;
   margin:0;
-  padding:10px 56px 0px 5px;  
+  padding:10px 56px 0px 5px;
 }
 
 .panelSystemUpdateRow .panelGenericMeta {
-  color: #838383;  
+  color: #838383;
   font-style:normal;
   font-size:0.8em;
 }
@@ -1217,13 +1217,13 @@ margin:5px 0px 0px 0px;
   text-align:center;
   font-style:italic;
   margin:10px 5px 5px 5px;
-}  
+}
 
 /*
  * Panel Admin Dashboard Column Layout
  *
  */
- 
+
 .GUI_adminDashboardNarrowColumn {
   float:left;
   width:33%;
@@ -1234,7 +1234,7 @@ margin:5px 0px 0px 0px;
   float:left;
   width:66%;
 }
- 
+
 #GUI_adminDashboardSettingsContainer {
   margin-bottom:10px;
 }
@@ -1254,7 +1254,7 @@ margin:5px 0px 0px 0px;
 }
 
 .adminDashboardQueriesShowAllLink {
-  border-top:1px solid #dde7ed;  
+  border-top:1px solid #dde7ed;
   padding:4px 0px 0px 0px;
   margin:4px 0px 0px 0px;
   text-align:center;
@@ -1273,7 +1273,7 @@ margin:5px 0px 0px 0px;
 
 .panelAdminGenericTitle {
   font-size:1.15em;
-  margin:0px 0px 5px 0px;  
+  margin:0px 0px 5px 0px;
 }
 
 .panelAdminGenericDescription {
@@ -1288,7 +1288,7 @@ margin:5px 0px 0px 0px;
  * Panel Admin Dashboard Settings Column
  *
  */
- 
+
 #panelAdminSettingsForm {
   margin-top:10px;
 }
@@ -1297,7 +1297,7 @@ margin:5px 0px 0px 0px;
  * Panel Admin Dashboard Process Column
  *
  */
- 
+
 #panelAdminDashboardProcessLeftBlock {
   float:left;
   width:50%;
@@ -1323,13 +1323,13 @@ margin:5px 0px 0px 0px;
 .panelAdminProcessRow .panelAdminGenericTitle {
   color: #0099FF;
 }
- 
+
 .panelAdminReportRow,
 .panelAdminQueryRow,
 .panelAdminBulletinRow {
   border-bottom:1px solid #dde7ed;
   padding:6px 5px 6px 5px;
-  position:relative;  
+  position:relative;
   border-radius:2px;
 }
 
@@ -1338,18 +1338,18 @@ margin:5px 0px 0px 0px;
 .panelAdminBulletinRow:last-child {
   border:0;
   padding:6px 5px 6px 5px;
-  position:relative;  
+  position:relative;
   margin-top:1px;
   border-radius:2px;
 }
 
 .panelAdminReportRow .panelAdminGenericTitle,
 .panelAdminQueryRow .panelAdminGenericTitle {
-  padding:0px 96px 0px 0px;    
+  padding:0px 96px 0px 0px;
 }
 
 .panelAdminBulletinRow .panelAdminGenericTitle {
-  padding:0px 78px 0px 0px;    
+  padding:0px 78px 0px 0px;
 }
 
 .panelAdminReportRow .panelAdminGenericTitle a {
@@ -1390,8 +1390,8 @@ margin:5px 0px 0px 0px;
   color: #b71818;
 }
 
-/* 
- * Panel Admin Manage Expertise 
+/*
+ * Panel Admin Manage Expertise
  *
  */
 
@@ -1539,7 +1539,7 @@ margin:5px 0px 0px 0px;
   width: 20px;
 }
 
-.panelExpertsMatrixHeaderRow, 
+.panelExpertsMatrixHeaderRow,
 .panelExpertsMatrixRow {
   display: table-row;
 }
@@ -1552,7 +1552,7 @@ margin:5px 0px 0px 0px;
   border:1px solid #ffffff;
   border-radius:2px;
 }
-  
+
 .panelExpertsMatrixHeaderCell {
   text-align:right;
   padding:2px 6px 2px 6px;
@@ -1561,7 +1561,7 @@ margin:5px 0px 0px 0px;
   max-width:14px;
   min-width:110px;
   background-color:#f7f7f7;
-  word-wrap:break-word;  
+  word-wrap:break-word;
   text-transform:uppercase;
   font-size:0.85em;
   line-height:1.2em;
@@ -1599,7 +1599,7 @@ margin:5px 0px 0px 0px;
  * Panel Admin Invite Users
  *
  */
- 
+
 #GUI_inviteUsersActionColumn {
 /*   float: left; */
   width: 40%;
@@ -1665,10 +1665,10 @@ margin:5px 0px 0px 0px;
   padding: 4px;
 }
 
-.inviteUsersListAddedByManagerContainer, 
-.inviteUsersListRegisteredContainer, 
-.inviteUsersListInvitationAcceptedContainer, 
-.inviteUsersListInvitationPendingContainer, 
+.inviteUsersListAddedByManagerContainer,
+.inviteUsersListRegisteredContainer,
+.inviteUsersListInvitationAcceptedContainer,
+.inviteUsersListInvitationPendingContainer,
 .inviteUsersListInvitationDeniedContainer,
 .inviteUsersListInvitationQueuedContainer,
 .inviteUsersListInvitationFailedContainer
@@ -1734,7 +1734,7 @@ margin:5px 0px 0px 0px;
 .inviteUsersListInvitationAcceptedContainer .inviteUsersListResendLink,
 .inviteUsersListAddedByManagerContainer .inviteUsersListResendLink {
   text-align: right;
-  padding-right:6px;  
+  padding-right:6px;
 }
 
 .invitationAutoCompleteList {
@@ -1762,7 +1762,7 @@ margin:5px 0px 0px 0px;
 .autoCompleteEntryNameContainer,
 .autoCompleteEntryEmailContainer {
   display:inline;
-  font-size:0.9em;  
+  font-size:0.9em;
   margin-right:4px;
 }
 
@@ -1815,19 +1815,19 @@ margin:5px 0px 0px 0px;
 }
 
 form#panelAdminInvitationForm .formSelectContainer {
-  margin:5px 0px 15px 0px;  
+  margin:5px 0px 15px 0px;
 }
 
 form#panelAdminInvitationForm .formCheckBoxContainer {
-  margin:5px 0px 10px 0px;   
-  
+  margin:5px 0px 10px 0px;
+
 }
 
 /*
  * Panel Admin Send Email
  *
  */
- 
+
 #GUI_emailContentColumn {
   width:60%;
   float:left;
@@ -1845,8 +1845,8 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
   font-family: 'PT Sans', Verdana, sans-serif;
   margin:0px 0px 1px 0px;
   padding:4px 6px;
-  text-transform: uppercase; 
-  font-size: 1em;    
+  text-transform: uppercase;
+  font-size: 1em;
 }
 
 #panelAdminSendEmailContentBlockContent.blockContent,
@@ -1874,7 +1874,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
  * Message Center
  *
  */
- 
+
 #GUI_messageCenterContentColumn {
   width:45%;
   float:left;
@@ -1896,8 +1896,8 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
   font-family: 'PT Sans', Verdana, sans-serif;
   margin:0px 0px 1px 0px;
   padding:4px 6px;
-  text-transform: uppercase; 
-  font-size: 1em;    
+  text-transform: uppercase;
+  font-size: 1em;
 }
 
 #messageCenterMessagesBlockContent {
@@ -1917,7 +1917,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 }
 
 #messageCenterContentBlockContent .messageCenterAddRecipientLink a {
-  
+
 }
 
 #messageCenterContentBlockContent .messageCenterSelectedRecipients {
@@ -1987,8 +1987,8 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 }
 
 .messageCenterMessage {
-  padding:8px;  
-  border-radius:3px;  
+  padding:8px;
+  border-radius:3px;
   font-size:0.925em;
   line-height:1.3em;
   margin-top:10px;
@@ -2040,7 +2040,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 
 .messageCenterMessage.receivedMessage {
   background:#f5f4fd;
-  cursor:pointer;  
+  cursor:pointer;
   position:relative;
 }
 
@@ -2090,7 +2090,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
   text-align:left;
 }
 
-/* Sent Messages Styles */  
+/* Sent Messages Styles */
 
 .messageCenterMessage.sentMessage {
   background:#e3ecff;
@@ -2139,10 +2139,10 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
  * Panel Admin Documents & Reports Management
  *
  */
- 
+
 .GUI_adminManageMaterialsNarrowColumn {
   float:left;
-  width:30%;  
+  width:30%;
   min-height:500px;
 }
 
@@ -2152,7 +2152,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 }
 
 .panelAdminDocumentEditorBodyWrapper {
-  
+
 }
 
 #panelAdminDocumentEditorForm {
@@ -2175,7 +2175,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 }
 
 .panelAdminDocumentEditorContainer {
- 
+
 }
 
 .panelAdminDocumentEditorPages {
@@ -2197,8 +2197,8 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
   margin-right:2px;
   margin-left:2px;
   background-image: url('../gfx/icons/32x32/apps/query_page.png');
-  position:relative;   
-  border:1px solid #ffffff;    
+  position:relative;
+  border:1px solid #ffffff;
 }
 
 .panelAdminDocumentEditorPageTitle {
@@ -2218,22 +2218,22 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 
 .panelAdminDocumentEditorPageSelected > .panelAdminDocumentEditorPageTitle {
   color:#fff;
-  background-color:#6cadd3; 
+  background-color:#6cadd3;
 }
 
 .panelAdminDocumentEditorPage:hover .panelAdminDocumentEditorPageTitle {
   color:#fff;
-  background-color:#6cadd3;  
+  background-color:#6cadd3;
 }
 
 .panelAdminDocumentEditorSubmitContainer {
   margin-top:10px;
 }
 
-/* 
+/*
  * Generic GDocs import
  */
- 
+
 .adminMaterialImportGDocsEntry,
 .panelAdminMaterialImportGDocsEntry {
   position: relative;
@@ -2269,13 +2269,13 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
   margin-top: 3px;
 }
 
-/* 
- * Panel Admin Bulletins Management 
+/*
+ * Panel Admin Bulletins Management
  */
 
 .GUI_adminManageBulletinsNarrowColumn {
   float:left;
-  width:30%;  
+  width:30%;
   min-height:500px;
 }
 
@@ -2294,7 +2294,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 
 #panelAdminBulletinEditorForm .formMemoFieldContainer {
   margin-top:10px;
-} 
+}
 
 /*
  * Panel Stamps Management
@@ -2306,7 +2306,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
   width:45%;
   min-height:500px;
 }
- 
+
 #GUI_managePanelStampsStampViewColumn{
   margin-left:46%;
   min-height:500px;
@@ -2314,11 +2314,11 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 
 .managePanelStamps_panelStamp {
   padding:6px 4px;
-  margin:0;  
+  margin:0;
   cursor:pointer;
   position:relative;
   border-bottom:1px solid #DDE7ED;
-  border-radius:2px;    
+  border-radius:2px;
 }
 
 .managePanelStamps_panelStamp:last-child {
@@ -2334,7 +2334,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 
 .managePanelStamps_panelStamp_name {
   margin-right:95px;
-  font-size:1.1em;   
+  font-size:1.1em;
 }
 
 .managePanelStamps_panelStamp_created {
@@ -2354,7 +2354,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 
 .managePanelStamps_panelStamp_link a {
   color: #0099FF;
-  font-size:0.9em; 
+  font-size:0.9em;
 }
 
 .managePanelStamps_panelStamp_selected .managePanelStamps_panelStamp_name,
@@ -2374,23 +2374,23 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
   width:45%;
   min-height:500px;
 }
- 
+
 #GUI_manageUsersUserViewColumn{
   margin-left:46%;
   min-height:500px;
 }
 
 .manageUsersList {
-  margin-bottom:20px;  
+  margin-bottom:20px;
 }
 
 .managePanelUsers_panelUser {
   padding:4px 4px 4px 22px;
-  margin:0;  
+  margin:0;
   cursor:pointer;
   position:relative;
   border-bottom:1px solid #DDE7ED;
-  border-radius:2px;   
+  border-radius:2px;
 }
 
 #manageUsersList_6 .managePanelUsers_panelUser {
@@ -2418,14 +2418,14 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 .managePanelUsers_panelUser_email {
   font-style:italic;
   color: #0099FF;
-  font-size:0.9em;  
+  font-size:0.9em;
 }
 
 .managePanelUsers_panelUser_name,
 .managePanelUsers_panelUser_emailAsName {
   display: inline-block;
   margin-right:10px;
-  font-size:1em;    
+  font-size:1em;
   min-width:230px;
 }
 
@@ -2465,7 +2465,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 .managePanelUsers_panelUser_selected,
 .managePanelUsers_panelUser_selected:hover {
   color:#fff;
-  background-color:#6cadd3; 
+  background-color:#6cadd3;
 }
 
 .managePanelUsers_panelUser_selected .managePanelUsers_panelUser_removeFromPanel,
@@ -2544,7 +2544,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 }
 
 .managePanelUsers_panelExpertsMatrixGroupCell {
-  background:#eee;  
+  background:#eee;
   cursor: pointer;
 }
 
@@ -2564,7 +2564,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
  * Panel Admin Usergroup Management
  *
  */
- 
+
 #GUI_manageUsergroupsListColumn {
   float:left;
   width:40%;
@@ -2577,20 +2577,20 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 }
 
 #panelAdminManagePanelUsergroupListingBlockContent {
-  
+
 }
 
 #panelAdminManagePanelUsergroupViewBlockContent {
-  
+
 }
 
 #manageUsergroupsUsergroupViewColumnContent {
-  
+
 }
 
 .managePanelUsergroups_panelUsergroup {
   padding:4px;
-  margin:0;  
+  margin:0;
   cursor:pointer;
   position:relative;
   border-bottom:1px solid #f2f2f2;
@@ -2616,7 +2616,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 
 .managePanelUsergroups_panelUsergroup_name {
   margin-right:10px;
-  font-size:1.1em;    
+  font-size:1.1em;
 }
 
 .managePanelUsergroups_panelUsergroup_created {
@@ -2638,7 +2638,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 .managePanelUsergroups_panelUsergroup_selected,
 .managePanelUsergroups_panelUsergroup_selected:hover {
   color:#fff;
-  background-color:#6cadd3; 
+  background-color:#6cadd3;
 }
 
 .managePanelUsergroups_panelUsergroup_selected .managePanelUsergroups_panelUsergroup_modified,
@@ -2646,7 +2646,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 .managePanelUsergroups_panelUsergroup_selected .managePanelUsergroups_panelUsergroup_created,
 .managePanelUsergroups_panelUsergroup_selected:hover .managePanelUsergroups_panelUsergroup_created {
   color:#fff;
-  background-color:#6cadd3; 
+  background-color:#6cadd3;
 }
 
 .usergroupView_availableUsersListWrapper {
@@ -2750,12 +2750,12 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 }
 
 .usergroupView_availableUsersListWrapper input.searchUsers:hover,
-.usergroupView_usergroupUsersListWrapper input.searchUsers:hover, 
+.usergroupView_usergroupUsersListWrapper input.searchUsers:hover,
 .usergroupView_availableUsersListWrapper input.searchUsers:focus,
 .usergroupView_usergroupUsersListWrapper input.searchUsers:focus {
   color:#1e1e1e;
   border:3px solid #0099ff;
-  background:url('../gfx/icons/16x16/actions/search_blue.png') no-repeat 5px center;  
+  background:url('../gfx/icons/16x16/actions/search_blue.png') no-repeat 5px center;
 }
 
 .usergroupViewSaveButtonWrapper {
@@ -2764,7 +2764,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 
 /*
  * Contextual Links
- * 
+ *
  */
 
 .contextualLinks {
@@ -2965,10 +2965,10 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
  * Panel Admin Query Management
  *
  */
- 
+
 .GUI_adminManageQueriesNarrowColumn {
   float:left;
-  width:35%;  
+  width:35%;
   min-height:500px;
 }
 
@@ -2985,7 +2985,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 
 }
 
-#panelAdminQueryEditorSettingsTab, 
+#panelAdminQueryEditorSettingsTab,
 #panelAdminQueryEditorPagesTab {
 
 }
@@ -3041,27 +3041,27 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
   margin-right:2px;
   margin-left:2px;
   background-image: url('../gfx/icons/32x32/apps/query_page.png');
-  position:relative;   
+  position:relative;
   border:1px solid #ffffff;
 }
 
 .panelAdminQueryEditorPage:hover .panelAdminQueryEditorPageTitle {
   color:#fff;
-  background-color:#6cadd3;  
+  background-color:#6cadd3;
 }
 
 .panelAdminQueryEditorPageSelected .panelAdminQueryEditorPageTitle {
   color:#fff;
-  background-color:#6cadd3;  
+  background-color:#6cadd3;
 }
 
 .panelAdminQueryEditorSectionSelected .panelAdminQueryEditorSectionTitle{
   color:#fff;
-  background-color:#6cadd3;  
+  background-color:#6cadd3;
 }
 
 .panelAdminQueryEditorSectionSelected {
- position:relative; 
+ position:relative;
 }
 
 .panelAdminQueryEditorSectionPages {
@@ -3080,7 +3080,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 }
 
 .panelAdminQueryEditorSectionPageSelected {
-  border:1px solid #6cadd3;  
+  border:1px solid #6cadd3;
 }
 
 .panelAdminQueryEditorSectionTitle {
@@ -3094,7 +3094,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 
 .panelAdminQueryEditorSectionTitle:hover {
   color:#fff;
-  background-color:#6cadd3;  
+  background-color:#6cadd3;
 }
 
 .panelAdminQueryEditorPageTitle {
@@ -3127,7 +3127,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
   text-decoration:line-through;
 }
 
-.panelAdminQueryEditorPageDelete, 
+.panelAdminQueryEditorPageDelete,
 .panelAdminDocumentEditorPageDelete {
   background: url("../gfx/icons/16x16/actions/delete_query_page.png") no-repeat scroll center center transparent;
   border-radius: 3px 3px 3px 3px;
@@ -3141,7 +3141,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
   opacity:0.3;
 }
 
-.panelAdminQueryEditorPageClone, 
+.panelAdminQueryEditorPageClone,
 .panelAdminDocumentEditorPageClone {
   background: url("../gfx/icons/16x16/actions/clone_query_page.png") no-repeat scroll center center transparent;
   border-radius: 3px 3px 3px 3px;
@@ -3155,16 +3155,16 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
   opacity:0.3;
 }
 
-.panelAdminQueryEditorPageSelected:hover > .panelAdminQueryEditorPageDelete, 
+.panelAdminQueryEditorPageSelected:hover > .panelAdminQueryEditorPageDelete,
 .panelAdminDocumentEditorPageSelected:hover > .panelAdminDocumentEditorPageDelete,
-.panelAdminQueryEditorPageSelected:hover > .panelAdminQueryEditorPageClone, 
+.panelAdminQueryEditorPageSelected:hover > .panelAdminQueryEditorPageClone,
 .panelAdminDocumentEditorPageSelected:hover > .panelAdminDocumentEditorPageClone {
   opacity:1;
 }
 
-.panelAdminQueryEditorPageSelected > .panelAdminQueryEditorPageDelete, 
+.panelAdminQueryEditorPageSelected > .panelAdminQueryEditorPageDelete,
 .panelAdminDocumentEditorPageSelected > .panelAdminDocumentEditorPageDelete,
-.panelAdminQueryEditorPageSelected > .panelAdminQueryEditorPageClone, 
+.panelAdminQueryEditorPageSelected > .panelAdminQueryEditorPageClone,
 .panelAdminDocumentEditorPageSelected > .panelAdminDocumentEditorPageClone {
   display: block;
 }
@@ -3206,7 +3206,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
   color:#fff;
 }
 
-/* 
+/*
  * Panel Query Views - Generic
  *
  */
@@ -3229,7 +3229,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 }
 
 .queryThesisDescription {
-  margin-bottom:20px;  
+  margin-bottom:20px;
 }
 
 .queryQuestionContainer {
@@ -3240,7 +3240,7 @@ form#panelAdminInvitationForm .formCheckBoxContainer {
 .queryCommentList,
 .queryLiveReportContainer {
   border:1px solid #dde7ed;
-  padding:10px;    
+  padding:10px;
   box-shadow: 0px 0px 8px rgba(0,0,0,0.1);
   margin-bottom:20px;
 }
@@ -3382,8 +3382,8 @@ h2.documentPageTitle {
   font-size:1.6em;
 }
 
-.queryScaleRadioListItemLabel, 
-.queryScaleSliderItemLabel, 
+.queryScaleRadioListItemLabel,
+.queryScaleSliderItemLabel,
 .queryTimelineHandleLabel {
   text-transform:none !important;
 }
@@ -3408,14 +3408,14 @@ h2.documentPageTitle {
 }
 
 .queryTimelineQuestionContainer {
-  margin:40px 20px 60px 20px;  
-  padding:12px 0px 12px 0px; 
+  margin:40px 20px 60px 20px;
+  padding:12px 0px 12px 0px;
   position:relative;
 }
 
 .queryScaleGraphQuestionContainer {
   margin-bottom:20px;
-  padding:12px;      
+  padding:12px;
 }
 
 .queryExpertiseQuestionContainer {
@@ -3425,12 +3425,12 @@ h2.documentPageTitle {
 
 .queryGroupingQuestionContainer {
   margin-bottom:20px;
-  padding:12px 0px 12px 0px; 
+  padding:12px 0px 12px 0px;
 }
 
 .queryMultiselectQuestionContainer {
   margin-bottom:20px;
-  padding:12px 0px 12px 0px; 
+  padding:12px 0px 12px 0px;
 }
 
 .queryOrderingQuestionContainer {
@@ -3444,12 +3444,12 @@ h2.documentPageTitle {
  */
 
 .queryBarChartLiveReportContainer {
-  
+
 }
 
-.queryTimeSerieQuestionFlotrContainer, 
-.queryScaleGraphQuestionFlotrContainer, 
-.queryBarChartLiveReportFlotrContainer, 
+.queryTimeSerieQuestionFlotrContainer,
+.queryScaleGraphQuestionFlotrContainer,
+.queryBarChartLiveReportFlotrContainer,
 .queryBubbleChartLiveReportFlotrContainer {
   width: 100%;
   height: 400px;
@@ -3462,7 +3462,7 @@ h2.documentPageTitle {
 }
 
 .flotr-axis-title > div:nth-child(2) {
-  -webkit-transform: rotate(-90deg); 
+  -webkit-transform: rotate(-90deg);
   -moz-transform: rotate(-90deg);
   filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
   transform: rotate(-90deg);
@@ -3520,7 +3520,7 @@ div.queryComment .queryCommentShowHideButton:hover {
 
 div.queryCommentChildren div.queryComment {
   margin-left:5px;
-  margin-top:4px;  
+  margin-top:4px;
   padding:0px 10px 0px 28px;
 }
 
@@ -3564,9 +3564,10 @@ div.queryCommentChildren div.queryComment {
   font-size:0.9em;
 }
 
-.queryCommentNewComment, 
+.queryCommentNewComment,
 .queryCommentHideComment,
-.queryCommentShowComment, 
+.queryCommentShowComment,
+.queryCommentDeleteComment,
 .queryCommentEditComment {
   float: left;
   margin-right: 8px;
@@ -3591,8 +3592,8 @@ div.queryCommentChildren div.queryComment {
  * Panel Query Expertise Matrix
  *
  */
- 
-.queryExpertiseMatrixHeaderRow, 
+
+.queryExpertiseMatrixHeaderRow,
 .queryExpertiseMatrixRow {
   display: table-row;
 }
@@ -3605,7 +3606,7 @@ div.queryCommentChildren div.queryComment {
   border:1px solid #ffffff;
   border-radius:2px;
 }
-  
+
 .queryExpertiseMatrixHeaderRow .queryExpertiseMatrixHeaderCell,
 .queryExpertiseMatrixHeaderRow .queryExpertiseMatrixCell {
   vertical-align:bottom;
@@ -3622,7 +3623,7 @@ div.queryCommentChildren div.queryComment {
   cursor: pointer;
   text-align: center;
   vertical-align: middle;
-  border-radius:5px;  
+  border-radius:5px;
 }
 
 .queryExpertiseMatrixAnswerCell:hover {
@@ -3650,10 +3651,10 @@ div.queryCommentChildren div.queryComment {
   width:auto;
   max-width:140px;
   background-color:#f7f7f7;
-  word-wrap:break-word;  
+  word-wrap:break-word;
   text-transform:uppercase;
-  font-size:0.85em; 
-  line-height:1.2em;   
+  font-size:0.85em;
+  line-height:1.2em;
 }
 
 .queryExpertiseMatrixHeaderRow .queryExpertiseMatrixHeaderCell {
@@ -3664,7 +3665,7 @@ div.queryCommentChildren div.queryComment {
  * Panel Query Scale Radiolist
  *
  */
- 
+
 .queryScaleRadioListQuestionContainer label {
   color: #1E1E1E;
   display: block;
@@ -3724,7 +3725,7 @@ div.queryCommentChildren div.queryComment {
   display: block;
   position: absolute;
   background-repeat: no-repeat;
-  text-decoration: none;  
+  text-decoration: none;
   height: 24px;
 }
 
@@ -3750,7 +3751,7 @@ div.queryCommentChildren div.queryComment {
   display: block;
   white-space: nowrap;
   background-color: #000;
-  color: #fff; 
+  color: #fff;
   border-radius: 2px;
   padding-left: 8px;
   padding-right: 8px;
@@ -3778,7 +3779,7 @@ div.queryCommentChildren div.queryComment {
   font-size: 1em;
   text-transform: uppercase;
   padding-bottom:35px;
-  text-align:center;  
+  text-align:center;
 }
 
 label.queryScaleSliderItemLabel {
@@ -3818,7 +3819,7 @@ label.queryScaleSliderItemLabel {
   display: block;
   white-space: nowrap;
   background-color: #000;
-  color: #fff; 
+  color: #fff;
   border-radius: 2px;
   padding-left: 8px;
   padding-right: 8px;
@@ -3833,7 +3834,7 @@ label.queryScaleSliderItemLabel {
  * Panel Query Grouping
  *
  */
- 
+
 .queryGroupingQuestionContainer .queryGroupingItemContainer .queryGroupingItem,
 .queryGroupingQuestionContainer .queryGroupingItemContainer .queryGroupingItem label,
 .queryGroupingQuestionContainer .queryGroupingGroupContainer .queryGroupingItem,
@@ -3850,9 +3851,9 @@ label.queryScaleSliderItemLabel {
  * Panel Query Ordering
  *
  */
- 
+
 .queryOrderingFieldItemContainer {
-  min-height:48px; 
+  min-height:48px;
   margin-bottom:6px;
   padding-left:30px;
   position:relative;
@@ -3923,8 +3924,8 @@ label.queryScaleSliderItemLabel {
 }
 
 /*
- * Panel Query Submit Container and Related Stuff  
- * 
+ * Panel Query Submit Container and Related Stuff
+ *
  */
 
 .queryQuestionSubmitContainer {
@@ -3957,12 +3958,12 @@ label.queryScaleSliderItemLabel {
 .queryQuestionSubmitContainer div.formSubmitContainer input[disabled="disabled"]{
   cursor:default;
   font-size: 1.1em;
-  padding: 6px;  
+  padding: 6px;
 }
 
 .queryQuestionSubmitContainer > div.querySkipQuestionContainer {
-  display: block;    
-  font-size: 0.9em; 
+  display: block;
+  font-size: 0.9em;
 }
 
 .queryQuestionSubmitContainer > div.querySkipQuestionContainer input {
@@ -3974,7 +3975,7 @@ label.queryScaleSliderItemLabel {
   border-radius:28px;
   cursor:default;
   padding:18px 8px;
-  background:url('../gfx/ui/quick_nav_arrow_up.png') no-repeat center 5px;  
+  background:url('../gfx/ui/quick_nav_arrow_up.png') no-repeat center 5px;
   min-width:45px;
   position:relative;
 }
@@ -3994,13 +3995,13 @@ label.queryScaleSliderItemLabel {
   border:3px solid #95d1f9;
   border-radius:5px;
   text-align:left;
-  box-shadow: 0px 4px 8px rgba(0,0,0,0.3);  
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.3);
   padding:10px;
   background:#fff;
-  overflow-y:scroll;  
+  overflow-y:scroll;
   overflow-x:hidden;
   min-height:94px;
-  max-height:484px; 
+  max-height:484px;
   width:444px;
   margin:0px auto 0px auto;
 }
@@ -4013,14 +4014,14 @@ label.queryScaleSliderItemLabel {
 }
 
 .queryCurrentPageIndicator:hover .queryPageChangeQuickNavigationWrapper {
-  padding-bottom:20px;  
+  padding-bottom:20px;
   bottom:45px;
-  margin-left:-244px; 
+  margin-left:-244px;
   min-height:120px;
   max-height:510px;
   overflow:hidden;
   width:490px;
-  left:50%;  
+  left:50%;
   position:absolute;
   display:block;
 }
@@ -4032,7 +4033,7 @@ label.queryScaleSliderItemLabel {
   position:absolute;
   bottom:0;
   left:0;
-  right:0; 
+  right:0;
 }
 
 .queryQuickNavigationPageLink a {
@@ -4044,11 +4045,11 @@ label.queryScaleSliderItemLabel {
 .queryQuickNavigationPageLink a:hover {
   background:#74c0f2;
   border-radius:3px;
-  color:#fff;  
+  color:#fff;
 }
 
 .queryQuickNavigationPageLink a {
-  color:#4c4c4c;  
+  color:#4c4c4c;
   font-size:0.85em;
 }
 
@@ -4065,11 +4066,11 @@ label.queryScaleSliderItemLabel {
  * Panel Admin Query Editor
  *
  */
- 
+
 #panelAdminQueryEditorSettingsTab label:nth-child(1){
   display:block;
-} 
- 
+}
+
 .queryEditorQuestionPreviewContainer {
   position:relative;
   margin-bottom:5px;
@@ -4106,7 +4107,7 @@ label.queryScaleSliderItemLabel {
   border: 3px dashed #ddd;
   border-radius: 3px 3px 3px 3px;
   margin: 0 1px 0 0;
-  padding: 5px; 
+  padding: 5px;
   margin-bottom:10px;
 }
 
@@ -4154,7 +4155,7 @@ label.queryScaleSliderItemLabel {
   font-size:0.8em;
   margin-right: 10px;
 }
- 
+
 .queryEditorQuestionOptions {
   background:#fff;
   border: 3px solid #74C0F2;
@@ -4174,7 +4175,7 @@ label.queryScaleSliderItemLabel {
   left:10px;
 }
 
-.queryPreviewTimelineValue2Label, 
+.queryPreviewTimelineValue2Label,
 .queryPreviewTimelineValue1Label,
 .queryEditorQuestionScaleRadioPreviewLabelContainer,
 .queryEditorQuestionScaleSliderPreviewLabel {
@@ -4209,7 +4210,7 @@ label.queryScaleSliderItemLabel {
   height: 16px;
   float:right;
   margin:5px 0px 0px 5px;
-  background:url('../gfx/icons/16x16/actions/validation_error_white.png') center center no-repeat transparent;  
+  background:url('../gfx/icons/16x16/actions/validation_error_white.png') center center no-repeat transparent;
 }
 
 #panelAdminQueryEditorPagesTabValidationError {
@@ -4217,7 +4218,7 @@ label.queryScaleSliderItemLabel {
   height: 16px;
   float:right;
   margin:5px 0px 0px 5px;
-  background:url('../gfx/icons/16x16/actions/validation_error_white.png') center center no-repeat transparent;  
+  background:url('../gfx/icons/16x16/actions/validation_error_white.png') center center no-repeat transparent;
 }
 
 .ui-dialog-content {
@@ -4227,11 +4228,11 @@ label.queryScaleSliderItemLabel {
 .ui-dialog-titlebar-close {
   display:none;
 }
- 
+
 /*
  * Panel Admin Query Editor Timeline Slider
  *
- */ 
+ */
 
 .queryEditorQuestionPreviewContainer label.queryPreviewTimelineMin {
   float:left;
@@ -4296,7 +4297,7 @@ label.queryScaleSliderItemLabel {
   left:58px;
   box-shadow:0px 0px 4px rgba(0, 0, 0, 0.4);
   min-width:35px;
-  opacity:0.7;  
+  opacity:0.7;
 }
 
 .queryEditorQuestionPreviewContainer .queryPreviewTimelineValue2Label:before {
@@ -4331,12 +4332,12 @@ label.queryScaleSliderItemLabel {
 }
 
 .queryEditorQuestionScale2DGraphContainer {
-  width: 400px; 
+  width: 400px;
   height: 400px;
 }
 
 .queryEditorQuestionTimeSerieContainer {
-  /* width: 400px; */ 
+  /* width: 400px; */
   min-height: 400px;
 }
 
@@ -4344,7 +4345,7 @@ label.queryScaleSliderItemLabel {
   display: inline-block;
   padding:0px 10px 5px 10px;
   margin:0px 10px 0px 0px;
-  text-align:center;  
+  text-align:center;
 }
 
 .queryEditorQuestionScaleRadioPreviewInputContainer {
@@ -4365,7 +4366,7 @@ label.queryScaleSliderItemLabel {
  */
 
 .queryEditorQuestionPreviewContainer > label.queryEditorQuestionScaleSliderLabel {
-  padding-bottom:25px; 
+  padding-bottom:25px;
   text-align:center;
 }
 
@@ -4379,8 +4380,8 @@ label.queryScaleSliderItemLabel {
 /*
  * Panel Admin Query Editor Grouping
  *
- */ 
- 
+ */
+
 .queryGroupingItemContainer {
   width:200px;
   float:left;
@@ -4392,7 +4393,7 @@ label.queryScaleSliderItemLabel {
   vertical-align:top;
   margin-left:210px;
 }
- 
+
 .queryGroupingItem {
   background:#0099FF;
   color:#fff;
@@ -4472,7 +4473,7 @@ label.queryScaleSliderItemLabel {
 /*
  * Panel Admin Query Editor Multiple Select
  *
- */ 
+ */
 
 .queryMultiselectListItemContainer {
 
@@ -4492,9 +4493,9 @@ label.queryScaleSliderItemLabel {
 /*
  * Panel Admin Query Editor Basic Form
  *
- */ 
- 
- 
+ */
+
+
 .queryEditorFormFieldEditors {
   margin-top:20px;
 }
@@ -4601,8 +4602,8 @@ label.queryScaleSliderItemLabel {
   border: 3px solid #e5e5e5;
   padding: 4px 6px;
   border-radius:3px;
-  width:300px; 
-  height:100px; 
+  width:300px;
+  height:100px;
   resize:none
 }
 
@@ -4611,7 +4612,7 @@ label.queryScaleSliderItemLabel {
   margin:10px 0px 20px 0px;
 }
 
-.queryEditorFormFieldSettings, 
+.queryEditorFormFieldSettings,
 .queryEditorFormFieldCreate {
   background: none repeat scroll 0 0 #FFFFFF;
   border: 4px solid #DDE7ED;
@@ -4660,8 +4661,8 @@ label.queryScaleSliderItemLabel {
   text-align: left;
   text-transform: uppercase;
   vertical-align: top;
-  width: 160px;  
-  
+  width: 160px;
+
 }
 
 .queryEditorFormFieldCreateButton:hover {
@@ -4702,7 +4703,7 @@ label.queryScaleSliderItemLabel {
 /*
  * Panel Admin Query Editor Background Form
  *
- */ 
+ */
 
 /*
  * Context Menu
@@ -4787,7 +4788,7 @@ label.queryScaleSliderItemLabel {
 
 .profilePictureWrapper {
   position:absolute;
-  right:12px;  
+  right:12px;
 }
 
 .profilePictureTitle {
@@ -4850,7 +4851,7 @@ label.queryScaleSliderItemLabel {
 .changeProfilePictureModalContainer {
   box-shadow: 0px 0px 100px 12px #000;
   border-radius:10px;
-  padding:8px;    
+  padding:8px;
   position:fixed;
   top:100px;
   left:50%;
@@ -4896,11 +4897,11 @@ label.queryScaleSliderItemLabel {
 }
 
 .loginTypeGoogle {
-  background:url('../gfx/icons/24x24/apps/google.png') no-repeat center left;   
+  background:url('../gfx/icons/24x24/apps/google.png') no-repeat center left;
 }
 
 .loginTypeTwitter {
-  background:url('../gfx/icons/24x24/apps/twitter.png') no-repeat center left;  
+  background:url('../gfx/icons/24x24/apps/twitter.png') no-repeat center left;
 }
 
 .loginTypeInUseTextContainer {
@@ -5021,11 +5022,11 @@ label.queryScaleSliderItemLabel {
   background-image: url('../gfx/ui/eventqueueloader.png');
   background-position: 8px center;
   background-repeat: no-repeat;
-  z-index:9999;  
+  z-index:9999;
 }
 
-/* 
- * Global Blocking Overlay 
+/*
+ * Global Blocking Overlay
  *
  */
 
@@ -5037,16 +5038,16 @@ label.queryScaleSliderItemLabel {
  * Report Issue
  *
  */
-  
+
  #reportIssueBlockContent > span {
    display:block;
    padding:10px 0px 10px 0px;
  }
- 
+
   #reportIssueBlockContent .formMemoFieldContainer {
   margin-top:10px;
  }
- 
+
 /*
  * Scripty Dialog Modifications - Create Query Page
  *
@@ -5193,7 +5194,7 @@ label.queryScaleSliderItemLabel {
   border:1px solid #4bb7ff;
   background:#fff;
 }
- 
+
 /*
  * Generic Modal Popup Dialog
  *
@@ -5286,7 +5287,7 @@ label.queryScaleSliderItemLabel {
   margin-top: 5px;
   padding: 4px;
   text-transform: uppercase;
-  font-weight: normal;  
+  font-weight: normal;
   margin-left:10px;
   cursor:pointer;
 }
@@ -5304,8 +5305,8 @@ label.queryScaleSliderItemLabel {
 }
 
 /*
- * Query Results and Reports 
- * 
+ * Query Results and Reports
+ *
  */
 
 #GUI_panelReportContainer .block {
@@ -5317,10 +5318,10 @@ label.queryScaleSliderItemLabel {
 
 #GUI_panelReportContainer .reportPage {
   border:1px solid #dde7ed;
-  padding:8px 12px;    
+  padding:8px 12px;
   position:relative;
   box-shadow: 0px 0px 8px rgba(0,0,0,0.1);
-  margin-top:20px;  
+  margin-top:20px;
 }
 
 #GUI_panelReportContainer .reportPage div img {
@@ -5347,7 +5348,7 @@ label.queryScaleSliderItemLabel {
 #GUI_panelReportControlsContainer .queryExpertiseFilter table tr:nth-child(1) td {
   vertical-align:bottom;
   background:#F7F7F7;
-  text-align:center;  
+  text-align:center;
   width:90px;
 }
 
@@ -5366,13 +5367,13 @@ label.queryScaleSliderItemLabel {
 }
 
 #GUI_panelReportControlsContainer .queryExpertiseFilter table .queryExpertiseFilterGroup {
-  cursor: pointer;  
+  cursor: pointer;
   text-align:center;
 }
 
 #GUI_panelReportControlsContainer .queryExpertiseFilter table td.queryExpertiseFilterGroupSelected,
 #GUI_panelReportControlsContainer .queryExpertiseFilter table td.queryExpertiseFilterGroupSelected:hover {
-  cursor: pointer;  
+  cursor: pointer;
   text-align:center;
   background:#3fb2ff;
   color:#fff;
@@ -5419,8 +5420,8 @@ label.queryScaleSliderItemLabel {
   padding: 0px;
   position: relative;
 }
- 
-#GUI_panelReportContainer .reportPage h2 { 
+
+#GUI_panelReportContainer .reportPage h2 {
   margin: 0px 0px 15px 0px;
   padding: 0px 0px 0px 0px;
   color:#0099ff;
@@ -5428,17 +5429,17 @@ label.queryScaleSliderItemLabel {
   text-transform:none;
 }
 
-#GUI_panelReportContainer .reportPage .queryReportThesis { 
+#GUI_panelReportContainer .reportPage .queryReportThesis {
   font-weight:bold;
   font-size:1.2em;
   margin-bottom:20px;
   color:#4c4c4c;
 }
 
-#GUI_panelReportContainer .reportPage .queryReportDescription { 
+#GUI_panelReportContainer .reportPage .queryReportDescription {
   margin-bottom:20px;
 }
- 
+
 #GUI_panelReportContainer .reportPage h2.querySubTitle {
   border-bottom: 1px solid #DDE7ED;
   color: #0099FF;
@@ -5453,7 +5454,7 @@ label.queryScaleSliderItemLabel {
   padding: 20px 0 10px;
   border-bottom: 1px solid #DDE7ED;
 }
- 
+
 #GUI_panelReportContainer .reportPage .queryCommentDate {
   color: #DF4D1C;
   font-size: 1.2em;
@@ -5461,7 +5462,7 @@ label.queryScaleSliderItemLabel {
   margin: 0 10px 0 0;
   float:none;
 }
- 
+
 .panelAdminQueryResultsQueryPagesContainer {
   padding-left: 5px;
   border-left:5px solid #eee;
@@ -5510,36 +5511,36 @@ label.queryScaleSliderItemLabel {
 }
 
 .blockContextualLink.documentFirstPage,
-.blockContextualLink.documentPreviousPage, 
-.blockContextualLink.documentNextPage, 
+.blockContextualLink.documentPreviousPage,
+.blockContextualLink.documentNextPage,
 .blockContextualLink.documentLastPage {
   display:inline-block;
   height:32px;
-  width:32px;  
+  width:32px;
   margin:0px 2px 0px 2px;
 }
 
 .blockContextualLink.documentFirstPage a,
-.blockContextualLink.documentPreviousPage a, 
-.blockContextualLink.documentNextPage a, 
+.blockContextualLink.documentPreviousPage a,
+.blockContextualLink.documentNextPage a,
 .blockContextualLink.documentLastPage a {
   text-align: center;
   cursor:pointer;
   display:inline-block;
   height:32px;
-  width:32px;  
+  width:32px;
   border:1px solid #fff;
 }
 
 .blockContextualLink.documentFirstPage a:hover,
-.blockContextualLink.documentPreviousPage a:hover, 
-.blockContextualLink.documentNextPage a:hover, 
+.blockContextualLink.documentPreviousPage a:hover,
+.blockContextualLink.documentNextPage a:hover,
 .blockContextualLink.documentLastPage a:hover {
   text-align: center;
   cursor:pointer;
   display:inline-block;
   height:32px;
-  width:32px;  
+  width:32px;
   border:1px solid #0099ff;
   border-radius:3px;
 }
@@ -5553,18 +5554,18 @@ label.queryScaleSliderItemLabel {
 }
 
 .blockContextualLink.documentNextPage a {
-  background:url('../gfx/icons/24x24/actions/goto_right.png') center center no-repeat;  
+  background:url('../gfx/icons/24x24/actions/goto_right.png') center center no-repeat;
 }
 
 .blockContextualLink.documentLastPage a {
-  background:url('../gfx/icons/24x24/actions/gotolastpage_right.png') center center no-repeat;    
+  background:url('../gfx/icons/24x24/actions/gotolastpage_right.png') center center no-repeat;
 }
 
 .documentNavigationContainer .blockContextualLinkDisabled a,
 .documentNavigationContainer .blockContextualLinkDisabled:hover a {
   opacity:0.5;
   cursor:default;
-  border:1px solid #fff;  
+  border:1px solid #fff;
 }
 
 .documentNavigationContainer .blockContextualLinkDisabled:hover a span.blockContextualLinkTooltip {
@@ -5575,10 +5576,10 @@ label.queryScaleSliderItemLabel {
  * Index Generic
  *
  */
- 
+
 .indexGenericTitle {
   font-size:1.15em;
-  margin:0px 0px 5px 0px;  
+  margin:0px 0px 5px 0px;
 }
 
 .indexGenericDescription {
@@ -5594,7 +5595,7 @@ label.queryScaleSliderItemLabel {
  * Index Admin Dashboard Column Layout
  *
  */
- 
+
 .GUI_indexAdminDashboardNarrowColumn {
   float:left;
   width:32%;
@@ -5605,20 +5606,20 @@ label.queryScaleSliderItemLabel {
   float:left;
   width:66%;
 }
- 
+
 .indexAdminDashboardMaterialsShowAllLink {
-  border-top:1px solid #dde7ed;    
+  border-top:1px solid #dde7ed;
   padding:4px 0px 0px 0px;
   margin:4px 0px 0px 0px;
   text-align:center;
 }
 
 #GUI_indexAdminDashboardGuidesContainer {
-  
+
 }
 
 #GUI_indexAdminDashboardMaterialsContainer {
-  
+
 }
 
 #GUI_indexAdminDashboardUsersContainer {
@@ -5626,7 +5627,7 @@ label.queryScaleSliderItemLabel {
 }
 
 #GUI_indexAdminDashboardBulletinsContainer {
-  
+
 }
 
 /*
@@ -5646,13 +5647,13 @@ label.queryScaleSliderItemLabel {
   width:69%;
   margin-left:31%;
 }
- 
- 
+
+
 #GUI_indexHelpListingPanel .panelGenericTitle,
 #GUI_indexMaterialsListingPanel .panelGenericTitle {
-  
+
 }
- 
+
 .dashboardLocaleSelectorContainer {
   position:absolute;
   right:40px;
@@ -5683,7 +5684,7 @@ label.queryScaleSliderItemLabel {
 
 
 /*
- * Generic Material Management - Drag and Drop etc. 
+ * Generic Material Management - Drag and Drop etc.
  *
  */
 
@@ -5700,9 +5701,9 @@ label.queryScaleSliderItemLabel {
   color:#1e1e1e;
   padding: 4px 8px;
   text-transform:uppercase;
-  font-size: 1em; 
+  font-size: 1em;
   font-family: 'PT Sans', Verdana, sans-serif;
-  margin:0px 0px 0px 0px;  
+  margin:0px 0px 0px 0px;
 }
 
 .materialFolderSortableHover {
@@ -5719,54 +5720,54 @@ label.queryScaleSliderItemLabel {
 }
 
 /*
- * Global Stamp Selector Rules 
+ * Global Stamp Selector Rules
  *
  */
- 
+
 .stampTimeLineSpacer {
   height:140px;
   clear:both;
 }
- 
+
 .stampSelectorOverlay {
   height:90px;
   position:fixed;
   left:0;
   right:0;
-  bottom:0;  
-  border-top:1px solid #dde7ed;  
-  box-shadow: 0 -2px 4px rgba(77, 77, 77, 0.1);   
+  bottom:0;
+  border-top:1px solid #dde7ed;
+  box-shadow: 0 -2px 4px rgba(77, 77, 77, 0.1);
 }
 
 .stampSelectorOverlayBackground {
   background:#eaf1f4;
   position:absolute;
-  height:90px;  
+  height:90px;
   left:0;
   right:0;
-  bottom:0;  
+  bottom:0;
   opacity:0.85;
 }
- 
+
 .stampSelectorOverlayContainer {
   height:90px;
   margin:0 auto 0 auto;
   max-width: 1240px;
-  min-width: 980px;   
+  min-width: 980px;
   position:relative;
 }
 
 .stampSelectorOverlayHeader {
-  background:#eaf1f4;  
+  background:#eaf1f4;
   border-top:1px solid #dde7ed;
-  border-left:1px solid #dde7ed;  
-  border-right:1px solid #dde7ed;    
+  border-left:1px solid #dde7ed;
+  border-right:1px solid #dde7ed;
   position:absolute;
   left:10px;
   top:-31px;
   padding:5px 30px 5px 7px;
-  box-shadow: 0 -2px 4px rgba(77, 77, 77, 0.1);  
-  opacity:0.9; 
+  box-shadow: 0 -2px 4px rgba(77, 77, 77, 0.1);
+  opacity:0.9;
   color:#186089;
 }
 
@@ -5817,15 +5818,15 @@ label.queryScaleSliderItemLabel {
   top:6px;
   background:url('../gfx/icons/16x16/actions/up.png') center center no-repeat;
   opacity:1;
-  cursor:pointer;  
+  cursor:pointer;
 }
- 
+
 .stampTimelineSpacerContainer {
   min-width:160px;
   min-height:70px;
   float:left;
   margin:10px 0px 10px 0px;
-} 
+}
 
 .stampTimelineContainer {
   min-width:70px;
@@ -5843,8 +5844,8 @@ label.queryScaleSliderItemLabel {
 
 .stampTimelineIcon {
   height:30px;
-  padding:5px 5px 0px 5px;  
-  display:block;  
+  padding:5px 5px 0px 5px;
+  display:block;
 }
 
 .current-stamp {
@@ -5858,10 +5859,10 @@ label.queryScaleSliderItemLabel {
 .present-stamp {
   background:url('../gfx/icons/24x24/actions/stamp-present-marker.png') center center no-repeat;
 }
- 
+
 .stampTimelineCreationDateWrapper {
   padding:0px 5px 5px 5px;
-  display:block;  
+  display:block;
   line-height:1.1em;
 }
 
@@ -5886,14 +5887,14 @@ label.queryScaleSliderItemLabel {
 .stampTimeLineDesc {
   display:block;
   margin-top:4px;
-  text-transform:none;  
+  text-transform:none;
 }
- 
+
 .stampTimelineContainer a > span.stampTimeLineTooltip,
 .stampTimelineContainer > span.stampTimeLineTooltip {
   display:none;
 }
- 
+
 .stampTimelineContainer a:hover > span.stampTimeLineTooltip,
 .stampTimelineContainer:hover > span.stampTimeLineTooltip {
   display:block;
@@ -5933,7 +5934,7 @@ label.queryScaleSliderItemLabel {
 .stampSelectorOverLayUp > span.stampOverlayButtonTooltip {
   display:none;
 }
- 
+
 .stampSelectorOverLayDown:hover > span.stampOverlayButtonTooltip,
 .stampSelectorOverLayUp:hover > span.stampOverlayButtonTooltip {
   display:block;
@@ -5966,13 +5967,13 @@ label.queryScaleSliderItemLabel {
   width:11px;
   position:absolute;
   right:14px;
-} 
- 
+}
+
 /*
  * Panel Admin Panelistactivity
  *
  */
- 
+
 #GUI_panelistActivityNarrowColumn {
   float: left;
   min-height: 500px;
@@ -6022,7 +6023,7 @@ label.queryScaleSliderItemLabel {
   text-decoration:underline;
 }
 
-#panelistActivityAnsweredReplicants, 
+#panelistActivityAnsweredReplicants,
 #panelistActivityUnAnsweredReplicants {
   margin-bottom:20px;
 }
@@ -6053,7 +6054,7 @@ label.queryScaleSliderItemLabel {
 
 #repliedPanelistName,
 #unrepliedPanelistName,
-#repliedPanelistLogin, 
+#repliedPanelistLogin,
 #repliedPanelistReply,
 #unrepliedPanelistLogin {
   cursor:pointer;
@@ -6122,4 +6123,4 @@ label.queryScaleSliderItemLabel {
   margin-left: 5px;
   margin-top: 4px;
   padding: 0px 10px 0px 10px;
-} 
+}

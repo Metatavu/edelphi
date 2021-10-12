@@ -13,6 +13,7 @@ export interface IStrings extends LocalizedStringsMethods {
     profileLink: string;
     logoutLink: string;
     panelAdminBreadcrumb: string;
+    select: string;
   },
 
   errorDialog: {
@@ -60,22 +61,28 @@ export interface IStrings extends LocalizedStringsMethods {
         modify: string
       },
       comments: {
-        title: string,
-        reply: string,
-        elaborate: string,
-        hide: string,
-        show: string,
-        edit: string,
-        remove: string,
-        commentModified: string,
-        commentDate: string,
-        saveReply: string,
-        saveEdit: string,
-        confirmRemoveConfirm: string,
-        confirmRemoveCancel: string,
-        confirmRemoveText: string,
-        noComments: string,
-        yourComment: string
+        title: string;
+        reply: string;
+        elaborate: string;
+        hide: string;
+        show: string;
+        edit: string;
+        remove: string;
+        commentModified: string;
+        commentDate: string;
+        saveReply: string;
+        saveEdit: string;
+        confirmRemoveConfirm: string;
+        confirmRemoveCancel: string;
+        confirmRemoveText: string;
+        noComments: string;
+        yourComment: string;
+        selectAmount: string;
+        showReplies: string;
+        hideReplies: string;
+        newCommentCount: string;
+        oldestFirst: string;
+        newestFirst: string;
       }
     }
   },
