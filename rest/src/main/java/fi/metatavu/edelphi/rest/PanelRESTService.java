@@ -200,7 +200,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     if (categoryId != null && categoryId > 0) {
       category = queryPageController.findCommentCategory(categoryId);
       if (category == null) {
-        return createBadRequest(String.format("Invalid categoryId", categoryId));
+        return createBadRequest(String.format("Invalid categoryId %s", categoryId));
       }
     }
     
@@ -215,7 +215,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
     publishCommentMqttNotification(QueryQuestionCommentNotification.Type.CREATED, panel, comment);
     
-    return createOk(queryQuestionCommentTranslator.translate(comment, panel));
+    return createOk(queryQuestionCommentTranslator.translate(comment));
   }
 
   @Override
@@ -273,7 +273,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createNotFound("Comment does not belong to given panel");
     }
     
-    return createOk(queryQuestionCommentTranslator.translate(comment, panel));
+    return createOk(queryQuestionCommentTranslator.translate(comment));
   }
 
   @Override
@@ -326,7 +326,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       if (categoryId > 0) {
         category = queryPageController.findCommentCategory(categoryId);
         if (category == null) {
-          return createBadRequest(String.format("Invalid categoryId", categoryId));
+          return createBadRequest(String.format("Invalid categoryId %s", categoryId));
         }
       } else {
         onlyNullCategories = true;
@@ -375,7 +375,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     );
 
     return createOk(rootComments.stream()
-      .map(comment -> queryQuestionCommentTranslator.translate(comment, panel))
+      .map(comment -> queryQuestionCommentTranslator.translate(comment))
       .collect(Collectors.toList()), invitationCount);
   }
 
@@ -412,7 +412,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     if (categoryId != null && categoryId > 0) {
       category = queryPageController.findCommentCategory(categoryId);
       if (category == null) {
-        return createBadRequest(String.format("Invalid categoryId", categoryId));
+        return createBadRequest(String.format("Invalid categoryId %s", categoryId));
       }
     }
     
@@ -425,7 +425,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
     publishCommentMqttNotification(QueryQuestionCommentNotification.Type.UPDATED, panel, comment);
     
-    return createOk(queryQuestionCommentTranslator.translate(updatedComment, panel));
+    return createOk(queryQuestionCommentTranslator.translate(updatedComment));
   }
 
   @Override

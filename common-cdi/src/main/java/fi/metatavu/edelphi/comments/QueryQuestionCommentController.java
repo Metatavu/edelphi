@@ -156,26 +156,22 @@ public class QueryQuestionCommentController {
   /**
    * Counts child comments
    *
-   * @param panel panel
    * @param parentComment parent comment
    * @return count of child comments
    */
-  public int countChildComments(Panel panel, QueryQuestionComment parentComment) {
-
-    return this.listQueryQuestionComments(
-      panel,
+  public int countChildComments(QueryQuestionComment parentComment) {
+    return queryQuestionCommentDAO.count(
+      parentComment.getQueryPage(),
       null,
       null,
       null,
       parentComment,
-      null,
       false,
       null,
+      null,
       false,
-      0,
-      1000,
       false
-    ).size();
+    ).intValue();
   }
 
   /**
