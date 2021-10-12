@@ -19,7 +19,7 @@ interface Props {
   pageId: number;
   queryReplyId: number;
   canManageComments: boolean;
-  category: QueryQuestionCommentCategory | null;
+  category: QueryQuestionCommentCategory | null;
   isRootComment?: boolean;
   childComments?: QueryQuestionComment[];
   loadChildComments?: (parentId: number) => void;
@@ -142,7 +142,7 @@ class QueryCommentClass extends React.Component<Props, State> {
         <div className="editCommentEditor">
           <textarea
             ref={ textarea => this.commentEditor = textarea }
-            onChange={ event => this.setState({ commentEditorContents: event.target.value }) }
+            onChange={ event => this.setState({ commentEditorContents: event.target.value }) }
             value={ commentEditorContents }
           />
           <input
@@ -367,7 +367,7 @@ class QueryCommentClass extends React.Component<Props, State> {
   private canEditComment = () => {
     const { canManageComments, loggedUserId, comment } = this.props;
 
-    return canManageComments || loggedUserId == comment.creatorId;
+    return canManageComments || loggedUserId == comment.creatorId;
   }
 
   /**
@@ -399,7 +399,7 @@ class QueryCommentClass extends React.Component<Props, State> {
    * @param dateTime date time
    * @return formatted date time
    */
-  private formatDateTime(dateTime?: Date | string) {
+  private formatDateTime(dateTime?: Date | string) {
     return moment(dateTime).locale(strings.getLanguage()).format("LLL");
   }
 
@@ -437,11 +437,11 @@ class QueryCommentClass extends React.Component<Props, State> {
   private onCommentDeleteConfirm = () => {
     const { accessToken, comment, panelId } = this.props;
 
-    if (!accessToken || !comment.id) {
+    if (!accessToken || !comment.id) {
       return;
     }
 
-    if (!accessToken || !comment.id) {
+    if (!accessToken || !comment.id) {
       return;
     }
 
@@ -465,7 +465,7 @@ class QueryCommentClass extends React.Component<Props, State> {
 
     event.preventDefault();
 
-    if (!this.commentEditor || !accessToken || !comment.id) {
+    if (!this.commentEditor || !accessToken || !comment.id) {
       return;
     }
 
@@ -492,7 +492,7 @@ class QueryCommentClass extends React.Component<Props, State> {
 
     event.preventDefault();
 
-    if (!this.replyEditor || !accessToken || !comment.id) {
+    if (!this.replyEditor || !accessToken || !comment.id) {
       return;
     }
 
@@ -550,7 +550,7 @@ class QueryCommentClass extends React.Component<Props, State> {
 
     event.preventDefault();
 
-    if (!accessToken || !comment.id) {
+    if (!accessToken || !comment.id) {
       return;
     }
 

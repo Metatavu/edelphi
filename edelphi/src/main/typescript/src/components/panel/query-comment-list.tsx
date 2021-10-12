@@ -21,7 +21,7 @@ interface Props {
   pageId: number;
   queryReplyId: number;
   canManageComments: boolean;
-  category: QueryQuestionCommentCategory | null;
+  category: QueryQuestionCommentCategory | null;
 }
 
 /**
@@ -35,7 +35,7 @@ interface State {
   oldestFirst: boolean;
   loading: boolean;
   comments: QueryQuestionComment[];
-  error?: Error | unknown;
+  error?: Error | unknown;
 }
 
 /**
@@ -146,7 +146,7 @@ class QueryCommentList extends React.Component<Props, State> {
     
     return (
       <div style={{ display: "flex", alignItems: "center" }}>
-        <p style={{ margin: 0, marginRight: "10px" }}>{ strings.panel.query.comments.selectAmount }</p>
+        <p style={{ margin: 0, marginRight: "10px" }}>{ strings.panel.query.comments.selectAmount }</p>
         <Select
           placeholder={ strings.generic.select }
           onChange={ this.onDropdownChange }
@@ -167,7 +167,7 @@ class QueryCommentList extends React.Component<Props, State> {
     return (
       <div style={{ display: "flex" }}>
         <p style={{ marginTop: 10, marginRight: 10 }}>
-          { strings.panel.query.comments.newestFirst }
+          { strings.panel.query.comments.newestFirst }
         </p>
         <div style={{ marginTop: 10 }}>
           <Checkbox
@@ -177,7 +177,7 @@ class QueryCommentList extends React.Component<Props, State> {
           />
         </div>
         <p style={{ marginTop: 10, marginLeft: 10 }}>
-          { strings.panel.query.comments.oldestFirst }
+          { strings.panel.query.comments.oldestFirst }
         </p>
       </div>
     );
@@ -191,7 +191,7 @@ class QueryCommentList extends React.Component<Props, State> {
     const { empty, comments, loading } = this.state;
 
     if (empty) {
-      return <p> { strings.panel.query.comments.noComments } </p>;
+      return <p> { strings.panel.query.comments.noComments } </p>;
     }
 
     if (loading) {
@@ -307,7 +307,7 @@ class QueryCommentList extends React.Component<Props, State> {
         oldestFirst: oldestFirst
       });
   
-      const totalCount = parseInt(response.raw.headers.get("X-Total-Count") || "0") || 0;
+      const totalCount = parseInt(response.raw.headers.get("X-Total-Count") || "0") || 0;
       const comments = await response.value();
   
       this.setState({
@@ -386,7 +386,7 @@ class QueryCommentList extends React.Component<Props, State> {
 
     switch (type) {
       case "CREATED":
-        this.onCreate(commentId);
+        this.onCreate(parentCommentId);
         break;
       case "UPDATED":
         this.onUpdate(commentId);
@@ -400,32 +400,18 @@ class QueryCommentList extends React.Component<Props, State> {
   /**
    * Event handler for CREATED MQTT message
    *
-   * @param commentId comment ID
+   * @param parentCommentId parent comment ID
    */
-  private onCreate = async (commentId: number) => {
-    const { panelId, accessToken } = this.props;
-    const { comments } = this.state;
-
-    const commentList = [ ...comments ];
+  private onCreate = async (parentCommentId: number | null) => {
+    const { oldestFirst, activePage, pageCount, comments } = this.state;
 
     try {
-      const newComment = await Api.getQueryQuestionCommentsApi(accessToken).findQueryQuestionComment({
-        panelId: panelId,
-        commentId: commentId
-      });
+      if (activePage === 1 || activePage == pageCount) {
+        await this.loadRootComments();
+      }
 
-      if (newComment.parentId) {
-        const parentIndex = commentList.findIndex(comment => comment.id === newComment.parentId);
-
-        if (parentIndex > -1) {
-          const parent = commentList[parentIndex];
-          commentList.splice(parentIndex, 1, { ...parent, childCount: (parent.childCount || 0) + 1 });
-        }
-
-        this.setState({ comments: [ newComment, ...commentList ] }, () => this.loadComments(newComment.parentId!));
-
-      } else {
-        this.setState({ comments: [ newComment, ...commentList ] });
+      if (parentCommentId && comments.findIndex(comment => comment.id === parentCommentId) !== -1) {
+        await this.loadComments(parentCommentId);
       }
     } catch (error) {
       this.setState({
@@ -445,20 +431,17 @@ class QueryCommentList extends React.Component<Props, State> {
 
     const commentList = [ ...comments ];
     try {
-      const updatedComment = await Api.getQueryQuestionCommentsApi(accessToken).findQueryQuestionComment({
-        panelId: panelId,
-        commentId: commentId
-      });
+      const index = commentList.findIndex(comment => comment.id === commentId);
 
-      const index = commentList.findIndex(comment => comment.id === updatedComment.id);
-
-      if (index < 0) {
-        commentList.push(updatedComment);
-      } else {
+      if (index != -1) {
+        const updatedComment = await Api.getQueryQuestionCommentsApi(accessToken).findQueryQuestionComment({
+          panelId: panelId,
+          commentId: commentId
+        });
+        
         commentList.splice(index, 1, updatedComment);
+        this.setState({ comments: commentList });
       }
-
-      this.setState({ comments: commentList });
     } catch (error) {
       this.setState({
         error: error
@@ -475,17 +458,9 @@ class QueryCommentList extends React.Component<Props, State> {
   private onDelete = async (commentId: number, parentCommentId: number | null) => {
     const { comments } = this.state;
 
-    const commentList = [ ...comments ];
-    const index = commentList.findIndex(comment => comment.id === parentCommentId);
-
-    if (index > -1) {
-      const parent = commentList[index];
-      commentList.splice(index, 1, { ...parent, childCount: parent.childCount ? parent.childCount - 1 : undefined });
+    if (comments.findIndex(comment => comment.id === commentId) != -1) {
+      this.setState({ loading: true }, () => this.loadRootComments());
     }
-
-    this.setState({ 
-      comments: commentList.filter(comment => comment.id !== commentId)
-    });
   }
 
 }
