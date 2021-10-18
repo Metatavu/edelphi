@@ -62,11 +62,11 @@
             </c:if>
 
             <c:choose>
-              <c:when test="${param.activeTrail eq 'reportIssue'}">
-                <li class="menuItem activeTrail"><a href="${pageContext.request.contextPath}/panel/reportissue.page?panelId=${panel.id}"><fmt:message key="panel.menu.reportIssueLabel"/></a></li>
+              <c:when test="${param.activeTrail eq 'contact'}">
+                <li class="menuItem activeTrail"><a href="${pageContext.request.contextPath}/contact.page"><fmt:message key="contact.link"/></a></li>
               </c:when>
               <c:otherwise>
-                <li class="menuItem"><a href="${pageContext.request.contextPath}/panel/reportissue.page?panelId=${panel.id}"><fmt:message key="panel.menu.reportIssueLabel"/></a></li>
+                <li class="menuItem"><a href="${pageContext.request.contextPath}/contact.page"><fmt:message key="contact.link"/></a></li>
               </c:otherwise>
             </c:choose>
           </ul>
