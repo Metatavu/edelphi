@@ -5035,20 +5035,6 @@ label.queryScaleSliderItemLabel {
 }
 
 /*
- * Report Issue
- *
- */
-
- #reportIssueBlockContent > span {
-   display:block;
-   padding:10px 0px 10px 0px;
- }
-
-  #reportIssueBlockContent .formMemoFieldContainer {
-  margin-top:10px;
- }
-
-/*
  * Scripty Dialog Modifications - Create Query Page
  *
  */
