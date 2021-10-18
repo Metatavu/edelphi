@@ -19,7 +19,7 @@ public class ContactPageController extends PageController {
     return Feature.BASIC_USAGE;
   }
 
-  @Override∂
+  @Override
   public void process(PageRequestContext pageRequestContext) {
     String email = Base64.getEncoder().encodeToString(System.getenv("CONTACT_EMAIL").getBytes(StandardCharsets.UTF_8));
 
