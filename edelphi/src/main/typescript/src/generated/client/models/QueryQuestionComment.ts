@@ -62,6 +62,12 @@ export interface QueryQuestionComment {
      */
     contents?: string;
     /**
+     * Total child comment
+     * @type {number}
+     * @memberof QueryQuestionComment
+     */
+    childCount?: number;
+    /**
      * Comment's creator id
      * @type {string}
      * @memberof QueryQuestionComment
@@ -104,6 +110,7 @@ export function QueryQuestionCommentFromJSONTyped(json: any, ignoreDiscriminator
         'queryPageId': json['queryPageId'],
         'queryReplyId': json['queryReplyId'],
         'contents': !exists(json, 'contents') ? undefined : json['contents'],
+        'childCount': !exists(json, 'childCount') ? undefined : json['childCount'],
         'creatorId': !exists(json, 'creatorId') ? undefined : json['creatorId'],
         'lastModifierId': !exists(json, 'lastModifierId') ? undefined : json['lastModifierId'],
         'created': !exists(json, 'created') ? undefined : (new Date(json['created'])),
@@ -126,6 +133,7 @@ export function QueryQuestionCommentToJSON(value?: QueryQuestionComment | null):
         'queryPageId': value.queryPageId,
         'queryReplyId': value.queryReplyId,
         'contents': value.contents,
+        'childCount': value.childCount,
     };
 }
 

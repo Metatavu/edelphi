@@ -38,6 +38,7 @@ services:
       SMTP_TLS: ${SMTP_TLS}
       KUBERNETES_NAMESPACE: ${KUBERNETES_NAMESPACE}
       JAVA_OPTS: ${JAVA_OPTS}
+      CONTACT_EMAIL: ${CONTACT_EMAIL}
   keycloak:
     image: metatavu/keycloak:5.0.0
     container_name: keycloak

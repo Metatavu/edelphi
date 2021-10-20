@@ -10,7 +10,6 @@ import javax.batch.runtime.BatchRuntime;
 import javax.ejb.Stateful;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
@@ -21,7 +20,6 @@ import javax.ws.rs.core.Response.Status;
 
 import fi.metatavu.edelphi.batch.i18n.BatchMessages;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitation;
-import fi.metatavu.edelphi.queries.batch.CopyQueryException;
 import fi.metatavu.edelphi.rest.model.*;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -202,7 +200,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     if (categoryId != null && categoryId > 0) {
       category = queryPageController.findCommentCategory(categoryId);
       if (category == null) {
-        return createBadRequest(String.format("Invalid categoryId", categoryId));
+        return createBadRequest(String.format("Invalid categoryId %s", categoryId));
       }
     }
     
@@ -259,7 +257,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   public Response findQueryQuestionComment(Long panelId, Long commentId) {
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
-      return createNotFound();
+      return createNotFound("Panel is null or archived");
     }
 
     if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.ACCESS_PANEL)) {
@@ -268,11 +266,11 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     
     fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment comment = queryQuestionCommentController.findQueryQuestionCommentById(commentId);
     if (comment == null || queryQuestionCommentController.isQueryQuestionCommentArchived(comment)) {
-      return createNotFound();
+      return createNotFound("Comment is null or archived");
     }
     
     if (!queryQuestionCommentController.isPanelsComment(comment, panel)) {
-      return createNotFound();
+      return createNotFound("Comment does not belong to given panel");
     }
     
     return createOk(queryQuestionCommentTranslator.translate(comment));
@@ -328,7 +326,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       if (categoryId > 0) {
         category = queryPageController.findCommentCategory(categoryId);
         if (category == null) {
-          return createBadRequest(String.format("Invalid categoryId", categoryId));
+          return createBadRequest(String.format("Invalid categoryId %s", categoryId));
         }
       } else {
         onlyNullCategories = true;
@@ -360,8 +358,8 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       category,
       onlyNullCategories
     );
-    
-    return createOk(queryQuestionCommentController.listQueryQuestionComments(
+
+    List<fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment> rootComments = queryQuestionCommentController.listQueryQuestionComments(
       panel,
       stamp,
       queryPage,
@@ -374,8 +372,10 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       firstResult,
       maxResults,
       oldestFirst
-    ).stream()
-      .map(queryQuestionCommentTranslator::translate)
+    );
+
+    return createOk(rootComments.stream()
+      .map(comment -> queryQuestionCommentTranslator.translate(comment))
       .collect(Collectors.toList()), invitationCount);
   }
 
@@ -412,7 +412,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     if (categoryId != null && categoryId > 0) {
       category = queryPageController.findCommentCategory(categoryId);
       if (category == null) {
-        return createBadRequest(String.format("Invalid categoryId", categoryId));
+        return createBadRequest(String.format("Invalid categoryId %s", categoryId));
       }
     }
     
@@ -433,12 +433,12 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
   public Response findQueryQuestionAnswer(Long panelId, String answerId) {
     QueryQuestionAnswer<?> answerData = queryReplyController.findQueryQuestionAnswerData(answerId);
     if (answerData == null) {
-      return createNotFound();
+      return createNotFound("No answer data");
     }
     
     Panel panel = panelController.findPanelById(panelId);
     if (panel == null || panelController.isPanelArchived(panel)) {
-      return createNotFound();
+      return createNotFound("Panel not found or panel is archived");
     }
     
     if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.ACCESS_PANEL)) {
@@ -447,7 +447,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     
     QueryPage queryPage = answerData.getQueryPage();
     if (queryPage == null) {
-      return createNotFound();
+      return createNotFound("Query page not found");
     }
     
     if (!queryPageController.isPanelsPage(panel, queryPage)) {

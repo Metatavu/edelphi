@@ -49,7 +49,7 @@ class QueryComments extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      categories: [],
+      categories: [],
       loading: false,
       commentChanged: false,
       confirmOpen: false,
@@ -126,7 +126,7 @@ class QueryComments extends React.Component<Props, State> {
    * 
    * @param category category
    */
-  private renderCategory = (category: QueryQuestionCommentCategory | null) => {      
+  private renderCategory = (category: QueryQuestionCommentCategory | null) => {
     const { accessToken } = this.props;
     if (!accessToken) {
       return null;
@@ -139,7 +139,7 @@ class QueryComments extends React.Component<Props, State> {
           <QueryCommentList
             accessToken={ accessToken.token }
             loggedUserId={ accessToken.userId }
-            category={ category }
+            category={ category }
             canManageComments={ this.props.canManageComments }
             panelId={ this.props.panelId } queryId={ this.props.queryId }
             pageId={ this.props.pageId }
@@ -155,7 +155,7 @@ class QueryComments extends React.Component<Props, State> {
    * Render comment editor
    * @param category comment category
    */
-  private renderCommentEditor = (category: QueryQuestionCommentCategory | null) => {
+  private renderCommentEditor = (category: QueryQuestionCommentCategory | null) => {
     return (
       <QueryCommentEditor
         onCommentChange={ this.onCommentChange }

@@ -5,7 +5,7 @@ docker-compose up -d mysql
 
 sleep 5
 
-CONTAINER_ID=$(docker ps -q --filter name=edelphi_mysql_1)
+CONTAINER_ID=$(docker ps -q --filter name=edelphi[_-]mysql[_-]1)
 echo "MySQL container started with ID: $CONTAINER_ID"
 
 docker cp ../db_dumps/edelphi.sql $CONTAINER_ID:/tmp/ed.sql
