@@ -3,6 +3,7 @@
 
   CKEDITOR.plugins.addExternal('fnigenericbrowser', '/_scripts/ckplugins/fnigenericbrowser/');
   CKEDITOR.plugins.addExternal('fnidynlist', '/_scripts/ckplugins/fnidynlist/');
+  CKEDITOR.plugins.addExternal('disablehttplink', '/_scripts/ckplugins/disablehttplink/');
   
   CKEDITOR.config.scayt_autoStartup = false;
   CKEDITOR.config.entities = false;
@@ -12,7 +13,7 @@
   CKEDITOR.config.forcePasteAsPlainText = true;
   CKEDITOR.config.language = getLocale().getLanguage();
   
-  CKEDITOR.config.extraPlugins = 'autogrow,mediaembed,fnigenericbrowser';
+  CKEDITOR.config.extraPlugins = 'autogrow,mediaembed,fnigenericbrowser,disablehttplink';
   
   CKEDITOR.config.removePlugins = 'elementspath';
   CKEDITOR.config.toolbarCanCollapse = false;
