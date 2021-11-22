@@ -21,3 +21,5 @@ dev
 .classpath
 .idea
 *.iml
+nginx-dev/letsencrypt
+nginx-dev/cloudflare.ini
