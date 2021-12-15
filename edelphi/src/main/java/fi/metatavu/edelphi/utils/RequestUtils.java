@@ -39,13 +39,18 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUser;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserRole;
+import org.apache.commons.lang3.math.NumberUtils;
 
 public class RequestUtils {
-  
+
+  /**
+   * Returns service base URL
+   *
+   * @param request request
+   * @return service base URL
+   */
   public static String getBaseUrl(HttpServletRequest request) {
-    String currentURL = request.getRequestURL().toString();
-    String pathInfo = request.getRequestURI();
-    return currentURL.substring(0, currentURL.length() - pathInfo.length()) + request.getContextPath();
+    return String.format("%s://%s:%d", getRequestScheme(request), getRequestHost(request), getRequestPort(request));
   }
 
   public static String getCurrentUrl(HttpServletRequest request, boolean stripApp) {
@@ -302,5 +307,50 @@ public class RequestUtils {
 
   public static String getSecurityContextType(RequestContext requestContext) {
     return requestContext.getString("securityContextType");
+  }
+
+  /**
+   * Returns request scheme
+   *
+   * @param request request
+   * @return request scheme
+   */
+  private static String getRequestScheme(HttpServletRequest request) {
+    String forwardProto = request.getHeader("X-Forwarded-Proto");
+    if (StringUtils.isNotBlank(forwardProto)) {
+      return forwardProto;
+    }
+
+    return request.getScheme();
+  }
+
+  /**
+   * Returns request host
+   *
+   * @param request request
+   * @return request host
+   */
+  private static String getRequestHost(HttpServletRequest request) {
+    String forwardHost = request.getHeader("X-Forwarded-Host");
+    if (StringUtils.isNotBlank(forwardHost)) {
+      return forwardHost;
+    }
+
+    return request.getServerName();
+  }
+
+  /**
+   * Returns request port
+   *
+   * @param request request
+   * @return request port
+   */
+  private static Integer getRequestPort(HttpServletRequest request) {
+    String forwardPort = request.getHeader("X-Forwarded-Port");
+    if (StringUtils.isNotBlank(forwardPort)) {
+      return NumberUtils.createInteger(forwardPort);
+    }
+
+    return request.getLocalPort();
   }
 }
