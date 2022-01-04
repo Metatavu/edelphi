@@ -201,7 +201,12 @@ export default class InviteUsers extends React.Component<Props, State> {
    * Renders message block
    */
   private renderMessageBlock = () => {
-    const { skipInvitation, password, messageHeader, messageText } = this.state;
+    const {
+      skipInvitation,
+      password,
+      messageHeader,
+      messageText
+    } = this.state;
 
     if (messageHeader && messageText) {
       return (
