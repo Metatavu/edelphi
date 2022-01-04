@@ -765,7 +765,7 @@ export default class InviteUsers extends React.Component<Props, State> {
     return {
       messageHeader: skipInvitation ? strings.panelAdmin.inviteUsers.usersAddedHeader : strings.panelAdmin.inviteUsers.invitationsSentHeader,
       messageText: strings.formatString<string | number>(this.getInvitationsSentTextTemplate(skipInvitation, newUserCount, invitedUserCount), newUserCount, password, invitedUserCount) as string
-    }
+    };
   }
 
   /**
