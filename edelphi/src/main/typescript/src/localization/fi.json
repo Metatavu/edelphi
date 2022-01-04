@@ -187,7 +187,11 @@
       "passwordHeader": "Uusille käyttäjille tullaan luomaan oletussalasana",
       "passwordText": "Salasana tulee olemaan ",
       "invitationsSentHeader": "Kutsut on lähetetty.",
-      "invitationsSentText": "{0} kutsua on lisätty lähetysjonon ja ne toimitetaan pian paneelilaisille.",
+      "invitationsSentText": "{2} kutsua on lisätty lähetysjonon ja ne toimitetaan pian panelisteille.",      
+      "usersAddedHeader": "Panelistit on lisätty paneeliin onnistuneesti.",
+      "usersAddedOnlyNew": "Kaikki lisätyt panelistit olivat uusia käyttäjiä ja heille on asetettu oletussalasanaksi {1}.",
+      "usersAddedOnlyExisting": "Kaikki lisätyt panelistit olivat vanhoja käyttäjiä, joten heidän salasanansa pysyvät ennallaan.",
+      "usersAddedNewAndExisting": "Lisätyistä panelisteista {0} oli uusia käyttäjiä. Uusien käyttäjien oletussalasanaksi on asetettu {1}. Loput lisätyistä panelisteista olivat vanhoja käyttäjiä, joten heidän salasanansa pysyvät ennallaan.",
       "inviteBlock": {
         "title": "Kutsu / liitä käyttäjiä",
         "emailPlaceholder": "Kirjoita käyttäjän sähköpostiosoite",

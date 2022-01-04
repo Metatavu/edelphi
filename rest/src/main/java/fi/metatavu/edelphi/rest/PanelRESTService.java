@@ -1035,8 +1035,15 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     
     User loggedUser = getLoggedUser();
     List<Long> invitationIds = new ArrayList<>();
+    int newUserCount = 0;
+
     
     for (String email : body.getEmails()) {
+      User invitedUser = userController.findUserByEmail(email);
+      if (invitedUser == null) {
+        newUserCount++;
+      }
+
       invitationIds.add(panelController.createPanelInvitation(panel, targetQuery, email, loggedUser).getId());      
     }
 
@@ -1054,7 +1061,10 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     
     long jobId = jobOperator.start("panelInvitationsJob", properties);
     if (jobId > 0) {
-      return Response.status(Status.ACCEPTED).build();
+      return Response
+        .status(Status.ACCEPTED)
+        .header("X-New-User-Count", newUserCount)
+        .build();
     }
     
     return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Failed to submit job").build();

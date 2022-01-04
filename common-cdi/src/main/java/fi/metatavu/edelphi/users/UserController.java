@@ -136,6 +136,18 @@ public class UserController {
   }
 
   /**
+   * Finds user by email
+   *
+   * @param email email
+   * @return user or null if not found
+   */
+  public User findUserByEmail(String email) {
+    UserEmail userEmail = userEmailDAO.findByAddress(email);
+    User user = userEmail == null ? null : userEmail.getUser();
+    return user == null || user.getArchived() ? null : user;
+  }
+
+  /**
    * Returns Keycloak id for an user
    * 
    * @param user user

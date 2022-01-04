@@ -62,11 +62,11 @@ export interface QueryQuestionComment {
      */
     contents?: string;
     /**
-     * Total child comment
+     * Child comment count
      * @type {number}
      * @memberof QueryQuestionComment
      */
-    childCount?: number;
+    readonly childCount?: number;
     /**
      * Comment's creator id
      * @type {string}
@@ -133,7 +133,6 @@ export function QueryQuestionCommentToJSON(value?: QueryQuestionComment | null):
         'queryPageId': value.queryPageId,
         'queryReplyId': value.queryReplyId,
         'contents': value.contents,
-        'childCount': value.childCount,
     };
 }
 

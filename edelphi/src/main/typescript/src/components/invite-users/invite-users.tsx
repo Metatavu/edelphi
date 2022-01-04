@@ -53,7 +53,8 @@ interface State {
   skipInvitation: boolean;
   invitationTarget: number;
   password: string;
-  message?: string;
+  messageHeader?: string;
+  messageText?: string;
   containsAcceptLink: boolean;
   windowWidth: number;
 }
@@ -175,7 +176,7 @@ export default class InviteUsers extends React.Component<Props, State> {
     return (
       <PanelAdminLayout loggedUser={ loggedUser } breadcrumbs={ breadcrumbs } loading={ loading } panel={ panel } redirectTo={ redirectTo }>
         <Container className="invite-users-screen-container">
-          { this.renderPasswordBlock() }
+          { this.renderMessageBlock() }
           <Grid>
             <Grid.Row>
               <Grid.Column width={ 16 }>
@@ -197,10 +198,28 @@ export default class InviteUsers extends React.Component<Props, State> {
   }
 
   /**
-   * Renders generated password block
+   * Renders message block
    */
-  private renderPasswordBlock = () => {
-    if (!this.state.skipInvitation) {
+  private renderMessageBlock = () => {
+    const {
+      skipInvitation,
+      password,
+      messageHeader,
+      messageText
+    } = this.state;
+
+    if (messageHeader && messageText) {
+      return (
+        <div className="message-container">
+          <Message info>
+            <Message.Header>{ messageHeader }</Message.Header>
+            <p>{ messageText }</p>
+          </Message>
+        </div>
+      );
+    }
+    
+    if (!skipInvitation) {
       return null;
     }
 
@@ -208,7 +227,7 @@ export default class InviteUsers extends React.Component<Props, State> {
       <div className="message-container">
         <Message info>
           <Message.Header>{ strings.panelAdmin.inviteUsers.passwordHeader }</Message.Header>
-          <p>{ strings.panelAdmin.inviteUsers.passwordText }<b>{ this.state.password }</b></p>
+          <p>{ strings.panelAdmin.inviteUsers.passwordText }<b>{ password }</b></p>
         </Message>
       </div>
     );
@@ -712,7 +731,7 @@ export default class InviteUsers extends React.Component<Props, State> {
     const { accessToken } = this.props;
     const { inviteEmails, skipInvitation, mailTemplate, password, invitationTarget } = this.state;
 
-    await Api.getPanelInvitationsApi(accessToken.token).createPanelInvitationRequest({
+    const response = await Api.getPanelInvitationsApi(accessToken.token).createPanelInvitationRequestRaw({
       panelId: this.props.panelId,
       panelInvitationRequest: {
         emails: inviteEmails,
@@ -722,6 +741,56 @@ export default class InviteUsers extends React.Component<Props, State> {
         targetQueryId: invitationTarget ? invitationTarget : undefined 
       }
     }); 
+
+    const newUserCount = parseInt(response.raw.headers.get("X-New-User-Count") || "0") || 0;
+    const invitedUserCount = inviteEmails.length;
+    const message = this.getInvitationsSentMessage(skipInvitation, password, newUserCount, invitedUserCount);
+
+    this.setState({
+      messageHeader: message.messageHeader,
+      messageText: message.messageText
+    });
+  }
+
+  /**
+   * Returns invitation success message according to given parameters.
+   * 
+   * @param skipInvitation whether to add users directly or use invitations
+   * @param password a default password
+   * @param newUserCount count of new users
+   * @param invitedUserCount count of all added or invited users
+   * @returns object containing message header and text
+   */
+  private getInvitationsSentMessage = (skipInvitation: boolean, password: string, newUserCount: number, invitedUserCount: number) => {
+    return {
+      messageHeader: skipInvitation ? strings.panelAdmin.inviteUsers.usersAddedHeader : strings.panelAdmin.inviteUsers.invitationsSentHeader,
+      messageText: strings.formatString<string | number>(this.getInvitationsSentTextTemplate(skipInvitation, newUserCount, invitedUserCount), newUserCount, password, invitedUserCount) as string
+    };
+  }
+
+  /**
+   * Returns invitation success message text template according to given parameters.
+   * 
+   * @param skipInvitation whether to add users directly or use invitations
+   * @param newUserCount count of new users
+   * @param invitedUserCount count of all added or invited users
+   * @returns template for users added text
+   */
+  private getInvitationsSentTextTemplate = (skipInvitation: boolean, newUserCount: number, invitedUserCount: number) => {
+    if (!skipInvitation) {
+      return strings.panelAdmin.inviteUsers.invitationsSentText;
+    }
+
+    const existingUserCount = invitedUserCount - newUserCount;
+    if (existingUserCount == 0 && newUserCount > 0) {
+      return strings.panelAdmin.inviteUsers.usersAddedOnlyNew;
+    }
+
+    if (existingUserCount > 0 && newUserCount == 0) {
+      return strings.panelAdmin.inviteUsers.usersAddedOnlyExisting;
+    }
+    
+    return strings.panelAdmin.inviteUsers.usersAddedNewAndExisting;
   }
 
   /**
@@ -758,7 +827,9 @@ export default class InviteUsers extends React.Component<Props, State> {
   private onAddInviteUserClick = () => {
     this.setState({
       inviteEmails: _.uniq([ ...this.state.inviteEmails, this.state.inviteEmail ]),
-      inviteEmail: ""
+      inviteEmail: "",
+      messageHeader: undefined,
+      messageText: undefined
     });
   }
 
@@ -776,12 +847,14 @@ export default class InviteUsers extends React.Component<Props, State> {
   /**
    * Event handler for skip invitaion change input
    * 
-   * @param event event
+   * @param _event event
    * @param data data
    */
-  private onSkipInvitationChange = (event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
+  private onSkipInvitationChange = (_event: React.FormEvent<HTMLInputElement>, data: CheckboxProps) => {
     this.setState({
-      skipInvitation: !!data.checked
+      skipInvitation: !!data.checked,
+      messageHeader: undefined,
+      messageText: undefined
     });
   }
 
@@ -831,7 +904,9 @@ export default class InviteUsers extends React.Component<Props, State> {
 
       this.setState({
         inviteEmails: _.uniq([ ...this.state.inviteEmails, ...inviteEmails.filter(EmailValidator.validate) ]),
-        loading: false
+        loading: false,
+        messageHeader: undefined,
+        messageText: undefined
       });
     }
   }
@@ -848,6 +923,7 @@ export default class InviteUsers extends React.Component<Props, State> {
 
     this.setState({
       loading: false,
+      skipInvitation: false,
       inviteEmails: []
     })
   }
