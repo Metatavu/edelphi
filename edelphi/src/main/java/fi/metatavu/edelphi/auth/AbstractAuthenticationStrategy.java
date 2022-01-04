@@ -76,11 +76,11 @@ public abstract class AbstractAuthenticationStrategy implements AuthenticationPr
     UserDAO userDAO = new UserDAO();
     
     Locale locale = requestContext.getRequest().getLocale();
-    UserIdentification userIdentification = userIdentificationDAO.findByExternalId(externalId, authSource);
+    User idUser = userIdentificationDAO.findUserByAuthSourceAndExternalId(externalId, authSource);
     // Resolve to a common user account based on a variety of possible sources
     User currentUser = RequestUtils.getUser(requestContext);
     User emailUser = resolveUser(requestContext, emails);
-    User idUser = userIdentification ==  null ? null : userIdentification.getUser();
+
     User resolvedUser = resolveUser(requestContext, new User[] {currentUser, emailUser, idUser});
     if (resolvedUser == null) {
       // Entirely new user account
