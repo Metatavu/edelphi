@@ -187,7 +187,11 @@
       "passwordHeader": "A default password will be generated for new users",
       "passwordText": "The password will be ",
       "invitationsSentHeader": "Invitations have been sent",
-      "invitationsSentText": "{0} invitations have been added to send queue and will be delivered soon to panelists.",
+      "invitationsSentText": "{2} invitations have been added to send queue and will be delivered soon to panelists.",      
+      "usersAddedHeader": "Panelists have been successfully added to the panel.",
+      "usersAddedOnlyNew": "All added panelists were new users and they will have a default password set to {1}.",
+      "usersAddedOnlyExisting": "All added panelists were existing users so their passwords will not be changed.",
+      "usersAddedNewAndExisting": "Of the added panelists, {0} were new users and have the default password set to {1}. The rest of the added panelists were existing users, so their passwords will not be changed.",
       "inviteBlock": {
         "title": "Invite / Add Users",
         "emailPlaceholder": "Type user's email address",

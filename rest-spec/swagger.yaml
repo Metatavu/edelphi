@@ -1339,6 +1339,12 @@ paths:
       responses:
         "202":
           description: Panel invitation request has been accepted
+          headers:
+            X-New-User-Count:
+              schema:
+                type: integer
+                format: int64
+              description: Count of new users
         "400":
           description: Invalid request was sent to the server
           content:

@@ -30,23 +30,6 @@ public class UserIdentificationDAO extends GenericDAO<UserIdentification> {
     return userIdentification;
   }
   
-  public UserIdentification findByExternalId(String externalId, AuthSource authSource) {
-    EntityManager entityManager = getEntityManager(); 
-    
-    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-    CriteriaQuery<UserIdentification> criteria = criteriaBuilder.createQuery(UserIdentification.class);
-    Root<UserIdentification> root = criteria.from(UserIdentification.class);
-    criteria.select(root);
-    criteria.where(
-        criteriaBuilder.and(
-            criteriaBuilder.equal(root.get(UserIdentification_.externalId), externalId),
-            criteriaBuilder.equal(root.get(UserIdentification_.authSource), authSource)
-        )
-    );
-    
-    return getSingleResult(entityManager.createQuery(criteria));
-  }
-  
   /**
    * Lists user identifications by user and auth source
    * 
@@ -83,6 +66,34 @@ public class UserIdentificationDAO extends GenericDAO<UserIdentification> {
     );
     
     return entityManager.createQuery(criteria).getResultList();
+  }
+
+  /**
+   * Finds user by auth source and external id.
+   *
+   * Method groups by user to mitigate possible duplicates from the same source
+   *
+   * @param externalId external id
+   * @param authSource auth source
+   * @return user or null if not found
+   */
+  public User findUserByAuthSourceAndExternalId(String externalId, AuthSource authSource) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<User> criteria = criteriaBuilder.createQuery(User.class);
+    Root<UserIdentification> root = criteria.from(UserIdentification.class);
+    criteria.select(root.get(UserIdentification_.user));
+    criteria.where(
+      criteriaBuilder.and(
+        criteriaBuilder.equal(root.get(UserIdentification_.externalId), externalId),
+        criteriaBuilder.equal(root.get(UserIdentification_.authSource), authSource)
+      )
+    );
+
+    criteria.groupBy(root.get(UserIdentification_.user));
+
+    return getSingleResult(entityManager.createQuery(criteria));
   }
 
 }

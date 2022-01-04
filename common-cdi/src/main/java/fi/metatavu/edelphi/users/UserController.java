@@ -122,12 +122,7 @@ public class UserController {
       logger.error("Could not find Keycloak auth source");
     }
     
-    UserIdentification userIdentification = userIdentificationDAO.findByExternalId(userId.toString(), authSource);
-    if (userIdentification != null) {
-      return userIdentification.getUser();
-    }
-    
-    return null;
+    return userIdentificationDAO.findUserByAuthSourceAndExternalId(userId.toString(), authSource);
   }
 
   /**
@@ -138,6 +133,18 @@ public class UserController {
    */
   public User findUserById(Long id) {
     return userDAO.findById(id);
+  }
+
+  /**
+   * Finds user by email
+   *
+   * @param email email
+   * @return user or null if not found
+   */
+  public User findUserByEmail(String email) {
+    UserEmail userEmail = userEmailDAO.findByAddress(email);
+    User user = userEmail == null ? null : userEmail.getUser();
+    return user == null || user.getArchived() ? null : user;
   }
 
   /**
