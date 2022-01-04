@@ -122,12 +122,7 @@ public class UserController {
       logger.error("Could not find Keycloak auth source");
     }
     
-    UserIdentification userIdentification = userIdentificationDAO.findByExternalId(userId.toString(), authSource);
-    if (userIdentification != null) {
-      return userIdentification.getUser();
-    }
-    
-    return null;
+    return userIdentificationDAO.findUserByAuthSourceAndExternalId(userId.toString(), authSource);
   }
 
   /**
