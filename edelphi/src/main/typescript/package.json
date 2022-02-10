@@ -54,7 +54,7 @@
     "less": "^3.9.0",
     "less-loader": "^4.1.0",
     "load-grunt-tasks": "^4.0.0",
-    "node-sass": "^4.13.0",
+    "node-sass": "^7.0.0",
     "sass-loader": "^7.1.0",
     "semantic-ui-less": "^2.4.1",
     "style-loader": "^0.23.1",
