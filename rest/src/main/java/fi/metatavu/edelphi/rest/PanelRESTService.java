@@ -147,7 +147,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   @Inject
   private BatchMessages batchMessages;
-  
+
   @Override
   @RolesAllowed("user")
   public Response createQueryQuestionComment(Long panelId, QueryQuestionComment body) {
@@ -156,7 +156,9 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createNotFound();
     }
 
-    if (!permissionController.hasPanelAccess(panel, getLoggedUser(), DelfoiActionName.ACCESS_PANEL)) {
+    User loggedUser = getLoggedUser();
+
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.ACCESS_PANEL)) {
       return createForbidden("Forbidden");
     }
 
@@ -193,7 +195,6 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     String contents = body.getContents();
     Boolean hidden = body.getHidden();
     Date created = new Date(System.currentTimeMillis());
-    User creator = getLoggedUser();
     Long categoryId = body.getCategoryId();
     fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory category = null;
 
@@ -209,12 +210,20 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
         parentComment, 
         category,
         contents, 
-        hidden, 
-        creator, 
-        created);
+        hidden,
+        loggedUser,
+        created
+    );
+
+    if (parentComment != null) {
+      User parentCommentCreator = parentComment.getCreator();
+      if (!parentCommentCreator.getId().equals(loggedUser.getId()) && userController.isNotifyCommentReplyEnabled(parentCommentCreator)) {
+        userController.notifyCommentReply(getBaseUrl(), parentComment, panel);
+      }
+    }
 
     publishCommentMqttNotification(QueryQuestionCommentNotification.Type.CREATED, panel, comment);
-    
+
     return createOk(queryQuestionCommentTranslator.translate(comment));
   }
 
