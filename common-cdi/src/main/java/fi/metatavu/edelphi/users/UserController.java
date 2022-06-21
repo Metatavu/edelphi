@@ -143,27 +143,36 @@ public class UserController {
    * Notifies user about new reply to his/her comment
    *
    * @param baseUrl System base URL
-   * @param parentComment parent comment
+   * @param reply reply comment
    * @param panel panel
    */
-  public void notifyCommentReply(String baseUrl, QueryQuestionComment parentComment, Panel panel) {
-    User parentCommentCreator = parentComment.getCreator();
-    Locale locale = LocaleUtils.toLocale(parentCommentCreator.getLocale());
-    QueryPage queryPage = parentComment.getQueryPage();
-    Query query = queryPage.getQuerySection().getQuery();
+  public void notifyCommentReply(String baseUrl, QueryQuestionComment reply, Panel panel) {
+    try {
+      QueryQuestionComment parentComment = reply.getParentComment();
+      if (parentComment == null) {
+        return;
+      }
 
-    String pageUrl = queryPageController.getPageUrl(baseUrl, panel, queryPage);
-    String subject = batchMessages.getText(locale, "mail.newReply.template.subject");
-    String content = batchMessages.getText(locale, "mail.newReply.template.content", panel.getName(), query.getName(), pageUrl);
+      User parentCommentCreator = parentComment.getCreator();
+      Locale locale = LocaleUtils.toLocale(parentCommentCreator.getLocale());
+      QueryPage queryPage = parentComment.getQueryPage();
+      Query query = queryPage.getQuerySection().getQuery();
 
-    Email email = EmailBuilder.startingBlank()
-      .from(settingsController.getEmailFromAddress())
-      .to(parentCommentCreator.getDefaultEmailAsString())
-      .withSubject(subject)
-      .withPlainText(content)
-      .buildEmail();
+      String pageUrl = queryPageController.getPageUrl(baseUrl, panel, queryPage);
+      String subject = batchMessages.getText(locale, "mail.newReply.template.subject");
+      String content = batchMessages.getText(locale, "mail.newReply.template.content", panel.getName(), query.getName(), pageUrl);
 
-    mailer.sendMail(email);
+      Email email = EmailBuilder.startingBlank()
+        .from(settingsController.getEmailFromAddress())
+        .to(parentCommentCreator.getDefaultEmailAsString())
+        .withSubject(subject)
+        .withPlainText(content)
+        .buildEmail();
+
+      mailer.sendMailAsync(email);
+    } catch (Exception e) {
+      logger.error("Failed to notify user about new comment reply", e);
+    }
   }
 
   /**

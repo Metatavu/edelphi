@@ -27,4 +27,13 @@ public class Mailer {
     MailerBuilder.usingSession(session).buildMailer().sendMail(email);
   }
 
+  /**
+   * Sends an email in a new thread and this method returns immediately
+   *
+   * @param email email
+   */
+  public void sendMailAsync(Email email) {
+    MailerBuilder.usingSession(session).buildMailer().sendMail(email, true);
+  }
+
 }

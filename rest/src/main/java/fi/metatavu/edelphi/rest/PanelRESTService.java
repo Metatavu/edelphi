@@ -218,7 +218,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     if (parentComment != null) {
       User parentCommentCreator = parentComment.getCreator();
       if (!parentCommentCreator.getId().equals(loggedUser.getId()) && userController.isNotifyCommentReplyEnabled(parentCommentCreator)) {
-        userController.notifyCommentReply(getBaseUrl(), parentComment, panel);
+        userController.notifyCommentReply(getBaseUrl(), comment, panel);
       }
     }
 
