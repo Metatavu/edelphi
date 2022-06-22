@@ -7,6 +7,17 @@ import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import fi.metatavu.edelphi.batch.i18n.BatchMessages;
+import fi.metatavu.edelphi.domainmodel.panels.Panel;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
+import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
+import fi.metatavu.edelphi.domainmodel.resources.Query;
+import fi.metatavu.edelphi.domainmodel.users.*;
+import fi.metatavu.edelphi.mail.Mailer;
+import fi.metatavu.edelphi.queries.QueryPageController;
+import org.apache.commons.lang3.LocaleUtils;
+import org.simplejavamail.email.Email;
+import org.simplejavamail.email.EmailBuilder;
 import org.slf4j.Logger;
 
 import fi.metatavu.edelphi.Defaults;
@@ -21,12 +32,6 @@ import fi.metatavu.edelphi.domainmodel.base.AuthSource;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiDefaults;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiUser;
-import fi.metatavu.edelphi.domainmodel.users.DelfoiUserRole;
-import fi.metatavu.edelphi.domainmodel.users.User;
-import fi.metatavu.edelphi.domainmodel.users.UserEmail;
-import fi.metatavu.edelphi.domainmodel.users.UserIdentification;
-import fi.metatavu.edelphi.domainmodel.users.UserPicture;
-import fi.metatavu.edelphi.domainmodel.users.UserSettingKey;
 import fi.metatavu.edelphi.keycloak.KeycloakController;
 import fi.metatavu.edelphi.keycloak.KeycloakException;
 import fi.metatavu.edelphi.settings.SettingsController;
@@ -69,7 +74,16 @@ public class UserController {
   private DelfoiUserDAO delfoiUserDAO;
 
   @Inject
-  private UserSettingDAO userSettingDAO;  
+  private UserSettingDAO userSettingDAO;
+
+  @Inject
+  private Mailer mailer;
+
+  @Inject
+  private QueryPageController queryPageController;
+
+  @Inject
+  private BatchMessages batchMessages;
   
   /**
    * Creates new user to the system. Method check whether user already exists and uses existing user if one is available.
@@ -108,6 +122,57 @@ public class UserController {
     }
     
     return user;
+  }
+
+  /**
+   * Returns whether user has comment reply notifications enabled
+   *
+   * @param user user
+   * @return whether user has comment reply notifications enabled
+   */
+  public boolean isNotifyCommentReplyEnabled(User user) {
+    if (user == null) {
+      return false;
+    }
+
+    UserSetting userSetting = userSettingDAO.findByUserAndKey(user, UserSettingKey.MAIL_COMMENT_REPLY);
+    return userSetting != null && "1".equals(userSetting.getValue());
+  }
+
+  /**
+   * Notifies user about new reply to his/her comment
+   *
+   * @param baseUrl System base URL
+   * @param reply reply comment
+   * @param panel panel
+   */
+  public void notifyCommentReply(String baseUrl, QueryQuestionComment reply, Panel panel) {
+    try {
+      QueryQuestionComment parentComment = reply.getParentComment();
+      if (parentComment == null) {
+        return;
+      }
+
+      User parentCommentCreator = parentComment.getCreator();
+      Locale locale = LocaleUtils.toLocale(parentCommentCreator.getLocale());
+      QueryPage queryPage = parentComment.getQueryPage();
+      Query query = queryPage.getQuerySection().getQuery();
+
+      String pageUrl = queryPageController.getPageUrl(baseUrl, panel, queryPage);
+      String subject = batchMessages.getText(locale, "mail.newReply.template.subject");
+      String content = batchMessages.getText(locale, "mail.newReply.template.content", panel.getName(), query.getName(), pageUrl);
+
+      Email email = EmailBuilder.startingBlank()
+        .from(settingsController.getEmailFromAddress())
+        .to(parentCommentCreator.getDefaultEmailAsString())
+        .withSubject(subject)
+        .withPlainText(content)
+        .buildEmail();
+
+      mailer.sendMailAsync(email);
+    } catch (Exception e) {
+      logger.error("Failed to notify user about new comment reply", e);
+    }
   }
 
   /**
