@@ -599,7 +599,7 @@ public class QueryPageController {
   /**
    * Lists page comment categories by query
    * 
-   * @param queryPage query
+   * @param query query
    * @param onlyQueryScoped return only categories without a page
    * @return comment categories
    */
@@ -755,6 +755,29 @@ public class QueryPageController {
    */
   public List<QueryPage> listQueryPagesByType(Query query, QueryPageType pageType) {
     return queryPageDAO.listByQueryAndType(query, pageType);
+  }
+
+  /**
+   * Returns URL for query page
+   *
+   * @param baseUrl System base URL
+   * @param panel panel
+   * @param queryPage query page
+   * @return URL for query page
+   */
+  public String getPageUrl(String baseUrl, Panel panel, QueryPage queryPage) {
+    Query query = queryPage.getQuerySection().getQuery();
+
+    StringBuilder commentUrl = new StringBuilder();
+    commentUrl.append(baseUrl);
+    commentUrl.append('/');
+    commentUrl.append(panel.getUrlName());
+    commentUrl.append('/');
+    commentUrl.append(query.getUrlName());
+    commentUrl.append("?page=");
+    commentUrl.append(queryPage.getPageNumber());
+
+    return commentUrl.toString();
   }
   
   /**
