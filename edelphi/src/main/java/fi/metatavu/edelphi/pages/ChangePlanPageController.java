@@ -15,11 +15,7 @@ import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.orders.Plan;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
-import fi.metatavu.edelphi.utils.ActionUtils;
-import fi.metatavu.edelphi.utils.LocalizationUtils;
-import fi.metatavu.edelphi.utils.RequestUtils;
-import fi.metatavu.edelphi.utils.SubscriptionCompareResult;
-import fi.metatavu.edelphi.utils.SubscriptionLevelUtils;
+import fi.metatavu.edelphi.utils.*;
 
 public class ChangePlanPageController extends PageController {
 
@@ -35,6 +31,11 @@ public class ChangePlanPageController extends PageController {
 
   @Override
   public void process(PageRequestContext pageRequestContext) {
+    if (SystemUtils.PAYMENT_SERVICES_DISABLED) {
+      pageRequestContext.setRedirectURL("/");
+      return;
+    }
+
     PlanDAO planDAO = new PlanDAO();
     
     User loggedUser = RequestUtils.getUser(pageRequestContext);
