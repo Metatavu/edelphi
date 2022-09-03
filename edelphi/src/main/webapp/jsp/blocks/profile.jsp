@@ -129,10 +129,12 @@
         </fmt:message>
       </p>
     </c:if>
-    <p>
-      <span class="profileChangeSubscriptionText"><fmt:message key="profile.block.profileChangeSubscriptionText"/></span>
-      <a class="profileChangeSubscriptionLink" href="/changeplan.page"><fmt:message key="profile.block.profileChangeSubscriptionLink"/></a>
-    </p>
+    <c:if test="${paymentServicesDisabled ne true}">
+        <p>
+          <span class="profileChangeSubscriptionText"><fmt:message key="profile.block.profileChangeSubscriptionText"/></span>
+          <a class="profileChangeSubscriptionLink" href="/changeplan.page"><fmt:message key="profile.block.profileChangeSubscriptionLink"/></a>
+        </p>
+    </c:if>
   </div>
 
   <!-- Invitations -->

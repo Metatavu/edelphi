@@ -58,6 +58,11 @@ public class OrderPlanPageController extends PageController {
 
   @Override
   public void process(PageRequestContext pageRequestContext) {
+    if (SystemUtils.PAYMENT_SERVICES_DISABLED) {
+      pageRequestContext.setRedirectURL("/");
+      return;
+    }
+
     if (StringUtils.equalsIgnoreCase("POST", pageRequestContext.getRequest().getMethod())) {
       doPost(pageRequestContext);
     } else {
