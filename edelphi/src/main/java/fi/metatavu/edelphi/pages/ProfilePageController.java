@@ -26,10 +26,7 @@ import fi.metatavu.edelphi.domainmodel.users.UserIdentification;
 import fi.metatavu.edelphi.domainmodel.users.UserSetting;
 import fi.metatavu.edelphi.domainmodel.users.UserSettingKey;
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
-import fi.metatavu.edelphi.utils.ActionUtils;
-import fi.metatavu.edelphi.utils.AuthUtils;
-import fi.metatavu.edelphi.utils.RequestUtils;
-import fi.metatavu.edelphi.utils.SubscriptionLevelUtils;
+import fi.metatavu.edelphi.utils.*;
 import fi.metatavu.edelphi.utils.SubscriptionLevelUtils.SubscriptionLevelSettings;
 
 public class ProfilePageController extends PageController {
@@ -100,6 +97,7 @@ public class ProfilePageController extends PageController {
       pageRequestContext.getRequest().setAttribute("subscriptionEnds", loggedUser.getSubscriptionEnds());
       pageRequestContext.getRequest().setAttribute("activePanelCount", SubscriptionLevelUtils.countManagedActivePanels(loggedUser));
       pageRequestContext.getRequest().setAttribute("accountUrl", AuthUtils.getKeycloakAccountUrl());
+      pageRequestContext.getRequest().setAttribute("paymentServicesDisabled", SystemUtils.PAYMENT_SERVICES_DISABLED);
     }
 
     ActionUtils.includeRoleAccessList(pageRequestContext);

@@ -11,7 +11,8 @@ import fi.metatavu.edelphi.domainmodel.system.Setting;
 import fi.metatavu.edelphi.domainmodel.system.SettingKey;
 
 public class SystemUtils {
-  
+
+  public static final Boolean PAYMENT_SERVICES_DISABLED = true;
   public static final int MAX_QUERY_PAGE_TITLE = 192;
   public static final int MAX_QUERY_FIELD_CAPTION = 192;
   

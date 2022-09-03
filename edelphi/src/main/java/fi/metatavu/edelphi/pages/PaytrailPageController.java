@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fi.metatavu.edelphi.utils.SystemUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -34,6 +35,11 @@ public class PaytrailPageController extends PageController {
 
   @Override
   public void process(PageRequestContext pageRequestContext) {
+    if (SystemUtils.PAYMENT_SERVICES_DISABLED) {
+      pageRequestContext.setRedirectURL("/");
+      return;
+    }
+
     String action = pageRequestContext.getString("action");
     
     if (StringUtils.isNotBlank(action)) {
