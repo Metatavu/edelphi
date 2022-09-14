@@ -101,10 +101,20 @@ public class QueryReplyController {
    * 
    * @param queryReply reply
    * @param newQuery new query
+   * @param stamp stamp
    * @return new reply
    */
-  public QueryReply copyQueryReply(QueryReply queryReply, Query newQuery) {
-    return queryReplyDAO.create(queryReply.getUser(), newQuery, queryReply.getStamp(), queryReply.getComplete(), queryReply.getCreator(), queryReply.getCreated(), queryReply.getLastModifier(), queryReply.getLastModified());
+  public QueryReply copyQueryReply(QueryReply queryReply, Query newQuery, PanelStamp stamp) {
+    return queryReplyDAO.create(
+      queryReply.getUser(),
+      newQuery,
+      stamp,
+      queryReply.getComplete(),
+      queryReply.getCreator(),
+      queryReply.getCreated(),
+      queryReply.getLastModifier(),
+      queryReply.getLastModified()
+    );
   }
   
   /**

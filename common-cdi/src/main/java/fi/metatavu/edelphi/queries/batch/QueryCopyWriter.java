@@ -11,6 +11,7 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import org.slf4j.Logger;
 
 import fi.metatavu.edelphi.batch.JobProperty;
@@ -142,7 +143,8 @@ public class QueryCopyWriter extends TypedItemWriter<Query> {
         originalQuery.getDescription(), 
         originalQuery.getState(), 
         getOffsetDateTime(originalQuery.getCloses()), 
-        copier);
+        copier
+    );
     
     // New query is in archived mode until it's completely copied
     
@@ -160,20 +162,22 @@ public class QueryCopyWriter extends TypedItemWriter<Query> {
     // Replies
     
     if (copyAnswers) {
-      if (sourcePanel.getId().equals(targetPanel.getId())) {        
+      if (sourcePanel.getId().equals(targetPanel.getId())) {
         // When copying within the same panel, copy all replies of all stamps
         
         List<QueryReply> queryReplies = queryReplyController.listQueryRepliesInAllStamps(originalQuery);
         for (QueryReply queryReply : queryReplies) {
-          QueryReply newReply = queryReplyController.copyQueryReply(queryReply, newQuery);
+          PanelStamp stamp = queryReply.getStamp();
+          QueryReply newReply = queryReplyController.copyQueryReply(queryReply, newQuery, stamp);
           queryCopyBatchContext.setQueryReplyId(queryReply.getId(), newReply.getId());
         }
       } else {
-        // When copying between panels, only copy the replies of the latest source panel stamp to the latest target panel stamp  
-        
+        // When copying between panels, only copy the replies of the latest source panel stamp to the latest target panel stamp
+        PanelStamp stamp = targetPanel.getCurrentStamp();
+
         List<QueryReply> queryReplies = queryReplyController.listQueryReplies(originalQuery, sourcePanel.getCurrentStamp());
         for (QueryReply queryReply : queryReplies) {
-          QueryReply newReply = queryReplyController.copyQueryReply(queryReply, newQuery);
+          QueryReply newReply = queryReplyController.copyQueryReply(queryReply, newQuery, stamp);
           queryCopyBatchContext.setQueryReplyId(queryReply.getId(), newReply.getId());
         }
       }
@@ -185,7 +189,6 @@ public class QueryCopyWriter extends TypedItemWriter<Query> {
     for (QuerySection querySection : querySections) {
       QuerySection newQuerySection = querySectionController.createQuerySection(newQuery, querySection.getTitle(), querySection.getSectionNumber(), querySection.getVisible(), querySection.getCommentable(), querySection.getViewDiscussions(), copier);
       queryCopyBatchContext.setQuerySectionId(querySection.getId(), newQuerySection.getId());
-
     }
     
     return newQuery;
