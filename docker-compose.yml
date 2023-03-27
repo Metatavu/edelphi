@@ -1,7 +1,8 @@
 version: "3"
 services:
   mysql:
-    image: mysql:5.6
+    image: mysql:5.7
+    platform: linux/amd64
     volumes:
       - db_data:/var/lib/mysql
     ports:
@@ -15,6 +16,7 @@ services:
   edelphi:
     hostname: ${HOST}
     build: .
+    platform: linux/amd64
     ports:
       - 8081:8080
     depends_on:
@@ -55,6 +57,7 @@ services:
 
   keycloak:
     image: metatavu/keycloak:5.0.0
+    platform: linux/amd64
     container_name: keycloak
     ports:
       - 8080:8080

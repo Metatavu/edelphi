@@ -6,3 +6,5 @@ embed-server --server-config=standalone-full-ha.xml
 /subsystem=security/security-domain=keycloak/authentication=classic/:add(login-modules=[{ "code" => "org.keycloak.adapters.jboss.KeycloakLoginModule","flag" => "required"}])
 /subsystem=logging/logger=org.keycloak.adapters.BearerTokenRequestAuthenticator:add(level=FATAL)
 /subsystem=logging/logger=org.jboss.as.ejb3.invocation:add(level=FATAL)
+
+stop-embedded-server

@@ -1,2 +1,3 @@
 embed-server --server-config=standalone-full-ha.xml
 /system-property=hibernate.search.default.worker.backend:add(value=jgroups)
+stop-embedded-server

@@ -15,3 +15,4 @@ embed-server --server-config=standalone-full-ha.xml
 /interface=unsecure:undefine-attribute(name=inet-address)
 /interface=unsecure:write-attribute(name=nic,value=eth0)
 
+stop-embedded-server

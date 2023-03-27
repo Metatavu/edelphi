@@ -20,3 +20,5 @@ embed-server --server-config=standalone-full-ha.xml
 /subsystem=jgroups/channel=ee:write-attribute(name=stack,value=kubernetes)
 /subsystem=jgroups/stack=udp:remove
 /subsystem=jgroups/stack=tcp:remove
+
+stop-embedded-server

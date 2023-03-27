@@ -1,2 +1,3 @@
 embed-server --server-config=standalone-full-ha.xml
 /subsystem=undertow/server=default-server/host=edelphi:add(alias=["${env.HOST}"],default-web-module="edelphi.war")
+stop-embedded-server
