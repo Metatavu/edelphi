@@ -207,6 +207,24 @@ public class PanelInvitationDAO extends GenericDAO<PanelInvitation> {
     return entityManager.createQuery(criteria).getResultList(); 
   }
 
+  /**
+   * Lists all invitations by panel (including archived)
+   *
+   * @param panel panel
+   * @return invitations
+   */
+  public List<PanelInvitation> listAllByPanel(Panel panel) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelInvitation> criteria = criteriaBuilder.createQuery(PanelInvitation.class);
+    Root<PanelInvitation> root = criteria.from(PanelInvitation.class);
+    criteria.select(root);
+    criteria.where(criteriaBuilder.equal(root.get(PanelInvitation_.panel), panel));
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
   public PanelInvitation updateState(PanelInvitation panelInvitation, PanelInvitationState state, User modifier) {
     panelInvitation.setState(state);
     panelInvitation.setLastModifier(modifier);

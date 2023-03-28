@@ -53,6 +53,24 @@ public class PanelStampDAO extends GenericDAO<PanelStamp> {
     return entityManager.createQuery(criteria).getResultList();
   }
 
+  /**
+   * Lists panel stamps by panel (including archived)
+   *
+   * @param panel panel
+   * @return panel stamps
+   */
+  public List<PanelStamp> listAllByPanel(Panel panel) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelStamp> criteria = criteriaBuilder.createQuery(PanelStamp.class);
+    Root<PanelStamp> root = criteria.from(PanelStamp.class);
+    criteria.select(root);
+    criteria.where(criteriaBuilder.equal(root.get(PanelStamp_.panel), panel));
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
   public PanelStamp update(PanelStamp panelStamp, String name, String description, Date stampTime, User updater) {
     panelStamp.setName(name);
     panelStamp.setDescription(description);

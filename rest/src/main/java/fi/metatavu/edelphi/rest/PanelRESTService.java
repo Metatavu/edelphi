@@ -65,6 +65,7 @@ import fi.metatavu.edelphi.rest.translate.QueryQuestionCommentCategoryTranslator
 import fi.metatavu.edelphi.rest.translate.QueryQuestionCommentTranslator;
 import fi.metatavu.edelphi.rest.translate.QueryTranslator;
 import fi.metatavu.edelphi.users.UserController;
+import org.slf4j.Logger;
 
 /**
  * Panel REST Services
@@ -81,6 +82,9 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
   private static final String QUERY_QUESTION_COMMENTS_MQTT_CHANNEL = "queryquestioncomments";
   private static final String QUERY_QUESTION_ANSWERS_MQTT_CHANNEL = "queryquestionanswers";
+
+  @Inject
+  private Logger logger;
 
   @Inject
   private PanelController panelController;
@@ -886,6 +890,29 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     }
     
     return createOk(panelTranslator.translate(panel));
+  }
+
+  @Override
+  @RolesAllowed("user")
+  public Response deletePanel(Long panelId) {
+    Panel panel = panelController.findPanelById(panelId);
+    if (panel == null || panelController.isPanelArchived(panel)) {
+      return createNotFound();
+    }
+
+    User loggedUser = getLoggedUser();
+
+    if (!permissionController.hasPanelAccess(panel, loggedUser, DelfoiActionName.MANAGE_PANEL)) {
+      return createForbidden("Forbidden");
+    }
+
+    logger.warn("User {} requested panel {} deletion", loggedUser.getId(), panel.getId());
+
+    panelController.deletePanel(panel);
+
+    logger.warn("User {} deleted panel {}", loggedUser.getId(), panel.getId());
+
+    return createNoContent();
   }
 
   @Override

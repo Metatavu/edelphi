@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import fi.metatavu.edelphi.dao.resources.ResourceLockDAO;
+import fi.metatavu.edelphi.domainmodel.resources.Query;
+import fi.metatavu.edelphi.domainmodel.resources.ResourceLock;
+import fi.metatavu.edelphi.queries.QueryController;
 import org.apache.commons.lang3.StringUtils;
 
 import com.github.slugify.Slugify;
@@ -26,12 +30,18 @@ public class ResourceController {
 
   @Inject
   private PanelController panelController;
+
+  @Inject
+  private QueryController queryController;
   
   @Inject
   private PanelDAO panelDAO;
   
   @Inject
   private ResourceDAO resourceDAO;
+
+  @Inject
+  private ResourceLockDAO resourceLockDAO;
   
   /**
    * Returns a panel for given resource
@@ -159,6 +169,32 @@ public class ResourceController {
       urlName = getUrlName(name == null ? ++i + "" : name + " (" + (++i) + ")");
     }
     return urlName;
+  }
+
+  /**
+   * Deletes a resource, including all child-resources and queries and query datas
+   *
+   * @param resource resource
+   */
+  public void deleteResource(Resource resource) {
+    ResourceLock resourceLock = resourceLockDAO.findByResource(resource);
+    if (resourceLock != null) {
+      resourceLockDAO.delete(resourceLock);
+    }
+
+    if (resource instanceof Folder) {
+      Folder folder = (Folder) resource;
+      List<Resource> resources = resourceDAO.listAllByParentFolder(folder);
+      for (Resource childResource : resources) {
+        deleteResource(childResource);
+      }
+    }
+
+    if (resource instanceof Query) {
+      queryController.deleteQuery((Query) resource);
+    } else {
+      resourceDAO.delete(resource);
+    }
   }
   
 }

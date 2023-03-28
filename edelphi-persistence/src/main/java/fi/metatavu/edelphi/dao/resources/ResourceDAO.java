@@ -120,6 +120,25 @@ public class ResourceDAO extends GenericDAO<Resource> {
     
     return query.getResultList();
   }
+
+  /**
+   * Lists all resources by parent folder (including archived)
+   *
+   * @param parentFolder parent folder
+   * @return list of resources
+   */
+  public List<Resource> listAllByParentFolder(Folder parentFolder) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Resource> criteria = criteriaBuilder.createQuery(Resource.class);
+    Root<Resource> root = criteria.from(Resource.class);
+    criteria.select(root);
+    criteria.where(criteriaBuilder.equal(root.get(Resource_.parentFolder), parentFolder));
+
+    TypedQuery<Resource> query = entityManager.createQuery(criteria);
+    return query.getResultList();
+  }
   
   public Long countByTypeAndFolderAndArchived(Collection<ResourceType> types, Folder folder, Boolean archived) {
     EntityManager entityManager = getEntityManager(); 
