@@ -47,7 +47,7 @@ public class KeycloakServiceImpl extends OAuth20ServiceImpl {
       JSONObject jsonObject = JSONObject.fromObject(response.getBody());
       return api.getAccessTokenExtractor().extract(jsonObject.toString(0));
     } else {
-      logger.log(Level.SEVERE, () -> String.format("Failed to resolve access token %s", response.getMessage()));
+      logger.log(Level.SEVERE, () -> String.format("Failed to resolve access token [%d] %s", response.getCode(), response.getMessage()));
       throw new SmvcRuntimeException(EdelfoiStatusCode.INVALID_AUTHENTICATION_REQUEST, "Failed to resolve access token");
     }
   }
