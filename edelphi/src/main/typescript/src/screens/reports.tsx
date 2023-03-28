@@ -26,7 +26,7 @@ interface Props {
  * Interface representing component state
  */
 interface State {
-  error?: Error;
+  error?: Error | unknown;
   loggedUser?: User;
   panel?: Panel;
   queries: Query[];

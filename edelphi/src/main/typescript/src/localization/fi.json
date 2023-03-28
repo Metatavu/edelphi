@@ -87,6 +87,12 @@
       "administration": "Hallinnointi",
       "reportAnIssue": "Virhe- ja kehitysehdotuslomake"
     },
+    "dashboard": {
+      "deletePanelDialogConfirmQuestion": "Oletko aivan varma, että haluat poistaa paneelin \"{0}\"?",
+      "deletePanelDialogConfirmDetails": "Tämä operaatio poistaa kaiken paneelin sisälämän tiedon mukaan lukien kyselyt sekä niiden vastaukset.",
+      "deletePanelDialogConfirmDestructive": "Huomaa, että tämä toiminto on peruuttamaton!",
+      "deletingPanel": "Poistetaan paneelia..."
+    },
     "queryEditor": {
       "removeQueryAnswersConfirm": "Oletko aivan varma, että haluat poistaa kaikki vastaukset tästä kyselystä?",
       "queryCommentOptions": {
