@@ -214,7 +214,6 @@ class PanelAdminDashboard extends React.Component<Props, State> {
     });
   }
 
-
   /**
    * Event handler for react command events
    * 
