@@ -15,34 +15,12 @@ import QueryNavigation from "../components/panel/query-navigation";
 import getLanguage from "../localization/language";
 import { QueryState } from "../generated/client/models";
 import LegacyUtils from "../utils/legacy-utils";
+import DomUtils from "../utils/dom-utils";
 
 declare const JSDATA: any;
 let initialQueryValidationMessage: string | undefined = undefined;
 const locale: string = getLanguage();
 strings.setLanguage(locale);
-
-const getAttribute = (element: Element, attributeName: string): string | null => {
-  if (!element) {
-    return null;
-  }
-
-  const attribute = element.attributes.getNamedItem(attributeName);
-  if (!attribute) {
-    return null;
-  }
-
-  return attribute.value;
-}
-
-const getIntAttribute = (element: Element, attributeName: string): number | null => {
-  const value = getAttribute(element, attributeName);
-  return value ? parseInt(value) : null;
-}
-
-const getBoolAttribute = (element: Element, attributeName: string): boolean => {
-  const value = getAttribute(element, attributeName);
-  return value === "true";
-}
 
 LegacyUtils.addCommandListener((event: CommandEvent) => {
   if (event.detail.command == "disable-query-next") {
@@ -65,12 +43,12 @@ window.addEventListener('load', () => {
   const store = createStore<StoreState, AppAction, any, any>(reducer as any, initalStoreState);
 
   if (queryComments) {
-    const panelId: number | null = getIntAttribute(queryComments, "data-panel-id");
-    const queryId: number | null = getIntAttribute(queryComments, "data-query-id");
-    const pageId: number | null = getIntAttribute(queryComments, "data-page-id");
-    const queryReplyId: number | null = getIntAttribute(queryComments, "data-query-reply-id");
-    const commentable: boolean = getBoolAttribute(queryComments, "data-commentable");
-    const viewDiscussion: boolean = getBoolAttribute(queryComments, "data-view-discussion");
+    const panelId: number | null = DomUtils.getIntAttribute(queryComments, "data-panel-id");
+    const queryId: number | null = DomUtils.getIntAttribute(queryComments, "data-query-id");
+    const pageId: number | null = DomUtils.getIntAttribute(queryComments, "data-page-id");
+    const queryReplyId: number | null = DomUtils.getIntAttribute(queryComments, "data-query-reply-id");
+    const commentable: boolean = DomUtils.getBoolAttribute(queryComments, "data-commentable");
+    const viewDiscussion: boolean = DomUtils.getBoolAttribute(queryComments, "data-view-discussion");
     const canManageComments: boolean = JSDATA['canManageComments'] == 'true';
 
     if (panelId && queryId && pageId && queryReplyId) {
@@ -96,10 +74,10 @@ window.addEventListener('load', () => {
   }
 
   if (queryPageLive2D) {
-    const panelId: number | null = getIntAttribute(queryPageLive2D, "data-panel-id");
-    const queryId: number | null = getIntAttribute(queryPageLive2D, "data-query-id");
-    const pageId: number | null = getIntAttribute(queryPageLive2D, "data-page-id");
-    const queryReplyId: number | null = getIntAttribute(queryPageLive2D, "data-query-reply-id");
+    const panelId: number | null = DomUtils.getIntAttribute(queryPageLive2D, "data-panel-id");
+    const queryId: number | null = DomUtils.getIntAttribute(queryPageLive2D, "data-query-id");
+    const pageId: number | null = DomUtils.getIntAttribute(queryPageLive2D, "data-page-id");
+    const queryReplyId: number | null = DomUtils.getIntAttribute(queryPageLive2D, "data-query-reply-id");
 
     if (panelId && queryId && pageId) {
       const component =
@@ -121,10 +99,10 @@ window.addEventListener('load', () => {
   }
 
   if (queryNavigation) {
-    const panelId: number | null = getIntAttribute(queryNavigation, "data-panel-id");
-    const queryId: number | null = getIntAttribute(queryNavigation, "data-query-id");
-    const pageId: number | null = getIntAttribute(queryNavigation, "data-page-id");
-    const queryState = (getAttribute(queryNavigation, "data-query-state") as QueryState) || QueryState.ACTIVE;
+    const panelId: number | null = DomUtils.getIntAttribute(queryNavigation, "data-panel-id");
+    const queryId: number | null = DomUtils.getIntAttribute(queryNavigation, "data-query-id");
+    const pageId: number | null = DomUtils.getIntAttribute(queryNavigation, "data-page-id");
+    const queryState = (DomUtils.getAttribute(queryNavigation, "data-query-state") as QueryState) || QueryState.ACTIVE;
 
     if (panelId && queryId && pageId) {
       const component =

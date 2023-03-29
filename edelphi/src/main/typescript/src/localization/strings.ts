@@ -93,6 +93,12 @@ export interface IStrings extends LocalizedStringsMethods {
       administration: string;
       reportAnIssue: string
     },
+    dashboard: {
+      deletePanelDialogConfirmQuestion: string;
+      deletePanelDialogConfirmDetails: string;
+      deletePanelDialogConfirmDestructive: string;
+      deletingPanel: string;
+    },
     queryEditor: {
       removeQueryAnswersConfirm: string;
 

@@ -7,14 +7,23 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentCategoryDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
+import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingDAO;
+import fi.metatavu.edelphi.dao.querylayout.QuerySectionDAO;
+import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
+import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldOptionDAO;
+import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldOptionGroupDAO;
 import fi.metatavu.edelphi.dao.resources.QueryDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageType;
 import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection;
+import fi.metatavu.edelphi.domainmodel.querymeta.QueryField;
+import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionField;
 import fi.metatavu.edelphi.domainmodel.resources.Folder;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.resources.QueryState;
@@ -44,6 +53,27 @@ public class QueryController {
 
   @Inject
   private SettingsController settingsController;
+
+  @Inject
+  private QuerySectionDAO querySectionDAO;
+
+  @Inject
+  private QueryReplyController queryReplyController;
+
+  @Inject
+  private QueryPageSettingDAO queryPageSettingDAO;
+
+  @Inject
+  private QueryFieldDAO queryFieldDAO;
+
+  @Inject
+  private QueryOptionFieldOptionDAO queryOptionFieldOptionDAO;
+
+  @Inject
+  private QueryOptionFieldOptionGroupDAO queryOptionFieldOptionGroupDAO;
+
+  @Inject
+  private QueryQuestionCommentCategoryDAO queryQuestionCommentCategoryDAO;
 
   /**
    * Creates new query
@@ -75,16 +105,32 @@ public class QueryController {
   }
 
   /**
-   * Deletes an query
+   * Deletes query including all data
    * 
-   * @param query
+   * @param query query to be deleted
    */
   public void deleteQuery(Query query) {
-    if (settingsController.isInTestMode()) {
-      queryDAO.delete(query);
-    } else {
-      queryDAO.archive(query);
-    }
+    querySectionDAO.listAllByQuery(query).forEach( querySection -> {
+      queryPageDAO.listAllByQuerySection(querySection).forEach(this::deleteQueryPage);
+      querySectionDAO.delete(querySection);
+    });
+
+    queryReplyDAO.listAllByQuery(query).forEach(queryReplyDAO::delete);
+    queryQuestionCommentCategoryDAO.listByQuery(query).forEach(queryQuestionCommentCategoryDAO::delete);
+    queryDAO.delete(query);
+  }
+
+  /**
+   * Deletes query page
+   *
+   * @param queryPage query page to be deleted
+   */
+  public void deleteQueryPage(QueryPage queryPage) {
+    queryReplyController.deleteQueryPageData(queryPage);
+    queryFieldDAO.listAllByQueryPage(queryPage).forEach(this::deleteQueryField);
+    queryPageSettingDAO.listByQueryPage(queryPage).forEach(queryPageSettingDAO::delete);
+    queryQuestionCommentCategoryDAO.listByQueryPage(queryPage).forEach(queryQuestionCommentCategoryDAO::delete);
+    queryPageDAO.delete(queryPage);
   }
 
   /**
@@ -217,6 +263,21 @@ public class QueryController {
    */
   public List<QueryPage> listQueryPagesByType(Query query, QueryPageType pageType) {
     return queryPageDAO.listByQueryAndType(query, pageType);
+  }
+
+  /**
+   * Deletes a query field
+   *
+   * @param queryField query field
+   */
+  private void deleteQueryField(QueryField queryField) {
+    if (queryField instanceof QueryOptionField) {
+      QueryOptionField queryOptionField = (QueryOptionField) queryField;
+      queryOptionFieldOptionGroupDAO.listAllByQueryField(queryOptionField).forEach(queryOptionFieldOptionGroupDAO::delete);
+      queryOptionFieldOptionDAO.listAllByQueryField(queryOptionField).forEach(queryOptionFieldOptionDAO::delete);
+    }
+
+    queryFieldDAO.delete(queryField);
   }
 
 }

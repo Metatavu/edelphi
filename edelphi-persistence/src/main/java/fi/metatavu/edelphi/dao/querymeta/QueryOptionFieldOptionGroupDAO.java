@@ -60,6 +60,24 @@ public class QueryOptionFieldOptionGroupDAO extends GenericDAO<QueryOptionFieldO
     return entityManager.createQuery(criteria).getResultList();
 
   }
+
+  /**
+   * Lists all option groups by query field (including archived)
+   *
+   * @param queryField query field
+   * @return list of option groups
+   */
+  public List<QueryOptionFieldOptionGroup> listAllByQueryField(QueryOptionField queryField) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryOptionFieldOptionGroup> criteria = criteriaBuilder.createQuery(QueryOptionFieldOptionGroup.class);
+    Root<QueryOptionFieldOptionGroup> root = criteria.from(QueryOptionFieldOptionGroup.class);
+    criteria.select(root);
+    criteria.where(criteriaBuilder.equal(root.get(QueryOptionFieldOptionGroup_.optionField), queryField));
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
   
   public QueryOptionFieldOptionGroup updateName(QueryOptionFieldOptionGroup queryOptionFieldOptionGroup, String name) {
     queryOptionFieldOptionGroup.setName(name);

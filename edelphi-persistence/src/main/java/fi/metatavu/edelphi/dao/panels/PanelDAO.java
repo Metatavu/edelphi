@@ -144,4 +144,19 @@ public class PanelDAO extends GenericDAO<Panel> {
     return persist(panel);
   }
 
+  /**
+   * Updates root folder of panel
+   *
+   * @param panel panel
+   * @param rootFolder root folder
+   * @param modifier modifier
+   * @return updated panel
+   */
+  public Panel updateRootFolder(Panel panel, Folder rootFolder, User modifier) {
+    panel.setRootFolder(rootFolder);
+    panel.setLastModified(new Date());
+    panel.setLastModifier(modifier);
+
+    return persist(panel);
+  }
 }

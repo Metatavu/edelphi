@@ -128,5 +128,23 @@ public class PanelUserExpertiseGroupDAO extends GenericDAO<PanelUserExpertiseGro
 
     return entityManager.createQuery(criteria).getResultList();
   }
+
+  /**
+   * Lists all panel user expertise groups by panel (including archived from all stamps)
+   *
+   * @param panel panel
+   * @return list of panel user expertise groups
+   */
+  public List<PanelUserExpertiseGroup> listAllByPanel(Panel panel) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelUserExpertiseGroup> criteria = criteriaBuilder.createQuery(PanelUserExpertiseGroup.class);
+    Root<PanelUserExpertiseGroup> root = criteria.from(PanelUserExpertiseGroup.class);
+    criteria.select(root);
+    criteria.where(criteriaBuilder.equal(root.get(PanelUserExpertiseGroup_.panel), panel));
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
   
 }

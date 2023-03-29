@@ -50,6 +50,24 @@ public class QueryFieldDAO extends GenericDAO<QueryField> {
 
     return entityManager.createQuery(criteria).getResultList();
   }
+
+  /**
+   * Lists all query fields by query page (including archived)
+   *
+   * @param queryPage query page
+   * @return list of query fields
+   */
+  public List<QueryField> listAllByQueryPage(QueryPage queryPage) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryField> criteria = criteriaBuilder.createQuery(QueryField.class);
+    Root<QueryField> root = criteria.from(QueryField.class);
+    criteria.select(root);
+    criteria.where(criteriaBuilder.equal(root.get(QueryField_.queryPage), queryPage));
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
   
   public Long countByQueryPage(QueryPage queryPage) {
     EntityManager entityManager = getEntityManager();

@@ -23,6 +23,10 @@ import {
     PanelToJSON,
 } from '../models';
 
+export interface DeletePanelRequest {
+    panelId: number;
+}
+
 export interface FindPanelRequest {
     panelId: number;
 }
@@ -35,6 +39,41 @@ export interface ListPanelsRequest {
  * 
  */
 export class PanelsApi extends runtime.BaseAPI {
+
+    /**
+     * Deletes panel
+     * Delete panel
+     */
+    async deletePanelRaw(requestParameters: DeletePanelRequest): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.panelId === null || requestParameters.panelId === undefined) {
+            throw new runtime.RequiredError('panelId','Required parameter requestParameters.panelId was null or undefined when calling deletePanel.');
+        }
+
+        const queryParameters: runtime.HTTPQuery = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.apiKey) {
+            headerParameters["Authorization"] = this.configuration.apiKey("Authorization"); // bearer authentication
+        }
+
+        const response = await this.request({
+            path: `/panels/{panelId}`.replace(`{${"panelId"}}`, encodeURIComponent(String(requestParameters.panelId))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        });
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Deletes panel
+     * Delete panel
+     */
+    async deletePanel(requestParameters: DeletePanelRequest): Promise<void> {
+        await this.deletePanelRaw(requestParameters);
+    }
 
     /**
      * Finds a panel by id

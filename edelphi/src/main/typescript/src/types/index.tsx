@@ -63,7 +63,7 @@ export interface QueryLive2dAnswer {
 /**
  * Command
  */
-export type Command = "edit-page-comment-options" | "edit-page-live2d-options" | "enable-query-next" | "disable-query-next" | "open-anonymous-login-dialog" | "open-copy-query-dialog";
+export type Command = "edit-page-comment-options" | "edit-page-live2d-options" | "enable-query-next" | "disable-query-next" | "open-anonymous-login-dialog" | "open-copy-query-dialog" | "open-delete-panel-dialog";
 
 /**
  * Command data for save query answers event
@@ -188,8 +188,16 @@ export interface EditQueryOpenCopyQueryDialogEventDetail {
 }
 
 /**
+ * Command payload for open anonymous login dialog event
+ */
+export interface OpenDeletePanelDialogEventDetail {
+  command: "open-delete-panel-dialog",
+  data: {}
+}
+
+/**
  * Command event for save query answers event
  */
 export interface CommandEvent extends CustomEvent {
-  detail: DisableQueryNextCommandEventDetail | EnableQueryNextCommandEventDetail | EditQueryCommentOptionsEventDataDetail | EditPageCommentOptionsEventDataDetail | EditPageLive2dOptionsEventDataDetail | RemoveQueryAnswersEventDataDetail | EditQueryOpenAnonymousLoginDialogEventDetail |EditQueryOpenCopyQueryDialogEventDetail
+  detail: DisableQueryNextCommandEventDetail | EnableQueryNextCommandEventDetail | EditQueryCommentOptionsEventDataDetail | EditPageCommentOptionsEventDataDetail | EditPageLive2dOptionsEventDataDetail | RemoveQueryAnswersEventDataDetail | EditQueryOpenAnonymousLoginDialogEventDetail | EditQueryOpenCopyQueryDialogEventDetail | OpenDeletePanelDialogEventDetail;
 } 
