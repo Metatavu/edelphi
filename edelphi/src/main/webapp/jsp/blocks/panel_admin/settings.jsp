@@ -10,6 +10,16 @@
     <jsp:param value="panel.admin.dashboard.panelSettings.title" name="titleLocale"/>
   </jsp:include>
 
+  <c:if test="${panelActions['MANAGE_PANEL']}">
+    <jsp:include page="/jsp/fragments/block_contextmenu.jsp">
+      <jsp:param name="items" value="DELETE"/>
+      <jsp:param name="item.DELETE.tooltipLocale" value="panel.admin.dashboard.panelSettings.delete"/>
+      <jsp:param name="item.DELETE.href" value="#"/>
+      <jsp:param name="item.DELETE.id" value="dashboard-delete-panel"/>
+      <jsp:param name="item.DELETE.icon" value="inverted blue trash"/>
+    </jsp:include>
+  </c:if>
+
   <div id="adminDashboardSettingsBlockContent" class="blockContent">
     <form id="panelAdminSettingsForm" action="${pageContext.request.contextPath}/panel/admin/savesettings.json">
       <input type="hidden" name="panelId" value="${panel.id}"/>

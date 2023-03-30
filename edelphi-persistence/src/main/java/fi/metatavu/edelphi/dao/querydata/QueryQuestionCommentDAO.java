@@ -382,19 +382,20 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
     return entityManager.createQuery(criteria).getResultList(); 
   }
 
-  public List<QueryQuestionComment> listByQueryReply(QueryReply queryReply) {
+  /**
+   * Lists all comments by query page (including archived)
+   *
+   * @param queryPage query page
+   * @return
+   */
+  public List<QueryQuestionComment> listAllByQueryPage(QueryPage queryPage) {
     EntityManager entityManager = getEntityManager();
 
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
     CriteriaQuery<QueryQuestionComment> criteria = criteriaBuilder.createQuery(QueryQuestionComment.class);
     Root<QueryQuestionComment> root = criteria.from(QueryQuestionComment.class);
     criteria.select(root);
-    criteria.where(
-        criteriaBuilder.and(
-            criteriaBuilder.equal(root.get(QueryQuestionComment_.queryReply), queryReply),
-            criteriaBuilder.equal(root.get(QueryQuestionComment_.archived), Boolean.FALSE)
-        )
-    );
+    criteria.where(criteriaBuilder.equal(root.get(QueryQuestionComment_.queryPage), queryPage));
 
     return entityManager.createQuery(criteria).getResultList(); 
   }

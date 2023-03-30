@@ -89,6 +89,29 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deletePanel
+      summary: Delete panel
+      description: Deletes panel
+      tags:
+        - Panels
+      parameters:
+        - name: panelId
+          required: true
+          in: path
+          description: id of the panel being deleted
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: No content to indicate successful delete
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /panels/{panelId}/queries:
     get:

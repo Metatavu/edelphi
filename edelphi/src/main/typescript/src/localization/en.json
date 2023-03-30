@@ -88,6 +88,12 @@
       "administration": "Administration",
       "reportAnIssue": "Report an Issue"
     },
+    "dashboard": {
+      "deletePanelDialogConfirmQuestion": "Are you absolutely certain that you want to delete panel \"{0}\"?",
+      "deletePanelDialogConfirmDetails": "This will delete all contents of the panel including queries and replies to them.",
+      "deletePanelDialogConfirmDestructive": "Panel deletion is a permanent and irreversible action!",
+      "deletingPanel": "Deleting panel..."
+    },
     "queryEditor": {
       "removeQueryAnswersConfirm": "Are you sure that you want to remove all answers from this query?",
       "queryCommentOptions": {

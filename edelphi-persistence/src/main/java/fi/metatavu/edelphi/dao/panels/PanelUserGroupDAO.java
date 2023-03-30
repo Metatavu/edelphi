@@ -71,6 +71,24 @@ public class PanelUserGroupDAO extends GenericDAO<PanelUserGroup> {
     return entityManager.createQuery(criteria).getResultList();
   }
 
+  /**
+   * Lists all panel user groups by panel (including archived from all stamps)
+   *
+   * @param panel panel
+   * @return list of panel user groups
+   */
+  public List<PanelUserGroup> listAllByPanel(Panel panel) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelUserGroup> criteria = criteriaBuilder.createQuery(PanelUserGroup.class);
+    Root<PanelUserGroup> root = criteria.from(PanelUserGroup.class);
+    criteria.select(root);
+    criteria.where(criteriaBuilder.equal(root.get(PanelUserGroup_.panel), panel));
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
   public PanelUserGroup update(PanelUserGroup panelUserGroup, String name, List<User> users, User updater) {
     panelUserGroup.setName(name);
     panelUserGroup.setUsers(users);

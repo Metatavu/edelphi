@@ -138,6 +138,24 @@ public class QueryReplyDAO extends GenericDAO<QueryReply> {
     return entityManager.createQuery(criteria).getResultList();
   }
 
+  /**
+   * Lists all query replies by query (including archived)
+   *
+   * @param query query
+   * @return list of query replies
+   */
+  public List<QueryReply> listAllByQuery(Query query) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryReply> criteria = criteriaBuilder.createQuery(QueryReply.class);
+    Root<QueryReply> root = criteria.from(QueryReply.class);
+    criteria.select(root);
+    criteria.where(criteriaBuilder.equal(root.get(QueryReply_.query), query));
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
   public Long countByQueryAndStamp(Query query, PanelStamp panelStamp) {
     EntityManager entityManager = getEntityManager();
 

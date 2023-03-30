@@ -13,8 +13,13 @@
     </c:set>
     
     <c:set var="href" value="item.${item}.href"/>
+    <c:set var="id" value="item.${item}.id"/>
+    <c:set var="icon" value="item.${item}.icon"/>
     <div class="blockContextMenuItem ${item}">
-    <a href="${param[href]}" title="${tooltip}">
+    <a id="${param[id]}" href="${param[href]}" title="${tooltip}">
+      <c:if test="${!empty(param[icon])}">
+        <i aria-hidden="true" class="${param[icon]} icon"></i>
+      </c:if>
       <span class="blockContextMenuTooltip">
         <span class="blockContextMenuTooltipText">${tooltip}</span>
         <span class="blockContextMenuTooltipArrow"></span>

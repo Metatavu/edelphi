@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import fi.metatavu.edelphi.dao.querylayout.QuerySectionDAO;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
@@ -95,7 +96,10 @@ public class QueryReplyController {
   
   @Inject
   private QueryQuestionOptionGroupOptionAnswerDAO queryQuestionOptionGroupOptionAnswerDAO;
-  
+
+  @Inject
+  private QuerySectionDAO querySectionDAO;
+
   /**
    * Copy query reply into new query
    * 
@@ -297,6 +301,16 @@ public class QueryReplyController {
     setNumericAnswer(answerData.getQueryPage(), answerData.getQueryReply(), LIVE_2D_FIELD_Y, y);
     return new QueryQuestionAnswer<QueryQuestionLive2dAnswerData>(answerData.getQueryReply(), answerData.getQueryPage(), new QueryQuestionLive2dAnswerData(x, y));
   }
+
+  /**
+   * Deletes all data from query page including archived answers and comments
+   *
+   * @param queryPage query page
+   */
+  public void deleteQueryPageData(QueryPage queryPage) {
+    queryFieldDAO.listAllByQueryPage(queryPage).forEach(this::deleteQueryFieldAnswers);
+    queryQuestionCommentDAO.listAllByQueryPage(queryPage).forEach(queryQuestionCommentDAO::delete);
+  }
   
   /**
    * Lists query question answers for live 2d queries
@@ -441,39 +455,7 @@ public class QueryReplyController {
   private void removeAnswers(QueryPage queryPage, PanelStamp stamp) {
     List<QueryField> queryFields = queryFieldDAO.listByQueryPage(queryPage);
     for (QueryField queryField : queryFields) {
-      switch (queryField.getType()) {
-        case TEXT:
-          List<QueryQuestionTextAnswer> textAnswers = queryQuestionTextAnswerDAO.listByQueryField(queryField);
-          for (QueryQuestionTextAnswer textAnswer : textAnswers) {
-            queryQuestionTextAnswerDAO.delete(textAnswer);
-            queryQuestionAnswerDAO.delete(textAnswer);
-          }
-          break;
-        case NUMERIC:
-        case NUMERIC_SCALE:
-          List<QueryQuestionNumericAnswer> numericAnswers = queryQuestionNumericAnswerDAO.listByQueryField(queryField);
-          for (QueryQuestionNumericAnswer numericAnswer : numericAnswers) {
-            queryQuestionNumericAnswerDAO.delete(numericAnswer);
-            queryQuestionAnswerDAO.delete(numericAnswer);
-          }
-          break;
-        case OPTIONFIELD:
-          List<QueryQuestionOptionGroupOptionAnswer> optionGroupAnswers = queryQuestionOptionGroupOptionAnswerDAO.listByQueryField(queryField);
-          for (QueryQuestionOptionGroupOptionAnswer optionGroupAnswer : optionGroupAnswers) {
-            queryQuestionOptionGroupOptionAnswerDAO.delete(optionGroupAnswer);
-          }
-          List<QueryQuestionMultiOptionAnswer> multiAnswers = queryQuestionMultiOptionAnswerDAO.listByQueryField(queryField);
-          for (QueryQuestionMultiOptionAnswer multiAnswer : multiAnswers) {
-            queryQuestionMultiOptionAnswerDAO.delete(multiAnswer);
-            queryQuestionAnswerDAO.delete(multiAnswer);
-          }
-          List<QueryQuestionOptionAnswer> optionAnswers = queryQuestionOptionAnswerDAO.listByQueryField(queryField);
-          for (QueryQuestionOptionAnswer optionAnswer : optionAnswers) {
-            queryQuestionOptionAnswerDAO.delete(optionAnswer);
-            queryQuestionAnswerDAO.delete(optionAnswer);
-          }
-          break;
-      }
+      deleteQueryFieldAnswers(queryField);
     }
     
     List<QueryQuestionComment> comments = queryQuestionCommentDAO.listByQueryPageAndStamp(queryPage, stamp);
@@ -481,5 +463,45 @@ public class QueryReplyController {
       queryQuestionCommentDAO.archive(comment);
     }
   }
-  
+
+  /**
+   * Deletes answers from query field
+   *
+   * @param queryField query field
+   */
+  private void deleteQueryFieldAnswers(QueryField queryField) {
+    switch (queryField.getType()) {
+      case TEXT:
+        List<QueryQuestionTextAnswer> textAnswers = queryQuestionTextAnswerDAO.listByQueryField(queryField);
+        for (QueryQuestionTextAnswer textAnswer : textAnswers) {
+          queryQuestionTextAnswerDAO.delete(textAnswer);
+          queryQuestionAnswerDAO.delete(textAnswer);
+        }
+        break;
+      case NUMERIC:
+      case NUMERIC_SCALE:
+        List<QueryQuestionNumericAnswer> numericAnswers = queryQuestionNumericAnswerDAO.listByQueryField(queryField);
+        for (QueryQuestionNumericAnswer numericAnswer : numericAnswers) {
+          queryQuestionNumericAnswerDAO.delete(numericAnswer);
+          queryQuestionAnswerDAO.delete(numericAnswer);
+        }
+        break;
+      case OPTIONFIELD:
+        List<QueryQuestionOptionGroupOptionAnswer> optionGroupAnswers = queryQuestionOptionGroupOptionAnswerDAO.listByQueryField(queryField);
+        for (QueryQuestionOptionGroupOptionAnswer optionGroupAnswer : optionGroupAnswers) {
+          queryQuestionOptionGroupOptionAnswerDAO.delete(optionGroupAnswer);
+        }
+        List<QueryQuestionMultiOptionAnswer> multiAnswers = queryQuestionMultiOptionAnswerDAO.listByQueryField(queryField);
+        for (QueryQuestionMultiOptionAnswer multiAnswer : multiAnswers) {
+          queryQuestionMultiOptionAnswerDAO.delete(multiAnswer);
+          queryQuestionAnswerDAO.delete(multiAnswer);
+        }
+        List<QueryQuestionOptionAnswer> optionAnswers = queryQuestionOptionAnswerDAO.listByQueryField(queryField);
+        for (QueryQuestionOptionAnswer optionAnswer : optionAnswers) {
+          queryQuestionOptionAnswerDAO.delete(optionAnswer);
+          queryQuestionAnswerDAO.delete(optionAnswer);
+        }
+        break;
+    }
+  }
 }

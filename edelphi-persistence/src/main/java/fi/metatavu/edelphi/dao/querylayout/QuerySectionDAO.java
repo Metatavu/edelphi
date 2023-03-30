@@ -54,6 +54,24 @@ public class QuerySectionDAO extends GenericDAO<QuerySection> {
     
     return entityManager.createQuery(criteria).getResultList();
   }
+
+  /**
+   * Lists all query sections by query (including archived)
+   *
+   * @param query query
+   * @return list of query sections
+   */
+  public List<QuerySection> listAllByQuery(Query query) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QuerySection> criteria = criteriaBuilder.createQuery(QuerySection.class);
+    Root<QuerySection> root = criteria.from(QuerySection.class);
+    criteria.select(root);
+    criteria.where(criteriaBuilder.equal(root.get(QuerySection_.query), query));
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
   
   public QuerySection updateTitle(QuerySection querySection, String title, User modifier) {
     Date now = new Date();

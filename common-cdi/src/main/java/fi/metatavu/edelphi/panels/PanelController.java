@@ -6,14 +6,8 @@ import java.util.UUID;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import fi.metatavu.edelphi.dao.panels.PanelDAO;
-import fi.metatavu.edelphi.dao.panels.PanelInvitationDAO;
-import fi.metatavu.edelphi.dao.panels.PanelStampDAO;
-import fi.metatavu.edelphi.dao.panels.PanelUserDAO;
-import fi.metatavu.edelphi.dao.panels.PanelUserExpertiseClassDAO;
-import fi.metatavu.edelphi.dao.panels.PanelUserExpertiseGroupDAO;
-import fi.metatavu.edelphi.dao.panels.PanelUserGroupDAO;
-import fi.metatavu.edelphi.dao.panels.PanelUserIntressClassDAO;
+import fi.metatavu.edelphi.dao.actions.PanelUserRoleActionDAO;
+import fi.metatavu.edelphi.dao.panels.*;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitation;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitationState;
@@ -25,9 +19,12 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelUserGroup;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserIntressClass;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserJoinType;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserRole;
+import fi.metatavu.edelphi.domainmodel.resources.Folder;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
+import fi.metatavu.edelphi.resources.ResourceController;
 import fi.metatavu.edelphi.settings.SettingsController;
+import fi.metatavu.edelphi.users.UserController;
 
 /**
  * Controller for panels
@@ -39,6 +36,12 @@ public class PanelController {
   
   @Inject
   private SettingsController settingsController;
+
+  @Inject
+  private ResourceController resourceController;
+
+  @Inject
+  private UserController userController;
   
   @Inject
   private PanelDAO panelDAO;
@@ -63,6 +66,19 @@ public class PanelController {
 
   @Inject
   private PanelUserDAO panelUserDAO;
+
+  @Inject
+  private PanelAuthDAO panelAuthDAO;
+
+  @Inject
+  private PanelBulletinDAO panelBulletinDAO;
+
+  @Inject
+  private PanelUserRoleActionDAO panelUserRoleActionDAO;
+
+  @Inject
+  private PanelExpertiseGroupUserDAO panelExpertiseGroupUserDAO;
+
   
   /**
    * Finds a panel by id
@@ -73,7 +89,31 @@ public class PanelController {
   public Panel findPanelById(Long id) {
     return panelDAO.findById(id);
   }
-  
+
+  /**
+   * Deletes a panel and all of its contents. This operation is not reversible.
+   *
+   * @param panel panel
+   */
+  public void deletePanel(Panel panel) {
+    Folder rootFolder = panel.getRootFolder();
+
+    panelDAO.updateRootFolder(panel, null, panel.getLastModifier());
+    panelAuthDAO.listByPanel(panel).forEach(panelAuthDAO::delete);
+    panelUserRoleActionDAO.listByPanel(panel).forEach(panelUserRoleActionDAO::delete);
+    panelBulletinDAO.listAllByPanel(panel).forEach(panelBulletinDAO::delete);
+    panelInvitationDAO.listAllByPanel(panel).forEach(panelInvitationDAO::delete);
+    resourceController.deleteResource(rootFolder);
+    panelUserExpertiseGroupDAO.listAllByPanel(panel).forEach(this::deletePanelUserExpertiseGroup);
+    panelUserDAO.listAllByPanel(panel).forEach(panelUserDAO::delete);
+    panelUserGroupDAO.listAllByPanel(panel).forEach(panelUserGroupDAO::delete);
+    panelUserExpertiseClassDAO.listByPanel(panel).forEach(panelUserExpertiseClassDAO::delete);
+    panelUserIntressClassDAO.listByPanel(panel).forEach(panelUserIntressClassDAO::delete);
+    panelStampDAO.listAllByPanel(panel).forEach(panelStampDAO::delete);
+
+    panelDAO.delete(panel);
+  }
+
   /**
    * Lists user's panels
    * 
@@ -277,6 +317,16 @@ public class PanelController {
    */
   public PanelUser findByPanelAndUserAndStamp(Panel panel, User user, PanelStamp stamp) {   
     return panelUserDAO.findByPanelAndUserAndStamp(panel, user, stamp);
+  }
+
+  /**
+   * Deletes user expertise group
+   *
+   * @param panelUserExpertiseGroup panel user expertise group
+   */
+  private void deletePanelUserExpertiseGroup(PanelUserExpertiseGroup panelUserExpertiseGroup) {
+    panelExpertiseGroupUserDAO.listByGroup(panelUserExpertiseGroup).forEach(panelExpertiseGroupUserDAO::delete);
+    panelUserExpertiseGroupDAO.delete(panelUserExpertiseGroup);
   }
   
 }

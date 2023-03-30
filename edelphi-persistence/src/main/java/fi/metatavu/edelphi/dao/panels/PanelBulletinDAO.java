@@ -53,6 +53,24 @@ public class PanelBulletinDAO extends GenericDAO<PanelBulletin> {
     return entityManager.createQuery(criteria).getResultList();
   }
 
+  /**
+   * Lists all panel bulletins by panel (including archived)
+   *
+   * @param panel panel
+   * @return list of panel bulletins
+   */
+  public List<PanelBulletin> listAllByPanel(Panel panel) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelBulletin> criteria = criteriaBuilder.createQuery(PanelBulletin.class);
+    Root<PanelBulletin> root = criteria.from(PanelBulletin.class);
+    criteria.select(root);
+    criteria.where(criteriaBuilder.equal(root.get(PanelBulletin_.panel), panel));
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
   public PanelBulletin updateTitle(PanelBulletin panelBulletin, String title, User modifier) {
     EntityManager entityManager = getEntityManager();
     
