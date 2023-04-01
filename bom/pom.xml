@@ -103,7 +103,7 @@
     
     <!-- Keycloak admin client -->
     
-    <keycloak.version>4.8.3.Final</keycloak.version>
+    <keycloak.version>20.0.3</keycloak.version>
 
     <!-- Paho -->
     
