@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import fi.metatavu.edelphi.dao.resources.LocalDocumentPageDAO;
 import fi.metatavu.edelphi.dao.resources.ResourceLockDAO;
-import fi.metatavu.edelphi.domainmodel.resources.Query;
-import fi.metatavu.edelphi.domainmodel.resources.ResourceLock;
+import fi.metatavu.edelphi.domainmodel.resources.*;
 import fi.metatavu.edelphi.queries.QueryController;
 import org.apache.commons.lang3.StringUtils;
 
@@ -16,8 +16,6 @@ import com.github.slugify.Slugify;
 import fi.metatavu.edelphi.dao.panels.PanelDAO;
 import fi.metatavu.edelphi.dao.resources.ResourceDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
-import fi.metatavu.edelphi.domainmodel.resources.Folder;
-import fi.metatavu.edelphi.domainmodel.resources.Resource;
 import fi.metatavu.edelphi.panels.PanelController;
 
 /**
@@ -42,6 +40,9 @@ public class ResourceController {
 
   @Inject
   private ResourceLockDAO resourceLockDAO;
+
+  @Inject
+  private LocalDocumentPageDAO localDocumentPageDAO;
   
   /**
    * Returns a panel for given resource
@@ -188,6 +189,10 @@ public class ResourceController {
       for (Resource childResource : resources) {
         deleteResource(childResource);
       }
+    }
+
+    if (resource instanceof LocalDocument) {
+      localDocumentPageDAO.listByDocument((LocalDocument) resource).forEach(localDocumentPageDAO::delete);
     }
 
     if (resource instanceof Query) {
