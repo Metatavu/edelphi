@@ -3421,5 +3421,46 @@
         entry_id = (SELECT name_id FROM QueryPageTemplate WHERE iconName = 'timeserie') AND locale = 'en'
     </sql>
   </changeSet>
+
+  <changeSet id="remove-duplicated-panel-users" author="antti.leppa">
+    <sql>
+      UPDATE
+        PanelUser
+        INNER JOIN (
+          SELECT
+            stamp_id, panel_id, user_id, MAX(id) as max_id
+          FROM
+            PanelUser
+          WHERE
+            archived = false
+          GROUP BY
+            stamp_id, panel_id, user_id
+          HAVING
+            COUNT(*) > 1
+        ) as Duplicates
+      ON
+        PanelUser.stamp_id = Duplicates.stamp_id AND
+        PanelUser.panel_id = Duplicates.panel_id AND
+        PanelUser.user_id = Duplicates.user_id AND
+        PanelUser.id != Duplicates.max_id
+      SET
+        PanelUser.archived = true
+    </sql>
+  </changeSet>
+  
+  <changeSet id="unique-panel-user" author="antti.leppa">
+    <sql>
+      ALTER TABLE
+        PanelUser
+      ADD COLUMN
+        nonArchivedCompositeKey VARCHAR(191) GENERATED ALWAYS AS (CASE WHEN archived = false THEN CONCAT(stamp_id, '-', panel_id, '-', user_id) ELSE NULL END) STORED
+    </sql>
+
+    <addUniqueConstraint
+            constraintName="UN_PANEL_USER_NON_ARCHIVED_COMPOSITE_KEY"
+            tableName="PanelUser"
+            columnNames="nonArchivedCompositeKey"
+    />
+  </changeSet>
   
 </databaseChangeLog>
