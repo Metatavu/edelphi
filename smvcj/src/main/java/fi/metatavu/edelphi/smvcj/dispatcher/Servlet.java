@@ -1,8 +1,5 @@
 package fi.metatavu.edelphi.smvcj.dispatcher;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.annotation.Resource;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -72,7 +69,6 @@ public class Servlet extends HttpServlet {
     
     errorJspPage = config.getInitParameter("errorJspPage");
     applicationPath = config.getInitParameter("applicationPath");
-    sessionSynchronization = "true".equals(config.getInitParameter("sessionSynchronization"));
   }
 
   /**
@@ -80,41 +76,7 @@ public class Servlet extends HttpServlet {
    */
   @Override
   protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.io.IOException {
-    if (sessionSynchronization) {
-      String syncKey = getSyncKey(request);
-      synchronized (getSyncObject(syncKey)) {
-        try {
-          doService(request, response);
-        }
-        finally {
-          removeSyncObject(syncKey);
-        }
-      }
-    }
-    else {
-      doService(request, response);
-    }
-  }
-
-  private synchronized Object getSyncObject(String syncKey) {
-    Object syncObject = syncObjects.get(syncKey);
-    if (syncObject == null) {
-      syncObject = new Object();
-      syncObjects.put(syncKey, syncObject);
-    }
-    return syncObject;
-  }
-  
-  private synchronized void removeSyncObject(String syncKey) {
-    syncObjects.remove(syncKey);
-  }
-  
-  private String getSyncKey(HttpServletRequest request) {
-    StringBuilder sb = new StringBuilder();
-    sb.append(request.getSession(true).getId());
-    sb.append(getCurrentUrl(request, false));
-    sb.append(request.getMethod());
-    return sb.toString();
+    doService(request, response);
   }
   
   private void doService(HttpServletRequest request,
@@ -165,6 +127,10 @@ public class Servlet extends HttpServlet {
         requestContext = new BinaryRequestContext(dispatchContext, request, response, getServletContext());
       }
 
+      if (requestContext == null) {
+        throw new SmvcRuntimeException(500, "Failed to create request context for " + requestController.getClass().getName());
+      }
+
       // Let the controller authorize the request. Most common exceptions thrown include
       // LoginRequiredException and AccessDeniedException 
       
@@ -172,15 +138,11 @@ public class Servlet extends HttpServlet {
       requestController.beforeProcess(requestContext);
       
       // Request has been authorized, so the controller is asked to process it
-      
-      if (requestController instanceof PageController) {
-        ((PageController) requestController).process((PageRequestContext) requestContext);
-      }
-      else if (requestController instanceof JSONRequestController) {
-        ((JSONRequestController) requestController).process((JSONRequestContext) requestContext);
-      }
-      else if (requestController instanceof BinaryRequestController) {
-        ((BinaryRequestController) requestController).process((BinaryRequestContext) requestContext);
+
+      if (requestController.isSynchronous()) {
+        processRequestSynchronized(requestController, requestContext);
+      } else {
+        processRequest(requestController, requestContext);
       }
     }
     catch (LoginRequiredException lre) {
@@ -274,6 +236,35 @@ public class Servlet extends HttpServlet {
     }
   }
 
+  /**
+   * Process the request by invoking the appropriate method on the controller. This method is
+   * synchronized to ensure that only one request is processed at a time.
+   *
+   * @param requestController The request controller
+   * @param requestContext The request context
+   */
+  private synchronized void processRequestSynchronized(RequestController requestController, RequestContext requestContext) {
+    processRequest(requestController, requestContext);
+  }
+
+  /**
+   * Process the request by invoking the appropriate method on the controller
+   *
+   * @param requestController The request controller
+   * @param requestContext The request context
+   */
+  private void processRequest(RequestController requestController, RequestContext requestContext) {
+    if (requestController instanceof PageController) {
+      ((PageController) requestController).process((PageRequestContext) requestContext);
+    }
+    else if (requestController instanceof JSONRequestController) {
+      ((JSONRequestController) requestController).process((JSONRequestContext) requestContext);
+    }
+    else if (requestController instanceof BinaryRequestController) {
+      ((BinaryRequestController) requestController).process((BinaryRequestContext) requestContext);
+    }
+  }
+
   private String getBaseUrl(HttpServletRequest request) {
     String currentURL = request.getRequestURL().toString();
     String pathInfo = request.getRequestURI();
@@ -281,7 +272,7 @@ public class Servlet extends HttpServlet {
   }
 
   private String getCurrentUrl(HttpServletRequest request, boolean stripApp) {
-    if (stripApp == false) {
+    if (!stripApp) {
       StringBuilder currentUrl = new StringBuilder(request.getRequestURL());
       String queryString = request.getQueryString();
       if (!StringUtils.isBlank(queryString)) {
@@ -313,12 +304,9 @@ public class Servlet extends HttpServlet {
   private String applicationPath = "";
   private RequestDispatcher requestDispatcher;
   private PlatformErrorListener platformErrorListener;
-
-  private boolean sessionSynchronization = false;
-  private Map<String, Object> syncObjects = new HashMap<>();
-
   private static final long serialVersionUID = 1L;
-  
+
+  @SuppressWarnings("unused")
   @Resource
   private UserTransaction userTransaction;
   
