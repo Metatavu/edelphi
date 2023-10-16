@@ -161,5 +161,10 @@ public abstract class PageController implements fi.metatavu.edelphi.smvcj.contro
   public DelfoiActionScope getAccessActionScope() {
     return accessActionScope;
   }
-  
+
+  @Override
+  public boolean isSynchronous() {
+    return false;
+  }
+
 }

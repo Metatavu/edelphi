@@ -3,7 +3,6 @@ package fi.metatavu.edelphi.pages;
 import java.util.Locale;
 import java.util.UUID;
 
-import fi.metatavu.edelphi.Defaults;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.auth.OAuthAccessToken;
 import fi.metatavu.edelphi.dao.panels.PanelInvitationDAO;
@@ -155,4 +154,8 @@ public class JoinPanelPageController extends PageController {
     }
   }
 
+  @Override
+  public boolean isSynchronous() {
+    return true;
+  }
 }

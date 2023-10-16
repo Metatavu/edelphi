@@ -101,7 +101,11 @@ public abstract class JSONController implements JSONRequestController, ActionedC
   public DelfoiActionScope getAccessActionScope() {
     return accessActionScope;
   }
-  
+  @Override
+  public boolean isSynchronous() {
+    return false;
+  }
+
   private DelfoiActionName accessActionName = null;
   private DelfoiActionScope accessActionScope;
 }

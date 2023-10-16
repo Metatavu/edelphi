@@ -16,4 +16,9 @@ public abstract class BinaryController implements BinaryRequestController {
   public void authorize(RequestContext requestContext) throws LoginRequiredException, AccessDeniedException {
   }
 
+  @Override
+  public boolean isSynchronous() {
+    return false;
+  }
+
 }
