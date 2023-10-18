@@ -8,8 +8,15 @@ import fi.metatavu.edelphi.smvcj.LoginRequiredException;
  */
 public interface RequestController {
 
-  public void beforeProcess(RequestContext requestContext);
+  void beforeProcess(RequestContext requestContext);
 
-  public void authorize(RequestContext requestContext) throws LoginRequiredException, AccessDeniedException;
+  void authorize(RequestContext requestContext) throws LoginRequiredException, AccessDeniedException;
+
+  /**
+   * Returns true if the request should be processed synchronously.
+   *
+   * @return true if the request should be processed synchronously
+   */
+  boolean isSynchronous();
 
 }
