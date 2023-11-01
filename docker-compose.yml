@@ -19,6 +19,7 @@ services:
     platform: linux/amd64
     ports:
       - 8081:8080
+      - 8787:8787
     depends_on:
       - mysql
     environment:
@@ -41,6 +42,7 @@ services:
       KUBERNETES_NAMESPACE: ${KUBERNETES_NAMESPACE}
       JAVA_OPTS: ${JAVA_OPTS}
       CONTACT_EMAIL: ${CONTACT_EMAIL}
+      WILDFLY_EXTRA_OPTS: ${WILDFLY_EXTRA_OPTS}
 
   nginx:
     hostname: ${HOST}
@@ -59,6 +61,7 @@ services:
     image: metatavu/keycloak:5.0.0
     platform: linux/amd64
     container_name: keycloak
+    hostname: dev-auth.edelphi.org
     ports:
       - 8080:8080
     depends_on:
@@ -70,6 +73,8 @@ services:
       DB_ADDR: mysql
       DB_PASSWORD: root
       JDBC_PARAMS: useSSL=false&allowPublicKeyRetrieval=true
+      PROXY_ADDRESS_FORWARDING: "true"
+      KEYCLOAK_FRONTEND_URL: https://dev-auth.edelphi.org/auth
     volumes: 
       - ../keycloak-theme-metatavu:/opt/jboss/keycloak/themes/metatavu
       - ../keycloak-theme-edelphi:/opt/jboss/keycloak/themes/edelphi
