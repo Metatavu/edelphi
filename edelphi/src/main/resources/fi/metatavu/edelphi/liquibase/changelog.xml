@@ -3462,5 +3462,59 @@
             columnNames="nonArchivedCompositeKey"
     />
   </changeSet>
-  
+
+  <changeSet id="remove-duplicated-user-identifications" author="antti.leppa">
+    <sql>
+      DELETE useridentification
+      FROM useridentification
+      INNER JOIN (
+        SELECT
+        MAX(id) as max_id,
+        externalId,
+        authSource_id,
+        user_id
+        FROM useridentification
+        GROUP BY externalId, authSource_id, user_id
+        ) AS Duplicates
+      ON
+        useridentification.id != Duplicates.max_id
+      WHERE
+        useridentification.externalId = Duplicates.externalId AND
+        useridentification.authSource_id = Duplicates.authSource_id AND
+        useridentification.user_id = Duplicates.user_id
+    </sql>
+  </changeSet>
+
+  <changeSet id="remove-user-identifications-with-several-users" author="antti.leppa">
+    <sql>
+      WITH RankedUsers AS (
+        SELECT
+          ui.id AS useridentification_id,
+          ROW_NUMBER() OVER(PARTITION BY ui.externalId, ui.authSource_id ORDER BY CASE subscriptionLevel WHEN 'PREMIUM' THEN 0 WHEN 'PLUS' THEN 1 ELSE 2 END, u.lastlogin DESC) AS rn
+        FROM
+          useridentification ui
+        JOIN
+          user u ON ui.user_id = u.id
+      )
+      DELETE FROM
+        useridentification
+      WHERE id IN (
+        SELECT
+          useridentification_id
+      FROM
+        RankedUsers
+      WHERE
+        rn > 1
+      )
+    </sql>
+  </changeSet>
+
+  <changeSet id="unique-user-identification" author="antti.leppa">
+    <addUniqueConstraint
+            constraintName="UN_USER_IDENTIFICATION"
+            tableName="UserIdentification"
+            columnNames="externalId, authSource_id"
+    />
+  </changeSet>
+
 </databaseChangeLog>
