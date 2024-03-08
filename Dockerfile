@@ -17,11 +17,10 @@ RUN chmod a+x /opt/docker/entrypoint.sh
 ARG WILDFLY_VERSION=16.0.0.Final
 ARG MARIADB_MODULE_VERSION=2.3.0
 ARG MYSQL_MODULE_VERSION=8.0.15
-ARG KEYCLOAK_MODULE_VERSION=5.0.0
 
-RUN curl -o /tmp/mariadb-module.zip -L https://static.metatavu.io/wildfly/wildfly-${WILDFLY_VERSION}-mariadb-module-${MARIADB_MODULE_VERSION}.zip
-RUN curl -o /tmp/mysql-module.zip -L https://static.metatavu.io/wildfly/wildfly-${WILDFLY_VERSION}-mysql-module-${MYSQL_MODULE_VERSION}.zip
-RUN curl -o /tmp/keycloak-module.zip -L https://downloads.jboss.org/keycloak/${KEYCLOAK_MODULE_VERSION}/adapters/keycloak-oidc/keycloak-wildfly-adapter-dist-${KEYCLOAK_MODULE_VERSION}.zip
+RUN curl -L -o /tmp/mariadb-module.zip -L https://static.metatavu.io/wildfly/wildfly-${WILDFLY_VERSION}-mariadb-module-${MARIADB_MODULE_VERSION}.zip
+RUN curl -L -o /tmp/mysql-module.zip -L https://static.metatavu.io/wildfly/wildfly-${WILDFLY_VERSION}-mysql-module-${MYSQL_MODULE_VERSION}.zip
+RUN curl -L -o /tmp/keycloak-module.zip -L https://github.com/keycloak/keycloak/releases/download/18.0.2/keycloak-oidc-wildfly-adapter-18.0.2.zip
 
 RUN unzip -o /tmp/mariadb-module.zip -d /opt/jboss/wildfly/
 RUN unzip -o /tmp/mysql-module.zip -d /opt/jboss/wildfly/

@@ -40,7 +40,7 @@ public class KeycloakApi extends DefaultApi20 {
       return getRegisterUrl(config);
     }
     
-    String url = String.format("%s/realms/%s/protocol/openid-connect/auth?client_id=%s&redirect_uri=%s&response_type=code&ui_locales=%s", getServerUrl(), getRealm(), config.getApiKey(), encodeUrl(config.getCallback()), getLocale());
+    String url = String.format("%s/realms/%s/protocol/openid-connect/auth?client_id=%s&redirect_uri=%s&response_type=code&ui_locales=%s&scope=openid", getServerUrl(), getRealm(), config.getApiKey(), encodeUrl(config.getCallback()), getLocale());
     
     if (StringUtils.isNotBlank(hint)) {
       return String.format("%s&kc_idp_hint=%s", url, hint);  

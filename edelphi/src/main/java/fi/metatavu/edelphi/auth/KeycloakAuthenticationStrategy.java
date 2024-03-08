@@ -4,17 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -46,7 +41,7 @@ import fi.metatavu.edelphi.utils.AuthUtils;
 import net.sf.json.JSONObject;
 
 public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy {
-  
+
   private static final Logger logger = Logger.getLogger(KeycloakAuthenticationStrategy.class.getName());
 
   @Override
@@ -118,7 +113,7 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     try (InputStream stream = response.getStream()) {
       UserInfo userInfo = objectMapper.readValue(stream, UserInfo.class);
       String externalId = userInfo.getSub();
-      List<String> emails = Arrays.asList(userInfo.getEmail());
+      List<String> emails = Collections.singletonList(userInfo.getEmail());
       String firstName = userInfo.getGivenName();
       String lastName = userInfo.getFamilyName();
 
