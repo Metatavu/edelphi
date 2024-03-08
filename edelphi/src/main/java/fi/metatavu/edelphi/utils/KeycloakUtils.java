@@ -3,18 +3,17 @@ package fi.metatavu.edelphi.utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import fi.metatavu.edelphi.keycloak.KeycloakException;
+import fi.metatavu.edelphi.keycloak.UsersApi;
+import fi.metatavu.edelphi.keycloak.invoker.ApiClient;
+import fi.metatavu.edelphi.keycloak.invoker.ApiException;
+import fi.metatavu.edelphi.keycloak.model.CredentialRepresentation;
+import fi.metatavu.edelphi.keycloak.model.UserRepresentation;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -31,18 +30,12 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
-import org.keycloak.OAuth2Constants;
-import org.keycloak.admin.client.Keycloak;
-import org.keycloak.admin.client.KeycloakBuilder;
-import org.keycloak.representations.idm.CredentialRepresentation;
-import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fi.metatavu.edelphi.EdelfoiStatusCode;
 import fi.metatavu.edelphi.auth.OAuthAccessToken;
 import fi.metatavu.edelphi.dao.base.AuthSourceDAO;
 import fi.metatavu.edelphi.dao.base.AuthSourceSettingDAO;
@@ -51,7 +44,6 @@ import fi.metatavu.edelphi.domainmodel.base.AuthSource;
 import fi.metatavu.edelphi.domainmodel.base.AuthSourceSetting;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserIdentification;
-import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 
 /**
  * Utilities for Keycloak
@@ -72,22 +64,23 @@ public class KeycloakUtils {
    * @param passwordTemporary whether password is temporary or not
    * @param emailVerified whether email is verified
    */
-  public static void createUser(User user, String password, boolean passwordTemporary, boolean emailVerified) {
+  public static void createUser(User user, String password, boolean passwordTemporary, boolean emailVerified) throws KeycloakException {
     UserIdentificationDAO userIdentificationDAO = new UserIdentificationDAO();
     
     Map<String, String> settings = getKeycloakSettings();
-    
-    Keycloak keycloakClient = getAdminClient(settings);
+
+    UsersApi usersApi = getUsersApi(settings);
     String email = user.getDefaultEmailAsString();
     String realm = getRealm(settings);
 
-    UserRepresentation userRepresentation = findUser(keycloakClient, realm, email);
+    UserRepresentation userRepresentation = findUser(usersApi, realm, email);
     if (userRepresentation == null) {
-      userRepresentation = createUser(keycloakClient, realm, user, email, password, passwordTemporary, emailVerified);
-      if (userRepresentation == null) {
-        logger.error("Failed to create user for {}", email);
-        return;
-      }
+      userRepresentation = createUser(usersApi, realm, user, email, password, passwordTemporary, emailVerified);
+    }
+
+    if (userRepresentation == null || userRepresentation.getId() == null) {
+      logger.error("Failed to create user for {}", email);
+      return;
     }
     
     AuthSource keycloakAuthSource = getKeycloakAuthSource();
@@ -145,61 +138,90 @@ public class KeycloakUtils {
 
   /**
    * Creates user into Keycloak
-   * 
-   * @param keycloakClient Keycloak client
+   *
+   * @param usersApi instance of UsersApi
    * @param realm realm
    * @param user user
    * @param email email
    * @param password password
    * @param passwordTemporary whether password is temporary or not
    * @param emailVerified whether email is verified
-   * @return created user
+   * @throws KeycloakException thrown when Keycloak related error occurs
    */
-  private static UserRepresentation createUser(Keycloak keycloakClient, String realm, User user, String email, String password, boolean passwordTemporary, boolean emailVerified) {
-    CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
-    credentialRepresentation.setType(CredentialRepresentation.PASSWORD);
+  private static fi.metatavu.edelphi.keycloak.model.UserRepresentation createUser(UsersApi usersApi, String realm, User user, String email, String password, boolean passwordTemporary, boolean emailVerified) throws KeycloakException {
+    fi.metatavu.edelphi.keycloak.model.CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
+    credentialRepresentation.setType("password");
     credentialRepresentation.setValue(password);
     credentialRepresentation.setTemporary(passwordTemporary);
-    
-    UserRepresentation userRepresentation = new UserRepresentation();
+
+    fi.metatavu.edelphi.keycloak.model.UserRepresentation userRepresentation = new fi.metatavu.edelphi.keycloak.model.UserRepresentation();
     userRepresentation.setUsername(email);
     userRepresentation.setFirstName(user.getFirstName());
     userRepresentation.setLastName(user.getLastName());
-    userRepresentation.setCredentials(Arrays.asList(credentialRepresentation));
+    userRepresentation.setCredentials(Collections.singletonList(credentialRepresentation));
     userRepresentation.setEnabled(true);
     userRepresentation.setEmail(email);
-    userRepresentation.setEmailVerified(emailVerified); 
-    
-    javax.ws.rs.core.Response response = keycloakClient.realm(realm).users().create(userRepresentation);
-    if (response.getStatus() < 200 && response.getStatus() >= 300) {
-      throw new SmvcRuntimeException(EdelfoiStatusCode.UNDEFINED, "Failed to create user on authentication server");
+    userRepresentation.setEmailVerified(emailVerified);
+
+    try {
+      usersApi.adminRealmsRealmUsersPost(realm, userRepresentation);
+    } catch (ApiException e) {
+      throw new KeycloakException(e);
     }
-    
-    UUID id = getCreateResponseId(response);
-    
-    UserRepresentation result = keycloakClient.realm(realm).users().get(id.toString()).toRepresentation();
-    if (result != null) {
-      return result;
-    }
-    
-    return findUser(keycloakClient, realm, email);
+
+    return findUser(usersApi, realm, email);
   }
 
   /**
    * Tries to find user by email
-   * 
-   * @param keycloakClient Keycloak client
+   *
+   * @param usersApi instance of UsersApi
    * @param realm realm
    * @param email email
    * @return found user or null if not found
    */
-  private static UserRepresentation findUser(Keycloak keycloakClient, String realm, String email) {
-    List<UserRepresentation> users = keycloakClient.realm(realm).users().search(null, null, null, email, 0, 1);
-    if (users.isEmpty()) {
-      return null;
+  private static fi.metatavu.edelphi.keycloak.model.UserRepresentation findUser(UsersApi usersApi, String realm, String email) throws KeycloakException {
+    Boolean briefRepresentation = false;
+    Boolean emailVerified = null;
+    Boolean enabled = true;
+    Boolean exact = false;
+    Integer first = 0;
+    String firstName = null;
+    String idpAlias = null;
+    String idpUserId = null;
+    String lastName = null;
+    Integer max = 1;
+    String q = null;
+    String search = null;
+    String username = null;
+
+    try {
+      List<fi.metatavu.edelphi.keycloak.model.UserRepresentation> users = usersApi.adminRealmsRealmUsersGet(
+              realm,
+              briefRepresentation,
+              email,
+              emailVerified,
+              enabled,
+              exact,
+              first,
+              firstName,
+              idpAlias,
+              idpUserId,
+              lastName,
+              max,
+              q,
+              search,
+              username
+      );
+
+      if (users.isEmpty()) {
+        return null;
+      }
+
+      return users.get(0);
+    } catch (ApiException e) {
+      throw new KeycloakException(e);
     }
-    
-    return users.get(0);
   }
   
   /**
@@ -313,33 +335,34 @@ public class KeycloakUtils {
     return null;
   }
 
+  /**
+   * Returns Keycloak API client
+   *
+   * @param settings settings
+   * @return Keycloak API client
+   */
+  private static UsersApi getUsersApi(Map<String, String> settings) {
+    return new UsersApi(getApiClient(settings));
+  }
 
   /**
-   * Creates admin client for config
-   * 
-   * @param configuration configuration
-   * @return admin client
+   * Returns Keycloak API client
+   *
+   * @param settings settings
+   * @return Keycloak API client
    */
-  private static Keycloak getAdminClient(Map<String, String> settings) {
+  private static ApiClient getApiClient(Map<String, String> settings) {
+    ApiClient result = new ApiClient();
     String realm = getRealm(settings);
     String serverUrl = getServerUrl(settings);
     String clientId = getAdminClientId(settings);
     String clientSecret = getAdminClientSecret(settings);
     String adminUser = getAdminUser(settings);
     String adminPass = getAdminPassword(settings);
-    
     String token = getAccessToken(serverUrl, realm, clientId, clientSecret, adminUser, adminPass);
-    
-    return KeycloakBuilder.builder()
-      .serverUrl(serverUrl)
-      .realm(realm)
-      .grantType(OAuth2Constants.PASSWORD)
-      .clientId(clientId)
-      .clientSecret(clientSecret)
-      .username(adminUser)
-      .password(adminPass)
-      .authorization(String.format("Bearer %s", token))
-      .build();
+    result.setBasePath(serverUrl);
+    result.addDefaultHeader("Authorization", String.format("Bearer %s", token));
+    return result;
   }
   
   /**

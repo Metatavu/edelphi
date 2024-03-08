@@ -22,6 +22,7 @@ import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.i18n.Messages;
+import fi.metatavu.edelphi.keycloak.KeycloakException;
 import fi.metatavu.edelphi.smvcj.Severity;
 import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
 import fi.metatavu.edelphi.smvcj.controllers.PageRequestContext;
@@ -109,10 +110,14 @@ public class JoinPanelPageController extends PageController {
         }
         
         // Ensure user has a Keycloak user
-        
-        KeycloakUtils.createUser(user, UUID.randomUUID().toString(), false, true);
-        
-        // Ensure panel membership 
+
+        try {
+          KeycloakUtils.createUser(user, UUID.randomUUID().toString(), false, true);
+        } catch (KeycloakException e) {
+          throw new SmvcRuntimeException(e);
+        }
+
+        // Ensure panel membership
         
         PanelUser panelUser = panelUserDAO.findByPanelAndUserAndStamp(panelInvitation.getPanel(), user, panelInvitation.getPanel().getCurrentStamp());
         if (panelUser == null) {
