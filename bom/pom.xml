@@ -100,10 +100,6 @@
     <!-- Paytrail -->
 
     <paytrail-sdk.version>1.2.1</paytrail-sdk.version>
-    
-    <!-- Keycloak admin client -->
-    
-    <keycloak.version>4.8.3.Final</keycloak.version>
 
     <!-- Paho -->
     
@@ -225,26 +221,6 @@
         <groupId>com.github.slugify</groupId>
         <artifactId>slugify</artifactId>
         <version>${slugify.version}</version>
-      </dependency>
-      
-      <!-- Keycloak -->
-      
-      <dependency>
-        <groupId>org.keycloak</groupId>
-        <artifactId>keycloak-core</artifactId>
-          <version>${keycloak.version}</version>
-      </dependency>
-    
-      <dependency>
-        <groupId>org.keycloak</groupId>
-        <artifactId>keycloak-adapter-spi</artifactId>
-        <version>${keycloak.version}</version>
-      </dependency>
-    
-      <dependency>
-        <groupId>org.keycloak</groupId>
-        <artifactId>keycloak-adapter-core</artifactId>
-        <version>${keycloak.version}</version>
       </dependency>
       
       <dependency>
