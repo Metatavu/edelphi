@@ -301,7 +301,7 @@ public class KeycloakController {
         
         Date expiresAt = getExpiresAt(NumberUtils.createInteger(params.get("expires_in")));
         
-        return new OAuthAccessToken(userId.toString(), params.get("access_token"), "__IMPERSONATED__", expiresAt, null);
+        return new OAuthAccessToken(userId.toString(), params.get("access_token"), "__IMPERSONATED__", null, expiresAt, null);
       }
       
     } catch (IOException | URISyntaxException e) {

@@ -25,7 +25,7 @@ public class AccessTokenJSONRequestController extends JSONController {
         requestContext.addResponseParameter("unauthorized", "true");
       } else {
         requestContext.addResponseParameter("expires", expires.format(DateTimeFormatter.ISO_DATE_TIME));
-        requestContext.addResponseParameter("token", keycloakToken.getToken());
+        requestContext.addResponseParameter("token", keycloakToken.getAccessToken());
         requestContext.addResponseParameter("userId", keycloakToken.getExternalId());
       }
     } else {
