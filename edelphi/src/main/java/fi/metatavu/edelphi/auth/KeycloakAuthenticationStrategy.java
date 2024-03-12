@@ -1,15 +1,14 @@
 package fi.metatavu.edelphi.auth;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.commons.io.IOUtils;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fi.metatavu.edelphi.Defaults;
+import fi.metatavu.edelphi.auth.api.KeycloakApi;
+import fi.metatavu.edelphi.auth.api.KeycloakBrokerToken;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
+import fi.metatavu.edelphi.utils.AuthUtils;
+import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -22,23 +21,16 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.scribe.builder.api.Api;
-import org.scribe.model.OAuthRequest;
-import org.scribe.model.Response;
-import org.scribe.model.Token;
-import org.scribe.model.Verb;
-import org.scribe.model.Verifier;
+import org.scribe.model.*;
 import org.scribe.oauth.OAuthService;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import fi.metatavu.edelphi.Defaults;
-import fi.metatavu.edelphi.auth.api.KeycloakApi;
-import fi.metatavu.edelphi.auth.api.KeycloakBrokerToken;
-import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
-import fi.metatavu.edelphi.utils.AuthUtils;
-import net.sf.json.JSONObject;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy {
 
@@ -70,7 +62,7 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
   
   private String getLogoutUrl(String redirectUrl) {
     try {
-      return String.format("%s/realms/%s/protocol/openid-connect/logout?redirect_uri=%s", getServerUrl(), getRealm(), URLEncoder.encode(redirectUrl, "UTF-8"));
+      return String.format("%s/realms/%s/protocol/openid-connect/logout?post_logout_redirect_uri=%s", getServerUrl(), getRealm(), URLEncoder.encode(redirectUrl, "UTF-8"));
     } catch (UnsupportedEncodingException e) {
       logger.log(Level.SEVERE, "Failed to encode Keycloak logout URL", e);
       return null;
@@ -142,7 +134,7 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     HttpPost httpPost = new HttpPost(tokenUrl);
     
     try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-      List<NameValuePair> params = new ArrayList<NameValuePair>();
+      List<NameValuePair> params = new ArrayList<>();
       params.add(new BasicNameValuePair("client_id", getApiKey()));
       params.add(new BasicNameValuePair("client_secret", getApiSecret()));
       params.add(new BasicNameValuePair("grant_type", "refresh_token"));
