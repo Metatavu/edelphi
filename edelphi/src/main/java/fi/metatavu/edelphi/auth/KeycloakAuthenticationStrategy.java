@@ -9,7 +9,6 @@ import fi.metatavu.edelphi.auth.api.KeycloakBrokerToken;
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.AuthUtils;
 import net.sf.json.JSONObject;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -29,11 +28,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Keycloak authentication strategy
+ */
 public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy {
 
   private static final Logger logger = Logger.getLogger(KeycloakAuthenticationStrategy.class.getName());
@@ -57,11 +58,23 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
   protected String getOAuthCallbackURL(RequestContext requestContext) {
     return getCallbackUrl();
   }
-  
+
+  /**
+   * Returns account URL
+   *
+   * @return account URL
+   */
   public String getAccountUrl() {
     return String.format("%s/realms/%s/account?referrer=%s", getServerUrl(), getRealm(), getApiKey());
   }
-  
+
+  /**
+   * Returns logout URL
+   *
+   * @param redirectUrl redirect URL
+   * @param keycloakToken keycloak token
+   * @return logout URL
+   */
   private String getLogoutUrl(String redirectUrl, OAuthAccessToken keycloakToken) {
     try {
       return String.format("%s/realms/%s/protocol/openid-connect/logout?post_logout_redirect_uri=%s&client_id=%s&id_token_hint=%s",
@@ -77,6 +90,12 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     }
   }
 
+  /**
+   * Returns token URL
+   *
+   * @param broker broker
+   * @return token URL
+   */
   private String getTokenUrl(String broker) {
     return String.format("%s/realms/%s/broker/%s/token", getServerUrl(), getRealm(), broker);
   }
@@ -165,9 +184,7 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
           
           ObjectMapper objectMapper = new ObjectMapper();
           try (InputStream stream = entity.getContent()) {
-            String rawToken = IOUtils.toString(stream);
-
-            RefreshTokenResponse refreshTokenResponse = objectMapper.readValue(rawToken, RefreshTokenResponse.class);
+            RefreshTokenResponse refreshTokenResponse = objectMapper.readValue(stream, RefreshTokenResponse.class);
             Date expiresAt = getExpiresAt(refreshTokenResponse.getExpiresIn());
             result = new OAuthAccessToken(
                     token.getExternalId(),
@@ -193,7 +210,14 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     
     return result;
   }
-  
+
+  /**
+   * Returns broker token
+   *
+   * @param requestContext request context
+   * @param broker broker
+   * @return broker token
+   */
   public OAuthAccessToken getBrokerToken(RequestContext requestContext, String broker) {
     OAuthAccessToken storedBrokerToken = AuthUtils.getOAuthAccessToken(requestContext, broker);
     if (storedBrokerToken != null) {
@@ -236,20 +260,47 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     return key;
   }
 
+  /**
+   * Returns signed get response
+   *
+   * @param accessToken access token
+   * @param url url
+   * @return signed get response
+   */
   private Response doSignedGet(OAuthAccessToken accessToken, String url) {
     return doSignedGet(accessToken.getAccessToken(), url);
   }
-  
+
+  /**
+   * Makes a GET request to the given URL with the given access token
+   *
+   * @param accessToken access token
+   * @param url url
+   * @return response
+   */
   private Response doSignedGet(Token accessToken, String url) {
     return doSignedGet(accessToken.getToken(), url);
   }
 
+  /**
+   * Makes a GET request to the given URL with the given access token
+   *
+   * @param accessToken access token
+   * @param url url
+   * @return response
+   */
   private Response doSignedGet(String accessToken, String url) {
     OAuthRequest request = new OAuthRequest(Verb.GET, url);
     request.addHeader("Authorization", String.format("Bearer %s", accessToken));
     return request.send();
   }
-  
+
+  /**
+   * Parses expiration date from the access token
+   *
+   * @param accessToken access token
+   * @return expiration date
+   */
   private Date getExpiresAt(Token accessToken) {
     JSONObject rawJson = JSONObject.fromObject(accessToken.getRawResponse());
     int expiresIn = rawJson.getInt("expires_in");
@@ -277,26 +328,52 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     JSONObject rawJson = JSONObject.fromObject(accessToken.getRawResponse());
     return rawJson.getString("id_token");
   }
-  
+
+  /**
+   * Returns expiration date
+   *
+   * @param expiresIn expiration in seconds
+   * @return expiration date
+   */
   private Date getExpiresAt(int expiresIn) {
     Calendar calendar = new GregorianCalendar();
     calendar.setTime(new Date());
     calendar.add(Calendar.SECOND, expiresIn);
     return calendar.getTime();
   }
-  
+
+  /**
+   * Returns callback URL
+   *
+   * @return callback URL
+   */
   private String getCallbackUrl() {
     return settings.get("oauth.keycloak.callbackUrl");
   }
-  
+
+  /**
+   * Returns server URL
+   *
+   * @return server URL
+   */
   private String getServerUrl() {
     return settings.get("oauth.keycloak.serverUrl");
   }
-  
+
+  /**
+   * Returns Keycloak realm
+   *
+   * @return Keycloak realm
+   */
   private String getRealm() {
     return settings.get("oauth.keycloak.realm");
   }
-  
+
+  /**
+   * Returns userinfo URL
+   *
+   * @return userinfo URL
+   */
   private String getUserinfoUrl() {
     return String.format("%s/realms/%s/protocol/openid-connect/userinfo", getServerUrl(), getRealm());
   }
@@ -307,6 +384,7 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
    * @author Antti Leppä
    */
   @JsonIgnoreProperties (ignoreUnknown = true)
+  @SuppressWarnings("unused")
   public static class RefreshTokenResponse {
     
     @JsonProperty ("access_token")
@@ -353,8 +431,12 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
       this.refreshToken = refreshToken;
     }
   }
-  
+
+  /**
+   * Keycloak user info response. This class is used to parse user info response from Keycloak
+   */
   @JsonIgnoreProperties (ignoreUnknown = true)
+  @SuppressWarnings("unused")
   public static class UserInfo {
     private String sub;
 
