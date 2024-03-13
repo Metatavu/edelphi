@@ -123,8 +123,8 @@ public class GoogleDriveUtils {
       .setJsonFactory(JSON_FACTORY)
       .build();
     
-    if (brokerToken != null && brokerToken.getToken() != null) {
-      credential.setAccessToken(brokerToken.getToken()); 
+    if (brokerToken != null && brokerToken.getAccessToken() != null) {
+      credential.setAccessToken(brokerToken.getAccessToken());
     }
 
     if (brokerToken != null && brokerToken.getRefreshToken() != null) {
@@ -167,7 +167,7 @@ public class GoogleDriveUtils {
   /**
    * Returns whether file exists or not
    * 
-   * @param file file path
+   * @param path file path
    * @return whether file exists or not
    */
   private static boolean isExistingFile(String path) {

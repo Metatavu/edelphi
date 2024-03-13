@@ -21,9 +21,10 @@ public interface AuthenticationProvider {
    * Logs authentication strategy out
    * 
    * @param requestContext
-   * @param redirectUrl 
+   * @param redirectUrl
+   * @param keycloakToken Keycloak token
    */
-  public void logout(RequestContext requestContext, String redirectUrl);
+  public void logout(RequestContext requestContext, String redirectUrl, OAuthAccessToken keycloakToken);
 
   /**
    * Returns the name of this authentication provider.

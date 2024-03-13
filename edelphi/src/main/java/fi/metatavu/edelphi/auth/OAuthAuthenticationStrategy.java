@@ -39,7 +39,7 @@ public abstract class OAuthAuthenticationStrategy extends AbstractAuthentication
   }
   
   @Override
-  public void logout(RequestContext requestContext, String redirectUrl) {
+  public void logout(RequestContext requestContext, String redirectUrl, OAuthAccessToken keycloakToken) {
   }
 
   @Override

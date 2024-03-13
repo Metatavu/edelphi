@@ -1,20 +1,14 @@
 package fi.metatavu.edelphi.auth;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fi.metatavu.edelphi.Defaults;
+import fi.metatavu.edelphi.auth.api.KeycloakApi;
+import fi.metatavu.edelphi.auth.api.KeycloakBrokerToken;
+import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
+import fi.metatavu.edelphi.utils.AuthUtils;
+import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -27,26 +21,22 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.scribe.builder.api.Api;
-import org.scribe.model.OAuthRequest;
-import org.scribe.model.Response;
-import org.scribe.model.Token;
-import org.scribe.model.Verb;
-import org.scribe.model.Verifier;
+import org.scribe.model.*;
 import org.scribe.oauth.OAuthService;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import fi.metatavu.edelphi.Defaults;
-import fi.metatavu.edelphi.auth.api.KeycloakApi;
-import fi.metatavu.edelphi.auth.api.KeycloakBrokerToken;
-import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
-import fi.metatavu.edelphi.utils.AuthUtils;
-import net.sf.json.JSONObject;
-
+/**
+ * Keycloak authentication strategy
+ */
 public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy {
-  
+
   private static final Logger logger = Logger.getLogger(KeycloakAuthenticationStrategy.class.getName());
 
   @Override
@@ -68,27 +58,51 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
   protected String getOAuthCallbackURL(RequestContext requestContext) {
     return getCallbackUrl();
   }
-  
+
+  /**
+   * Returns account URL
+   *
+   * @return account URL
+   */
   public String getAccountUrl() {
     return String.format("%s/realms/%s/account?referrer=%s", getServerUrl(), getRealm(), getApiKey());
   }
-  
-  private String getLogoutUrl(String redirectUrl) {
+
+  /**
+   * Returns logout URL
+   *
+   * @param redirectUrl redirect URL
+   * @param keycloakToken keycloak token
+   * @return logout URL
+   */
+  private String getLogoutUrl(String redirectUrl, OAuthAccessToken keycloakToken) {
     try {
-      return String.format("%s/realms/%s/protocol/openid-connect/logout?redirect_uri=%s", getServerUrl(), getRealm(), URLEncoder.encode(redirectUrl, "UTF-8"));
+      return String.format("%s/realms/%s/protocol/openid-connect/logout?post_logout_redirect_uri=%s&client_id=%s&id_token_hint=%s",
+              getServerUrl(),
+              getRealm(),
+              URLEncoder.encode(redirectUrl, "UTF-8"),
+              getApiKey(),
+              URLEncoder.encode(keycloakToken.getIdToken(), "UTF-8")
+      );
     } catch (UnsupportedEncodingException e) {
       logger.log(Level.SEVERE, "Failed to encode Keycloak logout URL", e);
       return null;
     }
   }
 
+  /**
+   * Returns token URL
+   *
+   * @param broker broker
+   * @return token URL
+   */
   private String getTokenUrl(String broker) {
-    return String.format("%s/realms/%s/broker/%s/token", getServerUrl(), getRealm(), broker   );
+    return String.format("%s/realms/%s/broker/%s/token", getServerUrl(), getRealm(), broker);
   }
   
   @Override
-  public void logout(RequestContext requestContext, String redirectUrl) {
-    requestContext.setRedirectURL(getLogoutUrl(redirectUrl));
+  public void logout(RequestContext requestContext, String redirectUrl, OAuthAccessToken keycloakToken) {
+    requestContext.setRedirectURL(getLogoutUrl(redirectUrl, keycloakToken));
   }
   
   @Override
@@ -111,6 +125,7 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
 
     Date expiresAt = getExpiresAt(accessToken);
     String refreshToken = getRefreshToken(accessToken);
+    String idToken = getIdToken(accessToken);
     
     Response response = doSignedGet(accessToken, getUserinfoUrl());
     
@@ -118,11 +133,18 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     try (InputStream stream = response.getStream()) {
       UserInfo userInfo = objectMapper.readValue(stream, UserInfo.class);
       String externalId = userInfo.getSub();
-      List<String> emails = Arrays.asList(userInfo.getEmail());
+      List<String> emails = Collections.singletonList(userInfo.getEmail());
       String firstName = userInfo.getGivenName();
       String lastName = userInfo.getFamilyName();
 
-      AuthUtils.storeOAuthAccessToken(requestContext, getName(), new OAuthAccessToken(externalId, accessToken.getToken(), refreshToken, expiresAt, requestedScopes));
+      AuthUtils.storeOAuthAccessToken(requestContext, getName(), new OAuthAccessToken(
+              externalId,
+              accessToken.getToken(),
+              refreshToken,
+              idToken,
+              expiresAt,
+              requestedScopes
+      ));
       
       return processExternalLogin(requestContext, externalId, emails, firstName, lastName);
     } catch (IOException e) {
@@ -147,7 +169,7 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     HttpPost httpPost = new HttpPost(tokenUrl);
     
     try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-      List<NameValuePair> params = new ArrayList<NameValuePair>();
+      List<NameValuePair> params = new ArrayList<>();
       params.add(new BasicNameValuePair("client_id", getApiKey()));
       params.add(new BasicNameValuePair("client_secret", getApiSecret()));
       params.add(new BasicNameValuePair("grant_type", "refresh_token"));
@@ -164,14 +186,22 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
           try (InputStream stream = entity.getContent()) {
             RefreshTokenResponse refreshTokenResponse = objectMapper.readValue(stream, RefreshTokenResponse.class);
             Date expiresAt = getExpiresAt(refreshTokenResponse.getExpiresIn());
-            result = new OAuthAccessToken(token.getExternalId(), refreshTokenResponse.getAccessToken(), refreshTokenResponse.getRefreshToken(), expiresAt, scopes);
+            result = new OAuthAccessToken(
+                    token.getExternalId(),
+                    refreshTokenResponse.getAccessToken(),
+                    refreshTokenResponse.getRefreshToken(),
+                    token.getIdToken(),
+                    expiresAt,
+                    scopes
+            );
+
             AuthUtils.purgeOAuthAccessTokens(requestContext, getName());
             AuthUtils.storeOAuthAccessToken(requestContext, getName(), result);            
           }
           
           EntityUtils.consume(entity);
         } else {
-          logger.log(Level.WARNING, String.format("Failed to refresh access token with message [%d]: %s", statusLine.getStatusCode(), statusLine.getReasonPhrase()));
+          logger.log(Level.WARNING, String.format("Failed to refresh access token with message [%d]: %s", statusLine.getStatusCode(), statusLine.getReasonPhrase()));
         }
       }
     } catch (IOException e) {
@@ -180,7 +210,14 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     
     return result;
   }
-  
+
+  /**
+   * Returns broker token
+   *
+   * @param requestContext request context
+   * @param broker broker
+   * @return broker token
+   */
   public OAuthAccessToken getBrokerToken(RequestContext requestContext, String broker) {
     OAuthAccessToken storedBrokerToken = AuthUtils.getOAuthAccessToken(requestContext, broker);
     if (storedBrokerToken != null) {
@@ -204,7 +241,7 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     try (InputStream stream = response.getStream()) {
       KeycloakBrokerToken brokerToken = objectMapper.readValue(stream, KeycloakBrokerToken.class);
       Date expiresAt = getExpiresAt(brokerToken.getExpiresIn());
-      resolvedBrokerToken = new OAuthAccessToken(null, brokerToken.getAccessToken(), null, expiresAt, null);
+      resolvedBrokerToken = new OAuthAccessToken(null, brokerToken.getAccessToken(), null, null, expiresAt, null);
       AuthUtils.storeOAuthAccessToken(requestContext, broker, resolvedBrokerToken);
     } catch (IOException e) {
       logger.log(Level.SEVERE, "Failed to process broker token response", e);
@@ -223,20 +260,47 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     return key;
   }
 
+  /**
+   * Returns signed get response
+   *
+   * @param accessToken access token
+   * @param url url
+   * @return signed get response
+   */
   private Response doSignedGet(OAuthAccessToken accessToken, String url) {
-    return doSignedGet(accessToken.getToken(), url);
+    return doSignedGet(accessToken.getAccessToken(), url);
   }
-  
+
+  /**
+   * Makes a GET request to the given URL with the given access token
+   *
+   * @param accessToken access token
+   * @param url url
+   * @return response
+   */
   private Response doSignedGet(Token accessToken, String url) {
     return doSignedGet(accessToken.getToken(), url);
   }
 
+  /**
+   * Makes a GET request to the given URL with the given access token
+   *
+   * @param accessToken access token
+   * @param url url
+   * @return response
+   */
   private Response doSignedGet(String accessToken, String url) {
     OAuthRequest request = new OAuthRequest(Verb.GET, url);
     request.addHeader("Authorization", String.format("Bearer %s", accessToken));
     return request.send();
   }
-  
+
+  /**
+   * Parses expiration date from the access token
+   *
+   * @param accessToken access token
+   * @return expiration date
+   */
   private Date getExpiresAt(Token accessToken) {
     JSONObject rawJson = JSONObject.fromObject(accessToken.getRawResponse());
     int expiresIn = rawJson.getInt("expires_in");
@@ -253,26 +317,63 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
     JSONObject rawJson = JSONObject.fromObject(accessToken.getRawResponse());
     return rawJson.getString("refresh_token");
   }
-  
+
+  /**
+   * Parses id token from the access token
+   *
+   * @param accessToken access token
+   * @return id token
+   */
+  private String getIdToken(Token accessToken) {
+    JSONObject rawJson = JSONObject.fromObject(accessToken.getRawResponse());
+    return rawJson.getString("id_token");
+  }
+
+  /**
+   * Returns expiration date
+   *
+   * @param expiresIn expiration in seconds
+   * @return expiration date
+   */
   private Date getExpiresAt(int expiresIn) {
     Calendar calendar = new GregorianCalendar();
     calendar.setTime(new Date());
     calendar.add(Calendar.SECOND, expiresIn);
     return calendar.getTime();
   }
-  
+
+  /**
+   * Returns callback URL
+   *
+   * @return callback URL
+   */
   private String getCallbackUrl() {
     return settings.get("oauth.keycloak.callbackUrl");
   }
-  
+
+  /**
+   * Returns server URL
+   *
+   * @return server URL
+   */
   private String getServerUrl() {
     return settings.get("oauth.keycloak.serverUrl");
   }
-  
+
+  /**
+   * Returns Keycloak realm
+   *
+   * @return Keycloak realm
+   */
   private String getRealm() {
     return settings.get("oauth.keycloak.realm");
   }
-  
+
+  /**
+   * Returns userinfo URL
+   *
+   * @return userinfo URL
+   */
   private String getUserinfoUrl() {
     return String.format("%s/realms/%s/protocol/openid-connect/userinfo", getServerUrl(), getRealm());
   }
@@ -283,6 +384,7 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
    * @author Antti Leppä
    */
   @JsonIgnoreProperties (ignoreUnknown = true)
+  @SuppressWarnings("unused")
   public static class RefreshTokenResponse {
     
     @JsonProperty ("access_token")
@@ -329,8 +431,12 @@ public class KeycloakAuthenticationStrategy extends OAuthAuthenticationStrategy 
       this.refreshToken = refreshToken;
     }
   }
-  
+
+  /**
+   * Keycloak user info response. This class is used to parse user info response from Keycloak
+   */
   @JsonIgnoreProperties (ignoreUnknown = true)
+  @SuppressWarnings("unused")
   public static class UserInfo {
     private String sub;
 

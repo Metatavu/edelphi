@@ -9,6 +9,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import fi.metatavu.edelphi.auth.OAuthAccessToken;
 import org.apache.commons.lang3.StringUtils;
 
 import fi.metatavu.edelphi.smvcj.SmvcMessage;
@@ -144,7 +145,8 @@ public class RequestUtils {
       if (authSource != null) {
         AuthenticationProvider authenticationProvider = AuthenticationProviderFactory.getInstance().createAuthenticationProvider(authSource);
         if (authenticationProvider != null) {
-          authenticationProvider.logout(requestContext, redirectUrl);
+          OAuthAccessToken keycloakToken = AuthUtils.getOAuthAccessToken(requestContext, "Keycloak");
+          authenticationProvider.logout(requestContext, redirectUrl, keycloakToken);
         }
       }
     }
