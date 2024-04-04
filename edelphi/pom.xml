@@ -486,45 +486,6 @@ Delphi technique is used for bringing values, new viewpoints and ideas as a foun
       <groupId>fi.metatavu.paytrail</groupId>
       <artifactId>paytrail-sdk</artifactId>
     </dependency>
-      
-    <!-- Keycloak -->
-  
-    <dependency>
-      <groupId>org.keycloak</groupId>
-      <artifactId>keycloak-admin-client</artifactId>
-      <exclusions>       
-        <exclusion>
-          <groupId>org.keycloak</groupId>
-          <artifactId>keycloak-core</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.fasterxml.jackson.core</groupId>
-          <artifactId>jackson-core</artifactId>
-        </exclusion>      
-        <exclusion>
-          <groupId>com.fasterxml.jackson.core</groupId>
-          <artifactId>jackson-databind</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.keycloak</groupId>
-      <artifactId>keycloak-core</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.keycloak</groupId>
-      <artifactId>keycloak-adapter-spi</artifactId>
-      <scope>provided</scope>
-    </dependency>
-  
-    <dependency>
-      <groupId>org.keycloak</groupId>
-      <artifactId>keycloak-adapter-core</artifactId>
-      <scope>provided</scope>
-    </dependency>
     
   </dependencies>
   

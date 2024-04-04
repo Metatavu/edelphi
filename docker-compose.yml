@@ -58,8 +58,12 @@ services:
       - keycloak
 
   keycloak:
-    image: metatavu/keycloak:5.0.0
-    platform: linux/amd64
+    # image: quay.io/keycloak/keycloak:21.1
+    command:
+      - start-dev
+    build:
+      context: ../edelphi-keycloak
+      dockerfile: Dockerfile
     container_name: keycloak
     hostname: dev-auth.edelphi.org
     ports:
@@ -67,16 +71,10 @@ services:
     depends_on:
       - mysql
     environment:
-      DB_VENDOR: mysql
-      DB_DATABASE: keycloak
-      DB_USER: root
-      DB_ADDR: mysql
-      DB_PASSWORD: root
-      JDBC_PARAMS: useSSL=false&allowPublicKeyRetrieval=true
-      PROXY_ADDRESS_FORWARDING: "true"
-      KEYCLOAK_FRONTEND_URL: https://dev-auth.edelphi.org/auth
-    volumes: 
-      - ../keycloak-theme-metatavu:/opt/jboss/keycloak/themes/metatavu
-      - ../keycloak-theme-edelphi:/opt/jboss/keycloak/themes/edelphi
+      KC_DB_URL: jdbc:mysql://mysql:3306/keycloak?useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull
+      KC_DB_USERNAME: root
+      KC_DB_PASSWORD: root
+      KC_PROXY_HEADERS: xforwarded
+
 volumes:
   db_data: {}
