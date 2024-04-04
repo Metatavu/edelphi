@@ -28,7 +28,7 @@ public class TestAuthenticationStrategy extends AbstractAuthenticationStrategy i
   }
 
   @Override
-  public void logout(RequestContext requestContext, String redirectUrl) {
+  public void logout(RequestContext requestContext, String redirectUrl, OAuthAccessToken keycloakToken) {
     // Does not support logout
   }
 
