@@ -42,7 +42,10 @@ export interface IStrings extends LocalizedStringsMethods {
       next: string;
       save: string;
       skip: string;
-      noAnswer: string;
+      saveDisabledReason: {
+        noAnswer: string;
+        replyEditNotAllowed: string;
+      },
       quickNavigationTitle: string;
       live2d: {
         statistics: {

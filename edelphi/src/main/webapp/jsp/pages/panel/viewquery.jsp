@@ -19,10 +19,10 @@
     <jsp:include page="/jsp/supports/flotr_support.jsp"></jsp:include>
     <jsp:include page="/jsp/supports/dragdrop_support.jsp"></jsp:include>
     <jsp:include page="/jsp/supports/modalpopup_support.jsp"></jsp:include>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/mathutils.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/panel/queryblockcontroller.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/ping.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/dist/bundle.min.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/mathutils.js?v=${version}"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/panel/queryblockcontroller.js?v=${version}"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/gui/ping.js?v=${version}"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/_scripts/dist/bundle.min.js?v=${version}"></script>
   </head>
   <body class="panel index">
   

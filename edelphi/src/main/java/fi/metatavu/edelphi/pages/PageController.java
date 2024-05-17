@@ -24,6 +24,8 @@ import fi.metatavu.edelphi.utils.RequestUtils;
 import fi.metatavu.edelphi.utils.SessionUtils;
 import fi.metatavu.edelphi.utils.SubscriptionLevelUtils;
 
+import fi.metatavu.edelphi.Version;
+
 public abstract class PageController implements fi.metatavu.edelphi.smvcj.controllers.PageController, ActionedController {
 
   private DelfoiActionName accessActionName = null;
@@ -42,7 +44,8 @@ public abstract class PageController implements fi.metatavu.edelphi.smvcj.contro
       boolean hasImportantBulletins = SessionUtils.hasImportantBulletins(requestContext.getRequest().getSession(false));
       requestContext.getRequest().setAttribute("hasImportantBulletins", hasImportantBulletins);
     }
-    
+
+    requestContext.getRequest().setAttribute("version", Version.VERSION);
   }
 
   @Override

@@ -20,8 +20,8 @@ interface Props {
   queryId: number,
   pageId: number,
   queryState: QueryState,
-  queryValidationMessage: string | null,
-  queryValidationMessageUpdate: (queryValidationMessage: string | null) => void
+  queryValidationMessage: string | null,
+  queryValidationMessageUpdate: (queryValidationMessage: string | null) => void
 }
 
 /**
@@ -109,9 +109,9 @@ class QueryNavigation extends React.Component<Props, State> {
       return null;
     }
 
-    const nextDisabled = this.props.queryState !== "ACTIVE" || !!this.props.queryValidationMessage || this.state.previousSaving || this.state.nextSaving;
-    const previousDisabled = !previousPage || this.state.previousSaving || this.state.nextSaving;
-    const skipDisabled = !nextPage || this.state.previousSaving || this.state.nextSaving;
+    const nextDisabled = this.props.queryState !== "ACTIVE" || !!this.props.queryValidationMessage || this.state.previousSaving || this.state.nextSaving;
+    const previousDisabled = !previousPage || this.state.previousSaving || this.state.nextSaving || !!this.props.queryValidationMessage;
+    const skipDisabled = !nextPage || this.state.previousSaving || this.state.nextSaving;
     
     return (
       <Grid style={{ marginTop: "10px", borderTop: "1px solid #000" }}>
@@ -129,12 +129,12 @@ class QueryNavigation extends React.Component<Props, State> {
                 </Grid.Column>
                 <Grid.Column  width={ 4 } style={{ textAlign: "center" }}>
                   <Popup position="top center" size="large" closeOnDocumentClick={ true } trigger={ <div style={{ textAlign: "center", marginBottom: "5px" }}> <Icon size="large" color="blue" name="triangle up"/> <div> </div> { `${ currentPage.pageNumber + 1 } / ${ this.state.pages.length }` } </div> } on="click" open={ this.state.pagesOpen } onClose={ () => this.setState({ pagesOpen: false }) } onOpen={ () => this.setState({ pagesOpen: true }) }>
-                    <p> { strings.panel.query.quickNavigationTitle } </p>
+                    <p> { strings.panel.query.quickNavigationTitle } </p>
                     { this.renderPages() }
                   </Popup>
                 </Grid.Column>
                 <Grid.Column width={ 6 } style={{ textAlign: "center" }}>
-                  <Button disabled={ nextDisabled } color={ "blue" } onClick={ this.onNextClick }>
+                  <Button disabled={ nextDisabled } color={ "blue" } onClick={ this.onNextClick }>
                     { nextPage ? strings.panel.query.next : strings.panel.query.save }
                     { this.state.nextSaving && <Loader style={{ marginLeft: "10px" }} active={ true } inline size="mini" inverted/> }
                   </Button>
@@ -142,7 +142,7 @@ class QueryNavigation extends React.Component<Props, State> {
               </Grid.Row>
               <Grid.Row>
                 <Grid.Column width={ 16 } style={{ textAlign: "center" }}> 
-                  <Button disabled={ skipDisabled } color={ "blue" } onClick={ this.onSkipClick }>{ strings.panel.query.skip }</Button>
+                  <Button disabled={ skipDisabled } color={ "blue" } onClick={ this.onSkipClick }>{ strings.panel.query.skip }</Button>
                 </Grid.Column>
               </Grid.Row>
             </Grid>
@@ -244,7 +244,7 @@ class QueryNavigation extends React.Component<Props, State> {
   /**
    * Handles page change click event
    */
-  private changePage = async (page: QueryPage | null, save: boolean, finish: boolean) => {
+  private changePage = async (page: QueryPage | null, save: boolean, finish: boolean) => {
     if (save) {
       document.dispatchEvent(new CustomEvent('before-page-save', { 
         bubbles: true
@@ -403,9 +403,11 @@ class QueryNavigation extends React.Component<Props, State> {
    * @param event event
    */
   private onReactCommand = async (event: CommandEvent) => {
-    if (event.detail.command == "disable-query-next") {
-      this.props.queryValidationMessageUpdate(event.detail.data.reason || strings.panel.query.noAnswer);
-    } else if (event.detail.command == "enable-query-next") {
+    if (event.detail.command == "disable-query-save") {
+      const reason = event.detail.data.reason || "noAnswer";
+      const queryValidationMessage = strings.panel.query.saveDisabledReason[reason];
+      this.props.queryValidationMessageUpdate(queryValidationMessage);
+    } else if (event.detail.command == "enable-query-save") {
       this.props.queryValidationMessageUpdate(null);
     }
   }
@@ -431,7 +433,7 @@ function mapStateToProps(state: StoreState) {
  */
 function mapDispatchToProps(dispatch: React.Dispatch<actions.AppAction>) {
   return {
-    queryValidationMessageUpdate: (queryValidationMessage: string | null) => dispatch(actions.queryValidationMessageUpdate(queryValidationMessage))
+    queryValidationMessageUpdate: (queryValidationMessage: string | null) => dispatch(actions.queryValidationMessageUpdate(queryValidationMessage))
   };
 }
 
