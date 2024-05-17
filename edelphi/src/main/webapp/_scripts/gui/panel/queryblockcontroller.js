@@ -137,7 +137,7 @@ var QueryBlockController = Class.create(BlockController, {
 
             startPing();
 
-            if (!this.allowEditReply() && this.hasAnswers()) {
+            if (!this.allowReplySave()) {
               this.disableSave({
                 reason: "replyEditNotAllowed"
               });
@@ -167,18 +167,20 @@ var QueryBlockController = Class.create(BlockController, {
            * Enables save button
            */
           enableSave : function() {
-            triggerReactCommand("enable-query-save");
+            if (this.allowReplySave()) {
+              triggerReactCommand("enable-query-save");
+            }
           },
 
           /**
-           * Checks whether save buttons can be enabled
+           * Returns whether reply saving is allowed
            * 
-           * @param {boolean} hasValues whether next button can be enabled
+           * Reply saving is allowed when either reply editing is allowed or panelis has not replies to the given page yet
+           * 
+           * @return {boolean} whether reply saving is allowed
            */
-          checkSaveState: function (hasValues) {
-            if ((this.allowEditReply() || !this.hasAnswers()) && hasValues) {
-              this.enableSave();
-            }
+          allowReplySave: function () {
+            return this.allowEditReply() || !this.hasAnswers();
           },
 
           /**
@@ -469,13 +471,19 @@ Scale1DQueryPageController = Class.create(QueryPageController, {
 
   _onSliderValueChange : function(event) {
     this._selected = event.value;
-    this.getBlockController().checkSaveState(this._selected !== null);
+    if (this._selected !== null) {
+      this.getBlockController().enableSave();
+    }
+
     this._updateReport();
   },
 
   _onRadioListValueChange : function(event) {
     this._selected = event.value;
-    this.getBlockController().checkSaveState(this._selected !== null);
+    if (this._selected !== null) {
+      this.getBlockController().enableSave();
+    }
+
     this._updateReport();
   }
 });
@@ -554,7 +562,11 @@ Multiple1DScaleQueryPageController = Class.create(QueryPageController, {
   },
 
   _updateNextButton: function () {
-    this.getBlockController().checkSaveState(!this._isAllValuesSet());
+    if (!this._isAllValuesSet()) {
+      this.getBlockController().disableNext();
+    } else {
+      this.getBlockController().enableSave();
+    }
   },
 
   _onValueChange: function () {
@@ -644,7 +656,11 @@ Multiple2DScaleQueryPageController = Class.create(QueryPageController, {
   },
 
   _updateNextButton: function () {
-    this.getBlockController().checkSaveState(!this._isAllValuesSet());
+    if (!this._isAllValuesSet()) {
+      this.getBlockController().disableNext();
+    } else {
+      this.getBlockController().enableSave();
+    }
   },
 
   _onValueChange: function () {
@@ -749,7 +765,11 @@ Scale2DQueryPageController = Class.create(QueryPageController, {
   },
 
   _updateNextButton : function() {
-    this.getBlockController().checkSaveState(this._value1 !== null && this._value2 !== null);
+    if (this._value1 === null || this._value2 === null) {
+      this.getBlockController().disableNext();
+    } else {
+      this.getBlockController().enableSave();
+    }
   },
 
   _updateReport : function() {
