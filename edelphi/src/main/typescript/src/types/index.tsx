@@ -63,7 +63,7 @@ export interface QueryLive2dAnswer {
 /**
  * Command
  */
-export type Command = "edit-page-comment-options" | "edit-page-live2d-options" | "enable-query-next" | "disable-query-next" | "open-anonymous-login-dialog" | "open-copy-query-dialog" | "open-delete-panel-dialog";
+export type Command = "edit-page-comment-options" | "edit-page-live2d-options" | "enable-query-save" | "disable-query-save" | "open-anonymous-login-dialog" | "open-copy-query-dialog" | "open-delete-panel-dialog";
 
 /**
  * Command data for save query answers event
@@ -76,7 +76,7 @@ export interface SaveQueryAnswersCommandData {
 }
 
 export interface DisableQueryNextCommandEventData {
-  reason?: string
+  reason?: "noAnswer" | "replyEditNotAllowed"
 } 
 
 export interface EnableQueryNextCommandEventData {
@@ -127,7 +127,7 @@ export interface EditPageLegacyPageEventData {
  * Command detail for enable query event
  */
 export interface DisableQueryNextCommandEventDetail {
-  command: "disable-query-next",
+  command: "disable-query-save",
   data: DisableQueryNextCommandEventData
 }
 
@@ -135,7 +135,7 @@ export interface DisableQueryNextCommandEventDetail {
  * Command detail for enable query event
  */
 export interface EnableQueryNextCommandEventDetail {
-  command: "enable-query-next",
+  command: "enable-query-save",
   data: EnableQueryNextCommandEventData
 }
 

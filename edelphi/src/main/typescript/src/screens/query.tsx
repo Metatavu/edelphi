@@ -18,14 +18,14 @@ import LegacyUtils from "../utils/legacy-utils";
 import DomUtils from "../utils/dom-utils";
 
 declare const JSDATA: any;
-let initialQueryValidationMessage: string | undefined = undefined;
+let initialQueryValidationMessage: string | undefined = undefined;
 const locale: string = getLanguage();
 strings.setLanguage(locale);
 
 LegacyUtils.addCommandListener((event: CommandEvent) => {
-  if (event.detail.command == "disable-query-next") {
-    initialQueryValidationMessage = event.detail.data.reason || strings.panel.query.noAnswer;
-  } else if (event.detail.command == "enable-query-next") {
+  if (event.detail.command == "disable-query-save") {
+    initialQueryValidationMessage = strings.panel.query.saveDisabledReason[event.detail.data.reason || "noAnswer"];
+  } else if (event.detail.command == "enable-query-save") {
     initialQueryValidationMessage = undefined;
   }
 });
@@ -37,7 +37,7 @@ window.addEventListener('load', () => {
   
   const initalStoreState: StoreState = {
     locale: locale,
-    queryValidationMessage: initialQueryValidationMessage || null
+    queryValidationMessage: initialQueryValidationMessage || null
   };
 
   const store = createStore<StoreState, AppAction, any, any>(reducer as any, initalStoreState);
@@ -102,7 +102,7 @@ window.addEventListener('load', () => {
     const panelId: number | null = DomUtils.getIntAttribute(queryNavigation, "data-panel-id");
     const queryId: number | null = DomUtils.getIntAttribute(queryNavigation, "data-query-id");
     const pageId: number | null = DomUtils.getIntAttribute(queryNavigation, "data-page-id");
-    const queryState = (DomUtils.getAttribute(queryNavigation, "data-query-state") as QueryState) || QueryState.ACTIVE;
+    const queryState = (DomUtils.getAttribute(queryNavigation, "data-query-state") as QueryState) || QueryState.ACTIVE;
 
     if (panelId && queryId && pageId) {
       const component =
