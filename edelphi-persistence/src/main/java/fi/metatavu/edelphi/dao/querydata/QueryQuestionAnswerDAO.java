@@ -56,6 +56,32 @@ public class QueryQuestionAnswerDAO extends GenericDAO<QueryQuestionAnswer> {
     return entityManager.createQuery(criteria).getSingleResult();
   }
 
+  /**
+   * Returns count of answers by query page and query reply
+   *
+   * @param queryPage query page
+   * @param queryReply query reply
+   * @return count of answers by query page and query reply
+   */
+  public Long countByQueryPageAndQueryReply(QueryPage queryPage, QueryReply queryReply) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
+    Root<QueryQuestionAnswer> root = criteria.from(QueryQuestionAnswer.class);
+    Join<QueryQuestionAnswer, QueryField> qfJoin = root.join(QueryQuestionAnswer_.queryField);
+
+    criteria.select(criteriaBuilder.count(root));
+    criteria.where(
+            criteriaBuilder.and(
+                    criteriaBuilder.equal(qfJoin.get(QueryField_.queryPage), queryPage),
+                    criteriaBuilder.equal(root.get(QueryQuestionAnswer_.queryReply), queryReply)
+            )
+    );
+
+    return entityManager.createQuery(criteria).getSingleResult();
+  }
+
   public Long countByQueryField(QueryField queryField) {
     EntityManager entityManager = getEntityManager();
 

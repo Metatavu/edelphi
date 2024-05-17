@@ -136,6 +136,12 @@ var QueryBlockController = Class.create(BlockController, {
             }
 
             startPing();
+
+            if (!this.allowEditReply() && this.hasAnswers()) {
+              this.disableSave({
+                reason: "replyEditNotAllowed"
+              });
+            }
           },
 
           deinitialize : function() {
@@ -150,12 +156,47 @@ var QueryBlockController = Class.create(BlockController, {
                   this._sortCommentsDescendingTimeClickListener);
           },
 
-          disableNext : function() { 
-            triggerReactCommand("disable-query-next");
+          /**
+           * Disables save button
+           */
+          disableSave : function(data) { 
+            triggerReactCommand("disable-query-save", data);
           },
 
-          enableNext : function() {
-            triggerReactCommand("enable-query-next");
+          /**
+           * Enables save button
+           */
+          enableSave : function() {
+            triggerReactCommand("enable-query-save");
+          },
+
+          /**
+           * Checks whether save buttons can be enabled
+           * 
+           * @param {boolean} hasValues whether next button can be enabled
+           */
+          checkSaveState: function (hasValues) {
+            if ((this.allowEditReply() || !this.hasAnswers()) && hasValues) {
+              this.enableSave();
+            }
+          },
+
+          /**
+           * Returns whether page already has saved answers
+           * 
+           * @return {boolean} whether page already has saved answers
+           */
+          hasAnswers: function() {
+            return this.getBlockElement().down('input[name="hasAnswers"]').value == "true";
+          },
+
+          /**
+           * Returns whether reply editing in allowed in this query or not
+           * 
+           * @return {boolean} whether reply editing in allowed in this query or not
+           */
+          allowEditReply: function () {
+            return this.getBlockElement().down('input[name="allowEditReply"]').value == "true";
           },
           
           _onToggleCommentsClickListener : function(event) {
@@ -399,7 +440,7 @@ Scale1DQueryPageController = Class.create(QueryPageController, {
     this._tickLabels = this._sliderController.getValueLabels();
 
     if (this._selected === null) {
-      this.getBlockController().disableNext();
+      this.getBlockController().disableSave();
     }
   },
 
@@ -413,7 +454,7 @@ Scale1DQueryPageController = Class.create(QueryPageController, {
     this._tickLabels = this._radioListController.getValueLabels();
 
     if (this._selected === null) {
-      this.getBlockController().disableNext();
+      this.getBlockController().disableSave();
     }
   },
 
@@ -428,19 +469,13 @@ Scale1DQueryPageController = Class.create(QueryPageController, {
 
   _onSliderValueChange : function(event) {
     this._selected = event.value;
-    if (this._selected !== null) {
-      this.getBlockController().enableNext();
-    }
-
+    this.getBlockController().checkSaveState(this._selected !== null);
     this._updateReport();
   },
 
   _onRadioListValueChange : function(event) {
     this._selected = event.value;
-    if (this._selected !== null) {
-      this.getBlockController().enableNext();
-    }
-
+    this.getBlockController().checkSaveState(this._selected !== null);
     this._updateReport();
   }
 });
@@ -519,11 +554,7 @@ Multiple1DScaleQueryPageController = Class.create(QueryPageController, {
   },
 
   _updateNextButton: function () {
-    if (!this._isAllValuesSet()) {
-      this.getBlockController().disableNext();
-    } else {
-      this.getBlockController().enableNext();
-    }
+    this.getBlockController().checkSaveState(!this._isAllValuesSet());
   },
 
   _onValueChange: function () {
@@ -613,11 +644,7 @@ Multiple2DScaleQueryPageController = Class.create(QueryPageController, {
   },
 
   _updateNextButton: function () {
-    if (!this._isAllValuesSet()) {
-      this.getBlockController().disableNext();
-    } else {
-      this.getBlockController().enableNext();
-    }
+    this.getBlockController().checkSaveState(!this._isAllValuesSet());
   },
 
   _onValueChange: function () {
@@ -722,11 +749,7 @@ Scale2DQueryPageController = Class.create(QueryPageController, {
   },
 
   _updateNextButton : function() {
-    if (this._value1 === null || this._value2 === null) {
-      this.getBlockController().disableNext();
-    } else {
-      this.getBlockController().enableNext();
-    }
+    this.getBlockController().checkSaveState(this._value1 !== null && this._value2 !== null);
   },
 
   _updateReport : function() {

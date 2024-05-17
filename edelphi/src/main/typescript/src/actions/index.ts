@@ -14,13 +14,13 @@ export interface AccessTokenUpdate {
  */
 export interface QueryValidationMessageUpdate {
   type: constants.QUERY_VALIDATION_MESSAGE_UPDATE,
-  queryValidationMessage: string | null
+  queryValidationMessage: string | null
 }
 
 /**
  * Actions
  */
-export type AppAction =  AccessTokenUpdate | QueryValidationMessageUpdate;
+export type AppAction =  AccessTokenUpdate | QueryValidationMessageUpdate;
 
 /**
  * Store update method for access token
@@ -39,7 +39,7 @@ export function accessTokenUpdate(accessToken: AccessToken): AccessTokenUpdate {
  * 
  * @param queryValidationMessage query validation message
  */
-export function queryValidationMessageUpdate(queryValidationMessage: string | null): QueryValidationMessageUpdate {
+export function queryValidationMessageUpdate(queryValidationMessage: string | null): QueryValidationMessageUpdate {
   return {
     type: constants.QUERY_VALIDATION_MESSAGE_UPDATE,
     queryValidationMessage: queryValidationMessage

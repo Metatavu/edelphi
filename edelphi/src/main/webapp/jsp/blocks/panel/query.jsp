@@ -35,6 +35,8 @@
     <input type="hidden" name="queryPageType" value="${queryPage.pageType}"/>
     <input type="hidden" name="queryNextPageNumber" value="${queryNextPageNumber}"/>
     <input type="hidden" name="queryPreviousPageNumber" value="${queryPreviousPageNumber}"/>
+    <input type="hidden" name="allowEditReply" value="${allowEditReply}"/>
+    <input type="hidden" name="hasAnswers" value="${hasAnswers}"/>
     
     <div class="clearBoth"></div>
 

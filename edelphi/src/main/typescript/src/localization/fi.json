@@ -37,7 +37,10 @@
       "save": "Tallenna",
       "skip": "Ohita kysymys",
       "quickNavigationTitle": "Siirry tallentamatta sivulle:",
-      "noAnswer": "Et ole vielä vastannut kysymykseen",
+      "saveDisabledReason": {
+        "noAnswer": "Et ole vielä vastannut kysymykseen",
+        "replyEditNotAllowed": "Vastausten muokkaus ei ole sallittua tässä kyselyssä. Voit ohittaa kysymyksen ja jatkaa seuraavaan klikkaamalla 'Ohita kysymys' -painiketta."
+      },
       "live2d": {
         "statistics": {
           "title": "Vastausten jakauma",

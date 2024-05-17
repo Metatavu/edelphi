@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
+import fi.metatavu.edelphi.dao.querydata.QueryQuestionAnswerDAO;
 import fi.metatavu.edelphi.smvcj.PageNotFoundException;
 import fi.metatavu.edelphi.smvcj.Severity;
 import fi.metatavu.edelphi.smvcj.SmvcRuntimeException;
@@ -52,7 +53,8 @@ public class ViewQueryPageController extends PanelPageController {
     PanelDAO panelDAO = new PanelDAO();
     QueryDAO queryDAO = new QueryDAO();
     QueryPageDAO queryPageDAO = new QueryPageDAO();
-    
+    QueryQuestionAnswerDAO queryQuestionAnswerDAO = new QueryQuestionAnswerDAO();
+
     Long panelId = pageRequestContext.getLong("panelId");
     Long queryId = pageRequestContext.getLong("queryId");
     Integer pageNumber = pageRequestContext.getInteger("page");
@@ -212,6 +214,8 @@ public class ViewQueryPageController extends PanelPageController {
       QueryPageHandler queryPageHandler = QueryPageHandlerFactory.getInstance().buildPageHandler(queryPage.getPageType());
       queryPageHandler.renderPage(pageRequestContext, queryPage, queryReply);
 
+      boolean hasAnswers = queryQuestionAnswerDAO.countByQueryPageAndQueryReply(queryPage, queryReply) > 0;
+
       ActionUtils.includeRoleAccessList(pageRequestContext);
 
       if (ActionUtils.hasPanelAccess(pageRequestContext, DelfoiActionName.MANAGE_QUERY_COMMENTS.toString()))
@@ -225,6 +229,8 @@ public class ViewQueryPageController extends PanelPageController {
       pageRequestContext.getRequest().setAttribute("currentVisiblePageNumber", currentVisiblePageNumber);
       pageRequestContext.getRequest().setAttribute("queryPageCount", queryPageDAO.countByQueryAndVisible(query, Boolean.TRUE));
       pageRequestContext.getRequest().setAttribute("panel", panel);
+      pageRequestContext.getRequest().setAttribute("allowEditReply", query.getAllowEditReply());
+      pageRequestContext.getRequest().setAttribute("hasAnswers", hasAnswers);
 
       pageRequestContext.setIncludeJSP("/jsp/pages/panel/viewquery.jsp");
     }

@@ -38,7 +38,10 @@
       "save": "Save",
       "skip": "Skip Question",
       "quickNavigationTitle": "Skip question without saving and move to page:",
-      "noAnswer": "You have not answered the question",
+      "saveDisabledReason": {
+        "noAnswer": "You have not answered the question",
+        "replyEditNotAllowed": "Editing replies is not allowed in this query. You can skip the question and move to the next by clicking the 'Skip Question' button."
+      },
       "live2d": {
         "statistics": {
           "title": "Distribution of answers",
