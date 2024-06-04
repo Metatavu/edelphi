@@ -563,7 +563,7 @@ Multiple1DScaleQueryPageController = Class.create(QueryPageController, {
 
   _updateNextButton: function () {
     if (!this._isAllValuesSet()) {
-      this.getBlockController().disableNext();
+      this.getBlockController().disableSave();
     } else {
       this.getBlockController().enableSave();
     }
@@ -657,7 +657,7 @@ Multiple2DScaleQueryPageController = Class.create(QueryPageController, {
 
   _updateNextButton: function () {
     if (!this._isAllValuesSet()) {
-      this.getBlockController().disableNext();
+      this.getBlockController().disableSave();
     } else {
       this.getBlockController().enableSave();
     }
@@ -766,7 +766,7 @@ Scale2DQueryPageController = Class.create(QueryPageController, {
 
   _updateNextButton : function() {
     if (this._value1 === null || this._value2 === null) {
-      this.getBlockController().disableNext();
+      this.getBlockController().disableSave();
     } else {
       this.getBlockController().enableSave();
     }
