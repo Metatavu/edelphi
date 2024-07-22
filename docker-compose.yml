@@ -43,6 +43,7 @@ services:
       JAVA_OPTS: ${JAVA_OPTS}
       CONTACT_EMAIL: ${CONTACT_EMAIL}
       WILDFLY_EXTRA_OPTS: ${WILDFLY_EXTRA_OPTS}
+      LEGACY_REPORTS_URL: ${LEGACY_REPORTS_URL}
 
   nginx:
     hostname: ${HOST}

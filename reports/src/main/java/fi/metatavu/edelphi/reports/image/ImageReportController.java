@@ -26,8 +26,7 @@ public class ImageReportController {
   
   /**
    * Generates a report chart as PNG
-   * 
-   * @param context context
+   *
    * @return generated chart
    * @throws ReportException thrown when report chart generation fails
    */
