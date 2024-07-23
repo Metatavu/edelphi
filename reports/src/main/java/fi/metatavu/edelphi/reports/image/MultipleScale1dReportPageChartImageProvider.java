@@ -56,7 +56,14 @@ public class MultipleScale1dReportPageChartImageProvider extends AbstractReportP
 
       double[] thesisValues = pageValues[thesisIndex];
       try {
-        byte[] data = chartController.renderChartPNG(chartController.createBarChart(locale, queryPage, queryReplies, label, options, thesisValues));
+        byte[] data = chartController.renderChartPNG(chartController.createBarChart(
+                locale,
+                title,
+                label,
+                options,
+                thesisValues
+        ));
+
         if (data != null && data.length > 0) {
           result.add(new ChartData("image/png", data, title));
         }

@@ -56,7 +56,16 @@ public class Live2dReportPageChartImageProvider extends AbstractReportPageChartI
     
     List<ScatterValue> scatterValues = queryPageController.getLive2dScatterValues(queryPage, queryReplies);
     try {
-      byte[] data = chartController.renderChartPNG(chartController.createLive2dChart(locale, queryPage, queryReplies, scatterValues, labelX, labelY, optionsX, optionsY));
+      byte[] data = chartController.renderChartPNG(chartController.createLive2dChart(
+              locale,
+              title,
+              scatterValues,
+              labelX,
+              labelY,
+              optionsX,
+              optionsY)
+      );
+
       if (data == null || data.length == 0) {
         return Collections.emptyList();
       }

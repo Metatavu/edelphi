@@ -13,6 +13,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -34,7 +35,7 @@ import fi.metatavu.edelphi.reports.i18n.ReportMessages;
  * @author Antti Leppä
  */
 @ApplicationScoped
-public class Multiple2dScalesReportPageHtmlProvider extends AbstractReportPageHtmlProvider {
+public class Multiple1dScalesReportPageHtmlProvider extends AbstractReportPageHtmlProvider {
   
   @Inject
   private ReportMessages reportMessages;
@@ -87,8 +88,16 @@ public class Multiple2dScalesReportPageHtmlProvider extends AbstractReportPageHt
       double[][] pageValues = queryPageController.getMultipleScale1dValues(queryPage, queryReplies);
       for (int thesisIndex = 0; thesisIndex < pageValues.length; thesisIndex++) {
         String thesis = theses.get(thesisIndex);
+        String chartTitle = StringUtils.isNotBlank(thesis) ? thesis : queryPage.getTitle();
         double[] thesisValues = pageValues[thesisIndex];
-        String chartHtml = chartController.printGraphPNG(chartController.createBarChart(locale, queryPage, queryReplies, getFieldLabel(thesis, label), options, thesisValues));
+        String chartHtml = chartController.printGraphPNG(chartController.createBarChart(
+                locale,
+                chartTitle,
+                getFieldLabel(thesis, label),
+                options,
+                thesisValues)
+        );
+
         document.getElementById("chart").append(chartHtml);
       }
       
