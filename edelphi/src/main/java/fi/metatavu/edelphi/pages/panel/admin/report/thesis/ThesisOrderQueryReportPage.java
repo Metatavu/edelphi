@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.birt.chart.model.Chart;
 
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
@@ -89,8 +90,12 @@ public class ThesisOrderQueryReportPage extends QueryReportPageController {
         }
       }      
     }
+
+    String thesis = QueryPageUtils.getSetting(queryPage, "thesis.text");
+    String pageTitle = queryPage.getTitle();
+    String chartTitle = StringUtils.isNotBlank(thesis) ? thesis : pageTitle;
     
-    return ChartModelProvider.createStackedBarChartHorizontal(queryPage.getTitle(), items, stackedSeries);
+    return ChartModelProvider.createStackedBarChartHorizontal(chartTitle, items, stackedSeries);
   }
   
   
