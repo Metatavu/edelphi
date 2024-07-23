@@ -13,6 +13,12 @@ services:
       MYSQL_DATABASE: edelphi
       MYSQL_USER: edelphi      
       MYSQL_PASSWORD: password
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root --password=root"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
   edelphi:
     hostname: ${HOST}
     build: .
@@ -43,7 +49,8 @@ services:
       JAVA_OPTS: ${JAVA_OPTS}
       CONTACT_EMAIL: ${CONTACT_EMAIL}
       WILDFLY_EXTRA_OPTS: ${WILDFLY_EXTRA_OPTS}
-      LEGACY_REPORTS_URL: ${LEGACY_REPORTS_URL}
+      OVERRIDE_REPORTS_URL: ${OVERRIDE_REPORTS_URL}
+      SAVE_REPORTS_ON_DISK: ${SAVE_REPORTS_ON_DISK}
 
   nginx:
     hostname: ${HOST}
@@ -70,7 +77,8 @@ services:
     ports:
       - 8080:8080
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     environment:
       KC_DB_URL: jdbc:mysql://mysql:3306/keycloak?useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull
       KC_DB_USERNAME: root

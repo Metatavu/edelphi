@@ -47,8 +47,8 @@ public class LegacyReportPageChartImageProvider extends AbstractReportPageChartI
   @Override
   public List<ChartData> getPageCharts(ImageReportPageContext exportContext) throws ReportException {
     try {
-      String legacyReportsUrl = System.getenv("LEGACY_REPORTS_URL");
-      String baseUrl = StringUtils.isNotBlank(legacyReportsUrl) ? legacyReportsUrl : exportContext.getBaseURL();
+      String overrideReportsUrl = System.getenv("OVERRIDE_REPORTS_URL");
+      String baseUrl = StringUtils.isNotBlank(overrideReportsUrl) ? overrideReportsUrl : exportContext.getBaseURL();
       QueryPage queryPage = exportContext.getPage();
       PanelStamp panelStamp = exportContext.getStamp();
       String serializedContext = getSerializedContext(exportContext);
