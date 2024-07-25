@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.birt.chart.model.Chart;
 
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
@@ -76,7 +77,11 @@ public class ThesisMultiselectQueryReportPage extends QueryReportPageController 
       categoryCaptions.add(optionFieldOption.getText());
       values.add(new Double(listOptionAnswerCounts.get(optionId)));
     }
-    
-    return ChartModelProvider.createBarChartHorizontal(queryPage.getTitle(), null, categoryCaptions, values, null, null, null, null, null);
+
+    String thesis = QueryPageUtils.getSetting(queryPage, "thesis.text");
+    String pageTitle = queryPage.getTitle();
+    String chartTitle = StringUtils.isNotBlank(thesis) ? thesis : pageTitle;
+
+    return ChartModelProvider.createBarChartHorizontal(chartTitle, null, categoryCaptions, values, null, null, null, null, null);
   }
 }

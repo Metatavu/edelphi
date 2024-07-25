@@ -17,6 +17,7 @@ import fi.metatavu.edelphi.queries.QueryPageController;
 import fi.metatavu.edelphi.queries.QueryReplyController;
 import fi.metatavu.edelphi.reports.ReportException;
 import fi.metatavu.edelphi.reports.charts.ChartController;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Report chart image provider for multiple scale 1d reports
@@ -42,19 +43,29 @@ public class MultipleScale1dReportPageChartImageProvider extends AbstractReportP
     QueryPage queryPage = exportContext.getPage();
     Long[] queryReplyIds = exportContext.getQueryReplyIds();
     Locale locale = exportContext.getLocale();
-    
     List<QueryReply> queryReplies = queryReplyIds == null ? Collections.emptyList() : Arrays.stream(queryReplyIds).map(queryReplyController::findQueryReply).collect(Collectors.toList());
     
     String label = queryPageController.getSetting(queryPage, QueryPageController.MULTIPLE_1D_SCALES_LABEL_OPTION);
     List<String> options = queryPageController.getListSetting(queryPage, QueryPageController.MULTIPLE_1D_SCALES_OPTIONS_OPTION);
     double[][] pageValues = queryPageController.getMultipleScale1dValues(queryPage, queryReplies);
-    
+    List<String> theses = queryPageController.getListSetting(queryPage, QueryPageController.MULTIPLE_1D_SCALES_THESES_OPTION);
+
     for (int thesisIndex = 0; thesisIndex < pageValues.length; thesisIndex++) {
+      String thesis = theses.size() > thesisIndex ? theses.get(thesisIndex).trim() : null;
+      String title = StringUtils.isEmpty(thesis) ? queryPage.getTitle() : thesis;
+
       double[] thesisValues = pageValues[thesisIndex];
       try {
-        byte[] data = chartController.renderChartPNG(chartController.createBarChart(locale, queryPage, queryReplies, label, options, thesisValues));
+        byte[] data = chartController.renderChartPNG(chartController.createBarChart(
+                locale,
+                title,
+                label,
+                options,
+                thesisValues
+        ));
+
         if (data != null && data.length > 0) {
-          result.add(new ChartData("image/png", data));
+          result.add(new ChartData("image/png", data, title));
         }
       } catch (IOException e) {
         throw new ReportException(e);

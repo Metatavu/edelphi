@@ -100,6 +100,9 @@ public class TextReportPageHtmlWriter extends TypedItemWriter<String> {
    */
   private String downloadAsDataUrl(URI uri) throws IOException, MimeTypeParseException {
     try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+      String overrideReportsUrl = System.getenv("OVERRIDE_REPORTS_URL");
+      String baseUrl = StringUtils.isNotBlank(overrideReportsUrl) ? overrideReportsUrl : this.baseUrl;
+
       HttpGet request = new HttpGet(URI.create(baseUrl).resolve(uri));
 
       try (CloseableHttpResponse response = httpClient.execute(request)) {

@@ -14,6 +14,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -85,13 +86,23 @@ public class Live2dReportPageHtmlProvider extends AbstractReportPageHtmlProvider
       String labelY = queryPageController.getSetting(queryPage, "live2d.label.y");
       String thesis = queryPageController.getSetting(queryPage, "thesis.text");
       String description = queryPageController.getSetting(queryPage, "thesis.description");
+      String pageTitle = queryPage.getTitle();
+      String chartTitle = StringUtils.isNotBlank(thesis) ? thesis : pageTitle;
 
       List<String> optionsX = queryPageController.getListSetting(queryPage, OPTIONS_X);
       List<String> optionsY = queryPageController.getListSetting(queryPage, OPTIONS_Y);
       
       List<ScatterValue> scatterValues = queryPageController.getLive2dScatterValues(queryPage, queryReplies);
 
-      String chartHtml = chartController.printGraphPNG(chartController.createLive2dChart(locale, queryPage, queryReplies, scatterValues, labelX, labelY, optionsX, optionsY));
+      String chartHtml = chartController.printGraphPNG(chartController.createLive2dChart(
+              locale,
+              chartTitle,
+              scatterValues,
+              labelX,
+              labelY,
+              optionsX,
+              optionsY)
+      );
       
       document.getElementById("title").html(queryPage.getTitle());
       
@@ -252,13 +263,20 @@ public class Live2dReportPageHtmlProvider extends AbstractReportPageHtmlProvider
   
   /**
    * Renders a report comment 
-   * 
+   *
+   * @param locale locale
    * @param comment comment
-   * @param childComments child comment list
-   * @return
-   * @throws ReportException
+   * @param childCommentMap child comment map
+   * @param commentAnswers comment answers
+   * @return comment HTML
+   * @throws ReportException thrown when rendering fails
    */
-  private String renderComment(Locale locale, QueryQuestionComment comment, Map<Long, List<QueryQuestionComment>> childCommentMap, Map<Long, String> commentAnswers) throws ReportException {
+  private String renderComment(
+          Locale locale,
+          QueryQuestionComment comment,
+          Map<Long, List<QueryQuestionComment>> childCommentMap,
+          Map<Long, String> commentAnswers
+  ) throws ReportException {
     List<QueryQuestionComment> childComments = childCommentMap.get(comment.getId());
     String commentAnswer = commentAnswers.get(comment.getId());
     

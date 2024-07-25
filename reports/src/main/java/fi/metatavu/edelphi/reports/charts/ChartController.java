@@ -52,17 +52,27 @@ public class ChartController {
    * Creates a bar chart 
    * 
    * @param locale locale
-   * @param queryPage query page
-   * @param queryReplies query replies
+   * @param title chart title
    * @param label chart label
    * @param options options
    * @param values values
    * @return bar chart
    */
-  public CategoryChart createBarChart(Locale locale, QueryPage queryPage, List<QueryReply> queryReplies, String label, List<String> options, double[] values) {
+  public CategoryChart createBarChart(
+          Locale locale,
+          String title,
+          String label,
+          List<String> options,
+          double[] values
+  ) {
     // Create Chart
     
-    CategoryChart chart = new CategoryChartBuilder().width(GRAPH_WIDTH).height(GRAPH_HEIGHT).title(queryPage.getTitle()).xAxisTitle(label).build();
+    CategoryChart chart = new CategoryChartBuilder()
+            .width(GRAPH_WIDTH)
+            .height(GRAPH_HEIGHT)
+            .title(title)
+            .xAxisTitle(label)
+            .build();
     
     // Customize Chart
     
@@ -105,63 +115,79 @@ public class ChartController {
    * Creates a live 2d report
    * 
    * @param locale locale
-   * @param queryPage
-   * @param queryReplies
-   * @param title
-   * @param labelX
-   * @param labelY
-   * @param fieldNameX
-   * @param fieldNameY
-   * @return
-   * @throws ReportException
+   * @param title chart title
+   * @param scatterValues scatter values
+   * @param labelX label on x-axis
+   * @param labelY label on y-axis
+   * @param optionsX options on x-axis
+   * @param optionsY options on y-axis
+   * @return live 2d chart
+   * @throws ReportException thrown when chart creation fails
    */
   @SuppressWarnings ({"squid:S3776"})
-  public XYChart createLive2dChart(Locale locale, QueryPage queryPage, List<QueryReply> queryReplies, List<ScatterValue> scatterValues, String labelX, String labelY, List<String> optionsX, List<String> optionsY) throws ReportException {
-    // Create Chart
-    
-    XYChart chart = new XYChartBuilder().width(GRAPH_WIDTH).height(GRAPH_HEIGHT).title(queryPage.getTitle()).xAxisTitle(labelX).yAxisTitle(labelY).build();
-    
-    // Customize Chart
-    
-    chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Scatter);
-    chart.getStyler().setChartTitleVisible(true);
-    chart.getStyler().setLegendPosition(LegendPosition.InsideSW);
-    chart.getStyler().setMarkerSize(16);
-    chart.getStyler().setLegendVisible(false);
-    chart.getStyler().setChartBackgroundColor(Color.WHITE);
-    chart.getStyler().setChartTitleBoxBackgroundColor(Color.WHITE);
-    chart.getStyler().setLocale(locale);
-    
-    // Axis 
-    
-    double maxX = optionsX.size() - 1;
-    double maxY = optionsY.size() - 1;
-    
-    chart.getStyler().setXAxisMin(0d);
-    chart.getStyler().setXAxisMax(maxX);
-    chart.getStyler().setYAxisMin(0d);
-    chart.getStyler().setYAxisMax(maxY);
-    
-    // Ticks 
-    
-    chart.setXAxisLabelOverrideMap(createTickMap(optionsX));
-    chart.setYAxisLabelOverrideMap(createTickMap(optionsY));
-    
-    // Values
-    
-    double[] xValues = scatterValues.stream().map(ScatterValue::getX).mapToDouble(Double::doubleValue).toArray();
-    double[] yValues = scatterValues.stream().map(ScatterValue::getY).mapToDouble(Double::doubleValue).toArray();
+  public XYChart createLive2dChart(
+          Locale locale,
+          String title,
+          List<ScatterValue> scatterValues,
+          String labelX,
+          String labelY,
+          List<String> optionsX,
+          List<String> optionsY
+  ) throws ReportException {
+    try {
+      // Create Chart
 
-    // Series
+      XYChart chart = new XYChartBuilder()
+              .width(GRAPH_WIDTH)
+              .height(GRAPH_HEIGHT)
+              .title(title)
+              .xAxisTitle(labelX)
+              .yAxisTitle(labelY).build();
 
-    if (xValues != null && xValues.length > 0 && yValues != null && yValues.length > 0) {
-      chart.addSeries("values", xValues, yValues);
+      // Customize Chart
+
+      chart.getStyler().setDefaultSeriesRenderStyle(XYSeriesRenderStyle.Scatter);
+      chart.getStyler().setChartTitleVisible(true);
+      chart.getStyler().setLegendPosition(LegendPosition.InsideSW);
+      chart.getStyler().setMarkerSize(16);
+      chart.getStyler().setLegendVisible(false);
+      chart.getStyler().setChartBackgroundColor(Color.WHITE);
+      chart.getStyler().setChartTitleBoxBackgroundColor(Color.WHITE);
+      chart.getStyler().setLocale(locale);
+
+      // Axis
+
+      double maxX = optionsX.size() - 1;
+      double maxY = optionsY.size() - 1;
+
+      chart.getStyler().setXAxisMin(0d);
+      chart.getStyler().setXAxisMax(maxX);
+      chart.getStyler().setYAxisMin(0d);
+      chart.getStyler().setYAxisMax(maxY);
+
+      // Ticks
+
+      chart.setXAxisLabelOverrideMap(createTickMap(optionsX));
+      chart.setYAxisLabelOverrideMap(createTickMap(optionsY));
+
+      // Values
+
+      double[] xValues = scatterValues.stream().map(ScatterValue::getX).mapToDouble(Double::doubleValue).toArray();
+      double[] yValues = scatterValues.stream().map(ScatterValue::getY).mapToDouble(Double::doubleValue).toArray();
+
+      // Series
+
+      if (xValues != null && xValues.length > 0 && yValues != null && yValues.length > 0) {
+        chart.addSeries("values", xValues, yValues);
+      }
+
+      addStraightLineSerie(chart, "xaxis", 0, maxY / 2, maxX, maxY / 2);
+      addStraightLineSerie(chart, "yaxis", maxX / 2, 0, maxX / 2, maxY);
+
+      return chart;
+    } catch (Exception e) {
+        throw new ReportException(e);
     }
-    
-    addStraightLineSerie(chart, "xaxis", 0, maxY / 2, maxX, maxY / 2);
-    addStraightLineSerie(chart, "yaxis", maxX / 2, 0, maxX / 2, maxY);
-    
-    return chart;
   }
   
   /**

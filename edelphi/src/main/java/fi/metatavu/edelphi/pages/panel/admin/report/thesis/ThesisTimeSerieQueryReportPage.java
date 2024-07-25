@@ -155,12 +155,16 @@ public class ThesisTimeSerieQueryReportPage extends QueryReportPageController {
     }
 
     String predefinedValuesCaption = QueryPageUtils.getSetting(queryPage, "time_serie.predefinedSetLabel");
-    
+
+    String thesis = QueryPageUtils.getSetting(queryPage, "thesis.text");
+    String pageTitle = queryPage.getTitle();
+    String chartTitle = StringUtils.isNotBlank(thesis) ? thesis : pageTitle;
+
     return ChartModelProvider.createTimeSeriesChart(
-        queryPage.getTitle(),
+        chartTitle,
         categoryCaptions, 
         minY, maxY,
-        preliminaryValues.size() > 0 ? new ChartDataSeries(predefinedValuesCaption, preliminaryValues) : null, 
+        preliminaryValues.size() > 0 ? new ChartDataSeries(predefinedValuesCaption, preliminaryValues) : null,
         new ChartDataSeries(Messages.getInstance().getText(locale, "panel.admin.report.timeSerie.averageValuesValuesCaption"), averageValues), 
         new ChartDataSeries(Messages.getInstance().getText(locale, "panel.admin.report.timeSerie.1stQuartileValuesValuesCaption"), q1Values),
         new ChartDataSeries(Messages.getInstance().getText(locale, "panel.admin.report.timeSerie.3rdQuartileValuesValuesCaption"), q3Values),

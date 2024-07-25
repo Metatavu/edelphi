@@ -113,5 +113,16 @@ public abstract class AbstractPrinter extends AbstractBatchlet {
     PanelUserExpertiseClass expertiseClass = expertiseGroup.getExpertiseClass();
     return String.format("%s / %s", intressClass.getName(), expertiseClass.getName());
   }
-  
+
+  /**
+   * Returns true if reports should be saved on disk. Reports are saved on disk if SAVE_REPORTS_ON_DISK environment variable is set to "true"
+   *
+   * This feature is used for debugging purposes only
+   *
+   * @return true if reports should be saved on disk
+   */
+  protected boolean getSaveReportsOnDisk() {
+    return "true".equals(System.getenv("SAVE_REPORTS_ON_DISK"));
+  }
+
 }

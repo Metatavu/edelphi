@@ -47,7 +47,8 @@ public class LegacyReportPageChartImageProvider extends AbstractReportPageChartI
   @Override
   public List<ChartData> getPageCharts(ImageReportPageContext exportContext) throws ReportException {
     try {
-      String baseUrl = exportContext.getBaseURL();
+      String overrideReportsUrl = System.getenv("OVERRIDE_REPORTS_URL");
+      String baseUrl = StringUtils.isNotBlank(overrideReportsUrl) ? overrideReportsUrl : exportContext.getBaseURL();
       QueryPage queryPage = exportContext.getPage();
       PanelStamp panelStamp = exportContext.getStamp();
       String serializedContext = getSerializedContext(exportContext);
@@ -60,18 +61,20 @@ public class LegacyReportPageChartImageProvider extends AbstractReportPageChartI
       connection.setRequestMethod("GET");
       connection.setReadTimeout(900000); // 15 minutes; gross overkill but at least eventual termination is guaranteed
       connection.connect();
-      
+
       try (InputStream inputStream = connection.getInputStream()) {
         Document document = Jsoup.parse(inputStream, "UTF-8", baseUrl);
         Elements reportPage = document.select("body > .reportPage");
         if (reportPage == null) {
           throw new ReportException("Could not find report page element from HTML");
         }
-        
+
         Elements reportImages = reportPage.select("img.report-image");
-        
+        String thesis = StringUtils.trim(reportPage.select(".queryReportThesis").text());
+        String title = StringUtils.isEmpty(thesis) ? queryPage.getTitle() : thesis;
+
         return reportImages.stream()
-          .map(element -> downloadUrlAsByteArray(baseUrl, element.attr("src"), internalAuthorizationHash))
+          .map(element -> downloadUrlAsByteArray(baseUrl, element.attr("src"), internalAuthorizationHash, title))
           .filter(Objects::nonNull)
           .collect(Collectors.toList());
       }
@@ -83,18 +86,20 @@ public class LegacyReportPageChartImageProvider extends AbstractReportPageChartI
   
   /**
    * Downloads URL as byte array
-   * 
+   *
+   * @param baseUrl base URL
    * @param urlString URL
    * @param internalAuthorizationHash internal authorization hash
+   * @param title title
    * @return URL as byte array
    * @throws IOException thrown on download failure
    */
-  private ChartData downloadUrlAsByteArray(String baseUrl, String urlString, String internalAuthorizationHash) {
+  private ChartData downloadUrlAsByteArray(String baseUrl, String urlString, String internalAuthorizationHash, String title) {
     try {
       if (StringUtils.startsWith(urlString,  "data:")) {
         int base64Index = urlString.indexOf("base64,");
         String contentType = urlString.substring(5, base64Index);
-        return new ChartData(contentType, Base64.decodeBase64(urlString.substring(base64Index + 7)));
+        return new ChartData(contentType, Base64.decodeBase64(urlString.substring(base64Index + 7)), title);
       } else {
         URL url = URI.create(baseUrl).resolve(urlString).toURL();
         
@@ -108,7 +113,7 @@ public class LegacyReportPageChartImageProvider extends AbstractReportPageChartI
           connection.connect();
           
           try (InputStream is = connection.getInputStream()) {
-            return new ChartData(connection.getContentType(), IOUtils.toByteArray(is));
+            return new ChartData(connection.getContentType(), IOUtils.toByteArray(is), title);
           }
         } finally {
           connection.disconnect();

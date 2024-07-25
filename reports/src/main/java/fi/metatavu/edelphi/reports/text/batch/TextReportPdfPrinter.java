@@ -2,7 +2,9 @@ package fi.metatavu.edelphi.reports.text.batch;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -32,6 +34,7 @@ import fi.metatavu.edelphi.settings.SettingsController;
  * @author Antti Leppä
  */
 @Named
+@SuppressWarnings("unused")
 public class TextReportPdfPrinter extends AbstractPrinter {
 
   @Inject
@@ -71,10 +74,6 @@ public class TextReportPdfPrinter extends AbstractPrinter {
 
   @Inject
   @JobProperty
-  private Long[] pageIds;
-
-  @Inject
-  @JobProperty
   private String deliveryEmail;
 
   @Inject
@@ -90,7 +89,7 @@ public class TextReportPdfPrinter extends AbstractPrinter {
     Panel panel = resourceController.getResourcePanel(query);
     String html = htmlReportController.getHtmlReport(baseUrl, pageHtmls);
     
-    try (InputStream htmlStream = new ByteArrayInputStream(html.getBytes("UTF-8")); ByteArrayOutputStream pdfStream = new ByteArrayOutputStream()) {
+    try (InputStream htmlStream = new ByteArrayInputStream(html.getBytes(StandardCharsets.UTF_8)); ByteArrayOutputStream pdfStream = new ByteArrayOutputStream()) {
       pdfPrinter.printHtmlAsPdf(htmlStream, pdfStream);
       
       String panelName = panel.getName();
@@ -103,19 +102,31 @@ public class TextReportPdfPrinter extends AbstractPrinter {
       String contents = reportMessages.getText(locale, "reports.pdf.mail.contents", now, filters, settings);
       String file = String.format("%s-%s.pdf", panel.getUrlName(), query.getUrlName());
 
-      logger.info("Sending report. Email locale {}, subject {}", locale, subject);
+      if (getSaveReportsOnDisk()) {
+        logger.info("Saving report to disk");
 
-      Email email = EmailBuilder.startingBlank()
-        .from(settingsController.getEmailFromAddress())
-        .to(deliveryEmail)
-        .withSubject(subject)
-        .withHTMLText(contents)
-        .withAttachment(file, pdfStream.toByteArray(), "application/pdf")
-        .buildEmail();
-      
-      mailer.sendMail(email);
-      
-      logger.info(String.format("Report sent via email into address %s", deliveryEmail));
+        String fileUrl = String.format("/tmp/%d.pdf", System.currentTimeMillis());
+
+        try (FileOutputStream fileStream = new FileOutputStream(fileUrl)) {
+            pdfStream.writeTo(fileStream);
+        }
+
+        logger.info("Report saved to disk as {}", fileUrl);
+      } else {
+        logger.info("Sending report. Email locale {}, subject {}", locale, subject);
+
+        Email email = EmailBuilder.startingBlank()
+                .from(settingsController.getEmailFromAddress())
+                .to(deliveryEmail)
+                .withSubject(subject)
+                .withHTMLText(contents)
+                .withAttachment(file, pdfStream.toByteArray(), "application/pdf")
+                .buildEmail();
+
+        mailer.sendMail(email);
+
+        logger.info(String.format("Report sent via email into address %s", deliveryEmail));
+      }
     }
     
     return "DONE";

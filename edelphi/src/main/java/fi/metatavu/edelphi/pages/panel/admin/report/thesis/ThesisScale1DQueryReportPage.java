@@ -156,7 +156,21 @@ public class ThesisScale1DQueryReportPage extends QueryReportPageController {
     Double avg = statistics.getCount() > 1 ? statistics.getAvg() : null;
     Double q1 = statistics.getCount() >= 5 ? statistics.getQ1() : null;
     Double q3 = statistics.getCount() >= 5 ? statistics.getQ3() : null;
-    
-    return ChartModelProvider.createBarChart(queryPage.getTitle(), xLabel, categoryCaptions, values, null, null, avg, q1, q3);
+
+    String thesis = QueryPageUtils.getSetting(queryPage, "thesis.text");
+    String pageTitle = queryPage.getTitle();
+    String chartTitle = StringUtils.isNotBlank(thesis) ? thesis : pageTitle;
+
+    return ChartModelProvider.createBarChart(
+            chartTitle,
+            xLabel,
+            categoryCaptions,
+            values,
+            null,
+            null,
+            avg,
+            q1,
+            q3
+    );
   }
 }
