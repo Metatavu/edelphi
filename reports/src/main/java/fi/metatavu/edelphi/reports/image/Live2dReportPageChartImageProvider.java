@@ -17,6 +17,7 @@ import fi.metatavu.edelphi.queries.QueryReplyController;
 import fi.metatavu.edelphi.queries.ScatterValue;
 import fi.metatavu.edelphi.reports.ReportException;
 import fi.metatavu.edelphi.reports.charts.ChartController;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Report chart image provider for live2d reports
@@ -45,21 +46,31 @@ public class Live2dReportPageChartImageProvider extends AbstractReportPageChartI
     Locale locale = exportContext.getLocale();
     
     List<QueryReply> queryReplies = queryReplyIds == null ? Collections.emptyList() : Arrays.stream(queryReplyIds).map(queryReplyController::findQueryReply).collect(Collectors.toList());
-    
+
+    String thesis = StringUtils.trim(queryPageController.getSetting(queryPage, "thesis.text"));
     String labelX = queryPageController.getSetting(queryPage, "live2d.label.x");
     String labelY = queryPageController.getSetting(queryPage, "live2d.label.y");
-
+    String title = StringUtils.isEmpty(thesis) ? queryPage.getTitle() : thesis;
     List<String> optionsX = queryPageController.getListSetting(queryPage, OPTIONS_X);
     List<String> optionsY = queryPageController.getListSetting(queryPage, OPTIONS_Y);
     
     List<ScatterValue> scatterValues = queryPageController.getLive2dScatterValues(queryPage, queryReplies);
     try {
-      byte[] data = chartController.renderChartPNG(chartController.createLive2dChart(locale, queryPage, queryReplies, scatterValues, labelX, labelY, optionsX, optionsY));
+      byte[] data = chartController.renderChartPNG(chartController.createLive2dChart(
+              locale,
+              title,
+              scatterValues,
+              labelX,
+              labelY,
+              optionsX,
+              optionsY)
+      );
+
       if (data == null || data.length == 0) {
         return Collections.emptyList();
       }
-      
-      return Collections.singletonList(new ChartData("image/png", data));
+
+      return Collections.singletonList(new ChartData("image/png", data, title));
     } catch (IOException e) {
       throw new ReportException(e);
     }

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.birt.chart.model.Chart;
 
 import fi.metatavu.edelphi.dao.querymeta.QueryFieldDAO;
@@ -81,6 +82,10 @@ public class ThesisTimelineQueryReportPage extends QueryReportPageController {
     for (double d = min; d <= max; d += step) {
       captions.add(step % 1 == 0 ? new Long(Math.round(d)).toString() : new Double(d).toString());
     }
+
+    String thesis = QueryPageUtils.getSetting(queryPage, "thesis.text");
+    String pageTitle = queryPage.getTitle();
+    String chartTitle = StringUtils.isNotBlank(thesis) ? thesis : pageTitle;
     
     if (type == TimelineThesisQueryPageHandler.TIMELINE_TYPE_2VALUE) {
       Double[][] values = new Double[captions.size()][captions.size()];
@@ -108,11 +113,10 @@ public class ThesisTimelineQueryReportPage extends QueryReportPageController {
       Double qY1 = statisticsY.getCount() >= QUARTILE_MIN_COUNT ? statisticsY.getQ1() : null;
       Double qY3 = statisticsY.getCount() >= QUARTILE_MIN_COUNT ? statisticsY.getQ3() : null;
       
-      return ChartModelProvider.createBubbleChart(queryPage.getTitle(), null, captions, null, captions, 0, 0, values, min, max, min, max, avgX, qX1, qX3, avgY, qY1, qY3);
+      return ChartModelProvider.createBubbleChart(chartTitle, null, captions, null, captions, 0, 0, values, min, max, min, max, avgX, qX1, qX3, avgY, qY1, qY3);
     } else {
       QueryField queryField = queryFieldDAO.findByQueryPageAndName(queryPage, "timeline.value1");
-      String chartTitle = QueryPageUtils.getSetting(queryPage, "timeline.value1Label"); 
-      
+
       List<Double> data = ReportUtils.getNumberFieldData(queryField, queryReplies);
       List<Double> occurences = new ArrayList<>();
       Map<Double, Long> classifiedData = ReportUtils.getClassifiedNumberFieldData(data);

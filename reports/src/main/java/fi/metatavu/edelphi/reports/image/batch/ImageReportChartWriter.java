@@ -122,7 +122,8 @@ public class ImageReportChartWriter extends TypedItemWriter<QueryPage> {
     for (int imageIndex = 0; imageIndex < chartDatas.size(); imageIndex++) {
       ChartData chartData = chartDatas.get(imageIndex);
       if (chartData != null && chartData.getData() != null && chartData.getData().length > 0) {
-        result.add(new BinaryFile(String.format("%d-%d-%s.png", index, imageIndex, getFileName(queryPage.getTitle())), chartData.getContentType(), chartData.getData()));
+        String fileName = getFileName(chartData.getTitle());
+        result.add(new BinaryFile(String.format("%d-%d-%s.png", index, imageIndex, fileName), chartData.getContentType(), chartData.getData()));
       }
     }
     

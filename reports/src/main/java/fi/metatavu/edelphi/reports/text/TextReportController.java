@@ -32,7 +32,7 @@ public class TextReportController {
   private Live2dReportPageHtmlProvider live2dReportPageHtmlProvider;
 
   @Inject
-  private Multiple2dScalesReportPageHtmlProvider multiple2dScalesReportPageHtmlProvider;
+  private Multiple1dScalesReportPageHtmlProvider multiple1dScalesReportPageHtmlProvider;
   
   /**
    * Returns a report HTML for given report pages
@@ -88,7 +88,7 @@ public class TextReportController {
       case LIVE_2D:
         return live2dReportPageHtmlProvider.getPageHtml(context);
       case THESIS_MULTIPLE_1D_SCALES:
-        return multiple2dScalesReportPageHtmlProvider.getPageHtml(context);
+        return multiple1dScalesReportPageHtmlProvider.getPageHtml(context);
       default:
     }
     

@@ -62,14 +62,16 @@ public class LegacyReportPageHtmlProvider extends AbstractReportPageHtmlProvider
 
   private String downloadPageHtml(TextReportPageContext exportContext) throws ReportException {
     try {
-      String baseURL = exportContext.getBaseURL();
+      String overrideReportsUrl = System.getenv("OVERRIDE_REPORTS_URL");
+      String baseUrl = StringUtils.isNotBlank(overrideReportsUrl) ? overrideReportsUrl : exportContext.getBaseURL();
+
       QueryPage queryPage = exportContext.getPage();
       PanelStamp panelStamp = exportContext.getStamp();
       String serializedContext = getSerializedContext(exportContext);
       
       String internalAuthorizationHash = settingsController.getInternalAuthorizationHash();
 
-      URL url = new URL(baseURL + "/panel/admin/report/page.page?chartFormat=PNG&pageId=" + queryPage.getId() + "&panelId=" + panelStamp.getPanel().getId() + "&serializedContext=" + serializedContext);
+      URL url = new URL(baseUrl + "/panel/admin/report/page.page?chartFormat=PNG&pageId=" + queryPage.getId() + "&panelId=" + panelStamp.getPanel().getId() + "&serializedContext=" + serializedContext);
       logger.info(String.format("Downloading legacy report from %s", url.toExternalForm()));
 
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -81,15 +83,15 @@ public class LegacyReportPageHtmlProvider extends AbstractReportPageHtmlProvider
       connection.connect();
       
       try (InputStream inputStream = connection.getInputStream()) {
-        Document document = Jsoup.parse(inputStream, "UTF-8", baseURL);
+        Document document = Jsoup.parse(inputStream, "UTF-8", baseUrl);
         Elements reportPage = document.select("body > .reportPage");
         if (reportPage == null) {
           throw new ReportException("Could not find report page element from HTML");
         }
-        
+
         return reportPage.outerHtml();
       }
-      
+
     } catch (IOException e) {
       throw new ReportException(e);
     }
