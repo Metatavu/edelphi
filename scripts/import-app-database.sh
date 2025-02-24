@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Starting docker container for MySQL..."
-docker-compose up -d mysql
+docker compose up -d mysql
 
 sleep 5
 
@@ -17,4 +17,4 @@ echo "Copied local script for eDelphi"
 echo "Creating databases with dump data..."
 docker exec $CONTAINER_ID  mysql -uroot -proot -e 'DROP DATABASE IF EXISTS `edelphi`; CREATE DATABASE `edelphi` /*!40100 DEFAULT CHARACTER SET utf8 */; USE edelphi; source /tmp/ed.sql; source /tmp/lo.sql; commit;'
 
-docker-compose down
+docker compose down
