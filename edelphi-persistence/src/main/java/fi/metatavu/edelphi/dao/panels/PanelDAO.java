@@ -27,6 +27,12 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 @ApplicationScoped
 public class PanelDAO extends GenericDAO<Panel> {
 
+  public void archivePanelByScheduler (Panel panel) {
+    panel.setArchived(true);
+    panel.setLastModified(new Date());
+    persist(panel);
+  }
+
   @SuppressWarnings ("squid:S00107")
   public Panel create(Delfoi delfoi, String name, String description, Folder rootFolder, 
       PanelState state, PanelAccessLevel accessLevel, PanelUserRole defaultPanelUserRole, User creator) {
@@ -60,7 +66,7 @@ public class PanelDAO extends GenericDAO<Panel> {
     
     return getSingleResult(entityManager.createQuery(criteria));
   }
-  
+
   public List<Panel> listByDelfoi(Delfoi delfoi) {
     EntityManager entityManager = getEntityManager();
     
@@ -115,6 +121,41 @@ public class PanelDAO extends GenericDAO<Panel> {
     );
     
     return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<Panel> listPanelsToArchive(PanelState panelState, Date before, int maxResults) {
+    EntityManager entityManager = getEntityManager();
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Panel> criteria = criteriaBuilder.createQuery(Panel.class);
+    Root<Panel> root = criteria.from(Panel.class);
+    criteria.select(root);
+
+    criteria.where(
+            criteriaBuilder.and(
+                    criteriaBuilder.equal(root.get(Panel_.state), panelState),
+                    criteriaBuilder.lessThan(root.get(Panel_.lastModified), before),
+                    criteriaBuilder.equal(root.get(Panel_.archived), Boolean.FALSE)
+            )
+    );
+
+    return entityManager.createQuery(criteria).setMaxResults(maxResults).getResultList();
+  }
+
+  public List<Panel> listPanelsToDelete(Date before, int maxResults) {
+    EntityManager entityManager = getEntityManager();
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Panel> criteria = criteriaBuilder.createQuery(Panel.class);
+    Root<Panel> root = criteria.from(Panel.class);
+    criteria.select(root);
+
+    criteria.where(
+            criteriaBuilder.and(
+                    criteriaBuilder.lessThan(root.get(Panel_.lastModified), before),
+                    criteriaBuilder.equal(root.get(Panel_.archived), Boolean.TRUE)
+            )
+    );
+
+    return entityManager.createQuery(criteria).setMaxResults(maxResults).getResultList();
   }
   
   public Panel update(Panel panel, String name, String description, PanelAccessLevel accessLevel, PanelState state, User modifier) {

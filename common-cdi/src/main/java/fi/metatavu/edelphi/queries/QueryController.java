@@ -6,9 +6,9 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
-import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentCategoryDAO;
-import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
+import fi.metatavu.edelphi.dao.querydata.*;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingDAO;
 import fi.metatavu.edelphi.dao.querylayout.QuerySectionDAO;
@@ -17,8 +17,7 @@ import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldOptionDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldOptionGroupDAO;
 import fi.metatavu.edelphi.dao.resources.QueryDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
-import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory;
-import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
+import fi.metatavu.edelphi.domainmodel.querydata.*;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageType;
 import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection;
@@ -65,6 +64,24 @@ public class QueryController {
 
   @Inject
   private QueryFieldDAO queryFieldDAO;
+
+  @Inject
+  private QueryQuestionAnswerDAO queryQuestionAnswerDAO;
+
+  @Inject
+  private QueryQuestionTextAnswerDAO queryQuestionTextAnswerDAO;
+
+  @Inject
+  private QueryQuestionNumericAnswerDAO queryQuestionNumericAnswerDAO;
+
+  @Inject
+  private QueryQuestionOptionGroupOptionAnswerDAO queryQuestionOptionGroupOptionAnswerDAO;
+
+  @Inject
+  private QueryQuestionMultiOptionAnswerDAO queryQuestionMultiOptionAnswerDAO;
+
+  @Inject
+  private QueryQuestionOptionAnswerDAO queryQuestionOptionAnswerDAO;
 
   @Inject
   private QueryOptionFieldOptionDAO queryOptionFieldOptionDAO;
@@ -114,7 +131,7 @@ public class QueryController {
       queryPageDAO.listAllByQuerySection(querySection).forEach(this::deleteQueryPage);
       querySectionDAO.delete(querySection);
     });
-
+    System.out.println("Query ID: " + query.getId());
     queryReplyDAO.listAllByQuery(query).forEach(queryReplyDAO::delete);
     queryQuestionCommentCategoryDAO.listByQuery(query).forEach(queryQuestionCommentCategoryDAO::delete);
     queryDAO.delete(query);

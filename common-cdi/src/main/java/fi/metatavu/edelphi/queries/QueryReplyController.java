@@ -12,6 +12,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import fi.metatavu.edelphi.dao.querylayout.QuerySectionDAO;
+import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldOptionDAO;
+import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
@@ -99,6 +101,9 @@ public class QueryReplyController {
 
   @Inject
   private QuerySectionDAO querySectionDAO;
+
+  @Inject
+  private QueryOptionFieldOptionDAO queryOptionFieldOptionDAO;
 
   /**
    * Copy query reply into new query
@@ -491,8 +496,11 @@ public class QueryReplyController {
         for (QueryQuestionOptionGroupOptionAnswer optionGroupAnswer : optionGroupAnswers) {
           queryQuestionOptionGroupOptionAnswerDAO.delete(optionGroupAnswer);
         }
-        List<QueryQuestionMultiOptionAnswer> multiAnswers = queryQuestionMultiOptionAnswerDAO.listByQueryField(queryField);
+        List<QueryQuestionMultiOptionAnswer> multiAnswers = queryQuestionMultiOptionAnswerDAO.listAllByQueryField(queryField);
         for (QueryQuestionMultiOptionAnswer multiAnswer : multiAnswers) {
+          multiAnswer.setOptions(Collections.emptySet());
+          queryQuestionMultiOptionAnswerDAO.persist(multiAnswer);
+          multiAnswer.getOptions().forEach(queryOptionFieldOptionDAO::delete);
           queryQuestionMultiOptionAnswerDAO.delete(multiAnswer);
           queryQuestionAnswerDAO.delete(multiAnswer);
         }

@@ -13,6 +13,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionMultiOptionAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionOptionAnswer_;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
@@ -23,6 +24,19 @@ import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption_;
 
 @ApplicationScoped
 public class QueryQuestionOptionAnswerDAO extends GenericDAO<QueryQuestionOptionAnswer> {
+  public List<QueryQuestionOptionAnswer> listByReply(QueryReply reply) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryQuestionOptionAnswer> criteria = criteriaBuilder.createQuery(QueryQuestionOptionAnswer.class);
+    Root<QueryQuestionOptionAnswer> root = criteria.from(QueryQuestionOptionAnswer.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(QueryQuestionOptionAnswer_.queryReply), reply)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
 
   public QueryQuestionOptionAnswer create(QueryReply queryReply, QueryField queryField, QueryOptionFieldOption option) {
     Date now = new Date();

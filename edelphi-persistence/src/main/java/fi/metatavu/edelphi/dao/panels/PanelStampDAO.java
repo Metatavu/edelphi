@@ -35,7 +35,7 @@ public class PanelStampDAO extends GenericDAO<PanelStamp> {
     getEntityManager().persist(panelStamp);
     return panelStamp;
   }
-  
+
   public List<PanelStamp> listByPanel(Panel panel) {
     EntityManager entityManager = getEntityManager();
 

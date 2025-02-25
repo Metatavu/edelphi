@@ -156,6 +156,24 @@ public class QueryReplyDAO extends GenericDAO<QueryReply> {
     return entityManager.createQuery(criteria).getResultList();
   }
 
+  /**
+   * Lists all query replies by stamp (including archived)
+   *
+   * @param stamp stamp
+   * @return list of query replies
+   */
+  public List<QueryReply> listAllByStamp(PanelStamp stamp) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryReply> criteria = criteriaBuilder.createQuery(QueryReply.class);
+    Root<QueryReply> root = criteria.from(QueryReply.class);
+    criteria.select(root);
+    criteria.where(criteriaBuilder.equal(root.get(QueryReply_.stamp), stamp));
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
   public Long countByQueryAndStamp(Query query, PanelStamp panelStamp) {
     EntityManager entityManager = getEntityManager();
 
@@ -166,8 +184,7 @@ public class QueryReplyDAO extends GenericDAO<QueryReply> {
     criteria.where(
       criteriaBuilder.and(
         criteriaBuilder.equal(root.get(QueryReply_.query), query), 
-        criteriaBuilder.equal(root.get(QueryReply_.stamp), panelStamp), 
-        criteriaBuilder.equal(root.get(QueryReply_.archived), Boolean.FALSE)
+        criteriaBuilder.equal(root.get(QueryReply_.stamp), panelStamp)
       )
     );
     

@@ -1,27 +1,22 @@
 package fi.metatavu.edelphi.panels;
 
+import java.time.OffsetDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 import fi.metatavu.edelphi.dao.actions.PanelUserRoleActionDAO;
 import fi.metatavu.edelphi.dao.panels.*;
-import fi.metatavu.edelphi.domainmodel.panels.Panel;
-import fi.metatavu.edelphi.domainmodel.panels.PanelInvitation;
-import fi.metatavu.edelphi.domainmodel.panels.PanelInvitationState;
-import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
-import fi.metatavu.edelphi.domainmodel.panels.PanelUser;
-import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseClass;
-import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseGroup;
-import fi.metatavu.edelphi.domainmodel.panels.PanelUserGroup;
-import fi.metatavu.edelphi.domainmodel.panels.PanelUserIntressClass;
-import fi.metatavu.edelphi.domainmodel.panels.PanelUserJoinType;
-import fi.metatavu.edelphi.domainmodel.panels.PanelUserRole;
+import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
+import fi.metatavu.edelphi.domainmodel.panels.*;
 import fi.metatavu.edelphi.domainmodel.resources.Folder;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
+import fi.metatavu.edelphi.queries.QueryController;
 import fi.metatavu.edelphi.resources.ResourceController;
 import fi.metatavu.edelphi.settings.SettingsController;
 import fi.metatavu.edelphi.users.UserController;
@@ -79,6 +74,21 @@ public class PanelController {
   @Inject
   private PanelExpertiseGroupUserDAO panelExpertiseGroupUserDAO;
 
+  @Inject
+  private QueryController queryController;
+
+  @Inject
+  private QueryReplyDAO queryReplyDAO;
+
+  /**
+   * This function is used by a scheduled job to archive panels
+   *
+   * @param panel panel to archive
+   */
+  public void archivePanelByScheduler(Panel panel) {
+
+    panelDAO.archivePanelByScheduler(panel);
+  }
   
   /**
    * Finds a panel by id
@@ -95,7 +105,7 @@ public class PanelController {
    *
    * @param panel panel
    */
-  public void deletePanel(Panel panel) {
+  public void deletePanel(Panel panel) throws InterruptedException {
     Folder rootFolder = panel.getRootFolder();
 
     panelDAO.updateRootFolder(panel, null, panel.getLastModifier());
@@ -109,7 +119,12 @@ public class PanelController {
     panelUserGroupDAO.listAllByPanel(panel).forEach(panelUserGroupDAO::delete);
     panelUserExpertiseClassDAO.listByPanel(panel).forEach(panelUserExpertiseClassDAO::delete);
     panelUserIntressClassDAO.listByPanel(panel).forEach(panelUserIntressClassDAO::delete);
-    panelStampDAO.listAllByPanel(panel).forEach(panelStampDAO::delete);
+
+    List<PanelStamp> stamps = panelStampDAO.listAllByPanel(panel);
+    for (PanelStamp panelStamp : stamps) {
+      queryReplyDAO.listAllByStamp(panelStamp).forEach(queryReplyDAO::delete);
+      panelStampDAO.delete(panelStamp);
+    }
 
     panelDAO.delete(panel);
   }
@@ -122,6 +137,33 @@ public class PanelController {
    */
   public List<Panel> listUserPanels(User user) {
     return panelDAO.listByDelfoiAndUser(settingsController.getDelfoi(), user);
+  }
+
+  /**
+   * Lists panels to archive
+   *
+   * @param panelState panel state
+   * @param waitDays wait this amount of days before archiving
+   * @param maxResults max results
+   *
+   * @return panels
+   */
+  public List<Panel> listPanelsToArchive(PanelState panelState, long waitDays, int maxResults) {
+    Date before = Date.from(OffsetDateTime.now().minusDays(waitDays).toInstant());
+    return panelDAO.listPanelsToArchive(panelState, before, maxResults);
+  }
+
+  /**
+   * Lists panels to delete
+   *
+   * @param waitDays wait this amount of days before deleting
+   * @param maxResults max results
+   *
+   * @return panels
+   */
+  public List<Panel> listPanelsToDelete(long waitDays, int maxResults) {
+    Date before = Date.from(OffsetDateTime.now().minusDays(waitDays).toInstant());
+    return panelDAO.listPanelsToDelete(before, maxResults);
   }
 
   /**

@@ -18,6 +18,7 @@ import fi.metatavu.edelphi.dao.GenericDAO;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionNumericAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionNumericAnswer_;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionTextAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply_;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
@@ -34,6 +35,19 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
 public class QueryQuestionNumericAnswerDAO extends GenericDAO<QueryQuestionNumericAnswer> {
+  public List<QueryQuestionNumericAnswer> listByReply(QueryReply reply) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryQuestionNumericAnswer> criteria = criteriaBuilder.createQuery(QueryQuestionNumericAnswer.class);
+    Root<QueryQuestionNumericAnswer> root = criteria.from(QueryQuestionNumericAnswer.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(QueryQuestionNumericAnswer_.queryReply), reply)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
 
   public QueryQuestionNumericAnswer create(QueryReply queryReply, QueryField queryField, Double data) {
     Date now = new Date();

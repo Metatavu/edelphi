@@ -15,7 +15,6 @@ public class ScheduledUserDeletion {
 
     @Schedule (hour = "*", minute = "*", second = "*/5", info = "Every 5 seconds timer")
     public void archive() {
-        System.out.println("ffffffffffffffffffffffffffffffffffffff");
     }
 
 }
