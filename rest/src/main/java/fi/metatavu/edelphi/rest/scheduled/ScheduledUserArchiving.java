@@ -9,7 +9,7 @@ import javax.inject.Inject;
 
 @Startup
 @Singleton
-public class ScheduledPanelArchiving {
+public class ScheduledUserArchiving {
     @Inject
     private PanelController panelController;
 
