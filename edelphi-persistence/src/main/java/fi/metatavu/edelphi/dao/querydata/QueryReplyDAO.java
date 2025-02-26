@@ -7,9 +7,11 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
+import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply_;
@@ -81,6 +83,20 @@ public class QueryReplyDAO extends GenericDAO<QueryReply> {
     );
     
     return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<QueryReply> listByQuery(Query query, int maxResults) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryReply> criteria = criteriaBuilder.createQuery(QueryReply.class);
+    Root<QueryReply> root = criteria.from(QueryReply.class);
+    criteria.select(root);
+    criteria.where(
+        criteriaBuilder.equal(root.get(QueryReply_.query), query)
+    );
+
+    return entityManager.createQuery(criteria).setMaxResults(maxResults).getResultList();
   }
   
   public List<Long> listIdsByQueryAndStamp(Query query, PanelStamp panelStamp) {

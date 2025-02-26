@@ -7,16 +7,19 @@ import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
+import fi.metatavu.edelphi.comments.QueryQuestionCommentController;
 import fi.metatavu.edelphi.dao.actions.PanelUserRoleActionDAO;
 import fi.metatavu.edelphi.dao.panels.*;
 import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
 import fi.metatavu.edelphi.domainmodel.panels.*;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.resources.Folder;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.queries.QueryController;
+import fi.metatavu.edelphi.queries.QueryReplyController;
 import fi.metatavu.edelphi.resources.ResourceController;
 import fi.metatavu.edelphi.settings.SettingsController;
 import fi.metatavu.edelphi.users.UserController;
@@ -80,6 +83,13 @@ public class PanelController {
   @Inject
   private QueryReplyDAO queryReplyDAO;
 
+  @Inject
+  private QueryQuestionCommentController queryQuestionCommentController;
+
+  @Inject
+  private QueryReplyController queryReplyController;
+
+
   /**
    * This function is used by a scheduled job to archive panels
    *
@@ -120,9 +130,48 @@ public class PanelController {
     panelUserExpertiseClassDAO.listByPanel(panel).forEach(panelUserExpertiseClassDAO::delete);
     panelUserIntressClassDAO.listByPanel(panel).forEach(panelUserIntressClassDAO::delete);
 
+    panelStampDAO.listAllByPanel(panel).forEach(panelStampDAO::delete);
+
+    panelDAO.delete(panel);
+  }
+
+  /**
+   * Delete query dependencies
+   *
+   * @param panel panel
+   */
+  public void schedulerDeleteQueryDependencies(Panel panel) {
+    panelAuthDAO.listByPanel(panel).forEach(panelAuthDAO::delete);
+    panelUserRoleActionDAO.listByPanel(panel).forEach(panelUserRoleActionDAO::delete);
+    panelBulletinDAO.listAllByPanel(panel).forEach(panelBulletinDAO::delete);
+    panelInvitationDAO.listAllByPanel(panel).forEach(panelInvitationDAO::delete);
+  }
+
+  public void schedulerDeleteAfterDeletingQueries(Panel panel) {
+    Folder rootFolder = panel.getRootFolder();
+    panelDAO.updateRootFolder(panel, null, panel.getLastModifier());
+
+    System.out.println("Root folder: " + rootFolder);
+    if (rootFolder != null) {
+      resourceController.deleteResource(rootFolder);
+    }
+    panelUserExpertiseGroupDAO.listAllByPanel(panel).forEach(this::deletePanelUserExpertiseGroup);
+    panelUserDAO.listAllByPanel(panel).forEach(panelUserDAO::delete);
+    panelUserGroupDAO.listAllByPanel(panel).forEach(panelUserGroupDAO::delete);
+    panelUserExpertiseClassDAO.listByPanel(panel).forEach(panelUserExpertiseClassDAO::delete);
+    panelUserIntressClassDAO.listByPanel(panel).forEach(panelUserIntressClassDAO::delete);
+
     List<PanelStamp> stamps = panelStampDAO.listAllByPanel(panel);
     for (PanelStamp panelStamp : stamps) {
-      queryReplyDAO.listAllByStamp(panelStamp).forEach(queryReplyDAO::delete);
+      List<QueryReply> replies = queryReplyDAO.listAllByStamp(panelStamp);
+      for (QueryReply reply : replies) {
+        List<QueryQuestionComment> comments = queryQuestionCommentController.listAllByQuery(reply.getQuery());
+        comments.forEach(queryQuestionCommentController::removeParent);
+        comments.forEach(queryQuestionCommentController::deleteQueryQuestionComment);
+        queryReplyController.deleteQueryReplyAnswers(reply);
+        queryReplyDAO.delete(reply);
+      }
+
       panelStampDAO.delete(panelStamp);
     }
 

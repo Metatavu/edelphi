@@ -178,6 +178,17 @@ public class QueryReplyController {
   }
 
   /**
+   * Returns replies by query
+   *
+   * @param query query
+   * @param maxResults max results
+   * @return replies
+   */
+  public List<QueryReply> listQueryReplies(Query query, int maxResults) {
+    return queryReplyDAO.listByQuery(query, maxResults);
+  }
+
+  /**
    * Returns replies in all stamps of given query
    * 
    * @param query query
@@ -315,6 +326,14 @@ public class QueryReplyController {
   public void deleteQueryPageData(QueryPage queryPage) {
     queryFieldDAO.listAllByQueryPage(queryPage).forEach(this::deleteQueryFieldAnswers);
     queryQuestionCommentDAO.listAllByQueryPage(queryPage).forEach(queryQuestionCommentDAO::delete);
+  }
+
+  /**
+   * Delete reply
+   * @param queryReply query reply
+   */
+  public void deleteReply(QueryReply queryReply) {
+    queryReplyDAO.delete(queryReply);
   }
   
   /**
@@ -498,9 +517,6 @@ public class QueryReplyController {
         }
         List<QueryQuestionMultiOptionAnswer> multiAnswers = queryQuestionMultiOptionAnswerDAO.listAllByQueryField(queryField);
         for (QueryQuestionMultiOptionAnswer multiAnswer : multiAnswers) {
-          multiAnswer.setOptions(Collections.emptySet());
-          queryQuestionMultiOptionAnswerDAO.persist(multiAnswer);
-          multiAnswer.getOptions().forEach(queryOptionFieldOptionDAO::delete);
           queryQuestionMultiOptionAnswerDAO.delete(multiAnswer);
           queryQuestionAnswerDAO.delete(multiAnswer);
         }
@@ -511,5 +527,45 @@ public class QueryReplyController {
         }
         break;
     }
+  }
+
+  /**
+   * Deletes answers from query reply
+   *
+   * @param queryReply query reply
+   */
+  public void deleteQueryReplyAnswers(QueryReply queryReply) {
+    List<QueryQuestionTextAnswer> textAnswers = queryQuestionTextAnswerDAO.listByReply(queryReply);
+    for (QueryQuestionTextAnswer textAnswer : textAnswers) {
+      queryQuestionTextAnswerDAO.delete(textAnswer);
+      queryQuestionAnswerDAO.delete(textAnswer);
+    }
+
+    List<QueryQuestionNumericAnswer> numericAnswers = queryQuestionNumericAnswerDAO.listByReply(queryReply);
+    for (QueryQuestionNumericAnswer numericAnswer : numericAnswers) {
+      queryQuestionNumericAnswerDAO.delete(numericAnswer);
+      queryQuestionAnswerDAO.delete(numericAnswer);
+    }
+
+    List<QueryQuestionOptionGroupOptionAnswer> optionGroupAnswers = queryQuestionOptionGroupOptionAnswerDAO.listByReply(queryReply);
+    for (QueryQuestionOptionGroupOptionAnswer optionGroupAnswer : optionGroupAnswers) {
+      queryQuestionOptionGroupOptionAnswerDAO.delete(optionGroupAnswer);
+    }
+    List<QueryQuestionMultiOptionAnswer> multiAnswers = queryQuestionMultiOptionAnswerDAO.listByReply(queryReply);
+    for (QueryQuestionMultiOptionAnswer multiAnswer : multiAnswers) {
+      multiAnswer.setOptions(Collections.emptySet());
+      queryQuestionMultiOptionAnswerDAO.persist(multiAnswer);
+
+      queryQuestionMultiOptionAnswerDAO.delete(multiAnswer);
+      queryQuestionAnswerDAO.delete(multiAnswer);
+    }
+
+    List<QueryQuestionOptionAnswer> optionAnswers = queryQuestionOptionAnswerDAO.listByReply(queryReply);
+    for (QueryQuestionOptionAnswer optionAnswer : optionAnswers) {
+      queryQuestionOptionAnswerDAO.delete(optionAnswer);
+      queryQuestionAnswerDAO.delete(optionAnswer);
+    }
+
+    queryQuestionAnswerDAO.listByReply(queryReply).forEach(queryQuestionAnswerDAO::delete);
   }
 }

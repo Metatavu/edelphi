@@ -8,6 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import fi.metatavu.edelphi.comments.QueryQuestionCommentController;
 import fi.metatavu.edelphi.dao.querydata.*;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingDAO;
@@ -92,6 +93,9 @@ public class QueryController {
   @Inject
   private QueryQuestionCommentCategoryDAO queryQuestionCommentCategoryDAO;
 
+  @Inject
+  private QueryQuestionCommentController queryQuestionCommentController;
+
   /**
    * Creates new query
    * 
@@ -131,7 +135,7 @@ public class QueryController {
       queryPageDAO.listAllByQuerySection(querySection).forEach(this::deleteQueryPage);
       querySectionDAO.delete(querySection);
     });
-    System.out.println("Query ID: " + query.getId());
+
     queryReplyDAO.listAllByQuery(query).forEach(queryReplyDAO::delete);
     queryQuestionCommentCategoryDAO.listByQuery(query).forEach(queryQuestionCommentCategoryDAO::delete);
     queryDAO.delete(query);
@@ -259,6 +263,17 @@ public class QueryController {
   public List<Query> listPanelQueries(Panel panel) {
     return queryDAO.listByFolderAndArchived(panel.getRootFolder(), Boolean.FALSE);
   }
+
+  /**
+   * Lists queries in a panel
+   *
+   * @param panel panel
+   * @return list of panel queries
+   */
+  public List<Query> listAllPanelQueries(Panel panel) {
+    return queryDAO.listByFolder(panel.getRootFolder());
+  }
+
 
   /**
    * Lists query pages by query

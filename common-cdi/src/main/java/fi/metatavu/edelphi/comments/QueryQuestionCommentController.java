@@ -61,7 +61,25 @@ public class QueryQuestionCommentController {
   public QueryQuestionComment findQueryQuestionCommentById(Long id) {
     return queryQuestionCommentDAO.findById(id);
   }
-  
+
+  /**
+   * List all query question comments by reply
+   *
+   * @param reply reply
+   */
+  public List<QueryQuestionComment> listAllByReply(QueryReply reply) {
+    return queryQuestionCommentDAO.listAllByReply(reply);
+  }
+
+  /**
+   * List all query question comments by query
+   *
+   * @param query query
+   */
+  public List<QueryQuestionComment> listAllByQuery(Query query) {
+    return queryQuestionCommentDAO.listAllByQuery(query);
+  }
+
   /**
    * Lists not archived comments by given parameters.
    * 
@@ -259,5 +277,10 @@ public class QueryQuestionCommentController {
     }
     
     return queryController.isPanelsQuery(category.getQuery(), panel);
+  }
+
+  public void removeParent(QueryQuestionComment queryQuestionComment) {
+    queryQuestionComment.setParentComment(null);
+    queryQuestionCommentDAO.persist(queryQuestionComment);
   }
 }

@@ -386,7 +386,7 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
    * Lists all comments by query page (including archived)
    *
    * @param queryPage query page
-   * @return
+   * @return comments
    */
   public List<QueryQuestionComment> listAllByQueryPage(QueryPage queryPage) {
     EntityManager entityManager = getEntityManager();
@@ -398,6 +398,43 @@ public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
     criteria.where(criteriaBuilder.equal(root.get(QueryQuestionComment_.queryPage), queryPage));
 
     return entityManager.createQuery(criteria).getResultList(); 
+  }
+
+  /**
+   * Lists all comments by query reply (including archived)
+   *
+   * @param queryReply query reply
+   * @return comments
+   */
+  public List<QueryQuestionComment> listAllByReply(QueryReply queryReply) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryQuestionComment> criteria = criteriaBuilder.createQuery(QueryQuestionComment.class);
+    Root<QueryQuestionComment> root = criteria.from(QueryQuestionComment.class);
+    criteria.select(root);
+    criteria.where(criteriaBuilder.equal(root.get(QueryQuestionComment_.queryReply), queryReply));
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  /**
+   * Lists all comments by query (including archived)
+   *
+   * @param query query
+   * @return comments
+   */
+  public List<QueryQuestionComment> listAllByQuery(Query query) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryQuestionComment> criteria = criteriaBuilder.createQuery(QueryQuestionComment.class);
+    Root<QueryQuestionComment> root = criteria.from(QueryQuestionComment.class);
+    Join<QueryQuestionComment, QueryReply> qqJoin = root.join(QueryQuestionComment_.queryReply);
+    criteria.select(root);
+    criteria.where(criteriaBuilder.equal(qqJoin.get(QueryReply_.query), query));
+
+    return entityManager.createQuery(criteria).getResultList();
   }
 
   public List<QueryQuestionComment> listRootCommentsByQueryPageAndStampOrderByCreated(QueryPage queryPage, PanelStamp panelStamp) {
