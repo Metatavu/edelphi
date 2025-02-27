@@ -221,18 +221,13 @@ public class UserController {
     if (authSource == null) {
       logger.error("Could not find Keycloak auth source");
     }
-    
-    return userIdentificationDAO.findUserByAuthSourceAndExternalId(userId.toString(), authSource);
-  }
 
-  /**
-   * Finds user by id
-   * 
-   * @param id id
-   * @return user id
-   */
-  public User findUserById(Long id) {
-    return userDAO.findById(id);
+    User user = userIdentificationDAO.findUserByAuthSourceAndExternalId(userId.toString(), authSource);
+    if (user != null && user.getArchived()) {
+      return null;
+    }
+
+    return user;
   }
 
   /**
@@ -304,17 +299,34 @@ public class UserController {
     return userDAO.listUsersToArchive(before, maxResults, excludeRole);
   }
 
+  /**
+   * List users to delete
+   *
+   * @param waitDays wait this amount of days before deleting archived users
+   * @param maxResults max results
+   * @return users to delete
+   */
   public List<User> listUsersToDelete(int waitDays, int maxResults) {
     Date before = Date.from(OffsetDateTime.now().minusDays(waitDays).toInstant());
     return userDAO.listUsersToDelete(before, maxResults);
   }
 
+  /**
+   * Archive user
+   *
+   * @param user user to archive
+   */
   public void archiveUser(User user) {
     delfoiUserDAO.listByUser(user).forEach(delfoiUserDAO::archive);
     user.setArchived(true);
     userDAO.persist(user);
   }
 
+  /**
+   * Delete user
+   *
+   * @param user user to delete
+   */
   public void deleteUser(User user) {
     clearUserCreationsAndModifications.clearUserModifiedEntities(user);
 

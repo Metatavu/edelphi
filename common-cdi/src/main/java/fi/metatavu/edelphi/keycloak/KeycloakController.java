@@ -147,6 +147,12 @@ public class KeycloakController {
     return exchangeImpersonationCookiesToToken(serverUrl, realm, impersonateClientId, userId, impersonateRedirectUrl, cookies);
   }
 
+  /**
+   * Delete user from Keycloak
+   *
+   * @param userId user id
+   * @throws KeycloakException
+   */
   public void deleteUser(String userId) throws KeycloakException {
     Map<String, String> settings = getKeycloakSettings();
     UsersApi usersApi = getUsersApi(settings);
@@ -190,6 +196,14 @@ public class KeycloakController {
       return findUser(usersApi, realm, email);
   }
 
+  /**
+   * Delete user from Keycloak
+   *
+   * @param usersApi users api
+   * @param realm realm
+   * @param userId user id
+   * @throws KeycloakException
+   */
   private void deleteUser(UsersApi usersApi, String realm, String userId) throws KeycloakException {
     try {
       usersApi.adminRealmsRealmUsersUserIdDelete(realm, userId);

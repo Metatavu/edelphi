@@ -15,7 +15,7 @@ public class ScheduledUserArchiving {
     @Inject
     private UserController userController;
 
-    @Schedule (hour = "*", minute = "*", second = "*/30", info = "Every 5 seconds timer")
+    @Schedule (hour = "*", minute = "*", second = "*/1", info = "Every 5 seconds timer")
     public void archive() {
         List<User> users = userController.listUsersToArchive(0, 100000);
         System.out.println("Users to archive: " + users.size());

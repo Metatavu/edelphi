@@ -229,4 +229,14 @@ public class PanelDAO extends GenericDAO<Panel> implements UserCreatedEntityDAO<
     return entityManager.createQuery(criteria).getResultList();
   }
 
+  @Override
+  public Panel findById(Long id) {
+    Panel foundPanel = super.findById(id);
+
+    if (foundPanel != null && foundPanel.getArchived()) {
+      return null;
+    }
+
+    return foundPanel;
+  }
 }

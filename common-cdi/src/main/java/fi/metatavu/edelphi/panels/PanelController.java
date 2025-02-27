@@ -78,9 +78,6 @@ public class PanelController {
   private PanelExpertiseGroupUserDAO panelExpertiseGroupUserDAO;
 
   @Inject
-  private QueryController queryController;
-
-  @Inject
   private QueryReplyDAO queryReplyDAO;
 
   @Inject
@@ -107,7 +104,12 @@ public class PanelController {
    * @return panel or null if not found
    */
   public Panel findPanelById(Long id) {
-    return panelDAO.findById(id);
+    Panel panel = panelDAO.findById(id);
+    if (panel != null && panel.getArchived()) {
+      return null;
+    }
+
+    return panel;
   }
 
   /**
@@ -136,7 +138,7 @@ public class PanelController {
   }
 
   /**
-   * Delete query dependencies
+   * Scheduler deletes these before deleting queries
    *
    * @param panel panel
    */
@@ -147,6 +149,11 @@ public class PanelController {
     panelInvitationDAO.listAllByPanel(panel).forEach(panelInvitationDAO::delete);
   }
 
+  /**
+   * After panel queries have been deleted, the scheduler will delete remainder of panel dependencies and the panel itself
+   *
+   * @param panel panel
+   */
   public void schedulerDeleteAfterDeletingQueries(Panel panel) {
     Folder rootFolder = panel.getRootFolder();
     panelDAO.updateRootFolder(panel, null, panel.getLastModifier());

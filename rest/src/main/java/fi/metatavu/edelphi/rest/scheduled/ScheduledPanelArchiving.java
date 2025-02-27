@@ -16,7 +16,7 @@ public class ScheduledPanelArchiving {
     @Inject
     private PanelController panelController;
 
-    @Schedule (hour = "*", minute = "*", second = "*/30", info = "Every 5 seconds timer")
+    @Schedule (hour = "*", minute = "*", second = "*/1", info = "Every 5 seconds timer")
     public void archive() {
         List<Panel> panels =  panelController.listPanelsToArchive(PanelState.ENDED, 0, 1000);
 

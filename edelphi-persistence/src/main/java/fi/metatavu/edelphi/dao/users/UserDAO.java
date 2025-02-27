@@ -2,18 +2,16 @@ package fi.metatavu.edelphi.dao.users;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 
 import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
-import fi.metatavu.edelphi.domainmodel.panels.Panel;
-import fi.metatavu.edelphi.domainmodel.resources.Resource;
+import fi.metatavu.edelphi.domainmodel.base.DelfoiUser;
+import fi.metatavu.edelphi.domainmodel.panels.PanelUser;
 import fi.metatavu.edelphi.domainmodel.users.UserRole;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -28,6 +26,8 @@ import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.domainmodel.users.User_;
+import fi.metatavu.edelphi.domainmodel.panels.PanelUser_;
+import fi.metatavu.edelphi.domainmodel.base.DelfoiUser_;
 import fi.metatavu.edelphi.search.SearchResult;
 
 @ApplicationScoped
@@ -254,16 +254,32 @@ public class UserDAO extends GenericDAO<User> implements UserCreatedEntityDAO<Us
 
   public List<User> listUsersToArchive(Date before, int maxResults, UserRole excludedRole) {
     EntityManager entityManager = getEntityManager();
-    String jpql = "SELECT u FROM User u " +
-      "LEFT JOIN PanelUser p ON p.user = u " +
-      "WHERE p.user IS NULL " +
-      "AND u.lastLogin < :before " +
-      "AND u.archived = false " +
-      "AND NOT EXISTS (SELECT d FROM DelfoiUser d WHERE d.user = u AND d.role = :excludedRole)";
-    TypedQuery<User> query = entityManager.createQuery(jpql, User.class);
-    query.setParameter("before", before);
-    query.setParameter("excludedRole", excludedRole);
-    return query.setMaxResults(maxResults).getResultList();
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<User> criteria = criteriaBuilder.createQuery(User.class);
+    Root<User> user = criteria.from(User.class);
+    Subquery<Long> subquery = criteria.subquery(Long.class);
+    Root<DelfoiUser> delfoiUser = subquery.from(DelfoiUser.class);
+    subquery.select(delfoiUser.get(DelfoiUser_.id))
+      .where(criteriaBuilder.and(
+        criteriaBuilder.equal(delfoiUser.get(DelfoiUser_.user), user),
+        criteriaBuilder.equal(delfoiUser.get(DelfoiUser_.role), excludedRole)
+      ));
+
+    Subquery<Long> panelUserSubquery = criteria.subquery(Long.class);
+    Root<PanelUser> panelUser = panelUserSubquery.from(PanelUser.class);
+    panelUserSubquery.select(panelUser.get(PanelUser_.id))
+      .where(criteriaBuilder.equal(panelUser.get(PanelUser_.user), user));
+
+    criteria.select(user)
+      .distinct(true)
+      .where(criteriaBuilder.and(
+        criteriaBuilder.not(criteriaBuilder.exists(panelUserSubquery)),
+        criteriaBuilder.lessThan(user.get(User_.lastLogin), before),
+        criteriaBuilder.isFalse(user.get(User_.archived)),
+        criteriaBuilder.not(criteriaBuilder.exists(subquery))
+      ));
+
+    return entityManager.createQuery(criteria).setMaxResults(maxResults).getResultList();
   }
 
   public List<User> listUsersToDelete(Date before, int maxResults) {
@@ -309,5 +325,16 @@ public class UserDAO extends GenericDAO<User> implements UserCreatedEntityDAO<Us
     );
 
     return entityManager.createQuery(criteria).getResultList();
+  }
+
+  @Override
+  public User findById(Long id) {
+    User foundUser = super.findById(id);
+
+    if (foundUser != null && foundUser.getArchived()) {
+      return null;
+    }
+
+    return foundUser;
   }
 }

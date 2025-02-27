@@ -63,18 +63,10 @@ public class QueryQuestionCommentController {
   }
 
   /**
-   * List all query question comments by reply
-   *
-   * @param reply reply
-   */
-  public List<QueryQuestionComment> listAllByReply(QueryReply reply) {
-    return queryQuestionCommentDAO.listAllByReply(reply);
-  }
-
-  /**
    * List all query question comments by query
    *
    * @param query query
+   * @return query question comments
    */
   public List<QueryQuestionComment> listAllByQuery(Query query) {
     return queryQuestionCommentDAO.listAllByQuery(query);
@@ -279,6 +271,11 @@ public class QueryQuestionCommentController {
     return queryController.isPanelsQuery(category.getQuery(), panel);
   }
 
+  /**
+   * Remove comment parent
+   *
+   * @param queryQuestionComment comment
+   */
   public void removeParent(QueryQuestionComment queryQuestionComment) {
     queryQuestionComment.setParentComment(null);
     queryQuestionCommentDAO.persist(queryQuestionComment);

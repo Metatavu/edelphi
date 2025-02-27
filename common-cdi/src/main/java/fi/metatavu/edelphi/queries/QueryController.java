@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import fi.metatavu.edelphi.comments.QueryQuestionCommentController;
 import fi.metatavu.edelphi.dao.querydata.*;
@@ -65,24 +64,6 @@ public class QueryController {
 
   @Inject
   private QueryFieldDAO queryFieldDAO;
-
-  @Inject
-  private QueryQuestionAnswerDAO queryQuestionAnswerDAO;
-
-  @Inject
-  private QueryQuestionTextAnswerDAO queryQuestionTextAnswerDAO;
-
-  @Inject
-  private QueryQuestionNumericAnswerDAO queryQuestionNumericAnswerDAO;
-
-  @Inject
-  private QueryQuestionOptionGroupOptionAnswerDAO queryQuestionOptionGroupOptionAnswerDAO;
-
-  @Inject
-  private QueryQuestionMultiOptionAnswerDAO queryQuestionMultiOptionAnswerDAO;
-
-  @Inject
-  private QueryQuestionOptionAnswerDAO queryQuestionOptionAnswerDAO;
 
   @Inject
   private QueryOptionFieldOptionDAO queryOptionFieldOptionDAO;

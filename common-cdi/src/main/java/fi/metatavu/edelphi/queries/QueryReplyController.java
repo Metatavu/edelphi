@@ -11,9 +11,6 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import fi.metatavu.edelphi.dao.querylayout.QuerySectionDAO;
-import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldOptionDAO;
-import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
@@ -98,12 +95,6 @@ public class QueryReplyController {
   
   @Inject
   private QueryQuestionOptionGroupOptionAnswerDAO queryQuestionOptionGroupOptionAnswerDAO;
-
-  @Inject
-  private QuerySectionDAO querySectionDAO;
-
-  @Inject
-  private QueryOptionFieldOptionDAO queryOptionFieldOptionDAO;
 
   /**
    * Copy query reply into new query

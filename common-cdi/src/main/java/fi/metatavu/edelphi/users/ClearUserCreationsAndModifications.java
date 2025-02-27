@@ -77,8 +77,16 @@ public class ClearUserCreationsAndModifications {
   @Inject
   private ResourceLockDAO resourceLockDAO;
 
+  private static final long ADMIN_USER_ID = 1;
+
+  /**
+   * Clear all creator and lastModifier fields where this user is used.
+   * The fields are set to the main admin user.
+   *
+   * @param user user whose fields to reset
+   */
   public void clearUserModifiedEntities(User user) {
-    User resetUser = userDAO.findById(1L);
+    User resetUser = userDAO.findById(ADMIN_USER_ID);
 
     clearUserModifiedEntities(user, panelUserDAO, resetUser);
     clearUserModifiedEntities(user, panelBulletinDAO, resetUser);
@@ -100,6 +108,15 @@ public class ClearUserCreationsAndModifications {
     clearUserModifiedEntities(user, userDAO, resetUser);
   }
 
+  /**
+   * Clears for the given entity creator and lastModifier fields where this user is used.
+   * Sets the creator and lastModifier fields to the user given in resetUser parameter.
+   *
+   * @param user user whose fields to reset
+   * @param dao DAO of the entity type to clear
+   * @param resetUser new value
+   * @param <T> type of the entity to clear
+   */
   private <T> void clearUserModifiedEntities(User user, UserCreatedEntityDAO<T> dao, User resetUser) {
     List<UserCreatedEntity> createdByUser = (List<UserCreatedEntity>) dao.listAllByCreator(user);
 
