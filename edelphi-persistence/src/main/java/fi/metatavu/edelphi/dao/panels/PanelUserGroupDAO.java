@@ -10,6 +10,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
+import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUser;
@@ -18,7 +19,7 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelUserGroup_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
-public class PanelUserGroupDAO extends GenericDAO<PanelUserGroup> {
+public class PanelUserGroupDAO extends GenericDAO<PanelUserGroup> implements UserCreatedEntityDAO<PanelUserGroup> {
 
   public PanelUserGroup create(Panel panel, String name, List<User> users, PanelStamp stamp, User creator) {
     Date now = new Date();
@@ -98,5 +99,46 @@ public class PanelUserGroupDAO extends GenericDAO<PanelUserGroup> {
     getEntityManager().persist(panelUserGroup);
     return panelUserGroup;
   }
-  
+
+  public List<PanelUserGroup> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelUserGroup> criteria = criteriaBuilder.createQuery(PanelUserGroup.class);
+    Root<PanelUserGroup> root = criteria.from(PanelUserGroup.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(PanelUserGroup_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<PanelUserGroup> listAllByModifier(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelUserGroup> criteria = criteriaBuilder.createQuery(PanelUserGroup.class);
+    Root<PanelUserGroup> root = criteria.from(PanelUserGroup.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(PanelUserGroup_.lastModifier), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<PanelUserGroup> listUserPanelGroups(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelUserGroup> criteria = criteriaBuilder.createQuery(PanelUserGroup.class);
+    Root<PanelUserGroup> root = criteria.from(PanelUserGroup.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.isMember(user, root.get(PanelUserGroup_.users))
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
 }

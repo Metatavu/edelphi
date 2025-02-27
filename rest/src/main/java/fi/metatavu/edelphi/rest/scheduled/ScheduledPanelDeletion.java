@@ -34,7 +34,7 @@ public class ScheduledPanelDeletion {
     @Inject
     private ResourceController resourceController;
 
-    @Schedule (hour = "*", minute = "*", second = "*/1", info = "Every 5 seconds timer")
+    @Schedule (hour = "*", minute = "*", second = "*/30", info = "Every 5 seconds timer")
     public void delete() throws InterruptedException {
         List<Panel> panels = panelController.listPanelsToDelete(0, 1000);
 
@@ -54,7 +54,6 @@ public class ScheduledPanelDeletion {
 
                 List<QueryReply> replies = queryReplyController.listQueryReplies(query, 100);
                 if (!replies.isEmpty()) {
-                    System.out.println("Deleting replies: " + replies.size());
                     replies.forEach(queryReplyController::deleteQueryReplyAnswers);
 
                     replies.forEach(queryReplyController::deleteReply);

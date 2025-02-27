@@ -10,13 +10,15 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
+import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
+import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageTemplate;
 import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection;
 import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection_;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
-public class QuerySectionDAO extends GenericDAO<QuerySection> {
+public class QuerySectionDAO extends GenericDAO<QuerySection> implements UserCreatedEntityDAO<QuerySection> {
 
   public QuerySection create(User creator, Query query, String title, Integer sectionNumber, Boolean visible, Boolean commentable, Boolean viewDiscussions) {
     Date now = new Date();
@@ -132,5 +134,32 @@ public class QuerySectionDAO extends GenericDAO<QuerySection> {
     
     return querySection;
   }
-  
+
+  public List<QuerySection> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QuerySection> criteria = criteriaBuilder.createQuery(QuerySection.class);
+    Root<QuerySection> root = criteria.from(QuerySection.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(QuerySection_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<QuerySection> listAllByModifier(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QuerySection> criteria = criteriaBuilder.createQuery(QuerySection.class);
+    Root<QuerySection> root = criteria.from(QuerySection.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(QuerySection_.lastModifier), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
 }

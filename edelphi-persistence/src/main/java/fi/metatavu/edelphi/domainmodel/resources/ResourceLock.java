@@ -13,10 +13,11 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
+import fi.metatavu.edelphi.domainmodel.base.UserCreatedEntity;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @Entity
-public class ResourceLock {
+public class ResourceLock extends UserCreatedEntity {
   
   /**
    * Returns internal unique id
@@ -50,6 +51,9 @@ public class ResourceLock {
   public Date getCreated() {
     return created;
   }
+
+  // Only for the abstract class
+  public void setLastModifier(User creator) {}
 
   public void setCreator(User creator) {
     this.creator = creator;

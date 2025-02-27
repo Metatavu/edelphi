@@ -151,7 +151,6 @@ public class PanelController {
     Folder rootFolder = panel.getRootFolder();
     panelDAO.updateRootFolder(panel, null, panel.getLastModifier());
 
-    System.out.println("Root folder: " + rootFolder);
     if (rootFolder != null) {
       resourceController.deleteResource(rootFolder);
     }

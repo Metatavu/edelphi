@@ -12,6 +12,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
+import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
+import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.resources.Folder;
 import fi.metatavu.edelphi.domainmodel.resources.Resource;
 import fi.metatavu.edelphi.domainmodel.resources.ResourceType;
@@ -19,7 +21,7 @@ import fi.metatavu.edelphi.domainmodel.resources.Resource_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
-public class ResourceDAO extends GenericDAO<Resource> {
+public class ResourceDAO extends GenericDAO<Resource> implements UserCreatedEntityDAO<Resource> {
   
   public Resource findByUrlNameAndParentFolder(String urlName, Folder parentFolder) {
     EntityManager entityManager = getEntityManager(); 
@@ -241,6 +243,34 @@ public class ResourceDAO extends GenericDAO<Resource> {
     );
     
     return entityManager.createQuery(criteria).getSingleResult();
+  }
+
+  public List<Resource> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Resource> criteria = criteriaBuilder.createQuery(Resource.class);
+    Root<Resource> root = criteria.from(Resource.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(Resource_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<Resource> listAllByModifier(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Resource> criteria = criteriaBuilder.createQuery(Resource.class);
+    Root<Resource> root = criteria.from(Resource.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(Resource_.lastModifier), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
   }
   
 }

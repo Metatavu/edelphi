@@ -13,6 +13,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
+import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageType;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage_;
@@ -24,7 +26,7 @@ import fi.metatavu.edelphi.domainmodel.resources.Query_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
-public class QueryPageDAO extends GenericDAO<QueryPage> {
+public class QueryPageDAO extends GenericDAO<QueryPage> implements UserCreatedEntityDAO<QueryPage> {
 
   public QueryPage create(User creator, QuerySection querySection, QueryPageType pageType, Integer pageNumber, String title, Boolean visible) {
     Date now = new Date();
@@ -306,4 +308,31 @@ public class QueryPageDAO extends GenericDAO<QueryPage> {
     return entityManager.createQuery(criteria).getResultList();
   }
 
+  public List<QueryPage> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryPage> criteria = criteriaBuilder.createQuery(QueryPage.class);
+    Root<QueryPage> root = criteria.from(QueryPage.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(QueryPage_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<QueryPage> listAllByModifier(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryPage> criteria = criteriaBuilder.createQuery(QueryPage.class);
+    Root<QueryPage> root = criteria.from(QueryPage.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(QueryPage_.lastModifier), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
 }

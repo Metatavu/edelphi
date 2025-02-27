@@ -9,13 +9,14 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
+import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelBulletin;
 import fi.metatavu.edelphi.domainmodel.panels.PanelBulletin_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
-public class PanelBulletinDAO extends GenericDAO<PanelBulletin> {
+public class PanelBulletinDAO extends GenericDAO<PanelBulletin> implements UserCreatedEntityDAO<PanelBulletin> {
   
   public PanelBulletin create(Panel panel, String title, String message, User creator, Boolean important, Date importantEnds) {
     
@@ -103,5 +104,35 @@ public class PanelBulletinDAO extends GenericDAO<PanelBulletin> {
   public PanelBulletin updateImportantEnds(PanelBulletin bulletin, Date importantEnds) {
     bulletin.setImportantEnds(importantEnds);
     return persist(bulletin);
+  }
+
+  @Override
+  public List<PanelBulletin> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelBulletin> criteria = criteriaBuilder.createQuery(PanelBulletin.class);
+    Root<PanelBulletin> root = criteria.from(PanelBulletin.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(PanelBulletin_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  @Override
+  public List<PanelBulletin> listAllByModifier(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelBulletin> criteria = criteriaBuilder.createQuery(PanelBulletin.class);
+    Root<PanelBulletin> root = criteria.from(PanelBulletin.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(PanelBulletin_.lastModifier), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
   }
 }

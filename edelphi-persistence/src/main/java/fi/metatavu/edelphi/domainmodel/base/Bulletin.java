@@ -24,7 +24,7 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 
 @Entity
 @Inheritance(strategy=InheritanceType.JOINED)
-public class Bulletin implements ArchivableEntity, ModificationTrackedEntity {
+public class Bulletin extends UserCreatedEntity implements ArchivableEntity, ModificationTrackedEntity {
   
   @Id 
   @GeneratedValue(strategy = GenerationType.IDENTITY)

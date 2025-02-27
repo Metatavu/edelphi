@@ -12,6 +12,8 @@ import fi.metatavu.edelphi.domainmodel.users.UserSetting;
 import fi.metatavu.edelphi.domainmodel.users.UserSettingKey;
 import fi.metatavu.edelphi.domainmodel.users.UserSetting_;
 
+import java.util.List;
+
 @ApplicationScoped
 public class UserSettingDAO extends GenericDAO<UserSetting> {
   
@@ -39,6 +41,20 @@ public class UserSettingDAO extends GenericDAO<UserSetting> {
     );
     
     return getSingleResult(entityManager.createQuery(criteria));
+  }
+
+  public List<UserSetting> listByUser(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<UserSetting> criteria = criteriaBuilder.createQuery(UserSetting.class);
+    Root<UserSetting> root = criteria.from(UserSetting.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(UserSetting_.user), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
   }
   
   public UserSetting updateValue(UserSetting userSetting, String value) {

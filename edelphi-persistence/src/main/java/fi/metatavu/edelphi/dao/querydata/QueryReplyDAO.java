@@ -11,15 +11,17 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
+import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply_;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
-public class QueryReplyDAO extends GenericDAO<QueryReply> {
+public class QueryReplyDAO extends GenericDAO<QueryReply> implements UserCreatedEntityDAO<QueryReply> {
 
   public QueryReply create(User user, Query query, PanelStamp panelStamp, User creator) {
     Date now = new Date();
@@ -154,6 +156,22 @@ public class QueryReplyDAO extends GenericDAO<QueryReply> {
     return entityManager.createQuery(criteria).getResultList();
   }
 
+  public List<QueryReply> listAllByUser(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryReply> criteria = criteriaBuilder.createQuery(QueryReply.class);
+    Root<QueryReply> root = criteria.from(QueryReply.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.and(
+        criteriaBuilder.equal(root.get(QueryReply_.user), user)
+      )
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
   /**
    * Lists all query replies by query (including archived)
    *
@@ -229,5 +247,32 @@ public class QueryReplyDAO extends GenericDAO<QueryReply> {
     getEntityManager().persist(queryReply);
     return queryReply;
   }
-  
+
+  public List<QueryReply> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryReply> criteria = criteriaBuilder.createQuery(QueryReply.class);
+    Root<QueryReply> root = criteria.from(QueryReply.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(QueryReply_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<QueryReply> listAllByModifier(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryReply> criteria = criteriaBuilder.createQuery(QueryReply.class);
+    Root<QueryReply> root = criteria.from(QueryReply.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(QueryReply_.lastModifier), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
 }

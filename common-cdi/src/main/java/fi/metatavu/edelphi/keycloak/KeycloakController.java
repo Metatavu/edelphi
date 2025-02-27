@@ -147,6 +147,13 @@ public class KeycloakController {
     return exchangeImpersonationCookiesToToken(serverUrl, realm, impersonateClientId, userId, impersonateRedirectUrl, cookies);
   }
 
+  public void deleteUser(String userId) throws KeycloakException {
+    Map<String, String> settings = getKeycloakSettings();
+    UsersApi usersApi = getUsersApi(settings);
+    String realm = getRealm(settings);
+    deleteUser(usersApi, realm, userId);
+  }
+
   /**
    * Creates user into Keycloak
    * 
@@ -181,6 +188,14 @@ public class KeycloakController {
       }
 
       return findUser(usersApi, realm, email);
+  }
+
+  private void deleteUser(UsersApi usersApi, String realm, String userId) throws KeycloakException {
+    try {
+      usersApi.adminRealmsRealmUsersUserIdDelete(realm, userId);
+    } catch (ApiException e) {
+      throw new KeycloakException(e);
+    }
   }
 
   /**
@@ -379,7 +394,7 @@ public class KeycloakController {
    * 
    * @return Keycloak auth source
    */
-  private AuthSource getKeycloakAuthSource() {
+  public AuthSource getKeycloakAuthSource() {
     AuthSource authSource = authSourceDAO.findByStrategy(KEYCLOAK_AUTH_SOURCE);
     
     if (authSource == null) {

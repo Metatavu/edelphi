@@ -10,6 +10,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
+import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiUser;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiUser_;
@@ -17,7 +18,7 @@ import fi.metatavu.edelphi.domainmodel.users.DelfoiUserRole;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
-public class DelfoiUserDAO extends GenericDAO<DelfoiUser> {
+public class DelfoiUserDAO extends GenericDAO<DelfoiUser> implements UserCreatedEntityDAO<DelfoiUser> {
 
   public DelfoiUser create(Delfoi delfoi, User user, DelfoiUserRole role, User creator) {
     EntityManager entityManager = getEntityManager(); 
@@ -57,19 +58,44 @@ public class DelfoiUserDAO extends GenericDAO<DelfoiUser> {
   }
 
   public List<DelfoiUser> listByUser(User user) {
-    EntityManager entityManager = getEntityManager(); 
-    
+    EntityManager entityManager = getEntityManager();
+
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
     CriteriaQuery<DelfoiUser> criteria = criteriaBuilder.createQuery(DelfoiUser.class);
     Root<DelfoiUser> root = criteria.from(DelfoiUser.class);
     criteria.select(root);
     criteria.where(
-      criteriaBuilder.and(
-          criteriaBuilder.equal(root.get(DelfoiUser_.user), user), 
-          criteriaBuilder.equal(root.get(DelfoiUser_.archived), Boolean.FALSE)
-        )
+      criteriaBuilder.equal(root.get(DelfoiUser_.user), user)
     );
-    
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<DelfoiUser> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<DelfoiUser> criteria = criteriaBuilder.createQuery(DelfoiUser.class);
+    Root<DelfoiUser> root = criteria.from(DelfoiUser.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(DelfoiUser_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<DelfoiUser> listAllByModifier(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<DelfoiUser> criteria = criteriaBuilder.createQuery(DelfoiUser.class);
+    Root<DelfoiUser> root = criteria.from(DelfoiUser.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(DelfoiUser_.lastModifier), user)
+    );
+
     return entityManager.createQuery(criteria).getResultList();
   }
 

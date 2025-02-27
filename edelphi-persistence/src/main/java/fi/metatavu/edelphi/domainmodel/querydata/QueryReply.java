@@ -16,13 +16,14 @@ import javax.validation.constraints.NotNull;
 
 import fi.metatavu.edelphi.domainmodel.base.ArchivableEntity;
 import fi.metatavu.edelphi.domainmodel.base.ModificationTrackedEntity;
+import fi.metatavu.edelphi.domainmodel.base.UserCreatedEntity;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @Entity
 @Cacheable
-public class QueryReply implements ArchivableEntity, ModificationTrackedEntity {
+public class QueryReply extends UserCreatedEntity implements ArchivableEntity, ModificationTrackedEntity {
 
   /**
    * Returns internal unique id

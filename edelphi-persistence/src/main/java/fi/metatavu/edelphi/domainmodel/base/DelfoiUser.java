@@ -17,7 +17,7 @@ import fi.metatavu.edelphi.domainmodel.users.DelfoiUserRole;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @Entity
-public class DelfoiUser implements ArchivableEntity, ModificationTrackedEntity {
+public class DelfoiUser extends UserCreatedEntity implements ArchivableEntity, ModificationTrackedEntity {
 
   /**
    * Returns internal unique id

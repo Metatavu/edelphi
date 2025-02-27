@@ -14,6 +14,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
+import fi.metatavu.edelphi.domainmodel.base.UserCreatedEntity;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import fi.metatavu.edelphi.domainmodel.base.ArchivableEntity;
@@ -23,7 +24,7 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 
 @Entity
 @Cacheable
-public class QuerySection implements ArchivableEntity, ModificationTrackedEntity{
+public class QuerySection extends UserCreatedEntity implements ArchivableEntity, ModificationTrackedEntity{
   
   public Long getId() {
     return id;

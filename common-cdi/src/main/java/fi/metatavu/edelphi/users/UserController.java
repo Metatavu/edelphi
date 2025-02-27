@@ -1,5 +1,7 @@
 package fi.metatavu.edelphi.users;
 
+import java.time.OffsetDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -8,8 +10,16 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import fi.metatavu.edelphi.batch.i18n.BatchMessages;
+import fi.metatavu.edelphi.dao.panels.*;
+import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
+import fi.metatavu.edelphi.dao.resources.ResourceDAO;
+import fi.metatavu.edelphi.dao.users.*;
+import fi.metatavu.edelphi.domainmodel.base.*;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
+import fi.metatavu.edelphi.domainmodel.panels.PanelUser;
+import fi.metatavu.edelphi.domainmodel.panels.PanelUserGroup;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.*;
@@ -22,16 +32,6 @@ import org.slf4j.Logger;
 
 import fi.metatavu.edelphi.Defaults;
 import fi.metatavu.edelphi.dao.base.AuthSourceDAO;
-import fi.metatavu.edelphi.dao.users.DelfoiUserDAO;
-import fi.metatavu.edelphi.dao.users.UserDAO;
-import fi.metatavu.edelphi.dao.users.UserEmailDAO;
-import fi.metatavu.edelphi.dao.users.UserIdentificationDAO;
-import fi.metatavu.edelphi.dao.users.UserPictureDAO;
-import fi.metatavu.edelphi.dao.users.UserSettingDAO;
-import fi.metatavu.edelphi.domainmodel.base.AuthSource;
-import fi.metatavu.edelphi.domainmodel.base.Delfoi;
-import fi.metatavu.edelphi.domainmodel.base.DelfoiDefaults;
-import fi.metatavu.edelphi.domainmodel.base.DelfoiUser;
 import fi.metatavu.edelphi.keycloak.KeycloakController;
 import fi.metatavu.edelphi.keycloak.KeycloakException;
 import fi.metatavu.edelphi.settings.SettingsController;
@@ -68,6 +68,36 @@ public class UserController {
   private UserDAO userDAO;
 
   @Inject
+  private PanelUserDAO panelUserDAO;
+
+  @Inject
+  private PanelDAO panelDAO;
+
+  @Inject
+  private ResourceDAO resourceDAO;
+
+  @Inject
+  private PanelStampDAO panelStampDAO;
+
+  @Inject
+  private PanelExpertiseGroupUserDAO panelExpertiseGroupUserDAO;
+
+  @Inject
+  private PanelUserGroupDAO panelUserGroupDAO;
+
+  @Inject
+  private UserRoleDAO userRoleDAO;
+
+  @Inject
+  private UserActivationDAO userActivationDAO;
+
+  @Inject
+  private UserPasswordDAO userPasswordDAO;
+
+  @Inject
+  private UserNotificationDAO userNotificationDAO;
+
+  @Inject
   private UserEmailDAO userEmailDAO;
 
   @Inject
@@ -84,7 +114,18 @@ public class UserController {
 
   @Inject
   private BatchMessages batchMessages;
-  
+
+  @Inject
+  private BulletinReadDAO bulletinReadDAO;
+
+  @Inject
+  private QueryReplyDAO queryReplyDAO;
+
+  @Inject
+  private ClearUserCreationsAndModifications clearUserCreationsAndModifications;
+
+  private static final long ADMINISTRATORS_ROLE_ID = 2;
+
   /**
    * Creates new user to the system. Method check whether user already exists and uses existing user if one is available.
    * 
@@ -254,5 +295,88 @@ public class UserController {
     
     return String.format("/user/picture.binary?userId=%d", user.getId());
   }
-  
+
+  /**
+   * List users to archive
+   *
+   * @param waitDays wait days before archiving
+   * @param maxResults max results
+   * @return users to archive
+   */
+  public List<User> listUsersToArchive(int waitDays, int maxResults) {
+    Date before = Date.from(OffsetDateTime.now().minusDays(waitDays).toInstant());
+
+    UserRole excludeRole = userRoleDAO.findById(ADMINISTRATORS_ROLE_ID);
+    return userDAO.listUsersToArchive(before, maxResults, excludeRole);
+  }
+
+  public List<User> listUsersToDelete(int waitDays, int maxResults) {
+    Date before = Date.from(OffsetDateTime.now().minusDays(waitDays).toInstant());
+    return userDAO.listUsersToDelete(before, maxResults);
+  }
+
+  public void archiveUser(User user) {
+    delfoiUserDAO.listByUser(user).forEach(delfoiUserDAO::archive);
+    user.setArchived(true);
+    userDAO.persist(user);
+  }
+
+  public void deleteUser(User user) {
+    clearUserCreationsAndModifications.clearUserModifiedEntities(user);
+
+    AuthSource authSource = keycloakController.getKeycloakAuthSource();
+    List<UserIdentification> userIdentifications = userIdentificationDAO.listByUserAndAuthSource(user, authSource);
+    for (UserIdentification userIdentification : userIdentifications) {
+      try {
+        keycloakController.deleteUser(userIdentification.getExternalId());
+      } catch (KeycloakException e) {
+        System.out.println(e.getMessage());
+      }
+    }
+
+    List<UserEmail> emails = userEmailDAO.listByUser(user);
+    user.setDefaultEmail(null);
+    user.setEmails(null);
+    userDAO.persist(user);
+
+    emails.forEach(userEmailDAO::delete);
+    userIdentificationDAO.listByUser(user).forEach(userIdentificationDAO::delete);
+    bulletinReadDAO.listByUser(user).forEach(bulletinReadDAO::delete);
+    userSettingDAO.listByUser(user).forEach(userSettingDAO::delete);
+
+    List<PanelUser> panelUsers = panelUserDAO.listAllByUser(user);
+    for (PanelUser panelUser : panelUsers) {
+      panelExpertiseGroupUserDAO.listByUser(panelUser).forEach(panelExpertiseGroupUserDAO::delete);
+      panelUserDAO.delete(panelUser);
+    }
+
+    UserActivation userActivation = userActivationDAO.findByUser(user);
+    if (userActivation != null) {
+      userActivationDAO.delete(userActivation);
+    }
+
+    UserPicture userPicture = userPictureDAO.findByUser(user);
+    if (userPicture != null) {
+      userPictureDAO.delete(userPicture);
+    }
+
+    userNotificationDAO.listByUser(user).forEach(userNotificationDAO::delete);
+    userPasswordDAO.listAllByUser(user).forEach(userPasswordDAO::delete);
+
+    delfoiUserDAO.listByUser(user).forEach(delfoiUserDAO::delete);
+    List<PanelUserGroup> groups = panelUserGroupDAO.listUserPanelGroups(user);
+    for (PanelUserGroup group : groups) {
+      group.removeUser(user);
+      panelUserGroupDAO.persist(group);
+    }
+
+    List<QueryReply> replies = queryReplyDAO.listAllByUser(user);
+    for (QueryReply reply : replies) {
+      reply.setUser(null);
+      queryReplyDAO.persist(reply);
+    }
+    userDAO.delete(user);
+  }
+
+
 }

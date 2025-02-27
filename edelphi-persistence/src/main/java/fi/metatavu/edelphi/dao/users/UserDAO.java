@@ -6,10 +6,15 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
+import fi.metatavu.edelphi.domainmodel.panels.Panel;
+import fi.metatavu.edelphi.domainmodel.resources.Resource;
+import fi.metatavu.edelphi.domainmodel.users.UserRole;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -26,7 +31,7 @@ import fi.metatavu.edelphi.domainmodel.users.User_;
 import fi.metatavu.edelphi.search.SearchResult;
 
 @ApplicationScoped
-public class UserDAO extends GenericDAO<User> {
+public class UserDAO extends GenericDAO<User> implements UserCreatedEntityDAO<User> {
   
   @SuppressWarnings ("squid:S00107")
   public User create(String firstName, String lastName, String nickname, User creator, SubscriptionLevel subscriptionLevel, Date subscriptionStarted, Date subscriptionEnds, String locale) {
@@ -246,5 +251,63 @@ public class UserDAO extends GenericDAO<User> {
     user.setLocale(locale);
     return persist(user);
   }
-  
+
+  public List<User> listUsersToArchive(Date before, int maxResults, UserRole excludedRole) {
+    EntityManager entityManager = getEntityManager();
+    String jpql = "SELECT u FROM User u " +
+      "LEFT JOIN PanelUser p ON p.user = u " +
+      "WHERE p.user IS NULL " +
+      "AND u.lastLogin < :before " +
+      "AND u.archived = false " +
+      "AND NOT EXISTS (SELECT d FROM DelfoiUser d WHERE d.user = u AND d.role = :excludedRole)";
+    TypedQuery<User> query = entityManager.createQuery(jpql, User.class);
+    query.setParameter("before", before);
+    query.setParameter("excludedRole", excludedRole);
+    return query.setMaxResults(maxResults).getResultList();
+  }
+
+  public List<User> listUsersToDelete(Date before, int maxResults) {
+    EntityManager entityManager = getEntityManager();
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<User> criteria = criteriaBuilder.createQuery(User.class);
+    Root<User> root = criteria.from(User.class);
+    criteria.select(root);
+
+    criteria.where(
+      criteriaBuilder.and(
+        criteriaBuilder.lessThan(root.get(User_.lastModified), before),
+        criteriaBuilder.equal(root.get(User_.archived), Boolean.TRUE)
+      )
+    );
+
+    return entityManager.createQuery(criteria).setMaxResults(maxResults).getResultList();
+  }
+
+  public List<User> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<User> criteria = criteriaBuilder.createQuery(User.class);
+    Root<User> root = criteria.from(User.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(User_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<User> listAllByModifier(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<User> criteria = criteriaBuilder.createQuery(User.class);
+    Root<User> root = criteria.from(User.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(User_.lastModifier), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
 }

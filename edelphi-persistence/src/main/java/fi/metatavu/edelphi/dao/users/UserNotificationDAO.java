@@ -45,6 +45,20 @@ public class UserNotificationDAO extends GenericDAO<UserNotification> {
     return entityManager.createQuery(criteria).getResultList(); 
   }
 
+  public List<UserNotification> listByUser(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<UserNotification> criteria = criteriaBuilder.createQuery(UserNotification.class);
+    Root<UserNotification> root = criteria.from(UserNotification.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(UserNotification_.user), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
   public Long countByNotificationAndUser(Notification notification, User user) {
     EntityManager entityManager = getEntityManager();
 

@@ -11,6 +11,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
+import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiAction;
 import fi.metatavu.edelphi.domainmodel.actions.PanelUserRoleAction;
 import fi.metatavu.edelphi.domainmodel.actions.PanelUserRoleAction_;
@@ -25,7 +26,7 @@ import fi.metatavu.edelphi.domainmodel.panels.Panel_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
-public class PanelUserDAO extends GenericDAO<PanelUser> {
+public class PanelUserDAO extends GenericDAO<PanelUser> implements UserCreatedEntityDAO<PanelUser> {
 
   /**
    * Creates new panel user
@@ -290,7 +291,52 @@ public class PanelUserDAO extends GenericDAO<PanelUser> {
     
     return entityManager.createQuery(criteria).getResultList();
   }
-  
+
+  public List<PanelUser> listAllByUser(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelUser> criteria = criteriaBuilder.createQuery(PanelUser.class);
+    Root<PanelUser> root = criteria.from(PanelUser.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(PanelUser_.user), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  @Override
+  public List<PanelUser> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelUser> criteria = criteriaBuilder.createQuery(PanelUser.class);
+    Root<PanelUser> root = criteria.from(PanelUser.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(PanelUser_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  @Override
+  public List<PanelUser> listAllByModifier(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelUser> criteria = criteriaBuilder.createQuery(PanelUser.class);
+    Root<PanelUser> root = criteria.from(PanelUser.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(PanelUser_.lastModifier), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+
   /**
    * Returns count of panels in specific state where user has permission to perform specific action
    * 
@@ -324,5 +370,4 @@ public class PanelUserDAO extends GenericDAO<PanelUser> {
     
     return entityManager.createQuery(criteria).getSingleResult();
   }
-    
 }

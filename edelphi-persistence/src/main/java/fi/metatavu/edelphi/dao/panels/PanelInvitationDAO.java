@@ -11,6 +11,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
+import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitation;
 import fi.metatavu.edelphi.domainmodel.panels.PanelInvitationState;
@@ -21,7 +22,7 @@ import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
-public class PanelInvitationDAO extends GenericDAO<PanelInvitation> {
+public class PanelInvitationDAO extends GenericDAO<PanelInvitation> implements UserCreatedEntityDAO<PanelInvitation> {
 
   public PanelInvitation create(Panel panel, Query query, String email, String hash, PanelUserRole role, PanelInvitationState state, User creator) {
     Date now = new Date();
@@ -234,5 +235,31 @@ public class PanelInvitationDAO extends GenericDAO<PanelInvitation> {
     return panelInvitation;
     
   }
-  
+
+  public List<PanelInvitation> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelInvitation> criteria = criteriaBuilder.createQuery(PanelInvitation.class);
+    Root<PanelInvitation> root = criteria.from(PanelInvitation.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(PanelInvitation_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+  public List<PanelInvitation> listAllByModifier(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelInvitation> criteria = criteriaBuilder.createQuery(PanelInvitation.class);
+    Root<PanelInvitation> root = criteria.from(PanelInvitation.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(PanelInvitation_.lastModifier), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
 }

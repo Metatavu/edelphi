@@ -44,6 +44,20 @@ public class BulletinReadDAO extends GenericDAO<BulletinRead> {
 
     return entityManager.createQuery(criteria).getResultList(); 
   }
+
+  public List<BulletinRead> listByUser(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<BulletinRead> criteria = criteriaBuilder.createQuery(BulletinRead.class);
+    Root<BulletinRead> root = criteria.from(BulletinRead.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(BulletinRead_.user), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
   
   public Long countByBulletinAndUser(Bulletin bulletin, User user) {
     EntityManager entityManager = getEntityManager();

@@ -10,13 +10,14 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
+import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
-public class PanelStampDAO extends GenericDAO<PanelStamp> {
+public class PanelStampDAO extends GenericDAO<PanelStamp> implements UserCreatedEntityDAO<PanelStamp> {
 
   public PanelStamp create(Panel panel, String name, String description, Date stampTime, User creator) {
     Date now = new Date();
@@ -79,6 +80,34 @@ public class PanelStampDAO extends GenericDAO<PanelStamp> {
     panelStamp.setLastModifier(updater);
     getEntityManager().persist(panelStamp);
     return panelStamp;
+  }
+
+  public List<PanelStamp> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelStamp> criteria = criteriaBuilder.createQuery(PanelStamp.class);
+    Root<PanelStamp> root = criteria.from(PanelStamp.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(PanelStamp_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<PanelStamp> listAllByModifier(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelStamp> criteria = criteriaBuilder.createQuery(PanelStamp.class);
+    Root<PanelStamp> root = criteria.from(PanelStamp.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(PanelStamp_.lastModifier), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
   }
 
 }

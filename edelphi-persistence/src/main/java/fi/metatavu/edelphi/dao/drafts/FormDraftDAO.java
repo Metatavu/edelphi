@@ -1,5 +1,6 @@
 package fi.metatavu.edelphi.dao.drafts;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -10,12 +11,15 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
+import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
 import fi.metatavu.edelphi.domainmodel.drafts.FormDraft;
 import fi.metatavu.edelphi.domainmodel.drafts.FormDraft_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
+import static java.util.Collections.emptyList;
+
 @ApplicationScoped
-public class FormDraftDAO extends GenericDAO<FormDraft> {
+public class FormDraftDAO extends GenericDAO<FormDraft> implements UserCreatedEntityDAO<FormDraft> {
 
   public FormDraft create(String url, String draftData, User creator) {
     FormDraft formDraft = new FormDraft();
@@ -69,5 +73,25 @@ public class FormDraftDAO extends GenericDAO<FormDraft> {
     
     return entityManager.createQuery(criteria).getResultList();
   }
-  
+
+  @Override
+  public List<FormDraft> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<FormDraft> criteria = criteriaBuilder.createQuery(FormDraft.class);
+    Root<FormDraft> root = criteria.from(FormDraft.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(FormDraft_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  @Override
+  public List<FormDraft> listAllByModifier(User user) {
+    return emptyList();
+  }
+
 }

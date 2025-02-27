@@ -12,10 +12,11 @@ import fi.metatavu.edelphi.dao.GenericDAO;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiBulletin;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiBulletin_;
+import fi.metatavu.edelphi.domainmodel.panels.PanelBulletin;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
-public class DelfoiBulletinDAO extends GenericDAO<DelfoiBulletin> {
+public class DelfoiBulletinDAO extends GenericDAO<DelfoiBulletin> implements UserCreatedEntityDAO<DelfoiBulletin> {
   
   public DelfoiBulletin create(Delfoi delfoi, String title, String message, User creator, Boolean important, Date importantEnds) {
     
@@ -106,6 +107,36 @@ public class DelfoiBulletinDAO extends GenericDAO<DelfoiBulletin> {
   public DelfoiBulletin updateImportantEnds(DelfoiBulletin bulletin, Date importantEnds) {
     bulletin.setImportantEnds(importantEnds);
     return persist(bulletin);
+  }
+
+  @Override
+  public List<DelfoiBulletin> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<DelfoiBulletin> criteria = criteriaBuilder.createQuery(DelfoiBulletin.class);
+    Root<DelfoiBulletin> root = criteria.from(DelfoiBulletin.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(DelfoiBulletin_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  @Override
+  public List<DelfoiBulletin> listAllByModifier(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<DelfoiBulletin> criteria = criteriaBuilder.createQuery(DelfoiBulletin.class);
+    Root<DelfoiBulletin> root = criteria.from(DelfoiBulletin.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(DelfoiBulletin_.lastModifier), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
   }
   
 }

@@ -19,6 +19,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
+import fi.metatavu.edelphi.domainmodel.base.UserCreatedEntity;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import fi.metatavu.edelphi.domainmodel.base.ArchivableEntity;
@@ -28,7 +29,7 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 @Entity
 @Inheritance(strategy=InheritanceType.JOINED)
 @Cacheable
-public class Resource implements ArchivableEntity, ModificationTrackedEntity {
+public class Resource extends UserCreatedEntity implements ArchivableEntity, ModificationTrackedEntity {
   
   /**
    * Returns internal unique id

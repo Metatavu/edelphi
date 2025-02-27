@@ -12,6 +12,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
+import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelAccessLevel;
@@ -25,7 +26,7 @@ import fi.metatavu.edelphi.domainmodel.resources.Folder;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
-public class PanelDAO extends GenericDAO<Panel> {
+public class PanelDAO extends GenericDAO<Panel> implements UserCreatedEntityDAO<Panel> {
 
   public void archivePanelByScheduler (Panel panel) {
     panel.setArchived(true);
@@ -200,4 +201,32 @@ public class PanelDAO extends GenericDAO<Panel> {
 
     return persist(panel);
   }
+
+  public List<Panel> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Panel> criteria = criteriaBuilder.createQuery(Panel.class);
+    Root<Panel> root = criteria.from(Panel.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(Panel_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+  public List<Panel> listAllByModifier(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Panel> criteria = criteriaBuilder.createQuery(Panel.class);
+    Root<Panel> root = criteria.from(Panel.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(Panel_.lastModifier), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
 }
