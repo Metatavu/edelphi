@@ -154,6 +154,7 @@ public class PanelController {
     if (rootFolder != null) {
       resourceController.deleteResource(rootFolder);
     }
+
     panelUserExpertiseGroupDAO.listAllByPanel(panel).forEach(this::deletePanelUserExpertiseGroup);
     panelUserDAO.listAllByPanel(panel).forEach(panelUserDAO::delete);
     panelUserGroupDAO.listAllByPanel(panel).forEach(panelUserGroupDAO::delete);

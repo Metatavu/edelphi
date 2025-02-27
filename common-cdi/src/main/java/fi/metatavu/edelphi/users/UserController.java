@@ -10,9 +10,9 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import fi.metatavu.edelphi.batch.i18n.BatchMessages;
+import fi.metatavu.edelphi.dao.orders.OrderHistoryDAO;
 import fi.metatavu.edelphi.dao.panels.*;
 import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
-import fi.metatavu.edelphi.dao.resources.ResourceDAO;
 import fi.metatavu.edelphi.dao.users.*;
 import fi.metatavu.edelphi.domainmodel.base.*;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
@@ -71,15 +71,6 @@ public class UserController {
   private PanelUserDAO panelUserDAO;
 
   @Inject
-  private PanelDAO panelDAO;
-
-  @Inject
-  private ResourceDAO resourceDAO;
-
-  @Inject
-  private PanelStampDAO panelStampDAO;
-
-  @Inject
   private PanelExpertiseGroupUserDAO panelExpertiseGroupUserDAO;
 
   @Inject
@@ -120,6 +111,9 @@ public class UserController {
 
   @Inject
   private QueryReplyDAO queryReplyDAO;
+
+  @Inject
+  private OrderHistoryDAO orderHistoryDAO;
 
   @Inject
   private ClearUserCreationsAndModifications clearUserCreationsAndModifications;
@@ -364,6 +358,7 @@ public class UserController {
     userPasswordDAO.listAllByUser(user).forEach(userPasswordDAO::delete);
 
     delfoiUserDAO.listByUser(user).forEach(delfoiUserDAO::delete);
+
     List<PanelUserGroup> groups = panelUserGroupDAO.listUserPanelGroups(user);
     for (PanelUserGroup group : groups) {
       group.removeUser(user);
@@ -375,6 +370,8 @@ public class UserController {
       reply.setUser(null);
       queryReplyDAO.persist(reply);
     }
+
+    orderHistoryDAO.listAllByUser(user).forEach(orderHistoryDAO::delete);
     userDAO.delete(user);
   }
 

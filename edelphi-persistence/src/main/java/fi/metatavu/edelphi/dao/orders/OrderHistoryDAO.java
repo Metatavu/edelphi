@@ -1,11 +1,17 @@
 package fi.metatavu.edelphi.dao.orders;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
 import fi.metatavu.edelphi.domainmodel.orders.OrderHistory;
+import fi.metatavu.edelphi.domainmodel.orders.OrderHistory_;
 import fi.metatavu.edelphi.domainmodel.orders.OrderStatus;
 import fi.metatavu.edelphi.domainmodel.orders.Plan;
 import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
@@ -34,6 +40,20 @@ public class OrderHistoryDAO extends GenericDAO<OrderHistory> {
   public OrderHistory updateStatus(OrderHistory orderHistory, OrderStatus status) {
     orderHistory.setStatus(status);
     return persist(orderHistory);
+  }
+
+  public List<OrderHistory> listAllByUser(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<OrderHistory> criteria = criteriaBuilder.createQuery(OrderHistory.class);
+    Root<OrderHistory> root = criteria.from(OrderHistory.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(OrderHistory_.user), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
   }
   
   
