@@ -18,12 +18,14 @@ public class ScheduledPanelArchiving {
 
   @Schedule (hour = "*", minute = "*", second = "*/60", info = "Panel archiving scheduler. Runs every 60 seconds.")
   public void archive() {
-    List<Panel> panelList = panelController.listPanelsToArchive(PanelState.ENDED, 0, 1);
+    if (SchedulerUtils.deletionSchedulersActive()) {
+      List<Panel> panelList = panelController.listPanelsToArchive(PanelState.ENDED, 30, 1);
 
-    if (!panelList.isEmpty()) {
-      Panel panel = panelList.get(0);
+      if (!panelList.isEmpty()) {
+        Panel panel = panelList.get(0);
 
-      panelController.archivePanelByScheduler(panel);
+        panelController.archivePanelByScheduler(panel);
+      }
     }
   }
 

@@ -36,28 +36,30 @@ public class ScheduledPanelDeletion {
 
   @Schedule (hour = "*", minute = "*", second = "*/60", info = "Panel deletion scheduler. Runs every 60 seconds.")
   public void delete() throws InterruptedException {
-    List<Panel> panelList = panelController.listPanelsToDelete(0, 1);
+    if (SchedulerUtils.deletionSchedulersActive()) {
+      List<Panel> panelList = panelController.listPanelsToDelete(30, 1);
 
-    if (!panelList.isEmpty()) {
-      Panel panel = panelList.get(0);
-      panelController.schedulerDeleteQueryDependencies(panel);
-      List<Query> queries = queryController.listAllPanelQueries(panel);
-      if (!queries.isEmpty()) {
-        Query query = queries.get(0);
-        List<QueryQuestionComment> comments = queryQuestionCommentController.listAllByQuery(query);
-        comments.forEach(queryQuestionCommentController::removeParent);
-        comments.forEach(queryQuestionCommentController::deleteQueryQuestionComment);
+      if (!panelList.isEmpty()) {
+        Panel panel = panelList.get(0);
+        panelController.schedulerDeleteQueryDependencies(panel);
+        List<Query> queries = queryController.listAllPanelQueries(panel);
+        if (!queries.isEmpty()) {
+          Query query = queries.get(0);
+          List<QueryQuestionComment> comments = queryQuestionCommentController.listAllByQuery(query);
+          comments.forEach(queryQuestionCommentController::removeParent);
+          comments.forEach(queryQuestionCommentController::deleteQueryQuestionComment);
 
-        List<QueryReply> replies = queryReplyController.listQueryReplies(query, 100);
-        if (!replies.isEmpty()) {
-          replies.forEach(queryReplyController::deleteQueryReplyAnswers);
+          List<QueryReply> replies = queryReplyController.listQueryReplies(query, 100);
+          if (!replies.isEmpty()) {
+            replies.forEach(queryReplyController::deleteQueryReplyAnswers);
 
-          replies.forEach(queryReplyController::deleteReply);
+            replies.forEach(queryReplyController::deleteReply);
+          } else {
+            resourceController.deleteResource(query);
+          }
         } else {
-          resourceController.deleteResource(query);
+          panelController.schedulerDeleteAfterDeletingQueries(panel);
         }
-      } else {
-        panelController.schedulerDeleteAfterDeletingQueries(panel);
       }
     }
   }
