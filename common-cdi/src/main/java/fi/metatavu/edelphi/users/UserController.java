@@ -318,6 +318,7 @@ public class UserController {
    */
   public void archiveUser(User user) {
     delfoiUserDAO.listByUser(user).forEach(delfoiUserDAO::archive);
+    user.setLastModified(new Date());
     user.setArchived(true);
     userDAO.persist(user);
   }
