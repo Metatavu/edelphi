@@ -13,15 +13,12 @@ import java.util.List;
 @Startup
 @Singleton
 public class ScheduledUserDeletion {
-    @Inject
-    private UserController userController;
+  @Inject
+  private UserController userController;
 
-    @Schedule (hour = "*", minute = "*", second = "*/1", info = "Every 5 seconds timer")
-    public void delete() {
-        List<User> users = userController.listUsersToDelete(0, 100000);
-        System.out.println("Users to delete: " + users.size());
-
-        userController.listUsersToDelete(0, 5).forEach(userController::deleteUser);
-    }
+  @Schedule (hour = "*", minute = "*", second = "*/60", info = "User deletion scheduler. Runs every 60 seconds.")
+  public void delete() {
+    userController.listUsersToDelete(0, 1).forEach(userController::deleteUser);
+  }
 
 }

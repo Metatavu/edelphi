@@ -19,51 +19,47 @@ import java.util.List;
 @Startup
 @Singleton
 public class ScheduledPanelDeletion {
-    @Inject
-    private PanelController panelController;
+  @Inject
+  private PanelController panelController;
 
-    @Inject
-    private QueryController queryController;
+  @Inject
+  private QueryController queryController;
 
-    @Inject
-    private QueryQuestionCommentController queryQuestionCommentController;
+  @Inject
+  private QueryQuestionCommentController queryQuestionCommentController;
 
-    @Inject
-    private QueryReplyController queryReplyController;
+  @Inject
+  private QueryReplyController queryReplyController;
 
-    @Inject
-    private ResourceController resourceController;
+  @Inject
+  private ResourceController resourceController;
 
-    @Schedule (hour = "*", minute = "*", second = "*/1", info = "Every 5 seconds timer")
-    public void delete() throws InterruptedException {
-        /*List<Panel> panels = panelController.listPanelsToDelete(0, 1000);
+  @Schedule (hour = "*", minute = "*", second = "*/60", info = "Panel deletion scheduler. Runs every 60 seconds.")
+  public void delete() throws InterruptedException {
+    List<Panel> panelList = panelController.listPanelsToDelete(0, 1);
 
-        System.out.println("Amount of archived panels: " + panels.size());
+    if (!panelList.isEmpty()) {
+      Panel panel = panelList.get(0);
+      panelController.schedulerDeleteQueryDependencies(panel);
+      List<Query> queries = queryController.listAllPanelQueries(panel);
+      if (!queries.isEmpty()) {
+        Query query = queries.get(0);
+        List<QueryQuestionComment> comments = queryQuestionCommentController.listAllByQuery(query);
+        comments.forEach(queryQuestionCommentController::removeParent);
+        comments.forEach(queryQuestionCommentController::deleteQueryQuestionComment);
 
-        List<Panel> panelList = panelController.listPanelsToDelete(0, 1);
+        List<QueryReply> replies = queryReplyController.listQueryReplies(query, 100);
+        if (!replies.isEmpty()) {
+          replies.forEach(queryReplyController::deleteQueryReplyAnswers);
 
-        if (!panelList.isEmpty()) {
-            Panel panel = panelList.get(0);
-            panelController.schedulerDeleteQueryDependencies(panel);
-            List<Query> queries = queryController.listAllPanelQueries(panel);
-            if (!queries.isEmpty()) {
-                Query query = queries.get(0);
-                List<QueryQuestionComment> comments = queryQuestionCommentController.listAllByQuery(query);
-                comments.forEach(queryQuestionCommentController::removeParent);
-                comments.forEach(queryQuestionCommentController::deleteQueryQuestionComment);
-
-                List<QueryReply> replies = queryReplyController.listQueryReplies(query, 1000);
-                if (!replies.isEmpty()) {
-                    replies.forEach(queryReplyController::deleteQueryReplyAnswers);
-
-                    replies.forEach(queryReplyController::deleteReply);
-                } else {
-                    resourceController.deleteResource(query);
-                }
-            } else {
-                panelController.schedulerDeleteAfterDeletingQueries(panel);
-            }
-        }*/
+          replies.forEach(queryReplyController::deleteReply);
+        } else {
+          resourceController.deleteResource(query);
+        }
+      } else {
+        panelController.schedulerDeleteAfterDeletingQueries(panel);
+      }
     }
+  }
 
 }

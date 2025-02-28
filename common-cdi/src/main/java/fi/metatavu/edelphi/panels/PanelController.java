@@ -93,7 +93,7 @@ public class PanelController {
    * @param panel panel to archive
    */
   public void archivePanelByScheduler(Panel panel) {
-
+    panelInvitationDAO.listAllByPanel(panel).forEach(panelInvitationDAO::delete);
     panelDAO.archivePanelByScheduler(panel);
   }
   

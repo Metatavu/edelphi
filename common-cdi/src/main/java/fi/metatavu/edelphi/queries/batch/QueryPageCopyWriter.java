@@ -95,45 +95,48 @@ public class QueryPageCopyWriter extends TypedItemWriter<QueryPage> {
   public void write(List<QueryPage> queryPages) throws Exception {
     User copier = userController.findUserByKeycloakId(loggedUserId);
     Panel targetPanel = panelController.findPanelById(targetPanelId);
-    Query originalQuery = queryController.findQueryById(queryCopyBatchContext.getOriginalQueryId());
-    Panel sourcePanel = resourceController.getResourcePanel(originalQuery);
-    Query newQuery = queryController.findQueryById(queryCopyBatchContext.getNewQueryId());
-    
-    Map<Long, Long> queryCommentCategoryIdMap = queryCopyBatchContext.getQueryCommentCategoryIdMap();
-    Map<Long, Long> queryReplyIdMap = queryCopyBatchContext.getQueryReplyIdMap();
-    Map<Long, Long> querySectionIdMap = queryCopyBatchContext.getQuerySectionIdMap();
-    
-    Map<Long, QueryQuestionCommentCategory> queryCommentCategoryMap = new HashMap<>(queryCommentCategoryIdMap.size());
-    Map<Long, QueryReply> replyMap = new HashMap<>(queryReplyIdMap.size());
-    
-    for (Entry<Long, Long> entry : queryCommentCategoryIdMap.entrySet()) {
-      queryCommentCategoryMap.put(entry.getKey(), queryPageController.findCommentCategory(entry.getValue()));
-    }
-    
-    for (Entry<Long, Long> entry : queryReplyIdMap.entrySet()) {
-      replyMap.put(entry.getKey(), queryReplyController.findQueryReply(entry.getValue()));
-    }
-    
-    List<QueryReply> originalQueryReplies = queryReplyIdMap.keySet().stream().map(queryReplyController::findQueryReply).collect(Collectors.toList());
-    
-    for (QueryPage originalQueryPage : queryPages) {
-      logger.info("Writing copy of query page {}", originalQueryPage.getId());
-      
-      QuerySection newQuerySection = querySectionController.findQuerySectionById(querySectionIdMap.get(originalQueryPage.getQuerySection().getId()));
-      
-      QueryPage newQueryPage = queryPageController.copyQueryPage(originalQueryPage, 
-          targetPanel, 
-          sourcePanel, 
-          newQuery, 
-          originalQueryReplies, 
-          newQuerySection, 
-          copyAnswers, 
-          copyComments, 
+
+    if (targetPanel != null) {
+      Query originalQuery = queryController.findQueryById(queryCopyBatchContext.getOriginalQueryId());
+      Panel sourcePanel = resourceController.getResourcePanel(originalQuery);
+      Query newQuery = queryController.findQueryById(queryCopyBatchContext.getNewQueryId());
+
+      Map<Long, Long> queryCommentCategoryIdMap = queryCopyBatchContext.getQueryCommentCategoryIdMap();
+      Map<Long, Long> queryReplyIdMap = queryCopyBatchContext.getQueryReplyIdMap();
+      Map<Long, Long> querySectionIdMap = queryCopyBatchContext.getQuerySectionIdMap();
+
+      Map<Long, QueryQuestionCommentCategory> queryCommentCategoryMap = new HashMap<>(queryCommentCategoryIdMap.size());
+      Map<Long, QueryReply> replyMap = new HashMap<>(queryReplyIdMap.size());
+
+      for (Entry<Long, Long> entry : queryCommentCategoryIdMap.entrySet()) {
+        queryCommentCategoryMap.put(entry.getKey(), queryPageController.findCommentCategory(entry.getValue()));
+      }
+
+      for (Entry<Long, Long> entry : queryReplyIdMap.entrySet()) {
+        replyMap.put(entry.getKey(), queryReplyController.findQueryReply(entry.getValue()));
+      }
+
+      List<QueryReply> originalQueryReplies = queryReplyIdMap.keySet().stream().map(queryReplyController::findQueryReply).collect(Collectors.toList());
+
+      for (QueryPage originalQueryPage : queryPages) {
+        logger.info("Writing copy of query page {}", originalQueryPage.getId());
+
+        QuerySection newQuerySection = querySectionController.findQuerySectionById(querySectionIdMap.get(originalQueryPage.getQuerySection().getId()));
+
+        QueryPage newQueryPage = queryPageController.copyQueryPage(originalQueryPage,
+          targetPanel,
+          sourcePanel,
+          newQuery,
+          originalQueryReplies,
+          newQuerySection,
+          copyAnswers,
+          copyComments,
           replyMap,
-          queryCommentCategoryMap, 
+          queryCommentCategoryMap,
           copier);
-      
-      queryCopyBatchContext.setQueryPageId(originalQueryPage.getId(), newQueryPage.getId());
+
+        queryCopyBatchContext.setQueryPageId(originalQueryPage.getId(), newQueryPage.getId());
+      }
     }
   }
   

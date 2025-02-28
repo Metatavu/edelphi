@@ -81,7 +81,10 @@ public class SystemUtilsPageController extends PageController {
       UserDAO userDAO = new UserDAO();
       User sourceUser = userDAO.findById(sourceUserId);
       User targetUser = userDAO.findById(targetUserId);
-      UserUtils.merge(sourceUser, targetUser);
+
+      if (sourceUser != null && targetUser != null) {
+        UserUtils.merge(sourceUser, targetUser);
+      }
     } else if ("copyQuery".equals(action)) {
       Long queryId = pageRequestContext.getLong("queryId");
       String name = pageRequestContext.getString("name");

@@ -13,22 +13,18 @@ import java.util.List;
 @Startup
 @Singleton
 public class ScheduledPanelArchiving {
-    @Inject
-    private PanelController panelController;
+  @Inject
+  private PanelController panelController;
 
-    @Schedule (hour = "*", minute = "*", second = "*/1", info = "Every 5 seconds timer")
-    public void archive() {
-        List<Panel> panels =  panelController.listPanelsToArchive(PanelState.ENDED, 0, 1000);
+  @Schedule (hour = "*", minute = "*", second = "*/60", info = "Panel archiving scheduler. Runs every 60 seconds.")
+  public void archive() {
+    List<Panel> panelList = panelController.listPanelsToArchive(PanelState.ENDED, 0, 1);
 
-        System.out.println("Amount of ended panels: " + panels.size());
+    if (!panelList.isEmpty()) {
+      Panel panel = panelList.get(0);
 
-        List<Panel> panelList = panelController.listPanelsToArchive(PanelState.ENDED, 0, 1);
-
-        if (!panelList.isEmpty()) {
-            Panel panel = panelList.get(0);
-
-            panelController.archivePanelByScheduler(panel);
-        }
+      panelController.archivePanelByScheduler(panel);
     }
+  }
 
 }
