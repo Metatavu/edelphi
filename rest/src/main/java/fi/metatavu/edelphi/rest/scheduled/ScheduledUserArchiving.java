@@ -16,7 +16,7 @@ public class ScheduledUserArchiving {
   @Schedule (hour = "*", minute = "*", second = "*/60", info = "User archiving scheduler. Runs every 60 seconds.")
   public void archive() {
     if (SchedulerUtils.deletionSchedulersActive()) {
-      userController.listUsersToArchive(30, 1).forEach(userController::archiveUser);
+      userController.listUsersToArchive(730, 1).forEach(userController::archiveUser);
     }
   }
 

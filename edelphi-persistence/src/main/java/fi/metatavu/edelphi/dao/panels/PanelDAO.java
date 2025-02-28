@@ -124,7 +124,7 @@ public class PanelDAO extends GenericDAO<Panel> implements UserCreatedEntityDAO<
     return entityManager.createQuery(criteria).getResultList();
   }
 
-  public List<Panel> listPanelsToArchive(PanelState panelState, Date before, int maxResults) {
+  public List<Panel> listPanelsToArchive(Date before, int maxResults) {
     EntityManager entityManager = getEntityManager();
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
     CriteriaQuery<Panel> criteria = criteriaBuilder.createQuery(Panel.class);
@@ -133,7 +133,7 @@ public class PanelDAO extends GenericDAO<Panel> implements UserCreatedEntityDAO<
 
     criteria.where(
             criteriaBuilder.and(
-                    criteriaBuilder.equal(root.get(Panel_.state), panelState),
+                    criteriaBuilder.equal(root.get(Panel_.state), PanelState.ENDED),
                     criteriaBuilder.lessThan(root.get(Panel_.lastModified), before),
                     criteriaBuilder.equal(root.get(Panel_.archived), Boolean.FALSE)
             )

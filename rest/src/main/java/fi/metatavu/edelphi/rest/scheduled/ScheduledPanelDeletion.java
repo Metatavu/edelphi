@@ -37,7 +37,7 @@ public class ScheduledPanelDeletion {
   @Schedule (hour = "*", minute = "*", second = "*/60", info = "Panel deletion scheduler. Runs every 60 seconds.")
   public void delete() throws InterruptedException {
     if (SchedulerUtils.deletionSchedulersActive()) {
-      List<Panel> panelList = panelController.listPanelsToDelete(30, 1);
+      List<Panel> panelList = panelController.listPanelsToDelete(731, 1);
 
       if (!panelList.isEmpty()) {
         Panel panel = panelList.get(0);

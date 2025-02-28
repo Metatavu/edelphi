@@ -16,7 +16,7 @@ public class ScheduledUserDeletion {
   @Schedule (hour = "*", minute = "*", second = "*/60", info = "User deletion scheduler. Runs every 60 seconds.")
   public void delete() {
     if (SchedulerUtils.deletionSchedulersActive()) {
-      userController.listUsersToDelete(30, 1).forEach(userController::deleteUser);
+      userController.listUsersToDelete(731, 1).forEach(userController::deleteUser);
     }
   }
 

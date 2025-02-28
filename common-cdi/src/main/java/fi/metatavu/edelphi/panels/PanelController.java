@@ -198,15 +198,14 @@ public class PanelController {
   /**
    * Lists panels to archive
    *
-   * @param panelState panel state
    * @param waitDays wait this amount of days before archiving
    * @param maxResults max results
    *
    * @return panels
    */
-  public List<Panel> listPanelsToArchive(PanelState panelState, long waitDays, int maxResults) {
+  public List<Panel> listPanelsToArchive(long waitDays, int maxResults) {
     Date before = Date.from(OffsetDateTime.now().minusDays(waitDays).toInstant());
-    return panelDAO.listPanelsToArchive(panelState, before, maxResults);
+    return panelDAO.listPanelsToArchive(before, maxResults);
   }
 
   /**
