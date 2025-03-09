@@ -16,7 +16,7 @@
     "email-validator": "^2.0.4",
     "localized-strings": "^0.2.1",
     "lodash": "^4.17.11",
-    "log4js": "^4.0.2",
+    "log4js": "^6.4.0",
     "moment": "^2.24.0",
     "mqtt": "^2.18.8",
     "object-assign": "^4.1.1",
