@@ -251,7 +251,7 @@ public class QueryController {
    * @param panel panel
    * @return list of panel queries
    */
-  public List<Query> listAllPanelQueries(Panel panel) {
+  public List<Query> listPanelQueries(Panel panel) {
     return queryDAO.listByFolder(panel.getRootFolder());
   }
 
