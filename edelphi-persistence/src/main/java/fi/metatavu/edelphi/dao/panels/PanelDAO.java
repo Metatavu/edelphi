@@ -27,7 +27,7 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 @ApplicationScoped
 public class PanelDAO extends GenericDAO<Panel> {
 
-  public void archivePanelByScheduler (Panel panel) {
+  public void archivePanel(Panel panel) {
     panel.setArchived(true);
     panel.setLastModified(new Date());
     persist(panel);

@@ -23,7 +23,7 @@ public class ScheduledPanelArchiving {
       if (!panelList.isEmpty()) {
         Panel panel = panelList.get(0);
 
-        panelController.archivePanelByScheduler(panel);
+        panelController.archivePanelScheduler(panel);
       }
     }
   }

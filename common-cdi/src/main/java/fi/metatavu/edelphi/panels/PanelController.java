@@ -18,7 +18,6 @@ import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.resources.Folder;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
-import fi.metatavu.edelphi.queries.QueryController;
 import fi.metatavu.edelphi.queries.QueryReplyController;
 import fi.metatavu.edelphi.resources.ResourceController;
 import fi.metatavu.edelphi.settings.SettingsController;
@@ -92,9 +91,9 @@ public class PanelController {
    *
    * @param panel panel to archive
    */
-  public void archivePanelByScheduler(Panel panel) {
+  public void archivePanelScheduler(Panel panel) {
     panelInvitationDAO.listAllByPanel(panel).forEach(panelInvitationDAO::delete);
-    panelDAO.archivePanelByScheduler(panel);
+    panelDAO.archivePanel(panel);
   }
   
   /**
@@ -117,7 +116,7 @@ public class PanelController {
    *
    * @param panel panel
    */
-  public void deletePanel(Panel panel) throws InterruptedException {
+  public void deletePanel(Panel panel) {
     Folder rootFolder = panel.getRootFolder();
 
     panelDAO.updateRootFolder(panel, null, panel.getLastModifier());
