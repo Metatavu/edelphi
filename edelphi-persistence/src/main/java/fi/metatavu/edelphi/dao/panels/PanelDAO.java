@@ -123,7 +123,7 @@ public class PanelDAO extends GenericDAO<Panel> {
     return entityManager.createQuery(criteria).getResultList();
   }
 
-  public List<Panel> listPanelsToArchive(Date before, int maxResults) {
+  public List<Panel> listPanelsByStateEndedAndLastModifiedBefore(Date before, int maxResults) {
     EntityManager entityManager = getEntityManager();
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
     CriteriaQuery<Panel> criteria = criteriaBuilder.createQuery(Panel.class);
@@ -141,7 +141,7 @@ public class PanelDAO extends GenericDAO<Panel> {
     return entityManager.createQuery(criteria).setMaxResults(maxResults).getResultList();
   }
 
-  public List<Panel> listPanelsToDelete(Date before, int maxResults) {
+  public List<Panel> listPanelsByStateArchivedAndLastModifiedBefore(Date before, int maxResults) {
     EntityManager entityManager = getEntityManager();
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
     CriteriaQuery<Panel> criteria = criteriaBuilder.createQuery(Panel.class);

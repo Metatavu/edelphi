@@ -204,7 +204,7 @@ public class PanelController {
    */
   public List<Panel> listPanelsToArchive(long waitDays, int maxResults) {
     Date before = Date.from(OffsetDateTime.now().minusDays(waitDays).toInstant());
-    return panelDAO.listPanelsToArchive(before, maxResults);
+    return panelDAO.listPanelsByStateEndedAndLastModifiedBefore(before, maxResults);
   }
 
   /**
@@ -217,7 +217,7 @@ public class PanelController {
    */
   public List<Panel> listPanelsToDelete(long waitDays, int maxResults) {
     Date before = Date.from(OffsetDateTime.now().minusDays(waitDays).toInstant());
-    return panelDAO.listPanelsToDelete(before, maxResults);
+    return panelDAO.listPanelsByStateArchivedAndLastModifiedBefore(before, maxResults);
   }
 
   /**
