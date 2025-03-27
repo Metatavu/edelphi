@@ -116,7 +116,7 @@ public class PanelController {
    *
    * @param panel panel
    */
-  public void deletePanel(Panel panel) {
+  public void deletePanelByRest(Panel panel) {
     Folder rootFolder = panel.getRootFolder();
 
     panelDAO.updateRootFolder(panel, null, panel.getLastModifier());
@@ -137,36 +137,61 @@ public class PanelController {
   }
 
   /**
-   * Scheduler deletes these before deleting queries
+   * Delete panel auths
    *
    * @param panel panel
    */
-  public void schedulerDeleteQueryDependencies(Panel panel) {
+  public void deletePanelAuths(Panel panel) {
     panelAuthDAO.listByPanel(panel).forEach(panelAuthDAO::delete);
+  }
+
+  /**
+   * Delete panel user role actions
+   *
+   * @param panel panel
+   */
+  public void deletePanelUserRoleActions(Panel panel) {
     panelUserRoleActionDAO.listByPanel(panel).forEach(panelUserRoleActionDAO::delete);
+  }
+
+  /**
+   * Delete panel bulletins
+   *
+   * @param panel panel
+   */
+  public void deletePanelBulletins(Panel panel) {
     panelBulletinDAO.listAllByPanel(panel).forEach(panelBulletinDAO::delete);
+  }
+
+  /**
+   * Delete panel invitations
+   *
+   * @param panel panel
+   */
+  public void deletePanelInvitations(Panel panel) {
     panelInvitationDAO.listAllByPanel(panel).forEach(panelInvitationDAO::delete);
   }
 
   /**
-   * After panel queries have been deleted, the scheduler will delete remainder of panel dependencies and the panel itself
+   * Delete panel resource
    *
    * @param panel panel
    */
-  public void schedulerDeleteAfterDeletingQueries(Panel panel) {
+  public void deletePanelResource(Panel panel) {
     Folder rootFolder = panel.getRootFolder();
     panelDAO.updateRootFolder(panel, null, panel.getLastModifier());
 
     if (rootFolder != null) {
       resourceController.deleteResource(rootFolder);
     }
+  }
 
-    panelUserExpertiseGroupDAO.listAllByPanel(panel).forEach(this::deletePanelUserExpertiseGroup);
-    panelUserDAO.listAllByPanel(panel).forEach(panelUserDAO::delete);
-    panelUserGroupDAO.listAllByPanel(panel).forEach(panelUserGroupDAO::delete);
-    panelUserExpertiseClassDAO.listByPanel(panel).forEach(panelUserExpertiseClassDAO::delete);
-    panelUserIntressClassDAO.listByPanel(panel).forEach(panelUserIntressClassDAO::delete);
-
+  /**
+   * Delete panel stamps
+   *
+   * @param panel panel
+   */
+  public void deletePanelStamps(Panel panel) {
     List<PanelStamp> stamps = panelStampDAO.listAllByPanel(panel);
     for (PanelStamp panelStamp : stamps) {
       List<QueryReply> replies = queryReplyDAO.listAllByStamp(panelStamp);
@@ -180,7 +205,59 @@ public class PanelController {
 
       panelStampDAO.delete(panelStamp);
     }
+  }
 
+  /**
+   * Delete panel user expertise groups
+   *
+   * @param panel panel
+   */
+  public void deletePanelUserExpertiseGroups(Panel panel) {
+    panelUserExpertiseGroupDAO.listAllByPanel(panel).forEach(this::deletePanelUserExpertiseGroup);
+  }
+
+  /**
+   * Delete panel users
+   *
+   * @param panel panel
+   */
+  public void deletePanelUsers(Panel panel) {
+    panelUserDAO.listAllByPanel(panel).forEach(panelUserDAO::delete);
+  }
+
+  /**
+   * Delete panel user groups
+   *
+   * @param panel panel
+   */
+  public void deletePanelUserGroups(Panel panel) {
+    panelUserGroupDAO.listAllByPanel(panel).forEach(panelUserGroupDAO::delete);
+  }
+
+  /**
+   * Delete panel user expertise classes
+   *
+   * @param panel panel
+   */
+  public void deletePanelUserExpertiseClasses(Panel panel) {
+    panelUserExpertiseClassDAO.listByPanel(panel).forEach(panelUserExpertiseClassDAO::delete);
+  }
+
+  /**
+   * Delete panel user intress classes
+   *
+   * @param panel panel
+   */
+  public void deletePanelUserIntressClasses(Panel panel) {
+    panelUserIntressClassDAO.listByPanel(panel).forEach(panelUserIntressClassDAO::delete);
+  }
+
+  /**
+   * Delete panel
+   *
+   * @param panel panel
+   */
+  public void deletePanel(Panel panel) {
     panelDAO.delete(panel);
   }
 

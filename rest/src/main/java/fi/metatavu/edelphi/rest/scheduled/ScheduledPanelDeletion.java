@@ -41,7 +41,12 @@ public class ScheduledPanelDeletion {
 
       if (!panelList.isEmpty()) {
         Panel panel = panelList.get(0);
-        panelController.schedulerDeleteQueryDependencies(panel);
+
+        panelController.deletePanelAuths(panel);
+        panelController.deletePanelUserRoleActions(panel);
+        panelController.deletePanelBulletins(panel);
+        panelController.deletePanelInvitations(panel);
+
         List<Query> queries = queryController.listPanelQueries(panel, true);
         if (!queries.isEmpty()) {
           Query query = queries.get(0);
@@ -58,7 +63,14 @@ public class ScheduledPanelDeletion {
             resourceController.deleteResource(query);
           }
         } else {
-          panelController.schedulerDeleteAfterDeletingQueries(panel);
+          panelController.deletePanelResource(panel);
+          panelController.deletePanelUserExpertiseGroups(panel);
+          panelController.deletePanelUsers(panel);
+          panelController.deletePanelUserGroups(panel);
+          panelController.deletePanelUserExpertiseClasses(panel);
+          panelController.deletePanelUserIntressClasses(panel);
+          panelController.deletePanelStamps(panel);
+          panelController.deletePanel(panel);
         }
       }
     }

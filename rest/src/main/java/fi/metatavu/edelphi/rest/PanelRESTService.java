@@ -329,7 +329,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     
     User user = userId != null ? userController.findUserByKeycloakId(userId) : null;
     if (userId != null && user == null) {
-      return createNotFound(String.format("User might be archived or the userId %s is invalid", userId));
+      return createBadRequest(String.format("Invalid user id %s", userId));
     }
 
     boolean onlyNullCategories = false;
@@ -499,7 +499,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
     
     User user = userId != null ? userController.findUserByKeycloakId(userId) : null;
     if (userId != null && user == null) {
-      return createNotFound(String.format("User might be archived or the userId %s is invalid", userId));
+      return createBadRequest(String.format("Invalid user id %s", userId));
     }
     
     return createOk(queryReplyController.listQueryQuestionAnswers(queryPage, stamp, query, panel.getRootFolder(), user).stream()
@@ -908,7 +908,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
     logger.warn("User {} requested panel {} deletion", loggedUser.getId(), panel.getId());
 
-    panelController.deletePanel(panel);
+    panelController.deletePanelByRest(panel);
 
     logger.warn("User {} deleted panel {}", loggedUser.getId(), panel.getId());
 
