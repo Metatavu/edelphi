@@ -10,7 +10,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
-import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageTemplate;
 import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection;
 import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection_;
@@ -18,7 +17,7 @@ import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
-public class QuerySectionDAO extends GenericDAO<QuerySection> implements UserCreatedEntityDAO<QuerySection> {
+public class QuerySectionDAO extends GenericDAO<QuerySection> {
 
   public QuerySection create(User creator, Query query, String title, Integer sectionNumber, Boolean visible, Boolean commentable, Boolean viewDiscussions) {
     Date now = new Date();

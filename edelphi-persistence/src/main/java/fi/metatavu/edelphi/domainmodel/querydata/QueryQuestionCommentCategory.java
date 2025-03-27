@@ -14,14 +14,13 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-import fi.metatavu.edelphi.domainmodel.base.UserCreatedEntity;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @Entity
 @Cacheable
-public class QueryQuestionCommentCategory extends UserCreatedEntity {
+public class QueryQuestionCommentCategory {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

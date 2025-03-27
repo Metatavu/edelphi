@@ -16,7 +16,7 @@ import fi.metatavu.edelphi.domainmodel.panels.PanelBulletin;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
-public class DelfoiBulletinDAO extends GenericDAO<DelfoiBulletin> implements UserCreatedEntityDAO<DelfoiBulletin> {
+public class DelfoiBulletinDAO extends GenericDAO<DelfoiBulletin> {
   
   public DelfoiBulletin create(Delfoi delfoi, String title, String message, User creator, Boolean important, Date importantEnds) {
     
@@ -109,7 +109,6 @@ public class DelfoiBulletinDAO extends GenericDAO<DelfoiBulletin> implements Use
     return persist(bulletin);
   }
 
-  @Override
   public List<DelfoiBulletin> listAllByCreator(User user) {
     EntityManager entityManager = getEntityManager();
 
@@ -124,7 +123,6 @@ public class DelfoiBulletinDAO extends GenericDAO<DelfoiBulletin> implements Use
     return entityManager.createQuery(criteria).getResultList();
   }
 
-  @Override
   public List<DelfoiBulletin> listAllByModifier(User user) {
     EntityManager entityManager = getEntityManager();
 

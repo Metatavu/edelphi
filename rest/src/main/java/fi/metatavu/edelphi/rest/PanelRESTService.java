@@ -945,7 +945,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
       return createForbidden("Forbidden");
     }
     
-    List<Query> queries = queryController.listPanelQueries(panel);
+    List<Query> queries = queryController.listPanelQueries(panel, false);
     
     return createOk(queries.stream().map(queryTranslator::translate).collect(Collectors.toList()));
   }

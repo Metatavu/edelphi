@@ -42,7 +42,7 @@ public class ScheduledPanelDeletion {
       if (!panelList.isEmpty()) {
         Panel panel = panelList.get(0);
         panelController.schedulerDeleteQueryDependencies(panel);
-        List<Query> queries = queryController.listAllPanelQueries(panel);
+        List<Query> queries = queryController.listPanelQueries(panel, true);
         if (!queries.isEmpty()) {
           Query query = queries.get(0);
           List<QueryQuestionComment> comments = queryQuestionCommentController.listAllByQuery(query);

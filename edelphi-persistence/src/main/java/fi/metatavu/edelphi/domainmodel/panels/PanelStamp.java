@@ -16,12 +16,11 @@ import javax.validation.constraints.NotNull;
 
 import fi.metatavu.edelphi.domainmodel.base.ArchivableEntity;
 import fi.metatavu.edelphi.domainmodel.base.ModificationTrackedEntity;
-import fi.metatavu.edelphi.domainmodel.base.UserCreatedEntity;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @Entity
 @Cacheable
-public class PanelStamp extends UserCreatedEntity implements ArchivableEntity, ModificationTrackedEntity {
+public class PanelStamp implements ArchivableEntity, ModificationTrackedEntity {
 
   /**
    * Returns internal unique id

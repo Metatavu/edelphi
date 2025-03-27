@@ -25,7 +25,6 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
-import fi.metatavu.edelphi.domainmodel.base.UserCreatedEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.DocumentId;
@@ -44,7 +43,7 @@ import fi.metatavu.edelphi.domainmodel.orders.Plan;
 @Indexed
 @Cacheable
 @Inheritance(strategy=InheritanceType.JOINED)
-public class User extends UserCreatedEntity implements ArchivableEntity, ModificationTrackedEntity {
+public class User implements ArchivableEntity, ModificationTrackedEntity {
 
   @Id
   @DocumentId

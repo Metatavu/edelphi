@@ -9,14 +9,13 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
-import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelBulletin;
 import fi.metatavu.edelphi.domainmodel.panels.PanelBulletin_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
-public class PanelBulletinDAO extends GenericDAO<PanelBulletin> implements UserCreatedEntityDAO<PanelBulletin> {
+public class PanelBulletinDAO extends GenericDAO<PanelBulletin> {
   
   public PanelBulletin create(Panel panel, String title, String message, User creator, Boolean important, Date importantEnds) {
     
@@ -106,7 +105,6 @@ public class PanelBulletinDAO extends GenericDAO<PanelBulletin> implements UserC
     return persist(bulletin);
   }
 
-  @Override
   public List<PanelBulletin> listAllByCreator(User user) {
     EntityManager entityManager = getEntityManager();
 
@@ -121,7 +119,6 @@ public class PanelBulletinDAO extends GenericDAO<PanelBulletin> implements UserC
     return entityManager.createQuery(criteria).getResultList();
   }
 
-  @Override
   public List<PanelBulletin> listAllByModifier(User user) {
     EntityManager entityManager = getEntityManager();
 

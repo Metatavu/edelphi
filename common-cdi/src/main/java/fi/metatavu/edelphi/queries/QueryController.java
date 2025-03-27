@@ -239,20 +239,15 @@ public class QueryController {
    * Lists queries in a panel
    * 
    * @param panel panel
+   * @param includeArchived include archived
    * @return list of panel queries
    */
-  public List<Query> listPanelQueries(Panel panel) {
-    return queryDAO.listByFolderAndArchived(panel.getRootFolder(), Boolean.FALSE);
-  }
-
-  /**
-   * Lists queries in a panel
-   *
-   * @param panel panel
-   * @return list of panel queries
-   */
-  public List<Query> listPanelQueries(Panel panel) {
-    return queryDAO.listByFolder(panel.getRootFolder());
+  public List<Query> listPanelQueries(Panel panel, Boolean includeArchived) {
+    if (includeArchived) {
+      return queryDAO.listByFolder(panel.getRootFolder());
+    } else {
+      return queryDAO.listByFolderAndArchived(panel.getRootFolder(), Boolean.FALSE);
+    }
   }
 
 

@@ -12,7 +12,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
-import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.resources.Folder;
 import fi.metatavu.edelphi.domainmodel.resources.Resource;
@@ -21,7 +20,7 @@ import fi.metatavu.edelphi.domainmodel.resources.Resource_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
-public class ResourceDAO extends GenericDAO<Resource> implements UserCreatedEntityDAO<Resource> {
+public class ResourceDAO extends GenericDAO<Resource> {
   
   public Resource findByUrlNameAndParentFolder(String urlName, Folder parentFolder) {
     EntityManager entityManager = getEntityManager(); 

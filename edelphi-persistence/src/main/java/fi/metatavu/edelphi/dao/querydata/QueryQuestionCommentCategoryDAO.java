@@ -10,7 +10,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
-import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory_;
@@ -24,7 +23,7 @@ import fi.metatavu.edelphi.domainmodel.users.User;
  * @author Antti Leppä
  */
 @ApplicationScoped
-public class QueryQuestionCommentCategoryDAO extends GenericDAO<QueryQuestionCommentCategory> implements UserCreatedEntityDAO<QueryQuestionCommentCategory> {
+public class QueryQuestionCommentCategoryDAO extends GenericDAO<QueryQuestionCommentCategory> {
 
   /**
    * Creates new QueryQuestionCommentCategory

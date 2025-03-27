@@ -1,7 +1,6 @@
 package fi.metatavu.edelphi.users;
 
 import fi.metatavu.edelphi.dao.base.DelfoiBulletinDAO;
-import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
 import fi.metatavu.edelphi.dao.drafts.FormDraftDAO;
 import fi.metatavu.edelphi.dao.panels.*;
 import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentCategoryDAO;
@@ -14,12 +13,10 @@ import fi.metatavu.edelphi.dao.resources.ResourceDAO;
 import fi.metatavu.edelphi.dao.resources.ResourceLockDAO;
 import fi.metatavu.edelphi.dao.users.DelfoiUserDAO;
 import fi.metatavu.edelphi.dao.users.UserDAO;
-import fi.metatavu.edelphi.domainmodel.base.UserCreatedEntity;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.List;
 
 @ApplicationScoped
 public class ClearUserCreationsAndModifications {
@@ -88,48 +85,167 @@ public class ClearUserCreationsAndModifications {
   public void clearUserModifiedEntities(User user) {
     User resetUser = userDAO.findById(ADMIN_USER_ID);
 
-    clearUserModifiedEntities(user, panelUserDAO, resetUser);
-    clearUserModifiedEntities(user, panelBulletinDAO, resetUser);
-    clearUserModifiedEntities(user, delfoiUserDAO, resetUser);
-    clearUserModifiedEntities(user, formDraftDAO, resetUser);
-    clearUserModifiedEntities(user, panelDAO, resetUser);
-    clearUserModifiedEntities(user, delfoiBulletinDAO, resetUser);
-    clearUserModifiedEntities(user, panelInvitationDAO, resetUser);
-    clearUserModifiedEntities(user, panelStampDAO, resetUser);
-    clearUserModifiedEntities(user, panelUserGroupDAO, resetUser);
-    clearUserModifiedEntities(user, queryQuestionCommentDAO, resetUser);
-    clearUserModifiedEntities(user, queryQuestionCommentCategoryDAO, resetUser);
-    clearUserModifiedEntities(user, queryReplyDAO, resetUser);
-    clearUserModifiedEntities(user, queryPageDAO, resetUser);
-    clearUserModifiedEntities(user, queryPageTemplateDAO, resetUser);
-    clearUserModifiedEntities(user, querySectionDAO, resetUser);
-    clearUserModifiedEntities(user, resourceDAO, resetUser);
-    clearUserModifiedEntities(user, resourceLockDAO, resetUser);
-    clearUserModifiedEntities(user, userDAO, resetUser);
-  }
+    panelUserDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      panelUserDAO.persist(entity);
+    });
+    panelUserDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      panelUserDAO.persist(entity);
+    });
 
-  /**
-   * Clears for the given entity creator and lastModifier fields where this user is used.
-   * Sets the creator and lastModifier fields to the user given in resetUser parameter.
-   *
-   * @param user user whose fields to reset
-   * @param dao DAO of the entity type to clear
-   * @param resetUser new value
-   * @param <T> type of the entity to clear
-   */
-  private <T> void clearUserModifiedEntities(User user, UserCreatedEntityDAO<T> dao, User resetUser) {
-    List<UserCreatedEntity> createdByUser = (List<UserCreatedEntity>) dao.listAllByCreator(user);
+    panelBulletinDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      panelBulletinDAO.persist(entity);
+    });
+    panelBulletinDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      panelBulletinDAO.persist(entity);
+    });
 
-    for (UserCreatedEntity resource: createdByUser) {
-      resource.setCreator(resetUser);
-      dao.persist((T) resource);
-    }
+    delfoiUserDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      delfoiUserDAO.persist(entity);
+    });
+    delfoiUserDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      delfoiUserDAO.persist(entity);
+    });
 
-    List<UserCreatedEntity> modifiedByUser = (List<UserCreatedEntity>) dao.listAllByModifier(user);
+    formDraftDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      formDraftDAO.persist(entity);
+    });
+    formDraftDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      formDraftDAO.persist(entity);
+    });
 
-    for (UserCreatedEntity resource: modifiedByUser) {
-      resource.setLastModifier(resetUser);
-      dao.persist((T) resource);
-    }
+    panelDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      panelDAO.persist(entity);
+    });
+    panelDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      panelDAO.persist(entity);
+    });
+
+    delfoiBulletinDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      delfoiBulletinDAO.persist(entity);
+    });
+    delfoiBulletinDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      delfoiBulletinDAO.persist(entity);
+    });
+
+    panelInvitationDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      panelInvitationDAO.persist(entity);
+    });
+    panelInvitationDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      panelInvitationDAO.persist(entity);
+    });
+
+    panelStampDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      panelStampDAO.persist(entity);
+    });
+    panelStampDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      panelStampDAO.persist(entity);
+    });
+
+    panelUserGroupDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      panelUserGroupDAO.persist(entity);
+    });
+    panelUserGroupDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      panelUserGroupDAO.persist(entity);
+    });
+
+    queryQuestionCommentDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      queryQuestionCommentDAO.persist(entity);
+    });
+    queryQuestionCommentDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      queryQuestionCommentDAO.persist(entity);
+    });
+
+    queryQuestionCommentCategoryDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      queryQuestionCommentCategoryDAO.persist(entity);
+    });
+    queryQuestionCommentCategoryDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      queryQuestionCommentCategoryDAO.persist(entity);
+    });
+
+    queryReplyDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      queryReplyDAO.persist(entity);
+    });
+    queryReplyDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      queryReplyDAO.persist(entity);
+    });
+
+    queryPageDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      queryPageDAO.persist(entity);
+    });
+    queryPageDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      queryPageDAO.persist(entity);
+    });
+
+    queryPageTemplateDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      queryPageTemplateDAO.persist(entity);
+    });
+    queryPageTemplateDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      queryPageTemplateDAO.persist(entity);
+    });
+
+    querySectionDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      querySectionDAO.persist(entity);
+    });
+    querySectionDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      querySectionDAO.persist(entity);
+    });
+
+    resourceDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      resourceDAO.persist(entity);
+    });
+    resourceDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      resourceDAO.persist(entity);
+    });
+
+    resourceLockDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      resourceLockDAO.persist(entity);
+    });
+    resourceLockDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      resourceLockDAO.persist(entity);
+    });
+
+    userDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      userDAO.persist(entity);
+    });
+    userDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      userDAO.persist(entity);
+    });
+
   }
 }

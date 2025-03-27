@@ -9,7 +9,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 import javax.persistence.criteria.*;
 
-import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiUser;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUser;
 import fi.metatavu.edelphi.domainmodel.users.UserRole;
@@ -31,7 +30,7 @@ import fi.metatavu.edelphi.domainmodel.base.DelfoiUser_;
 import fi.metatavu.edelphi.search.SearchResult;
 
 @ApplicationScoped
-public class UserDAO extends GenericDAO<User> implements UserCreatedEntityDAO<User> {
+public class UserDAO extends GenericDAO<User> {
   
   @SuppressWarnings ("squid:S00107")
   public User create(String firstName, String lastName, String nickname, User creator, SubscriptionLevel subscriptionLevel, Date subscriptionStarted, Date subscriptionEnds, String locale) {

@@ -13,13 +13,12 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import fi.metatavu.edelphi.domainmodel.base.UserCreatedEntity;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @Entity
-public class FormDraft extends UserCreatedEntity {
+public class FormDraft {
 
   public Long getId() {
     return id;
@@ -49,8 +48,6 @@ public class FormDraft extends UserCreatedEntity {
     this.creator = creator;
   }
 
-  // Only for interface
-  @Override
   public void setLastModifier(User creator) {}
   
   public Date getModified() {

@@ -13,11 +13,10 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
-import fi.metatavu.edelphi.domainmodel.base.UserCreatedEntity;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @Entity
-public class ResourceLock extends UserCreatedEntity {
+public class ResourceLock {
   
   /**
    * Returns internal unique id

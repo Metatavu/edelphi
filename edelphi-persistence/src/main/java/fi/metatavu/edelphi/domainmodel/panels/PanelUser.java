@@ -15,13 +15,12 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
-import fi.metatavu.edelphi.domainmodel.base.UserCreatedEntity;
 import fi.metatavu.edelphi.domainmodel.base.ArchivableEntity;
 import fi.metatavu.edelphi.domainmodel.base.ModificationTrackedEntity;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @Entity
-public class PanelUser extends UserCreatedEntity implements ArchivableEntity, ModificationTrackedEntity {
+public class PanelUser implements ArchivableEntity, ModificationTrackedEntity {
 
   /**
    * Returns internal unique id

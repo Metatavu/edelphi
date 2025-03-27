@@ -16,7 +16,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
-import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.panels.PanelUserGroup;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
@@ -35,7 +34,7 @@ import fi.metatavu.edelphi.domainmodel.resources.Query_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
-public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> implements UserCreatedEntityDAO<QueryQuestionComment> {
+public class QueryQuestionCommentDAO extends GenericDAO<QueryQuestionComment> {
 
   public QueryQuestionComment create(QueryReply queryReply, QueryPage queryPage, QueryQuestionComment parentComment, String comment, Boolean hidden, User creator) {
     Date now = new Date();

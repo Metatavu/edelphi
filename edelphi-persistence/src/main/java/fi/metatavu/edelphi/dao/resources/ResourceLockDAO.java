@@ -11,7 +11,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
-import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
 import fi.metatavu.edelphi.domainmodel.resources.Resource;
 import fi.metatavu.edelphi.domainmodel.resources.ResourceLock;
 import fi.metatavu.edelphi.domainmodel.resources.ResourceLock_;
@@ -20,7 +19,7 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 import static java.util.Collections.emptyList;
 
 @ApplicationScoped
-public class ResourceLockDAO extends GenericDAO<ResourceLock> implements UserCreatedEntityDAO<ResourceLock> {
+public class ResourceLockDAO extends GenericDAO<ResourceLock> {
   
   public ResourceLock create(Resource resource, User creator, Date expires) {
     Date created = new Date();
@@ -71,7 +70,6 @@ public class ResourceLockDAO extends GenericDAO<ResourceLock> implements UserCre
     return entityManager.createQuery(criteria).getResultList();
   }
 
-  @Override
   public List<ResourceLock> listAllByModifier(User user) {
     return emptyList();
   }

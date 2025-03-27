@@ -11,7 +11,6 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
-import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory;
@@ -21,7 +20,7 @@ import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
-public class QueryReplyDAO extends GenericDAO<QueryReply> implements UserCreatedEntityDAO<QueryReply> {
+public class QueryReplyDAO extends GenericDAO<QueryReply> {
 
   public QueryReply create(User user, Query query, PanelStamp panelStamp, User creator) {
     Date now = new Date();

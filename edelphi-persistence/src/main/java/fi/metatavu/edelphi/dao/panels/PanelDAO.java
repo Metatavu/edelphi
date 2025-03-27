@@ -12,7 +12,6 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
-import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelAccessLevel;
@@ -26,7 +25,7 @@ import fi.metatavu.edelphi.domainmodel.resources.Folder;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
-public class PanelDAO extends GenericDAO<Panel> implements UserCreatedEntityDAO<Panel> {
+public class PanelDAO extends GenericDAO<Panel> {
 
   public void archivePanelByScheduler (Panel panel) {
     panel.setArchived(true);

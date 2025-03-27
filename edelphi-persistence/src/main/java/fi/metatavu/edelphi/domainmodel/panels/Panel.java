@@ -17,7 +17,6 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
-import fi.metatavu.edelphi.domainmodel.base.UserCreatedEntity;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import fi.metatavu.edelphi.domainmodel.base.ArchivableEntity;
@@ -28,7 +27,7 @@ import fi.metatavu.edelphi.domainmodel.users.User;
 
 @Entity
 @Cacheable
-public class Panel extends UserCreatedEntity implements ArchivableEntity, ModificationTrackedEntity {
+public class Panel implements ArchivableEntity, ModificationTrackedEntity {
 
   /**
    * Returns internal unique id

@@ -10,14 +10,13 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
-import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
-public class PanelStampDAO extends GenericDAO<PanelStamp> implements UserCreatedEntityDAO<PanelStamp> {
+public class PanelStampDAO extends GenericDAO<PanelStamp> {
 
   public PanelStamp create(Panel panel, String name, String description, Date stampTime, User creator) {
     Date now = new Date();

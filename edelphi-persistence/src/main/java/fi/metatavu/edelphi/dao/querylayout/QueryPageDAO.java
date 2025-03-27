@@ -13,8 +13,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
-import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
-import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageType;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage_;
@@ -26,7 +24,7 @@ import fi.metatavu.edelphi.domainmodel.resources.Query_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
-public class QueryPageDAO extends GenericDAO<QueryPage> implements UserCreatedEntityDAO<QueryPage> {
+public class QueryPageDAO extends GenericDAO<QueryPage> {
 
   public QueryPage create(User creator, QuerySection querySection, QueryPageType pageType, Integer pageNumber, String title, Boolean visible) {
     Date now = new Date();

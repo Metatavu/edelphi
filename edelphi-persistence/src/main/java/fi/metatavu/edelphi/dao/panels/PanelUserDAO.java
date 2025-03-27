@@ -11,7 +11,6 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
-import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
 import fi.metatavu.edelphi.domainmodel.actions.DelfoiAction;
 import fi.metatavu.edelphi.domainmodel.actions.PanelUserRoleAction;
 import fi.metatavu.edelphi.domainmodel.actions.PanelUserRoleAction_;
@@ -26,7 +25,7 @@ import fi.metatavu.edelphi.domainmodel.panels.Panel_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
-public class PanelUserDAO extends GenericDAO<PanelUser> implements UserCreatedEntityDAO<PanelUser> {
+public class PanelUserDAO extends GenericDAO<PanelUser> {
 
   /**
    * Creates new panel user
@@ -306,7 +305,6 @@ public class PanelUserDAO extends GenericDAO<PanelUser> implements UserCreatedEn
     return entityManager.createQuery(criteria).getResultList();
   }
 
-  @Override
   public List<PanelUser> listAllByCreator(User user) {
     EntityManager entityManager = getEntityManager();
 
@@ -321,7 +319,6 @@ public class PanelUserDAO extends GenericDAO<PanelUser> implements UserCreatedEn
     return entityManager.createQuery(criteria).getResultList();
   }
 
-  @Override
   public List<PanelUser> listAllByModifier(User user) {
     EntityManager entityManager = getEntityManager();
 

@@ -10,7 +10,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
-import fi.metatavu.edelphi.dao.base.UserCreatedEntityDAO;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiUser;
 import fi.metatavu.edelphi.domainmodel.base.DelfoiUser_;
@@ -18,7 +17,7 @@ import fi.metatavu.edelphi.domainmodel.users.DelfoiUserRole;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
 @ApplicationScoped
-public class DelfoiUserDAO extends GenericDAO<DelfoiUser> implements UserCreatedEntityDAO<DelfoiUser> {
+public class DelfoiUserDAO extends GenericDAO<DelfoiUser> {
 
   public DelfoiUser create(Delfoi delfoi, User user, DelfoiUserRole role, User creator) {
     EntityManager entityManager = getEntityManager(); 
