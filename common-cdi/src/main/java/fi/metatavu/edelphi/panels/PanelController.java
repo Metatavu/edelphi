@@ -103,12 +103,7 @@ public class PanelController {
    * @return panel or null if not found
    */
   public Panel findPanelById(Long id) {
-    Panel panel = panelDAO.findById(id);
-    if (panel != null && panel.getArchived()) {
-      return null;
-    }
-
-    return panel;
+    return panelDAO.findById(id);
   }
 
   /**
@@ -314,11 +309,7 @@ public class PanelController {
    * @return whether panel is archived or not
    */
   public boolean isPanelArchived(Panel panel) {
-    if (panel.getArchived()) {
-      return true;
-    }
-    
-    return false;
+    return panel.getArchived();
   }
 
   /**

@@ -96,7 +96,7 @@ public class QueryPageCopyWriter extends TypedItemWriter<QueryPage> {
     User copier = userController.findUserByKeycloakId(loggedUserId);
     Panel targetPanel = panelController.findPanelById(targetPanelId);
 
-    if (targetPanel != null) {
+    if (targetPanel != null && !targetPanel.getArchived()) {
       Query originalQuery = queryController.findQueryById(queryCopyBatchContext.getOriginalQueryId());
       Panel sourcePanel = resourceController.getResourcePanel(originalQuery);
       Query newQuery = queryController.findQueryById(queryCopyBatchContext.getNewQueryId());

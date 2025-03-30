@@ -113,7 +113,7 @@ public class QueryCopyWriter extends TypedItemWriter<Query> {
     Query originalQuery = items.get(0);
     Panel targetPanel = panelController.findPanelById(targetPanelId);
 
-    if (targetPanel != null) {
+    if (targetPanel != null && !targetPanel.getArchived()) {
       User user = UserController.findUserByKeycloakId(loggedUserId);
 
       queryCopyBatchContext.setOriginalQueryId(originalQuery.getId());
