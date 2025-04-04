@@ -56,7 +56,7 @@ public class DelfoiUserDAO extends GenericDAO<DelfoiUser> {
     return getSingleResult(entityManager.createQuery(criteria));
   }
 
-  public List<DelfoiUser> listByUser(User user) {
+  public List<DelfoiUser> listAllByUser(User user) {
     EntityManager entityManager = getEntityManager();
 
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();

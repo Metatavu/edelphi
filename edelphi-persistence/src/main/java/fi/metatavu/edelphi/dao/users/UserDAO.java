@@ -226,6 +226,14 @@ public class UserDAO extends GenericDAO<User> {
     return user;
   }
 
+  public User removeAllUserEmails(User user, User modifier) {
+    user.setEmails(null);
+    user.setLastModified(new Date());
+    user.setLastModifier(modifier);
+    getEntityManager().persist(user);
+    return user;
+  }
+
   public User updateSubscriptionLevel(User user, SubscriptionLevel subscriptionLevel) {
     user.setSubscriptionLevel(subscriptionLevel);
     return persist(user);

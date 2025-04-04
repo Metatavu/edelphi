@@ -91,7 +91,7 @@ public class PanelController {
    *
    * @param panel panel to archive
    */
-  public void archivePanelScheduler(Panel panel) {
+  public void archivePanel(Panel panel) {
     panelInvitationDAO.listAllByPanel(panel).forEach(panelInvitationDAO::delete);
     panelDAO.archivePanel(panel);
   }

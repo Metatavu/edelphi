@@ -47,8 +47,6 @@ public class FormDraft {
   public void setCreator(User creator) {
     this.creator = creator;
   }
-
-  public void setLastModifier(User creator) {}
   
   public Date getModified() {
     return modified;

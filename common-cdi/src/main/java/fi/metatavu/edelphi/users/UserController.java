@@ -10,9 +10,18 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import fi.metatavu.edelphi.batch.i18n.BatchMessages;
+import fi.metatavu.edelphi.dao.base.DelfoiBulletinDAO;
+import fi.metatavu.edelphi.dao.drafts.FormDraftDAO;
 import fi.metatavu.edelphi.dao.orders.OrderHistoryDAO;
 import fi.metatavu.edelphi.dao.panels.*;
+import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentCategoryDAO;
+import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentDAO;
 import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
+import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
+import fi.metatavu.edelphi.dao.querylayout.QueryPageTemplateDAO;
+import fi.metatavu.edelphi.dao.querylayout.QuerySectionDAO;
+import fi.metatavu.edelphi.dao.resources.ResourceDAO;
+import fi.metatavu.edelphi.dao.resources.ResourceLockDAO;
 import fi.metatavu.edelphi.dao.users.*;
 import fi.metatavu.edelphi.domainmodel.base.*;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
@@ -116,9 +125,47 @@ public class UserController {
   private OrderHistoryDAO orderHistoryDAO;
 
   @Inject
-  private ClearUserCreationsAndModifications clearUserCreationsAndModifications;
+  private PanelBulletinDAO panelBulletinDAO;
+
+  @Inject
+  private DelfoiBulletinDAO delfoiBulletinDAO;
+
+  @Inject
+  private FormDraftDAO formDraftDAO;
+
+  @Inject
+  private PanelDAO panelDAO;
+
+  @Inject
+  private PanelInvitationDAO panelInvitationDAO;
+
+  @Inject
+  private PanelStampDAO panelStampDAO;
+
+  @Inject
+  private QueryQuestionCommentDAO queryQuestionCommentDAO;
+
+  @Inject
+  private QueryQuestionCommentCategoryDAO queryQuestionCommentCategoryDAO;
+
+  @Inject
+  private QueryPageDAO queryPageDAO;
+
+  @Inject
+  private QueryPageTemplateDAO queryPageTemplateDAO;
+
+  @Inject
+  private QuerySectionDAO querySectionDAO;
+
+  @Inject
+  private ResourceDAO resourceDAO;
+
+  @Inject
+  private ResourceLockDAO resourceLockDAO;
 
   private static final long ADMINISTRATORS_ROLE_ID = 2;
+
+  private static final long ADMIN_USER_ID = 1;
 
   /**
    * Creates new user to the system. Method check whether user already exists and uses existing user if one is available.
@@ -317,7 +364,7 @@ public class UserController {
    * @param user user to archive
    */
   public void archiveUser(User user) {
-    delfoiUserDAO.listByUser(user).forEach(delfoiUserDAO::archive);
+    delfoiUserDAO.listAllByUser(user).forEach(delfoiUserDAO::archive);
     user.setLastModified(new Date());
     user.setArchived(true);
     userDAO.persist(user);
@@ -329,7 +376,7 @@ public class UserController {
    * @param user user to delete
    */
   public void deleteUser(User user) {
-    clearUserCreationsAndModifications.clearUserModifiedEntities(user);
+    transferUserOwnedItemsToAdmin(user);
 
     AuthSource authSource = keycloakController.getKeycloakAuthSource();
     List<UserIdentification> userIdentifications = userIdentificationDAO.listByUserAndAuthSource(user, authSource);
@@ -341,11 +388,21 @@ public class UserController {
       }
     }
 
-    List<UserEmail> emails = userEmailDAO.listByUser(user);
-    user.setDefaultEmail(null);
-    user.setEmails(null);
+    User admin = userDAO.findById(ADMIN_USER_ID);
+    user = userDAO.updateDefaultEmail(
+      user,
+      null,
+      admin
+    );
+
+    user = userDAO.removeAllUserEmails(
+      user,
+      admin
+    );
+
     userDAO.persist(user);
 
+    List<UserEmail> emails = userEmailDAO.listByUser(user);
     emails.forEach(userEmailDAO::delete);
     userIdentificationDAO.listByUser(user).forEach(userIdentificationDAO::delete);
     bulletinReadDAO.listByUser(user).forEach(bulletinReadDAO::delete);
@@ -370,7 +427,7 @@ public class UserController {
     userNotificationDAO.listByUser(user).forEach(userNotificationDAO::delete);
     userPasswordDAO.listAllByUser(user).forEach(userPasswordDAO::delete);
 
-    delfoiUserDAO.listByUser(user).forEach(delfoiUserDAO::delete);
+    delfoiUserDAO.listAllByUser(user).forEach(delfoiUserDAO::delete);
 
     List<PanelUserGroup> groups = panelUserGroupDAO.listUserPanelGroups(user);
     for (PanelUserGroup group : groups) {
@@ -388,5 +445,174 @@ public class UserController {
     userDAO.delete(user);
   }
 
+  /**
+   * Clear all creator and lastModifier fields where this user is used.
+   * The fields are set to the main admin user.
+   *
+   * @param user user whose fields to reset
+   */
+  public void transferUserOwnedItemsToAdmin(User user) {
+    User resetUser = userDAO.findById(ADMIN_USER_ID);
 
+    panelUserDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      panelUserDAO.persist(entity);
+    });
+    panelUserDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      panelUserDAO.persist(entity);
+    });
+
+    panelBulletinDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      panelBulletinDAO.persist(entity);
+    });
+    panelBulletinDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      panelBulletinDAO.persist(entity);
+    });
+
+    delfoiUserDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      delfoiUserDAO.persist(entity);
+    });
+    delfoiUserDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      delfoiUserDAO.persist(entity);
+    });
+
+    formDraftDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      formDraftDAO.persist(entity);
+    });
+    formDraftDAO.listAllByModifier(user).forEach(entity -> {
+      formDraftDAO.persist(entity);
+    });
+
+    panelDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      panelDAO.persist(entity);
+    });
+    panelDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      panelDAO.persist(entity);
+    });
+
+    delfoiBulletinDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      delfoiBulletinDAO.persist(entity);
+    });
+    delfoiBulletinDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      delfoiBulletinDAO.persist(entity);
+    });
+
+    panelInvitationDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      panelInvitationDAO.persist(entity);
+    });
+    panelInvitationDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      panelInvitationDAO.persist(entity);
+    });
+
+    panelStampDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      panelStampDAO.persist(entity);
+    });
+    panelStampDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      panelStampDAO.persist(entity);
+    });
+
+    panelUserGroupDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      panelUserGroupDAO.persist(entity);
+    });
+    panelUserGroupDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      panelUserGroupDAO.persist(entity);
+    });
+
+    queryQuestionCommentDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      queryQuestionCommentDAO.persist(entity);
+    });
+    queryQuestionCommentDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      queryQuestionCommentDAO.persist(entity);
+    });
+
+    queryQuestionCommentCategoryDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      queryQuestionCommentCategoryDAO.persist(entity);
+    });
+    queryQuestionCommentCategoryDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      queryQuestionCommentCategoryDAO.persist(entity);
+    });
+
+    queryReplyDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      queryReplyDAO.persist(entity);
+    });
+    queryReplyDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      queryReplyDAO.persist(entity);
+    });
+
+    queryPageDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      queryPageDAO.persist(entity);
+    });
+    queryPageDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      queryPageDAO.persist(entity);
+    });
+
+    queryPageTemplateDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      queryPageTemplateDAO.persist(entity);
+    });
+    queryPageTemplateDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      queryPageTemplateDAO.persist(entity);
+    });
+
+    querySectionDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      querySectionDAO.persist(entity);
+    });
+    querySectionDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      querySectionDAO.persist(entity);
+    });
+
+    resourceDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      resourceDAO.persist(entity);
+    });
+    resourceDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      resourceDAO.persist(entity);
+    });
+
+    resourceLockDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      resourceLockDAO.persist(entity);
+    });
+    resourceLockDAO.listAllByModifier(user).forEach(entity -> {
+      resourceLockDAO.persist(entity);
+    });
+
+    userDAO.listAllByCreator(user).forEach(entity -> {
+      entity.setCreator(resetUser);
+      userDAO.persist(entity);
+    });
+    userDAO.listAllByModifier(user).forEach(entity -> {
+      entity.setLastModifier(resetUser);
+      userDAO.persist(entity);
+    });
+
+  }
 }

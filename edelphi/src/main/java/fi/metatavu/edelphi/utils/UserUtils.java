@@ -105,8 +105,8 @@ public class UserUtils {
       userPictureDAO.updateUser(sourceUserPicture, target);
     }
     // Delfoi memberships
-    List<DelfoiUser> sourceDelfoiUsers = delfoiUserDAO.listByUser(source);
-    List<DelfoiUser> targetDelfoiUsers = delfoiUserDAO.listByUser(target);
+    List<DelfoiUser> sourceDelfoiUsers = delfoiUserDAO.listAllByUser(source);
+    List<DelfoiUser> targetDelfoiUsers = delfoiUserDAO.listAllByUser(target);
     for (DelfoiUser sourceDelfoiUser : sourceDelfoiUsers) {
       boolean targetHasMembership = false;
       for (DelfoiUser targetDelfoiUser : targetDelfoiUsers) {

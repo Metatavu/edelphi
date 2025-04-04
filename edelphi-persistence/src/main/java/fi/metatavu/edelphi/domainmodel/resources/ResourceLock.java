@@ -51,9 +51,6 @@ public class ResourceLock {
     return created;
   }
 
-  // Only for the abstract class
-  public void setLastModifier(User creator) {}
-
   public void setCreator(User creator) {
     this.creator = creator;
   }
