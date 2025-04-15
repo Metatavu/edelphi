@@ -117,8 +117,7 @@ public class PanelInvitationSendWriter extends TypedItemWriter<PanelInvitation> 
       }
       
       Panel panel = panelController.findPanelById(panelId);
-
-      if (panel == null || panel.getArchived()) {
+      if (panel == null) {
         throw new PanelInvitationException("Invalid panel id");
       }
       
@@ -180,7 +179,7 @@ public class PanelInvitationSendWriter extends TypedItemWriter<PanelInvitation> 
     
     try {
       Panel panel = panelController.findPanelById(panelId);
-      if (panel == null || panel.getArchived()) {
+      if (panel == null) {
         throw new PanelInvitationException("Invalid panel id");
       }
       
