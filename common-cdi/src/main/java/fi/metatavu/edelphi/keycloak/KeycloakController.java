@@ -196,6 +196,12 @@ public class KeycloakController {
       return findUser(usersApi, realm, email);
   }
 
+  /**
+   * Retrieves user from Keycloak by id.
+   * Returns null if user is not found.
+   *
+   * @param userId Keycloak userId
+   */
   public UserRepresentation getUser(String userId) throws KeycloakException {
     Map<String, String> settings = getKeycloakSettings();
     UsersApi usersApi = getUsersApi(settings);
