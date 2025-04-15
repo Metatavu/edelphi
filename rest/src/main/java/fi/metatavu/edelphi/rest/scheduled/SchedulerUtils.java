@@ -7,7 +7,6 @@ import java.time.ZonedDateTime;
 
 /**
  * Scheduled deletion jobs are supposed to run only at night
- *
  */
 public class SchedulerUtils {
   static boolean panelArchivingScheduleActive() {
