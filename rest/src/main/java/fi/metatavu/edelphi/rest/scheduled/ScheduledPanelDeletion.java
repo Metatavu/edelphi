@@ -9,6 +9,7 @@ import fi.metatavu.edelphi.panels.PanelController;
 import fi.metatavu.edelphi.queries.QueryController;
 import fi.metatavu.edelphi.queries.QueryReplyController;
 import fi.metatavu.edelphi.resources.ResourceController;
+import org.slf4j.Logger;
 
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
@@ -19,6 +20,9 @@ import java.util.List;
 @Startup
 @Singleton
 public class ScheduledPanelDeletion {
+  @Inject
+  private Logger logger;
+
   @Inject
   private PanelController panelController;
 
@@ -34,22 +38,20 @@ public class ScheduledPanelDeletion {
   @Inject
   private ResourceController resourceController;
 
-  @Schedule (hour = "*", minute = "*", second = "*/1", info = "Panel deletion scheduler. Runs every 60 seconds.")
+  @Schedule (hour = "*", minute = "*/15")
   public void delete() throws InterruptedException {
-    if (true) {
-      System.out.println("Panels to delete: " + panelController.listPanelsToDelete(0, 100000).size());
+    if (SchedulerUtils.panelDeletionScheduleActive()) {
+      List<Panel> panelsToDelete = panelController.listPanelsToDelete(30, 1);
 
-      List<Panel> panelList = panelController.listPanelsToDelete(0, 100);
+      for (Panel panelToDelete : panelsToDelete) {
+        logger.info("Deleting panel: {} ({}), reason: archived and last modified at: {}", panelToDelete.getId(), panelToDelete.getRootFolder().getUrlName(), panelToDelete.getLastModified());
 
-      if (!panelList.isEmpty()) {
-        Panel panel = panelList.get(0);
+        panelController.deletePanelAuths(panelToDelete);
+        panelController.deletePanelUserRoleActions(panelToDelete);
+        panelController.deletePanelBulletins(panelToDelete);
+        panelController.deletePanelInvitations(panelToDelete);
 
-        panelController.deletePanelAuths(panel);
-        panelController.deletePanelUserRoleActions(panel);
-        panelController.deletePanelBulletins(panel);
-        panelController.deletePanelInvitations(panel);
-
-          List<Query> queries = queryController.listPanelQueries(panel, true);
+          List<Query> queries = queryController.listPanelQueries(panelToDelete, true);
           if (!queries.isEmpty()) {
             Query query = queries.get(0);
             List<QueryQuestionComment> comments = queryQuestionCommentController.listAllByQuery(query);
@@ -65,7 +67,7 @@ public class ScheduledPanelDeletion {
             resourceController.deleteResource(query);
           }
         } else {
-          panelController.deletePanel(panel);
+          panelController.deletePanel(panelToDelete);
         }
       }
     }

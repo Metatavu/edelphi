@@ -1,7 +1,9 @@
 package fi.metatavu.edelphi.rest.scheduled;
 
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
+import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.panels.PanelController;
+import org.slf4j.Logger;
 
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
@@ -15,17 +17,17 @@ public class ScheduledPanelArchiving {
   @Inject
   private PanelController panelController;
 
-  @Schedule (hour = "*", minute = "*", second = "*/1", info = "Panel archiving scheduler. Runs every 60 seconds.")
+  @Inject
+  private Logger logger;
+
+  @Schedule (hour = "*", minute = "*/15")
   public void archive() {
-    if (true) {
-      System.out.println("Panels to archive: " + panelController.listPanelsToArchive(730, 100000).size());
+    if (SchedulerUtils.panelArchivingScheduleActive()) {
+      List<Panel> panelsToArchive = panelController.listPanelsToArchive(730, 1);
 
-      List<Panel> panelList = panelController.listPanelsToArchive(730, 1);
-
-      if (!panelList.isEmpty()) {
-        Panel panel = panelList.get(0);
-
-        panelController.archivePanel(panel);
+      for (Panel panelToArchive: panelsToArchive) {
+        logger.info("Archiving panel: {} ({}), reason: ended and last modified at: {}", panelToArchive.getId(), panelToArchive.getRootFolder().getUrlName(), panelToArchive.getLastModified());
+        panelController.archivePanel(panelToArchive);
       }
     }
   }
