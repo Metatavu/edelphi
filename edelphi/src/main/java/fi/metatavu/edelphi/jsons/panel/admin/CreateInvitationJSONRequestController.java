@@ -64,29 +64,25 @@ public class CreateInvitationJSONRequestController extends JSONController {
     if (userId != null && userId > 0) {
       email = getUserEmail(userId);
     }
-
-    if (email == null) {
-      jsonRequestContext.addMessage(Severity.WARNING, messages.getText(locale, "panel.admin.inviteUsers.noInvitationsSent"));
+    
+    if (StringUtils.isEmpty(email)) {
+      email = StringUtils.lowerCase(jsonRequestContext.getString("email"));
+    }
+    
+    if (isDeclined(panel, query, email)) {
+      // If user has already declined the request, we wont bother him/her anymore
+      String personName = getPersonName(email);
+      jsonRequestContext.addMessage(Severity.WARNING, messages.getText(locale, "panel.admin.inviteUsers.userDeclinedAlready", new String[] { personName }));
     } else {
-      if (StringUtils.isEmpty(email)) {
-        email = StringUtils.lowerCase(jsonRequestContext.getString("email"));
-      }
-
-      if (isDeclined(panel, query, email)) {
-        // If user has already declined the request, we wont bother him/her anymore
-        String personName = getPersonName(email);
-        jsonRequestContext.addMessage(Severity.WARNING, messages.getText(locale, "panel.admin.inviteUsers.userDeclinedAlready", new String[] { personName }));
+      // Create invitations and mail them to users
+      PanelInvitation invitation = sendInvitation(locale, panel, query, creator, email, invitationMessage, baseUrl);
+      if (invitation == null) {
+        jsonRequestContext.addMessage(Severity.WARNING, messages.getText(locale, "panel.admin.inviteUsers.noInvitationsSent"));
       } else {
-        // Create invitations and mail them to users
-        PanelInvitation invitation = sendInvitation(locale, panel, query, creator, email, invitationMessage, baseUrl);
-        if (invitation == null) {
-          jsonRequestContext.addMessage(Severity.WARNING, messages.getText(locale, "panel.admin.inviteUsers.noInvitationsSent"));
+        if (invitation.getState() == PanelInvitationState.SEND_FAIL) {
+          jsonRequestContext.addMessage(Severity.ERROR, messages.getText(locale, "panel.admin.inviteUsers.invitationsSendFailed"));
         } else {
-          if (invitation.getState() == PanelInvitationState.SEND_FAIL) {
-            jsonRequestContext.addMessage(Severity.ERROR, messages.getText(locale, "panel.admin.inviteUsers.invitationsSendFailed"));
-          } else {
-            jsonRequestContext.addMessage(Severity.OK, messages.getText(locale, "panel.admin.inviteUsers.invitationSent"));
-          }
+          jsonRequestContext.addMessage(Severity.OK, messages.getText(locale, "panel.admin.inviteUsers.invitationSent"));
         }
       }
     }
@@ -101,11 +97,6 @@ public class CreateInvitationJSONRequestController extends JSONController {
   private String getUserEmail(Long userId) {
     UserDAO userDAO = new UserDAO();
     User user = userDAO.findById(userId);
-
-    if (user == null) {
-      return null;
-    }
-
     return user.getDefaultEmailAsString();
   }
   
