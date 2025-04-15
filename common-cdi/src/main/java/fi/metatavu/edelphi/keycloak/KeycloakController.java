@@ -201,6 +201,7 @@ public class KeycloakController {
    * Returns null if user is not found.
    *
    * @param userId Keycloak userId
+   * @throws KeycloakException
    */
   public UserRepresentation getUser(String userId) throws KeycloakException {
     Map<String, String> settings = getKeycloakSettings();
