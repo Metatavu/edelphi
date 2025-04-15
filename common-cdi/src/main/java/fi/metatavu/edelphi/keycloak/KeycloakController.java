@@ -196,6 +196,22 @@ public class KeycloakController {
       return findUser(usersApi, realm, email);
   }
 
+  public UserRepresentation getUser(String userId) throws KeycloakException {
+    Map<String, String> settings = getKeycloakSettings();
+    UsersApi usersApi = getUsersApi(settings);
+    String realm = getRealm(settings);
+    try {
+      return usersApi.adminRealmsRealmUsersUserIdGet(realm, userId, false);
+    } catch (ApiException e) {
+      if (e.getCode() == 404) {
+        return null;
+      }
+
+      throw new KeycloakException(e);
+    }
+
+  }
+
   /**
    * Delete user from Keycloak
    *

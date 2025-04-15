@@ -13,10 +13,11 @@ public class ScheduledUserArchiving {
   @Inject
   private UserController userController;
 
-  @Schedule (hour = "*", minute = "*", second = "*/60", info = "User archiving scheduler. Runs every 60 seconds.")
+  @Schedule (hour = "*", minute = "*", second = "*/1", info = "User archiving scheduler. Runs every 60 seconds.")
   public void archive() {
-    if (SchedulerUtils.deletionSchedulersActive()) {
-      userController.listUsersToArchive(730, 1).forEach(userController::archiveUser);
+    if (true) {
+      System.out.println("Users to archive: " + userController.listUsersToArchive(730, 100000).size());
+      userController.listUsersToArchive(730, 100).forEach(userController::archiveUser);
     }
   }
 

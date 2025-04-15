@@ -2,13 +2,11 @@ package fi.metatavu.edelphi.rest.scheduled;
 
 import java.time.OffsetDateTime;
 
+/**
+ * Scheduled deletion jobs are supposed to run only at night
+ *
+ */
 public class SchedulerUtils {
-
-  /**
-   * Scheduled deletion jobs are supposed to run only at night
-   *
-   * @return boolean that tells if now is the right time to run deletion schedulers
-   */
   static boolean deletionSchedulersActive() {
     int schedulerStartHour = 22;
     int schedulerEndHour = 6;

@@ -382,9 +382,14 @@ public class UserController {
     List<UserIdentification> userIdentifications = userIdentificationDAO.listByUserAndAuthSource(user, authSource);
     for (UserIdentification userIdentification : userIdentifications) {
       try {
-        keycloakController.deleteUser(userIdentification.getExternalId());
+        if (keycloakController.getUser(userIdentification.getExternalId()) != null) {
+          keycloakController.deleteUser(userIdentification.getExternalId());
+        }
       } catch (KeycloakException e) {
+        System.out.println("******************************");
+        System.out.println("KEYCLOAK USER DELETION FAILED: ");
         System.out.println(e.getMessage());
+        throw new RuntimeException();
       }
     }
 

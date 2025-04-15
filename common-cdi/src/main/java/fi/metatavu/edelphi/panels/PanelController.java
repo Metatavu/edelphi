@@ -111,7 +111,7 @@ public class PanelController {
    *
    * @param panel panel
    */
-  public void deletePanelByRest(Panel panel) {
+  public void deletePanel(Panel panel) {
     Folder rootFolder = panel.getRootFolder();
 
     panelDAO.updateRootFolder(panel, null, panel.getLastModifier());
@@ -126,7 +126,7 @@ public class PanelController {
     panelUserExpertiseClassDAO.listByPanel(panel).forEach(panelUserExpertiseClassDAO::delete);
     panelUserIntressClassDAO.listByPanel(panel).forEach(panelUserIntressClassDAO::delete);
 
-    panelStampDAO.listAllByPanel(panel).forEach(panelStampDAO::delete);
+    deletePanelStamps(panel);
 
     panelDAO.delete(panel);
   }
@@ -245,15 +245,6 @@ public class PanelController {
    */
   public void deletePanelUserIntressClasses(Panel panel) {
     panelUserIntressClassDAO.listByPanel(panel).forEach(panelUserIntressClassDAO::delete);
-  }
-
-  /**
-   * Delete panel
-   *
-   * @param panel panel
-   */
-  public void deletePanel(Panel panel) {
-    panelDAO.delete(panel);
   }
 
   /**

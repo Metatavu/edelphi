@@ -34,10 +34,12 @@ public class ScheduledPanelDeletion {
   @Inject
   private ResourceController resourceController;
 
-  @Schedule (hour = "*", minute = "*", second = "*/60", info = "Panel deletion scheduler. Runs every 60 seconds.")
+  @Schedule (hour = "*", minute = "*", second = "*/1", info = "Panel deletion scheduler. Runs every 60 seconds.")
   public void delete() throws InterruptedException {
-    if (SchedulerUtils.deletionSchedulersActive()) {
-      List<Panel> panelList = panelController.listPanelsToDelete(1, 1);
+    if (true) {
+      System.out.println("Panels to delete: " + panelController.listPanelsToDelete(0, 100000).size());
+
+      List<Panel> panelList = panelController.listPanelsToDelete(0, 100);
 
       if (!panelList.isEmpty()) {
         Panel panel = panelList.get(0);
@@ -47,29 +49,22 @@ public class ScheduledPanelDeletion {
         panelController.deletePanelBulletins(panel);
         panelController.deletePanelInvitations(panel);
 
-        List<Query> queries = queryController.listPanelQueries(panel, true);
-        if (!queries.isEmpty()) {
-          Query query = queries.get(0);
-          List<QueryQuestionComment> comments = queryQuestionCommentController.listAllByQuery(query);
-          comments.forEach(queryQuestionCommentController::removeParent);
-          comments.forEach(queryQuestionCommentController::deleteQueryQuestionComment);
+          List<Query> queries = queryController.listPanelQueries(panel, true);
+          if (!queries.isEmpty()) {
+            Query query = queries.get(0);
+            List<QueryQuestionComment> comments = queryQuestionCommentController.listAllByQuery(query);
+            comments.forEach(queryQuestionCommentController::removeParent);
+            comments.forEach(queryQuestionCommentController::deleteQueryQuestionComment);
 
-          List<QueryReply> replies = queryReplyController.listQueryReplies(query, 100);
-          if (!replies.isEmpty()) {
-            replies.forEach(queryReplyController::deleteQueryReplyAnswers);
+            List<QueryReply> replies = queryReplyController.listQueryReplies(query, 100);
+            if (!replies.isEmpty()) {
+              replies.forEach(queryReplyController::deleteQueryReplyAnswers);
 
             replies.forEach(queryReplyController::deleteReply);
           } else {
             resourceController.deleteResource(query);
           }
         } else {
-          panelController.deletePanelResource(panel);
-          panelController.deletePanelUserExpertiseGroups(panel);
-          panelController.deletePanelUsers(panel);
-          panelController.deletePanelUserGroups(panel);
-          panelController.deletePanelUserExpertiseClasses(panel);
-          panelController.deletePanelUserIntressClasses(panel);
-          panelController.deletePanelStamps(panel);
           panelController.deletePanel(panel);
         }
       }

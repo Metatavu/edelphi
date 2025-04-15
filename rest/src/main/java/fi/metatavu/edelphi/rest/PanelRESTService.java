@@ -908,7 +908,7 @@ public class PanelRESTService extends AbstractApi implements PanelsApi {
 
     logger.warn("User {} requested panel {} deletion", loggedUser.getId(), panel.getId());
 
-    panelController.deletePanelByRest(panel);
+    panelController.deletePanel(panel);
 
     logger.warn("User {} deleted panel {}", loggedUser.getId(), panel.getId());
 
