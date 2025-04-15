@@ -38,30 +38,25 @@ public class EditUserPageController extends PanelPageController {
     PanelUserRoleDAO panelUserRoleDAO = new PanelUserRoleDAO();
 
     User user = userDAO.findById(pageRequestContext.getLong("userId"));
-    if (user == null) {
-      pageRequestContext.setIncludeJSP("/jsp/pages/index.jsp");
-    } else {
-      pageRequestContext.getRequest().setAttribute("user", user);
-
-      List<PanelUserRole> panelUserRoles = panelUserRoleDAO.listAll();
-      List<UserRoleBean> userRoleBeans = new ArrayList<UserRoleBean>();
-      for (PanelUserRole panelUserRole : panelUserRoles) {
-        String name = LocalizationUtils.getLocalizedText(panelUserRole.getName(), pageRequestContext.getRequest().getLocale());
-        userRoleBeans.add(new UserRoleBean(panelUserRole.getId(), name));
-      }
-      pageRequestContext.getRequest().setAttribute("panelUserRoles", userRoleBeans);
-
-      HashSet<Long> userRoles = new HashSet<Long>();
-      Panel panel = panelDAO.findById(pageRequestContext.getLong("panelId"));
-      List<PanelUser> panelUsers = panelUserDAO.listByPanelAndUserAndStamp(panel, user, panel.getCurrentStamp());
-      for (PanelUser pUser : panelUsers) {
-        userRoles.add(pUser.getRole().getId());
-      }
-      pageRequestContext.getRequest().setAttribute("userRoles", userRoles);
-
-      pageRequestContext.setIncludeJSP("/jsp/panels/edituser.jsp");
+    pageRequestContext.getRequest().setAttribute("user", user);
+    
+    List<PanelUserRole> panelUserRoles = panelUserRoleDAO.listAll();
+    List<UserRoleBean> userRoleBeans = new ArrayList<UserRoleBean>();
+    for (PanelUserRole panelUserRole : panelUserRoles) {
+      String name = LocalizationUtils.getLocalizedText(panelUserRole.getName(), pageRequestContext.getRequest().getLocale());
+      userRoleBeans.add(new UserRoleBean(panelUserRole.getId(), name));
     }
-
+    pageRequestContext.getRequest().setAttribute("panelUserRoles", userRoleBeans);
+    
+    HashSet<Long> userRoles = new HashSet<Long>();
+    Panel panel = panelDAO.findById(pageRequestContext.getLong("panelId"));
+    List<PanelUser> panelUsers = panelUserDAO.listByPanelAndUserAndStamp(panel, user, panel.getCurrentStamp());
+    for (PanelUser pUser : panelUsers) {
+      userRoles.add(pUser.getRole().getId());
+    }
+    pageRequestContext.getRequest().setAttribute("userRoles", userRoles);
+    
+    pageRequestContext.setIncludeJSP("/jsp/panels/edituser.jsp");
   }
 
   public class UserRoleBean {
