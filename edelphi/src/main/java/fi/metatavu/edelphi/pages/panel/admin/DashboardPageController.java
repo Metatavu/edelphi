@@ -83,7 +83,8 @@ public class DashboardPageController extends PanelPageController {
     }
  
     ActionUtils.includeRoleAccessList(pageRequestContext);
-    
+    String googlePickerApiKey = System.getenv("GOOGLE_PICKER_API_KEY");
+    pageRequestContext.getRequest().setAttribute("googlePickerApiKey", googlePickerApiKey);
     pageRequestContext.setIncludeJSP("/jsp/pages/panel/admin/dashboard.jsp");
   }
 

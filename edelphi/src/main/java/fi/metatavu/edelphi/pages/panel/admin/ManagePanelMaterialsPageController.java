@@ -41,6 +41,8 @@ public class ManagePanelMaterialsPageController extends PanelPageController {
       pageRequestContext.getRequest().setAttribute("panel", panel);
       pageRequestContext.getRequest().setAttribute("materials", MaterialUtils.listPanelMaterials(panel, true));
 
+      String googlePickerApiKey = System.getenv("GOOGLE_PICKER_API_KEY");
+      pageRequestContext.getRequest().setAttribute("googlePickerApiKey", googlePickerApiKey);
       pageRequestContext.setIncludeJSP("/jsp/pages/panel/admin/managematerials.jsp");
     }
     catch (Exception e) {

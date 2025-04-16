@@ -121,7 +121,7 @@
 
 <h2>Cookies and Tracking</h2>
 <p>We use cookies solely to enhance your user experience and track basic site usage via Google Analytics. You may disable cookies through your browser settings, but this may impact some features.</p>
-<p>We respect your browser’s "Do Not Track" settings.</p>
+<p>We respect your browser's "Do Not Track" settings.</p>
 
 <h2>Compliance</h2>
 <ul>

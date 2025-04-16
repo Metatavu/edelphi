@@ -58,6 +58,9 @@ public class ImportMaterialsGDocsPageController extends PanelPageController {
         pageRequestContext.getRequest().setAttribute("materials", MaterialUtils.listPanelMaterials(panel, true));
 
         ActionUtils.includeRoleAccessList(pageRequestContext);
+
+        String googlePickerApiKey = System.getenv("GOOGLE_PICKER_API_KEY");
+        pageRequestContext.getRequest().setAttribute("googlePickerApiKey", googlePickerApiKey);
         pageRequestContext.setIncludeJSP("/jsp/pages/panel/admin/importmaterialsgdocs.jsp");
       } catch (Exception e) {
         Messages messages = Messages.getInstance();

@@ -30,6 +30,8 @@ public class ManagePanelDocumentsPageController extends PanelPageController {
     pageRequestContext.getRequest().setAttribute("panel", panel);
     
     ActionUtils.includeRoleAccessList(pageRequestContext);
+    String googlePickerApiKey = System.getenv("GOOGLE_PICKER_API_KEY");
+    pageRequestContext.getRequest().setAttribute("googlePickerApiKey", googlePickerApiKey);
     pageRequestContext.setIncludeJSP("/jsp/panels/managepaneldocuments.jsp");
   }
 }
