@@ -1,6 +1,8 @@
 package fi.metatavu.edelphi.dao.resources;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
@@ -13,6 +15,8 @@ import fi.metatavu.edelphi.domainmodel.resources.Resource;
 import fi.metatavu.edelphi.domainmodel.resources.ResourceLock;
 import fi.metatavu.edelphi.domainmodel.resources.ResourceLock_;
 import fi.metatavu.edelphi.domainmodel.users.User;
+
+import static java.util.Collections.emptyList;
 
 @ApplicationScoped
 public class ResourceLockDAO extends GenericDAO<ResourceLock> {
@@ -50,6 +54,24 @@ public class ResourceLockDAO extends GenericDAO<ResourceLock> {
     resourceLock.setExpires(expires);
     entityManager.persist(resourceLock);
     return resourceLock;
+  }
+
+  public List<ResourceLock> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<ResourceLock> criteria = criteriaBuilder.createQuery(ResourceLock.class);
+    Root<ResourceLock> root = criteria.from(ResourceLock.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(ResourceLock_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<ResourceLock> listAllByModifier(User user) {
+    return emptyList();
   }
 
 }

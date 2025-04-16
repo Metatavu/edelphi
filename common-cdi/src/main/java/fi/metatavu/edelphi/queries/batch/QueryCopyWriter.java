@@ -112,11 +112,14 @@ public class QueryCopyWriter extends TypedItemWriter<Query> {
 
     Query originalQuery = items.get(0);
     Panel targetPanel = panelController.findPanelById(targetPanelId);
-    User user = UserController.findUserByKeycloakId(loggedUserId);
-    
-    queryCopyBatchContext.setOriginalQueryId(originalQuery.getId());
-    Query newQuery = copyQuery(originalQuery, targetPanel, user);
-    queryCopyBatchContext.setNewQueryId(newQuery.getId());
+
+    if (targetPanel != null && !targetPanel.getArchived()) {
+      User user = UserController.findUserByKeycloakId(loggedUserId);
+
+      queryCopyBatchContext.setOriginalQueryId(originalQuery.getId());
+      Query newQuery = copyQuery(originalQuery, targetPanel, user);
+      queryCopyBatchContext.setNewQueryId(newQuery.getId());
+    }
   }
 
   /**

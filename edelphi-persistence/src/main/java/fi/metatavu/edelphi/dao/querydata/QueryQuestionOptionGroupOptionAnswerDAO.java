@@ -20,6 +20,19 @@ import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOptionGroup;
 
 @ApplicationScoped
 public class QueryQuestionOptionGroupOptionAnswerDAO extends GenericDAO<QueryQuestionOptionGroupOptionAnswer> {
+  public List<QueryQuestionOptionGroupOptionAnswer> listByReply(QueryReply reply) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryQuestionOptionGroupOptionAnswer> criteria = criteriaBuilder.createQuery(QueryQuestionOptionGroupOptionAnswer.class);
+    Root<QueryQuestionOptionGroupOptionAnswer> root = criteria.from(QueryQuestionOptionGroupOptionAnswer.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(QueryQuestionOptionGroupOptionAnswer_.queryReply), reply)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
 
   public QueryQuestionOptionGroupOptionAnswer create(QueryReply queryReply, QueryField queryField,
       QueryOptionFieldOption option, QueryOptionFieldOptionGroup group) {

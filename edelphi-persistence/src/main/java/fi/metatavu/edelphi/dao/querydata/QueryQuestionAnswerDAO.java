@@ -10,14 +10,30 @@ import javax.persistence.criteria.Root;
 import fi.metatavu.edelphi.dao.GenericDAO;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionAnswer_;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionTextAnswer;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply_;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryField;
 import fi.metatavu.edelphi.domainmodel.querymeta.QueryField_;
 
+import java.util.List;
+
 @ApplicationScoped
 public class QueryQuestionAnswerDAO extends GenericDAO<QueryQuestionAnswer> {
+  public List<QueryQuestionAnswer> listByReply(QueryReply reply) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryQuestionAnswer> criteria = criteriaBuilder.createQuery(QueryQuestionAnswer.class);
+    Root<QueryQuestionAnswer> root = criteria.from(QueryQuestionAnswer.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(QueryQuestionAnswer_.queryReply), reply)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
 
   public QueryQuestionAnswer findByQueryReplyAndQueryField(QueryReply queryReply, QueryField queryField) {
     EntityManager entityManager = getEntityManager();

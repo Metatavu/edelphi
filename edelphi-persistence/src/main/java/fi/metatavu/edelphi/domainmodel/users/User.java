@@ -280,8 +280,8 @@ public class User implements ArchivableEntity, ModificationTrackedEntity {
     }
   }
   
-  @SuppressWarnings("unused")
-  private void setEmails(List<UserEmail> emails) {
+
+  public void setEmails(List<UserEmail> emails) {
     this.emails = emails;
   }
 

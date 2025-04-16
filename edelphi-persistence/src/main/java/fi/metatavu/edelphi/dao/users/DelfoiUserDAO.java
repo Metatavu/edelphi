@@ -56,20 +56,45 @@ public class DelfoiUserDAO extends GenericDAO<DelfoiUser> {
     return getSingleResult(entityManager.createQuery(criteria));
   }
 
-  public List<DelfoiUser> listByUser(User user) {
-    EntityManager entityManager = getEntityManager(); 
-    
+  public List<DelfoiUser> listAllByUser(User user) {
+    EntityManager entityManager = getEntityManager();
+
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
     CriteriaQuery<DelfoiUser> criteria = criteriaBuilder.createQuery(DelfoiUser.class);
     Root<DelfoiUser> root = criteria.from(DelfoiUser.class);
     criteria.select(root);
     criteria.where(
-      criteriaBuilder.and(
-          criteriaBuilder.equal(root.get(DelfoiUser_.user), user), 
-          criteriaBuilder.equal(root.get(DelfoiUser_.archived), Boolean.FALSE)
-        )
+      criteriaBuilder.equal(root.get(DelfoiUser_.user), user)
     );
-    
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<DelfoiUser> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<DelfoiUser> criteria = criteriaBuilder.createQuery(DelfoiUser.class);
+    Root<DelfoiUser> root = criteria.from(DelfoiUser.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(DelfoiUser_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<DelfoiUser> listAllByModifier(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<DelfoiUser> criteria = criteriaBuilder.createQuery(DelfoiUser.class);
+    Root<DelfoiUser> root = criteria.from(DelfoiUser.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(DelfoiUser_.lastModifier), user)
+    );
+
     return entityManager.createQuery(criteria).getResultList();
   }
 

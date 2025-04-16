@@ -97,5 +97,46 @@ public class PanelUserGroupDAO extends GenericDAO<PanelUserGroup> {
     getEntityManager().persist(panelUserGroup);
     return panelUserGroup;
   }
-  
+
+  public List<PanelUserGroup> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelUserGroup> criteria = criteriaBuilder.createQuery(PanelUserGroup.class);
+    Root<PanelUserGroup> root = criteria.from(PanelUserGroup.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(PanelUserGroup_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<PanelUserGroup> listAllByModifier(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelUserGroup> criteria = criteriaBuilder.createQuery(PanelUserGroup.class);
+    Root<PanelUserGroup> root = criteria.from(PanelUserGroup.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(PanelUserGroup_.lastModifier), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<PanelUserGroup> listUserPanelGroups(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelUserGroup> criteria = criteriaBuilder.createQuery(PanelUserGroup.class);
+    Root<PanelUserGroup> root = criteria.from(PanelUserGroup.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.isMember(user, root.get(PanelUserGroup_.users))
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
 }
