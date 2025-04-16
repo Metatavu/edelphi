@@ -386,10 +386,8 @@ public class UserController {
           keycloakController.deleteUser(userIdentification.getExternalId());
         }
       } catch (KeycloakException e) {
-        System.out.println("******************************");
-        System.out.println("KEYCLOAK USER DELETION FAILED: ");
-        System.out.println(e.getMessage());
-        throw new RuntimeException();
+        logger.error("Failed to delete user from Keycloak: {}", e.getMessage());
+        throw new RuntimeException(e);
       }
     }
 
