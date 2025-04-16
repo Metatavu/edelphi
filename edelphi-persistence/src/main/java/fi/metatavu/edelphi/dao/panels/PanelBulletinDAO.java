@@ -104,4 +104,32 @@ public class PanelBulletinDAO extends GenericDAO<PanelBulletin> {
     bulletin.setImportantEnds(importantEnds);
     return persist(bulletin);
   }
+
+  public List<PanelBulletin> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelBulletin> criteria = criteriaBuilder.createQuery(PanelBulletin.class);
+    Root<PanelBulletin> root = criteria.from(PanelBulletin.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(PanelBulletin_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<PanelBulletin> listAllByModifier(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelBulletin> criteria = criteriaBuilder.createQuery(PanelBulletin.class);
+    Root<PanelBulletin> root = criteria.from(PanelBulletin.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(PanelBulletin_.lastModifier), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
 }

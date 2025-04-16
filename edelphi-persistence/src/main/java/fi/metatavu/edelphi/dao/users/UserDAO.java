@@ -2,14 +2,16 @@ package fi.metatavu.edelphi.dao.users;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 
+import fi.metatavu.edelphi.domainmodel.base.DelfoiUser;
+import fi.metatavu.edelphi.domainmodel.panels.PanelUser;
+import fi.metatavu.edelphi.domainmodel.users.UserRole;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -23,6 +25,8 @@ import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.domainmodel.users.UserEmail;
 import fi.metatavu.edelphi.domainmodel.users.User_;
+import fi.metatavu.edelphi.domainmodel.panels.PanelUser_;
+import fi.metatavu.edelphi.domainmodel.base.DelfoiUser_;
 import fi.metatavu.edelphi.search.SearchResult;
 
 @ApplicationScoped
@@ -222,6 +226,14 @@ public class UserDAO extends GenericDAO<User> {
     return user;
   }
 
+  public User removeAllUserEmails(User user, User modifier) {
+    user.setEmails(null);
+    user.setLastModified(new Date());
+    user.setLastModifier(modifier);
+    getEntityManager().persist(user);
+    return user;
+  }
+
   public User updateSubscriptionLevel(User user, SubscriptionLevel subscriptionLevel) {
     user.setSubscriptionLevel(subscriptionLevel);
     return persist(user);
@@ -246,5 +258,90 @@ public class UserDAO extends GenericDAO<User> {
     user.setLocale(locale);
     return persist(user);
   }
-  
+
+  public List<User> listUsersToArchive(Date before, int maxResults, UserRole excludedRole) {
+    EntityManager entityManager = getEntityManager();
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<User> criteria = criteriaBuilder.createQuery(User.class);
+    Root<User> user = criteria.from(User.class);
+    Subquery<Long> subquery = criteria.subquery(Long.class);
+    Root<DelfoiUser> delfoiUser = subquery.from(DelfoiUser.class);
+    subquery.select(delfoiUser.get(DelfoiUser_.id))
+      .where(criteriaBuilder.and(
+        criteriaBuilder.equal(delfoiUser.get(DelfoiUser_.user), user),
+        criteriaBuilder.equal(delfoiUser.get(DelfoiUser_.role), excludedRole)
+      ));
+
+    Subquery<Long> panelUserSubquery = criteria.subquery(Long.class);
+    Root<PanelUser> panelUser = panelUserSubquery.from(PanelUser.class);
+    panelUserSubquery.select(panelUser.get(PanelUser_.id))
+      .where(criteriaBuilder.equal(panelUser.get(PanelUser_.user), user));
+
+    criteria.select(user)
+      .distinct(true)
+      .where(criteriaBuilder.and(
+        criteriaBuilder.not(criteriaBuilder.exists(panelUserSubquery)),
+        criteriaBuilder.lessThan(user.get(User_.lastLogin), before),
+        criteriaBuilder.isFalse(user.get(User_.archived)),
+        criteriaBuilder.not(criteriaBuilder.exists(subquery))
+      ));
+
+    return entityManager.createQuery(criteria).setMaxResults(maxResults).getResultList();
+  }
+
+  public List<User> listUsersToDelete(Date before, int maxResults) {
+    EntityManager entityManager = getEntityManager();
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<User> criteria = criteriaBuilder.createQuery(User.class);
+    Root<User> root = criteria.from(User.class);
+    criteria.select(root);
+
+    criteria.where(
+      criteriaBuilder.and(
+        criteriaBuilder.lessThan(root.get(User_.lastModified), before),
+        criteriaBuilder.equal(root.get(User_.archived), Boolean.TRUE)
+      )
+    );
+
+    return entityManager.createQuery(criteria).setMaxResults(maxResults).getResultList();
+  }
+
+  public List<User> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<User> criteria = criteriaBuilder.createQuery(User.class);
+    Root<User> root = criteria.from(User.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(User_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<User> listAllByModifier(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<User> criteria = criteriaBuilder.createQuery(User.class);
+    Root<User> root = criteria.from(User.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(User_.lastModifier), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  @Override
+  public User findById(Long id) {
+    User foundUser = super.findById(id);
+
+    if (foundUser != null && foundUser.getArchived()) {
+      return null;
+    }
+
+    return foundUser;
+  }
 }

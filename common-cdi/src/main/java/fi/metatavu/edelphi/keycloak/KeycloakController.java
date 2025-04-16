@@ -148,6 +148,19 @@ public class KeycloakController {
   }
 
   /**
+   * Delete user from Keycloak
+   *
+   * @param userId user id
+   * @throws KeycloakException
+   */
+  public void deleteUser(String userId) throws KeycloakException {
+    Map<String, String> settings = getKeycloakSettings();
+    UsersApi usersApi = getUsersApi(settings);
+    String realm = getRealm(settings);
+    deleteUser(usersApi, realm, userId);
+  }
+
+  /**
    * Creates user into Keycloak
    * 
    * @param usersApi instance of UsersApi
@@ -181,6 +194,45 @@ public class KeycloakController {
       }
 
       return findUser(usersApi, realm, email);
+  }
+
+  /**
+   * Retrieves user from Keycloak by id.
+   * Returns null if user is not found.
+   *
+   * @param userId Keycloak userId
+   * @throws KeycloakException
+   */
+  public UserRepresentation getUser(String userId) throws KeycloakException {
+    Map<String, String> settings = getKeycloakSettings();
+    UsersApi usersApi = getUsersApi(settings);
+    String realm = getRealm(settings);
+    try {
+      return usersApi.adminRealmsRealmUsersUserIdGet(realm, userId, false);
+    } catch (ApiException e) {
+      if (e.getCode() == 404) {
+        return null;
+      }
+
+      throw new KeycloakException(e);
+    }
+
+  }
+
+  /**
+   * Delete user from Keycloak
+   *
+   * @param usersApi users api
+   * @param realm realm
+   * @param userId user id
+   * @throws KeycloakException
+   */
+  private void deleteUser(UsersApi usersApi, String realm, String userId) throws KeycloakException {
+    try {
+      usersApi.adminRealmsRealmUsersUserIdDelete(realm, userId);
+    } catch (ApiException e) {
+      throw new KeycloakException(e);
+    }
   }
 
   /**
@@ -379,7 +431,7 @@ public class KeycloakController {
    * 
    * @return Keycloak auth source
    */
-  private AuthSource getKeycloakAuthSource() {
+  public AuthSource getKeycloakAuthSource() {
     AuthSource authSource = authSourceDAO.findByStrategy(KEYCLOAK_AUTH_SOURCE);
     
     if (authSource == null) {

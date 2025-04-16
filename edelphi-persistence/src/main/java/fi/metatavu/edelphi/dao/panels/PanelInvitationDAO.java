@@ -234,5 +234,31 @@ public class PanelInvitationDAO extends GenericDAO<PanelInvitation> {
     return panelInvitation;
     
   }
-  
+
+  public List<PanelInvitation> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelInvitation> criteria = criteriaBuilder.createQuery(PanelInvitation.class);
+    Root<PanelInvitation> root = criteria.from(PanelInvitation.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(PanelInvitation_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+  public List<PanelInvitation> listAllByModifier(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelInvitation> criteria = criteriaBuilder.createQuery(PanelInvitation.class);
+    Root<PanelInvitation> root = criteria.from(PanelInvitation.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(PanelInvitation_.lastModifier), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
 }

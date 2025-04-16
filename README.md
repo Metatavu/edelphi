@@ -87,3 +87,12 @@ Wait for our team to review the changes. If our reviewers (or review systems) fi
 When pull-request has passed the review process, our team will merge it to the develop -branch and the changes will end up in the product. 
 
 In some rare cases if the code has some major issues, for example major quality issues or the change would be have other undesired effects, the pull-request can be closed without merging. 
+<div id="metatavu-custom-footer"><div align="center">
+    <img src="https://metatavu.fi/wp-content/uploads/2024/02/cropped-metatavu-favicon.jpg" alt="Organization Logo" width="100">
+    <p>© 2024 Metatavu. All rights reserved.</p>
+    <p>
+        <a href="https://www.metatavu.fi">Website</a> | 
+        <a href="https://twitter.com/metatavu">Twitter</a> | 
+        <a href="https://fi.linkedin.com/company/metatavu">LinkedIn</a>
+    </p>
+</div></div>

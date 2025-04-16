@@ -35,7 +35,7 @@ public class PanelStampDAO extends GenericDAO<PanelStamp> {
     getEntityManager().persist(panelStamp);
     return panelStamp;
   }
-  
+
   public List<PanelStamp> listByPanel(Panel panel) {
     EntityManager entityManager = getEntityManager();
 
@@ -79,6 +79,34 @@ public class PanelStampDAO extends GenericDAO<PanelStamp> {
     panelStamp.setLastModifier(updater);
     getEntityManager().persist(panelStamp);
     return panelStamp;
+  }
+
+  public List<PanelStamp> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelStamp> criteria = criteriaBuilder.createQuery(PanelStamp.class);
+    Root<PanelStamp> root = criteria.from(PanelStamp.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(PanelStamp_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<PanelStamp> listAllByModifier(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<PanelStamp> criteria = criteriaBuilder.createQuery(PanelStamp.class);
+    Root<PanelStamp> root = criteria.from(PanelStamp.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(PanelStamp_.lastModifier), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
   }
 
 }

@@ -98,13 +98,13 @@ public class IndexPageController extends PageController {
       }
     }
 
-    List<DelfoiBulletin> bulletins = bulletinDAO.listByDelfoiAndArchived(delfoi, Boolean.FALSE);
-    Collections.sort(bulletins, new Comparator<DelfoiBulletin>() {
-      @Override
-      public int compare(DelfoiBulletin o1, DelfoiBulletin o2) {
-        return o2.getCreated().compareTo(o1.getCreated());
-      }
-    });
+      List<DelfoiBulletin> bulletins = bulletinDAO.listByDelfoiAndArchived(delfoi, Boolean.FALSE);
+      Collections.sort(bulletins, new Comparator<DelfoiBulletin>() {
+        @Override
+        public int compare(DelfoiBulletin o1, DelfoiBulletin o2) {
+          return o2.getCreated().compareTo(o1.getCreated());
+        }
+      });
 
     if (!ignoreBulletinLocale) {
       TextLanguageDetector langdetect = null;

@@ -7,10 +7,13 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
+import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryReply_;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
@@ -82,6 +85,20 @@ public class QueryReplyDAO extends GenericDAO<QueryReply> {
     
     return entityManager.createQuery(criteria).getResultList();
   }
+
+  public List<QueryReply> listByQuery(Query query, int maxResults) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryReply> criteria = criteriaBuilder.createQuery(QueryReply.class);
+    Root<QueryReply> root = criteria.from(QueryReply.class);
+    criteria.select(root);
+    criteria.where(
+        criteriaBuilder.equal(root.get(QueryReply_.query), query)
+    );
+
+    return entityManager.createQuery(criteria).setMaxResults(maxResults).getResultList();
+  }
   
   public List<Long> listIdsByQueryAndStamp(Query query, PanelStamp panelStamp) {
     return listIdsByQueryAndStampAndArchived(query, panelStamp, Boolean.FALSE);
@@ -138,6 +155,22 @@ public class QueryReplyDAO extends GenericDAO<QueryReply> {
     return entityManager.createQuery(criteria).getResultList();
   }
 
+  public List<QueryReply> listAllByUser(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryReply> criteria = criteriaBuilder.createQuery(QueryReply.class);
+    Root<QueryReply> root = criteria.from(QueryReply.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.and(
+        criteriaBuilder.equal(root.get(QueryReply_.user), user)
+      )
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
   /**
    * Lists all query replies by query (including archived)
    *
@@ -156,6 +189,24 @@ public class QueryReplyDAO extends GenericDAO<QueryReply> {
     return entityManager.createQuery(criteria).getResultList();
   }
 
+  /**
+   * Lists all query replies by stamp (including archived)
+   *
+   * @param stamp stamp
+   * @return list of query replies
+   */
+  public List<QueryReply> listAllByStamp(PanelStamp stamp) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryReply> criteria = criteriaBuilder.createQuery(QueryReply.class);
+    Root<QueryReply> root = criteria.from(QueryReply.class);
+    criteria.select(root);
+    criteria.where(criteriaBuilder.equal(root.get(QueryReply_.stamp), stamp));
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
   public Long countByQueryAndStamp(Query query, PanelStamp panelStamp) {
     EntityManager entityManager = getEntityManager();
 
@@ -166,8 +217,7 @@ public class QueryReplyDAO extends GenericDAO<QueryReply> {
     criteria.where(
       criteriaBuilder.and(
         criteriaBuilder.equal(root.get(QueryReply_.query), query), 
-        criteriaBuilder.equal(root.get(QueryReply_.stamp), panelStamp), 
-        criteriaBuilder.equal(root.get(QueryReply_.archived), Boolean.FALSE)
+        criteriaBuilder.equal(root.get(QueryReply_.stamp), panelStamp)
       )
     );
     
@@ -196,5 +246,32 @@ public class QueryReplyDAO extends GenericDAO<QueryReply> {
     getEntityManager().persist(queryReply);
     return queryReply;
   }
-  
+
+  public List<QueryReply> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryReply> criteria = criteriaBuilder.createQuery(QueryReply.class);
+    Root<QueryReply> root = criteria.from(QueryReply.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(QueryReply_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<QueryReply> listAllByModifier(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryReply> criteria = criteriaBuilder.createQuery(QueryReply.class);
+    Root<QueryReply> root = criteria.from(QueryReply.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(QueryReply_.lastModifier), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
 }

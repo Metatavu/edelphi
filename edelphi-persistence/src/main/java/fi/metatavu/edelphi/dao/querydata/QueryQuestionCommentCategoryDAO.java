@@ -10,6 +10,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import fi.metatavu.edelphi.dao.GenericDAO;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory;
 import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory_;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
@@ -149,4 +150,31 @@ public class QueryQuestionCommentCategoryDAO extends GenericDAO<QueryQuestionCom
     return entityManager.createQuery(criteria).getResultList(); 
   }
 
+  public List<QueryQuestionCommentCategory> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryQuestionCommentCategory> criteria = criteriaBuilder.createQuery(QueryQuestionCommentCategory.class);
+    Root<QueryQuestionCommentCategory> root = criteria.from(QueryQuestionCommentCategory.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(QueryQuestionCommentCategory_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<QueryQuestionCommentCategory> listAllByModifier(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryQuestionCommentCategory> criteria = criteriaBuilder.createQuery(QueryQuestionCommentCategory.class);
+    Root<QueryQuestionCommentCategory> root = criteria.from(QueryQuestionCommentCategory.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(QueryQuestionCommentCategory_.lastModifier), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
 }

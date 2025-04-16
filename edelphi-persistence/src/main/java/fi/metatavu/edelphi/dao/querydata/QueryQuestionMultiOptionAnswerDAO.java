@@ -27,6 +27,19 @@ import fi.metatavu.edelphi.domainmodel.querymeta.QueryOptionFieldOption_;
 
 @ApplicationScoped
 public class QueryQuestionMultiOptionAnswerDAO extends GenericDAO<QueryQuestionMultiOptionAnswer> {
+  public List<QueryQuestionMultiOptionAnswer> listByReply(QueryReply reply) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryQuestionMultiOptionAnswer> criteria = criteriaBuilder.createQuery(QueryQuestionMultiOptionAnswer.class);
+    Root<QueryQuestionMultiOptionAnswer> root = criteria.from(QueryQuestionMultiOptionAnswer.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(QueryQuestionMultiOptionAnswer_.queryReply), reply)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
 
   public QueryQuestionMultiOptionAnswer create(QueryReply queryReply, QueryField queryField, Set<QueryOptionFieldOption> options) {
     Date now = new Date();
@@ -94,6 +107,21 @@ public class QueryQuestionMultiOptionAnswerDAO extends GenericDAO<QueryQuestionM
           criteriaBuilder.equal(root.get(QueryQuestionOptionAnswer_.queryField), queryField),
           criteriaBuilder.equal(qrJoin.get(QueryReply_.archived), Boolean.FALSE)
       )
+    );
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<QueryQuestionMultiOptionAnswer> listAllByQueryField(QueryField queryField) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryQuestionMultiOptionAnswer> criteria = criteriaBuilder.createQuery(QueryQuestionMultiOptionAnswer.class);
+    Root<QueryQuestionMultiOptionAnswer> root = criteria.from(QueryQuestionMultiOptionAnswer.class);
+
+    criteria.select(root);
+
+    criteria.where(
+        criteriaBuilder.equal(root.get(QueryQuestionOptionAnswer_.queryField), queryField)
     );
     return entityManager.createQuery(criteria).getResultList();
   }

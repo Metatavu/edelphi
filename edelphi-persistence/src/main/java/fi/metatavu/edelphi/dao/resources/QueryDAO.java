@@ -62,7 +62,20 @@ public class QueryDAO extends GenericDAO<Query> {
     
     return entityManager.createQuery(criteria).getResultList();
   }
-  
+  public List<Query> listByFolder(Folder folder) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Query> criteria = criteriaBuilder.createQuery(Query.class);
+    Root<Query> root = criteria.from(Query.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(Query_.parentFolder), folder)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
   public List<Query> listByFolderAndArchived(Folder folder, Boolean archived) {
     EntityManager entityManager = getEntityManager(); 
     

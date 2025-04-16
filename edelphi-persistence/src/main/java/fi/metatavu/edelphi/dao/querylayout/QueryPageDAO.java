@@ -306,4 +306,31 @@ public class QueryPageDAO extends GenericDAO<QueryPage> {
     return entityManager.createQuery(criteria).getResultList();
   }
 
+  public List<QueryPage> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryPage> criteria = criteriaBuilder.createQuery(QueryPage.class);
+    Root<QueryPage> root = criteria.from(QueryPage.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(QueryPage_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<QueryPage> listAllByModifier(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<QueryPage> criteria = criteriaBuilder.createQuery(QueryPage.class);
+    Root<QueryPage> root = criteria.from(QueryPage.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(QueryPage_.lastModifier), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
 }

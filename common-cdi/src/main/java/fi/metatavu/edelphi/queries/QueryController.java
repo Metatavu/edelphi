@@ -7,8 +7,8 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import fi.metatavu.edelphi.dao.querydata.QueryQuestionCommentCategoryDAO;
-import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
+import fi.metatavu.edelphi.comments.QueryQuestionCommentController;
+import fi.metatavu.edelphi.dao.querydata.*;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageDAO;
 import fi.metatavu.edelphi.dao.querylayout.QueryPageSettingDAO;
 import fi.metatavu.edelphi.dao.querylayout.QuerySectionDAO;
@@ -17,8 +17,7 @@ import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldOptionDAO;
 import fi.metatavu.edelphi.dao.querymeta.QueryOptionFieldOptionGroupDAO;
 import fi.metatavu.edelphi.dao.resources.QueryDAO;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
-import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionCommentCategory;
-import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
+import fi.metatavu.edelphi.domainmodel.querydata.*;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPage;
 import fi.metatavu.edelphi.domainmodel.querylayout.QueryPageType;
 import fi.metatavu.edelphi.domainmodel.querylayout.QuerySection;
@@ -74,6 +73,9 @@ public class QueryController {
 
   @Inject
   private QueryQuestionCommentCategoryDAO queryQuestionCommentCategoryDAO;
+
+  @Inject
+  private QueryQuestionCommentController queryQuestionCommentController;
 
   /**
    * Creates new query
@@ -237,11 +239,17 @@ public class QueryController {
    * Lists queries in a panel
    * 
    * @param panel panel
+   * @param includeArchived include archived
    * @return list of panel queries
    */
-  public List<Query> listPanelQueries(Panel panel) {
-    return queryDAO.listByFolderAndArchived(panel.getRootFolder(), Boolean.FALSE);
+  public List<Query> listPanelQueries(Panel panel, Boolean includeArchived) {
+    if (includeArchived) {
+      return queryDAO.listByFolder(panel.getRootFolder());
+    } else {
+      return queryDAO.listByFolderAndArchived(panel.getRootFolder(), Boolean.FALSE);
+    }
   }
+
 
   /**
    * Lists query pages by query

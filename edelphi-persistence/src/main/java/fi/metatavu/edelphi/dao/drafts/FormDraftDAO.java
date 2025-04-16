@@ -14,6 +14,8 @@ import fi.metatavu.edelphi.domainmodel.drafts.FormDraft;
 import fi.metatavu.edelphi.domainmodel.drafts.FormDraft_;
 import fi.metatavu.edelphi.domainmodel.users.User;
 
+import static java.util.Collections.emptyList;
+
 @ApplicationScoped
 public class FormDraftDAO extends GenericDAO<FormDraft> {
 
@@ -69,5 +71,23 @@ public class FormDraftDAO extends GenericDAO<FormDraft> {
     
     return entityManager.createQuery(criteria).getResultList();
   }
-  
+
+  public List<FormDraft> listAllByCreator(User user) {
+    EntityManager entityManager = getEntityManager();
+
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<FormDraft> criteria = criteriaBuilder.createQuery(FormDraft.class);
+    Root<FormDraft> root = criteria.from(FormDraft.class);
+    criteria.select(root);
+    criteria.where(
+      criteriaBuilder.equal(root.get(FormDraft_.creator), user)
+    );
+
+    return entityManager.createQuery(criteria).getResultList();
+  }
+
+  public List<FormDraft> listAllByModifier(User user) {
+    return emptyList();
+  }
+
 }

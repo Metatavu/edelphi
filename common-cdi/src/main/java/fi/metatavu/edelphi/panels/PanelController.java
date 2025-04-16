@@ -1,27 +1,24 @@
 package fi.metatavu.edelphi.panels;
 
+import java.time.OffsetDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import fi.metatavu.edelphi.comments.QueryQuestionCommentController;
 import fi.metatavu.edelphi.dao.actions.PanelUserRoleActionDAO;
 import fi.metatavu.edelphi.dao.panels.*;
-import fi.metatavu.edelphi.domainmodel.panels.Panel;
-import fi.metatavu.edelphi.domainmodel.panels.PanelInvitation;
-import fi.metatavu.edelphi.domainmodel.panels.PanelInvitationState;
-import fi.metatavu.edelphi.domainmodel.panels.PanelStamp;
-import fi.metatavu.edelphi.domainmodel.panels.PanelUser;
-import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseClass;
-import fi.metatavu.edelphi.domainmodel.panels.PanelUserExpertiseGroup;
-import fi.metatavu.edelphi.domainmodel.panels.PanelUserGroup;
-import fi.metatavu.edelphi.domainmodel.panels.PanelUserIntressClass;
-import fi.metatavu.edelphi.domainmodel.panels.PanelUserJoinType;
-import fi.metatavu.edelphi.domainmodel.panels.PanelUserRole;
+import fi.metatavu.edelphi.dao.querydata.QueryReplyDAO;
+import fi.metatavu.edelphi.domainmodel.panels.*;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryQuestionComment;
+import fi.metatavu.edelphi.domainmodel.querydata.QueryReply;
 import fi.metatavu.edelphi.domainmodel.resources.Folder;
 import fi.metatavu.edelphi.domainmodel.resources.Query;
 import fi.metatavu.edelphi.domainmodel.users.User;
+import fi.metatavu.edelphi.queries.QueryReplyController;
 import fi.metatavu.edelphi.resources.ResourceController;
 import fi.metatavu.edelphi.settings.SettingsController;
 import fi.metatavu.edelphi.users.UserController;
@@ -79,6 +76,25 @@ public class PanelController {
   @Inject
   private PanelExpertiseGroupUserDAO panelExpertiseGroupUserDAO;
 
+  @Inject
+  private QueryReplyDAO queryReplyDAO;
+
+  @Inject
+  private QueryQuestionCommentController queryQuestionCommentController;
+
+  @Inject
+  private QueryReplyController queryReplyController;
+
+
+  /**
+   * This function is used by a scheduled job to archive panels
+   *
+   * @param panel panel to archive
+   */
+  public void archivePanel(Panel panel) {
+    panelInvitationDAO.listAllByPanel(panel).forEach(panelInvitationDAO::delete);
+    panelDAO.archivePanel(panel);
+  }
   
   /**
    * Finds a panel by id
@@ -109,9 +125,126 @@ public class PanelController {
     panelUserGroupDAO.listAllByPanel(panel).forEach(panelUserGroupDAO::delete);
     panelUserExpertiseClassDAO.listByPanel(panel).forEach(panelUserExpertiseClassDAO::delete);
     panelUserIntressClassDAO.listByPanel(panel).forEach(panelUserIntressClassDAO::delete);
-    panelStampDAO.listAllByPanel(panel).forEach(panelStampDAO::delete);
+
+    deletePanelStamps(panel);
 
     panelDAO.delete(panel);
+  }
+
+  /**
+   * Delete panel auths
+   *
+   * @param panel panel
+   */
+  public void deletePanelAuths(Panel panel) {
+    panelAuthDAO.listByPanel(panel).forEach(panelAuthDAO::delete);
+  }
+
+  /**
+   * Delete panel user role actions
+   *
+   * @param panel panel
+   */
+  public void deletePanelUserRoleActions(Panel panel) {
+    panelUserRoleActionDAO.listByPanel(panel).forEach(panelUserRoleActionDAO::delete);
+  }
+
+  /**
+   * Delete panel bulletins
+   *
+   * @param panel panel
+   */
+  public void deletePanelBulletins(Panel panel) {
+    panelBulletinDAO.listAllByPanel(panel).forEach(panelBulletinDAO::delete);
+  }
+
+  /**
+   * Delete panel invitations
+   *
+   * @param panel panel
+   */
+  public void deletePanelInvitations(Panel panel) {
+    panelInvitationDAO.listAllByPanel(panel).forEach(panelInvitationDAO::delete);
+  }
+
+  /**
+   * Delete panel resource
+   *
+   * @param panel panel
+   */
+  public void deletePanelResource(Panel panel) {
+    Folder rootFolder = panel.getRootFolder();
+    panelDAO.updateRootFolder(panel, null, panel.getLastModifier());
+
+    if (rootFolder != null) {
+      resourceController.deleteResource(rootFolder);
+    }
+  }
+
+  /**
+   * Delete panel stamps
+   *
+   * @param panel panel
+   */
+  public void deletePanelStamps(Panel panel) {
+    List<PanelStamp> stamps = panelStampDAO.listAllByPanel(panel);
+    for (PanelStamp panelStamp : stamps) {
+      List<QueryReply> replies = queryReplyDAO.listAllByStamp(panelStamp);
+      for (QueryReply reply : replies) {
+        List<QueryQuestionComment> comments = queryQuestionCommentController.listAllByQuery(reply.getQuery());
+        comments.forEach(queryQuestionCommentController::removeParent);
+        comments.forEach(queryQuestionCommentController::deleteQueryQuestionComment);
+        queryReplyController.deleteQueryReplyAnswers(reply);
+        queryReplyDAO.delete(reply);
+      }
+
+      panelStampDAO.delete(panelStamp);
+    }
+  }
+
+  /**
+   * Delete panel user expertise groups
+   *
+   * @param panel panel
+   */
+  public void deletePanelUserExpertiseGroups(Panel panel) {
+    panelUserExpertiseGroupDAO.listAllByPanel(panel).forEach(this::deletePanelUserExpertiseGroup);
+  }
+
+  /**
+   * Delete panel users
+   *
+   * @param panel panel
+   */
+  public void deletePanelUsers(Panel panel) {
+    panelUserDAO.listAllByPanel(panel).forEach(panelUserDAO::delete);
+  }
+
+  /**
+   * Delete panel user groups
+   *
+   * @param panel panel
+   */
+  public void deletePanelUserGroups(Panel panel) {
+    panelUserGroupDAO.listAllByPanel(panel).forEach(panelUserGroupDAO::delete);
+  }
+
+  /**
+   * Delete panel user expertise classes
+   *
+   * @param panel panel
+   */
+  public void deletePanelUserExpertiseClasses(Panel panel) {
+    panelUserExpertiseClassDAO.listByPanel(panel).forEach(panelUserExpertiseClassDAO::delete);
+  }
+
+  /**
+   * Delete panel user intress classes
+   *
+   * @param panel panel
+   */
+  public void deletePanelUserIntressClasses(Panel panel) {
+    panelUserIntressClassDAO.listByPanel(panel).forEach(panelUserIntressClassDAO::delete);
   }
 
   /**
@@ -122,6 +255,32 @@ public class PanelController {
    */
   public List<Panel> listUserPanels(User user) {
     return panelDAO.listByDelfoiAndUser(settingsController.getDelfoi(), user);
+  }
+
+  /**
+   * Lists panels to archive
+   *
+   * @param waitDays wait this amount of days before archiving
+   * @param maxResults max results
+   *
+   * @return panels
+   */
+  public List<Panel> listPanelsToArchive(long waitDays, int maxResults) {
+    Date before = Date.from(OffsetDateTime.now().minusDays(waitDays).toInstant());
+    return panelDAO.listPanelsByStateEndedAndLastModifiedBefore(before, maxResults);
+  }
+
+  /**
+   * Lists panels to delete
+   *
+   * @param waitDays wait this amount of days before deleting
+   * @param maxResults max results
+   *
+   * @return panels
+   */
+  public List<Panel> listPanelsToDelete(long waitDays, int maxResults) {
+    Date before = Date.from(OffsetDateTime.now().minusDays(waitDays).toInstant());
+    return panelDAO.listPanelsByStateArchivedAndLastModifiedBefore(before, maxResults);
   }
 
   /**
@@ -141,11 +300,7 @@ public class PanelController {
    * @return whether panel is archived or not
    */
   public boolean isPanelArchived(Panel panel) {
-    if (panel.getArchived()) {
-      return true;
-    }
-    
-    return false;
+    return panel.getArchived();
   }
 
   /**
