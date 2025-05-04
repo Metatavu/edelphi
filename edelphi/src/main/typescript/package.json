@@ -15,7 +15,7 @@
     "@types/recharts": "^1.1.16",
     "email-validator": "^2.0.4",
     "localized-strings": "^0.2.1",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.21",
     "log4js": "^4.0.2",
     "moment": "^2.24.0",
     "mqtt": "^2.18.8",
