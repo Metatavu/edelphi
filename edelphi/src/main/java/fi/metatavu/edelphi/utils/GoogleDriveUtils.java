@@ -1,14 +1,12 @@
 package fi.metatavu.edelphi.utils;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.api.services.drive.DriveScopes;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -44,7 +42,6 @@ public class GoogleDriveUtils {
   private static final String CHARSET = "UTF-8";
   private static final String TEXT_HTML = "text/html";
   private static final Logger logger = Logger.getLogger(GoogleDriveUtils.class.getName());
-	private static final String[] REQUIRED_SCOPES = new String[] { "https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/drive.file" };
 	private static final JsonFactory JSON_FACTORY = new JacksonFactory();
 	private static final HttpTransport TRANSPORT = new NetHttpTransport();
   private static final String FILE_FIELDS = "id,kind,mimeType,name,parents,createdTime,modifiedTime,imageMediaMetadata,videoMediaMetadata,trashed,webViewLink";
@@ -155,7 +152,7 @@ public class GoogleDriveUtils {
   
   		adminCredentials = GoogleCredential
   	    .fromStream(new FileInputStream(keyFile))
-  	    .createScoped(Arrays.asList(REQUIRED_SCOPES));
+  	    .createScoped(Arrays.asList(DriveScopes.DRIVE_READONLY));
   			
   		return adminCredentials;
 	  } catch (IOException e) {
