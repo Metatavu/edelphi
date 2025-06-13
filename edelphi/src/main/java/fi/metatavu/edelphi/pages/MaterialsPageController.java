@@ -64,8 +64,15 @@ public class MaterialsPageController extends AbstractDelphiMaterialPageControlle
     }
  
     ActionUtils.includeRoleAccessList(pageRequestContext);
+
     String googlePickerApiKey = System.getenv("GOOGLE_PICKER_API_KEY");
+    String googlePickerClientId = System.getenv("GOOGLE_PICKER_CLIENT_ID");
+    String googlePickerAppId = System.getenv("GOOGLE_PICKER_APP_ID");
+
     pageRequestContext.getRequest().setAttribute("googlePickerApiKey", googlePickerApiKey);
+    pageRequestContext.getRequest().setAttribute("googlePickerAppId", googlePickerAppId);
+    pageRequestContext.getRequest().setAttribute("googlePickerClientId", googlePickerClientId);
+
     pageRequestContext.setIncludeJSP("/jsp/pages/materials.jsp");
   }
 

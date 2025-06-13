@@ -6,67 +6,6 @@
 
 <head>
   <jsp:include page="/jsp/supports/google_picker_support.jsp"></jsp:include>
-  <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
-  <script>
-    const CLIENT_ID = '748827317096-n6u0r7l3v2ggf08vbehefjifklgnb5au.apps.googleusercontent.com';
-
-    const SCOPE = 'https://www.googleapis.com/auth/drive.file';
-
-    let oauthToken = null;
-    const params = new URLSearchParams(window.location.search);
-
-    if (params.has("importFromGoogle")) {
-      onApiLoad();
-    }
-
-    function onApiLoad() {
-      gapi.load('client:auth2', initAuth);
-    }
-
-    function initAuth() {
-      gapi.auth2.init({
-        client_id: CLIENT_ID,
-        scope: SCOPE
-      }).then(() => {
-        gapi.auth2.getAuthInstance().signIn().then(user => {
-          oauthToken = user.getAuthResponse().access_token;
-          loadPicker();
-        });
-      });
-    }
-
-    function loadPicker() {
-      gapi.load('picker', () => {
-        const view = new google.picker.View(google.picker.ViewId.DOCS);
-        const picker = new google.picker.PickerBuilder()
-          .setOAuthToken(oauthToken)
-          .setDeveloperKey(__GOOGLE_PICKER_API_KEY)
-          .addView(view)
-          .setCallback(pickerCallback)
-          .setAppId(748827317096)
-          .build();
-        picker.setVisible(true);
-      });
-    }
-
-    function pickerCallback(data) {
-          if (data.action === google.picker.Action.PICKED) {
-            const panelId = document.getElementsByName("panelId")[0].value;
-            const fileId = data.docs[0].id;
-            console.log(fileId);
-            document.getElementsByName("selectedgdoc")[0].value = fileId;
-            startLoadingOperation("panelAdmin.block.importMaterialsGDocs.importingMaterials");
-            JSONUtils.sendForm(document.forms["importGDocs"], {
-              onComplete: function (transport) {
-                endLoadingOperation();
-              },
-              onSuccess: function () {
-                window.location.href = CONTEXTPATH + '/panel/admin/managematerials.page?panelId=' + panelId;
-              }
-            });
-          }
-        }
-  </script>
 </head>
 
 <form name="importGDocs" action="${pageContext.request.contextPath}/resources/importgdocs.json">
