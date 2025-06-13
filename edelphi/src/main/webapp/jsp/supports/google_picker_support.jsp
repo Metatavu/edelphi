@@ -5,21 +5,22 @@
   <c:when test="${googlePickerSupportIncluded != true}">
     <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
     <script>
-      const googlePickerApiKey = "${googlePickerApiKey}";
-      const googlePickerClientId = "${googlePickerClientId}";
-      const googlePickerAppId = "${googlePickerAppId}"
-
       const SCOPE = 'https://www.googleapis.com/auth/drive.file';
 
       let oauthToken = null;
+      const params = new URLSearchParams(window.location.search);
 
+      if (params.has("importFromGoogle")) {
+        onApiLoad();
+      }
       function onApiLoad() {
         gapi.load('client:auth2', initAuth);
       }
 
       function initAuth() {
+        console.log("${googlePickerClientId}");
         gapi.auth2.init({
-          client_id: googlePickerClientId,
+          client_id: "${googlePickerClientId}",
           scope: SCOPE
         }).then(() => {
           gapi.auth2.getAuthInstance().signIn().then(user => {
@@ -34,10 +35,10 @@
           const view = new google.picker.View(google.picker.ViewId.DOCS);
           const picker = new google.picker.PickerBuilder()
             .setOAuthToken(oauthToken)
-            .setDeveloperKey(googlePickerApiKey)
+            .setDeveloperKey("${googlePickerApiKey}")
             .addView(view)
             .setCallback(pickerCallback)
-            .setAppId(googlePickerAppId)
+            .setAppId("${googlePickerAppId}")
             .build();
           picker.setVisible(true);
         });

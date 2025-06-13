@@ -91,6 +91,7 @@ public class DashboardPageController extends PanelPageController {
     pageRequestContext.getRequest().setAttribute("googlePickerApiKey", googlePickerApiKey);
     pageRequestContext.getRequest().setAttribute("googlePickerAppId", googlePickerAppId);
     pageRequestContext.getRequest().setAttribute("googlePickerClientId", googlePickerClientId);
+    pageRequestContext.getRequest().setAttribute("panelId", panel.getId());
 
     pageRequestContext.setIncludeJSP("/jsp/pages/panel/admin/dashboard.jsp");
   }

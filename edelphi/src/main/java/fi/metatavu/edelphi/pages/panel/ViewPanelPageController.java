@@ -172,6 +172,15 @@ public class ViewPanelPageController extends PanelPageController {
       throw new SmvcRuntimeException(EdelfoiStatusCode.GOOGLE_DOCS_FAILURE, messages.getText(locale, "exception.1012.googleDocsFailure"), e);
     }
 
+    String googlePickerApiKey = System.getenv("GOOGLE_PICKER_API_KEY");
+    String googlePickerClientId = System.getenv("GOOGLE_PICKER_CLIENT_ID");
+    String googlePickerAppId = System.getenv("GOOGLE_PICKER_APP_ID");
+
+    pageRequestContext.getRequest().setAttribute("googlePickerApiKey", googlePickerApiKey);
+    pageRequestContext.getRequest().setAttribute("googlePickerAppId", googlePickerAppId);
+    pageRequestContext.getRequest().setAttribute("googlePickerClientId", googlePickerClientId);
+    pageRequestContext.getRequest().setAttribute("panelId", panel.getId());
+
     pageRequestContext.setIncludeJSP("/jsp/pages/panel/viewpanel.jsp");
   }
   

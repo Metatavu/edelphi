@@ -32,6 +32,8 @@ services:
       - ./google-service-account.json:/opt/google-service-account.json
     depends_on:
       - mysql
+      - nginx
+      - keycloak
     environment:
       HOST: ${HOST}
       DB_HOST: ${DB_HOST}
@@ -71,7 +73,6 @@ services:
       - ./nginx-dev/sites.conf:/etc/nginx/conf.d/sites.conf:ro
       - ./nginx-dev/letsencrypt:/etc/letsencrypt:ro
     depends_on:
-      - edelphi
       - keycloak
     networks:
       edelphi:
