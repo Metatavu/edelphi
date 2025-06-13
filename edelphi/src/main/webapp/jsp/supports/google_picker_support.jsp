@@ -18,7 +18,6 @@
       }
 
       function initAuth() {
-        console.log("${googlePickerClientId}");
         gapi.auth2.init({
           client_id: "${googlePickerClientId}",
           scope: SCOPE
