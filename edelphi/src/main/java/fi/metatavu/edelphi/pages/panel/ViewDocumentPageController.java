@@ -1,8 +1,10 @@
 package fi.metatavu.edelphi.pages.panel;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Locale;
 
+import javassist.bytecode.ByteArray;
 import org.apache.commons.io.IOUtils;
 
 import com.google.api.services.drive.Drive;
