@@ -4,6 +4,16 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
+<head>
+  <jsp:include page="/jsp/supports/google_picker_support.jsp"></jsp:include>
+</head>
+
+<form name="importGDocs" action="${pageContext.request.contextPath}/resources/importgdocs.json">
+  <input type="hidden" name="selectedgdoc"/>
+  <input type="hidden" name="parentFolderId" value="${panel.rootFolder.id}"/>
+  <input type="hidden" name="panelId" value="${panel.id}"/>
+</form>
+
 <div class="block materialsBlock">
 
   <jsp:include page="/jsp/fragments/block_title.jsp">
@@ -20,7 +30,7 @@
     <jsp:param name="item.CREATE.href" value="${pageContext.request.contextPath}/admin/createlocaldocument.page?cat=materials&lang=${dashboardLang}"/>
 
     <jsp:param name="item.GDOCSIMPORT.tooltipLocale" value="admin.dashboard.materialImportGoogleDocuments"/>
-    <jsp:param name="item.GDOCSIMPORT.href" value="${pageContext.request.contextPath}/admin/importmaterialsgdocs.page?cat=materials&lang=${dashboardLang}"/>
+    <jsp:param name="item.GDOCSIMPORT.href" value="?panelId=${panel.id}&importFromGoogle=importFromGoogle"/>
   </jsp:include>
   
   <div class="blockContent materialsBlockList sortableMaterialList">

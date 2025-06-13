@@ -48,6 +48,15 @@ public class CreateLocalDocumentPageController extends PanelPageController {
     }
  
     ActionUtils.includeRoleAccessList(pageRequestContext);
+
+    String googlePickerApiKey = System.getenv("GOOGLE_PICKER_API_KEY");
+    String googlePickerClientId = System.getenv("GOOGLE_PICKER_CLIENT_ID");
+    String googlePickerAppId = System.getenv("GOOGLE_PICKER_APP_ID");
+
+    pageRequestContext.getRequest().setAttribute("googlePickerApiKey", googlePickerApiKey);
+    pageRequestContext.getRequest().setAttribute("googlePickerAppId", googlePickerAppId);
+    pageRequestContext.getRequest().setAttribute("googlePickerClientId", googlePickerClientId);
+    pageRequestContext.getRequest().setAttribute("panelId", panel.getId());
     pageRequestContext.setIncludeJSP("/jsp/pages/panel/admin/createlocaldocument.jsp");
   }
 
