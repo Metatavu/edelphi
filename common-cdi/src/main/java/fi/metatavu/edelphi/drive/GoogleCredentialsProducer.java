@@ -20,7 +20,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
  */
 public class GoogleCredentialsProducer {
 
-  private static final String[] REQUIRED_SCOPES = new String[] { "https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/drive.file" };
+  private static final String[] REQUIRED_SCOPES = new String[] { "https://www.googleapis.com/auth/drive.file" };
   
   @Inject
   private Logger logger;

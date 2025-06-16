@@ -18,6 +18,8 @@ services:
       interval: 5s
       timeout: 10s
       retries: 5
+    networks:
+      - edelphi
 
   edelphi:
     hostname: ${HOST}
@@ -26,8 +28,12 @@ services:
     ports:
       - 8081:8080
       - 8787:8787
+    volumes:
+      - ./google-service-account.json:/opt/google-service-account.json
     depends_on:
       - mysql
+      - nginx
+      - keycloak
     environment:
       HOST: ${HOST}
       DB_HOST: ${DB_HOST}
@@ -51,6 +57,11 @@ services:
       WILDFLY_EXTRA_OPTS: ${WILDFLY_EXTRA_OPTS}
       OVERRIDE_REPORTS_URL: ${OVERRIDE_REPORTS_URL}
       SAVE_REPORTS_ON_DISK: ${SAVE_REPORTS_ON_DISK}
+      GOOGLE_PICKER_API_KEY: ${GOOGLE_PICKER_API_KEY}
+      GOOGLE_PICKER_CLIENT_ID: ${GOOGLE_PICKER_CLIENT_ID}
+      GOOGLE_PICKER_APP_ID: ${GOOGLE_PICKER_APP_ID}
+    networks:
+      - edelphi
 
   nginx:
     hostname: ${HOST}
@@ -62,8 +73,12 @@ services:
       - ./nginx-dev/sites.conf:/etc/nginx/conf.d/sites.conf:ro
       - ./nginx-dev/letsencrypt:/etc/letsencrypt:ro
     depends_on:
-      - edelphi
       - keycloak
+    networks:
+      edelphi:
+        aliases:
+          - dev.edelphi.org
+          - dev-auth.edelphi.org
 
   keycloak:
     # image: quay.io/keycloak/keycloak:21.1
@@ -84,6 +99,10 @@ services:
       KC_DB_USERNAME: root
       KC_DB_PASSWORD: root
       KC_PROXY_HEADERS: xforwarded
+    networks:
+      - edelphi
 
+networks:
+  edelphi:
 volumes:
   db_data: {}
