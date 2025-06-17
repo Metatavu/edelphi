@@ -58,6 +58,10 @@
               window.location.href = CONTEXTPATH + '/panel/admin/managematerials.page?panelId=' + panelId;
             }
           });
+        } else if (data.action == google.picker.Action.CANCEL) {
+          const url = new URL(window.location.href);
+          url.searchParams.delete("importFromGoogle");
+          window.location.href = url.toString();
         }
       }
     </script>
