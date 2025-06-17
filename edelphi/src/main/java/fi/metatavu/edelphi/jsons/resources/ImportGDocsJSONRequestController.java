@@ -8,15 +8,18 @@ import com.google.api.services.drive.model.File;
 
 import fi.metatavu.edelphi.DelfoiActionName;
 import fi.metatavu.edelphi.EdelfoiStatusCode;
+import fi.metatavu.edelphi.FeatureNotAvailableOnSubscriptionLevelException;
 import fi.metatavu.edelphi.dao.resources.FolderDAO;
 import fi.metatavu.edelphi.dao.resources.GoogleDocumentDAO;
 import fi.metatavu.edelphi.dao.resources.GoogleImageDAO;
 import fi.metatavu.edelphi.dao.resources.ResourceDAO;
 import fi.metatavu.edelphi.dao.users.UserDAO;
 import fi.metatavu.edelphi.domainmodel.base.Delfoi;
+import fi.metatavu.edelphi.domainmodel.features.Feature;
 import fi.metatavu.edelphi.domainmodel.panels.Panel;
 import fi.metatavu.edelphi.domainmodel.resources.Folder;
 import fi.metatavu.edelphi.domainmodel.resources.Resource;
+import fi.metatavu.edelphi.domainmodel.users.SubscriptionLevel;
 import fi.metatavu.edelphi.domainmodel.users.User;
 import fi.metatavu.edelphi.i18n.Messages;
 import fi.metatavu.edelphi.jsons.JSONController;
@@ -27,6 +30,7 @@ import fi.metatavu.edelphi.smvcj.controllers.JSONRequestContext;
 import fi.metatavu.edelphi.smvcj.controllers.RequestContext;
 import fi.metatavu.edelphi.utils.GoogleDriveUtils;
 import fi.metatavu.edelphi.utils.ResourceUtils;
+import fi.metatavu.edelphi.utils.SubscriptionLevelUtils;
 
 public class ImportGDocsJSONRequestController extends JSONController {
 
@@ -66,9 +70,17 @@ public class ImportGDocsJSONRequestController extends JSONController {
     }
     
     String[] selectedGDocs = jsonRequestContext.getStrings("selectedgdoc");
-    
+
+    User loggedUser = userDAO.findById(jsonRequestContext.getLoggedUserId());
+
+    boolean isFeatureEnabled = SubscriptionLevelUtils.isFeatureEnabled(loggedUser.getSubscriptionLevel(), Feature.MANAGE_PANEL_MATERIALS);
+
+    if (!isFeatureEnabled) {
+      SubscriptionLevel minimumSubscriptionLevel = SubscriptionLevelUtils.getMinimumLevelFor(Feature.MANAGE_PANEL_MATERIALS);
+      throw new FeatureNotAvailableOnSubscriptionLevelException(jsonRequestContext.getRequest().getLocale(), loggedUser.getSubscriptionLevel(), minimumSubscriptionLevel);
+    }
+
     try {
-      User loggedUser = userDAO.findById(jsonRequestContext.getLoggedUserId());
       Folder parentFolder = folderDAO.findById(parentFolderId);
 
       for (String resourceId : selectedGDocs) {
