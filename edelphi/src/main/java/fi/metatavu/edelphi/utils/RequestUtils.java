@@ -51,7 +51,15 @@ public class RequestUtils {
    * @return service base URL
    */
   public static String getBaseUrl(HttpServletRequest request) {
-    return String.format("%s://%s:%d", getRequestScheme(request), getRequestHost(request), getRequestPort(request));
+    String scheme = getRequestScheme(request);
+    String host = getRequestHost(request);
+    Integer port = getRequestPort(request, scheme);
+
+    if (port == null || isDefaultPort(scheme, port)) {
+      return String.format("%s://%s", scheme, host);
+    }
+
+    return String.format("%s://%s:%d", scheme, host, port);
   }
 
   public static String getCurrentUrl(HttpServletRequest request, boolean stripApp) {
@@ -318,41 +326,130 @@ public class RequestUtils {
    * @return request scheme
    */
   private static String getRequestScheme(HttpServletRequest request) {
-    String forwardProto = request.getHeader("X-Forwarded-Proto");
+    String forwardProto = getFirstHeaderValue(request, "X-Forwarded-Proto");
     if (StringUtils.isNotBlank(forwardProto)) {
-      return forwardProto;
+      return forwardProto.toLowerCase();
     }
 
     return request.getScheme();
   }
 
   /**
-   * Returns request host
+   * Returns request host (without port)
    *
    * @param request request
    * @return request host
    */
   private static String getRequestHost(HttpServletRequest request) {
-    String forwardHost = request.getHeader("X-Forwarded-Host");
+    String forwardHost = getFirstHeaderValue(request, "X-Forwarded-Host");
     if (StringUtils.isNotBlank(forwardHost)) {
-      return forwardHost;
+      return stripPort(forwardHost);
     }
 
     return request.getServerName();
   }
 
   /**
-   * Returns request port
+   * Returns request port.
+   *
+   * When the request has come through a reverse proxy, the container's local port
+   * (e.g. 8080) is never meaningful to the client, so in that case the port is resolved
+   * from X-Forwarded-Port, the port in X-Forwarded-Host or, failing those, the default
+   * port of the forwarded scheme.
    *
    * @param request request
-   * @return request port
+   * @param scheme resolved request scheme
+   * @return request port or null if default port of the scheme should be used
    */
-  private static Integer getRequestPort(HttpServletRequest request) {
-    String forwardPort = request.getHeader("X-Forwarded-Port");
-    if (StringUtils.isNotBlank(forwardPort)) {
+  private static Integer getRequestPort(HttpServletRequest request, String scheme) {
+    String forwardPort = getFirstHeaderValue(request, "X-Forwarded-Port");
+    if (NumberUtils.isDigits(forwardPort)) {
       return NumberUtils.createInteger(forwardPort);
     }
 
-    return request.getLocalPort();
+    String forwardHost = getFirstHeaderValue(request, "X-Forwarded-Host");
+    if (StringUtils.isNotBlank(forwardHost)) {
+      Integer hostPort = getPort(forwardHost);
+      if (hostPort != null) {
+        return hostPort;
+      }
+    }
+
+    if (isProxiedRequest(request)) {
+      return null;
+    }
+
+    return request.getServerPort();
+  }
+
+  /**
+   * Returns whether request has passed through a reverse proxy
+   *
+   * @param request request
+   * @return whether request has passed through a reverse proxy
+   */
+  private static boolean isProxiedRequest(HttpServletRequest request) {
+    return StringUtils.isNotBlank(request.getHeader("X-Forwarded-Proto")) ||
+      StringUtils.isNotBlank(request.getHeader("X-Forwarded-Host")) ||
+      StringUtils.isNotBlank(request.getHeader("X-Forwarded-For"));
+  }
+
+  /**
+   * Returns whether port is the default port for the scheme
+   *
+   * @param scheme scheme
+   * @param port port
+   * @return whether port is the default port for the scheme
+   */
+  private static boolean isDefaultPort(String scheme, int port) {
+    return ("https".equalsIgnoreCase(scheme) && port == 443) || ("http".equalsIgnoreCase(scheme) && port == 80);
+  }
+
+  /**
+   * Returns first value of possibly comma separated header (multiple proxies append values)
+   *
+   * @param request request
+   * @param name header name
+   * @return first value or null
+   */
+  private static String getFirstHeaderValue(HttpServletRequest request, String name) {
+    String value = request.getHeader(name);
+    if (StringUtils.isBlank(value)) {
+      return null;
+    }
+
+    return StringUtils.trim(StringUtils.substringBefore(value, ","));
+  }
+
+  /**
+   * Strips port from host[:port] value
+   *
+   * @param host host value
+   * @return host without port
+   */
+  private static String stripPort(String host) {
+    if (host.startsWith("[")) {
+      int end = host.indexOf(']');
+      return end > -1 ? host.substring(0, end + 1) : host;
+    }
+
+    int colon = host.lastIndexOf(':');
+    return colon > -1 ? host.substring(0, colon) : host;
+  }
+
+  /**
+   * Returns port from host[:port] value
+   *
+   * @param host host value
+   * @return port or null if not present
+   */
+  private static Integer getPort(String host) {
+    int colon = host.lastIndexOf(':');
+    if (colon == -1 || colon < host.lastIndexOf(']')) {
+      return null;
+    }
+
+    String port = host.substring(colon + 1);
+    return NumberUtils.isDigits(port) ? NumberUtils.createInteger(port) : null;
   }
 }
